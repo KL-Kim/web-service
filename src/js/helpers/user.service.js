@@ -16,17 +16,17 @@ export const loginFetch = (email, password) => {
   return fetch(userSerivceUri.login, options)
     .then(response => {
       if (!response.ok) {
-        return Promise.reject(response.statusText);
+        return Promise.reject(response);
       } else {
         return response.json();
       }
     })
-    .then(user => {
-      if (user && user.token) {
-        localStorage.setItem('user', JSON.stringify(user));
+    .then(json => {
+      if (json.user && json.token) {
+        return json;
+      } else {
+        return Promise.reject("Bad response");
       }
-
-      return user;
     })
     .catch(err => {
       return Promise.reject(err);

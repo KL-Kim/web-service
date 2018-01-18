@@ -1,22 +1,23 @@
 /**
  * User Reducer
  */
+import userTypes from '../constants/user.types.js'
+
 const initialState = {
   user: {},
-  token: '',
   isFetching: false,
   isLoggedIn: false,
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'LOGIN_REQUEST':
+    case userTypes.LOGIN_REQUEST:
       return {
         ...state,
         isFetching: true,
       };
 
-    case 'LOGIN_SUCCESS':
+    case userTypes.LOGIN_SUCCESS:
       return {
         ...state,
         token: action.payload.token,
@@ -24,8 +25,8 @@ const userReducer = (state = initialState, action) => {
         isLoggedIn: true
       };
 
-    case 'LOGIN_FAILURE':
-    return state;
+    case userTypes.LOGIN_FAILURE:
+    return {};
 
     default:
       return state;

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+
+import { login } from '../actions/user.actions';
 
 class LoginForm extends Component {
   constructor(props) {
@@ -31,26 +34,32 @@ class LoginForm extends Component {
 
   render() {
     return (
-      <form className="loginForm" noValidate autoComplete="off" onSubmit={this.handleSubmit}>
-          <br />
-          <TextField
-            label="Email"
-            id="email"
-            name="email"
-            onChange={this.handleChange} />
-          <br />
-          <TextField
-            type="password"
-            label="Password"
-            margin="normal"
-            id="password"
-            name="password"
-            onChange={this.handleChange} />
-          <br />
-          <Button raised color="primary" type="submit">Sign in</Button>
-      </form>
+      <div>
+        <form className="loginForm" noValidate autoComplete="off" onSubmit={this.handleSubmit}>
+            <br />
+            <TextField
+              label="Email"
+              id="email"
+              name="email"
+              onChange={this.handleChange} />
+            <br />
+            <TextField
+              type="password"
+              label="Password"
+              margin="normal"
+              id="password"
+              name="password"
+              onChange={this.handleChange} />
+            <br />
+            <Button raised color="primary" type="submit">Sign in</Button>
+        </form>
+      </div>
     );
   }
 }
 
-export default LoginForm;
+const mapStateToProps = (state, ownProps) => {
+  return {};
+}
+
+export default connect(mapStateToProps, { login })(LoginForm);

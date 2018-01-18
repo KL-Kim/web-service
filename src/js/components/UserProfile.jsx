@@ -1,22 +1,34 @@
 import React, { Component } from 'react';
-import logo from '../../css/logo.svg';
+import Reboot from 'material-ui/Reboot';
 
-const style = {
-  textAlign: 'center'
-};
+import Header from '../containers/Header';
+import Footer from '../containers/Footer';
 
 class UserProfile extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      token: JSON.parse(sessionStorage.getItem('token'))
+    };
+  }
+
   render() {
     return (
-      <div style={style}>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">User Profile</h1>
-        </header>
-        <p>
-          User Profile goes here!
-        </p>
+      <div>
+        <Reboot />
+          <div className="App-container">
+            <Header />
+            <p>
+              User Profile goes here!
+            </p>
+            <p>
+              Your token is : { this.state.token }
+            </p>
+          <Footer />
+          </div>
       </div>
+
     );
   }
 }

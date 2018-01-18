@@ -1,5 +1,6 @@
 import userTypes from '../constants/user.types';
 import { loginFetch } from '../helpers/user.service';
+import * as AlertActions from './alert.actions';
 
 /**
  *  Request login
@@ -13,19 +14,20 @@ const requestLogin = (email, password) => ({
       password: password
     }
   }
-)
+);
 
 /**
  *  Login success
  */
-const loginSuccess = json => ({
+const loginSuccess = response => ({
   type: userTypes.LOGIN_SUCCESS,
   meta: {},
   error: null,
   payload: {
-    token: json.token
+    user: response.user,
+    token: response.token
   }
-})
+});
 
 /**
  *  Login failure
@@ -37,7 +39,7 @@ const loginFailure = error => ({
   payload: {
     error: error
   }
-})
+});
 
 /**
  * Login
@@ -46,10 +48,17 @@ export const login = (email, password) => {
   return (dispath, getState) => {
     dispath(requestLogin(email, password));
     return loginFetch(email, password)
-      .then(json => {
-        dispath(loginSuccess(json));
+      .then(res => {
+        if (res.token) {
+          sessionStorage.setItem('token', JSON.stringify(res.token));
+        }
+        dispath(loginSuccess(res));
+        dispath(AlertActions.alertSuccess("Login Successfully"));
+
       }, error => {
         dispath(loginFailure(error));
+        dispath(AlertActions.alertFailure(error.statusText));
+
       });
   }
-}
+};

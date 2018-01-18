@@ -1,8 +1,8 @@
-const authHeader() => {
-  const user = JSON.parse(localStorage.getItem('user'));
+const authHeader = () => {
+  const token = JSON.parse(sessionStorage.getItem('token'));
 
-  if (user && user.token) {
-    return {'Authoriztion': 'Bearer ' + user.token}
+  if (token) {
+    return {'Authoriztion': 'Bearer ' + token}
   } else {
     return {};
   }
