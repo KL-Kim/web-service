@@ -1,13 +1,16 @@
+html {
+  height: 100%;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+  position: relative;
+  min-height: 100%;
 }
 
 a {
   text-decoration: none;
 }
 
-.App-container {
-  text-align: center;
+#root {
+  height: 100%;
 }

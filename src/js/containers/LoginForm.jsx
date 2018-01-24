@@ -1,9 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { withStyles } from 'material-ui/styles';
+import Grid from 'material-ui/Grid';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 
 import { login } from '../actions/user.actions';
+
+const styles = (theme) => ({
+  button: {
+    marginTop: theme.spacing.unit * 4,
+  },
+  input: {
+    width: 270,
+    margin: theme.spacing.unit * 2
+  }
+})
 
 class LoginForm extends Component {
   constructor(props) {
@@ -33,14 +47,18 @@ class LoginForm extends Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
       <div>
         <form className="loginForm" noValidate autoComplete="off" onSubmit={this.handleSubmit}>
-            <br />
+            <Typography type="display1" align="center">
+              Sign in
+            </Typography>
             <TextField
               label="Email"
               id="email"
               name="email"
+              className={classes.input}
               onChange={this.handleChange} />
             <br />
             <TextField
@@ -49,10 +67,19 @@ class LoginForm extends Component {
               margin="normal"
               id="password"
               name="password"
+              className={classes.input}
               onChange={this.handleChange} />
             <br />
-            <Button raised color="primary" type="submit">Sign in</Button>
+            <Button className={classes.button} raised color="primary" type="submit">Sign in</Button>
         </form>
+        <Grid container justify="center" alignItems="center">
+          <Grid item xs>
+            <Button className={classes.button} color="primary" type="submit">Forget your password?</Button>
+            <Link to="/signup">
+              <Button className={classes.button} color="primary" type="submit">Sign up</Button>
+            </Link>
+          </Grid>
+        </Grid>
       </div>
     );
   }
@@ -62,4 +89,4 @@ const mapStateToProps = (state, ownProps) => {
   return {};
 }
 
-export default connect(mapStateToProps, { login })(LoginForm);
+export default connect(mapStateToProps, { login })(withStyles(styles)(LoginForm));
