@@ -4,6 +4,8 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
+import Button from 'material-ui/Button';
+import Divider from 'material-ui/Divider';
 
 import Container from './Container'
 import ReviewCard from './utils/ReviewCard';
@@ -13,12 +15,23 @@ import image from '../../css/logo.svg';
 
 const business = {
   id: '1',
-  image: image,
   title: 'SteakHouse',
   description: 'Awesome Steak House',
   rating: 5,
   phone: '123-1234-1234',
+  district: 'Xianlin',
   address: '77 Massachusetts Ave, Cambridge, MA',
+  price: '100 ~ 150',
+  image: image,
+  other: {
+    businessTime: '11:00 ~ 02:00',
+    Delivery: 'Yes',
+    language: 'Korean',
+    rest: 'No',
+    payment: 'VISA, MasterCard',
+    parking: 'Yes',
+  },
+  menu: ['Menu1: 100', 'Menu2: 200', 'Menu3: 300'],
 };
 
 const reviews = {
@@ -75,18 +88,17 @@ class BusinessPage extends Component {
             </Paper>
           </Grid>
         </Grid>
+        <Divider />
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
-            <Typography type="display3" gutterBottom>
+            <Typography type="display3" align="center">
               Reviews
             </Typography>
           </Grid>
-          <Grid item xs={4}>
-            <ReviewCard businessName={reviews.businessName}
-              content={reviews.content}
-              good={reviews.good}
-              bad={reviews.bad}
-            />
+          <Grid item xs={12}>
+              <Button color="primary">Rating</Button>
+              <Button color="primary">Newest</Button>
+              <Button color="primary">Most Useful</Button>
           </Grid>
           <Grid item xs={4}>
             <ReviewCard businessName={reviews.businessName}
@@ -102,39 +114,49 @@ class BusinessPage extends Component {
               bad={reviews.bad}
             />
           </Grid>
-          <Grid container spacing={16} justify="center" alignItems="center">
-            <Grid item xs={12}>
-              <Typography type="display3" gutterBottom>
-                Stories
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <StoryCard businessName={story.businessName}
-                title={story.title}
-                content={story.content}
-                commentCount={story.commentCount}
-                good={story.good}
-                bad={story.bad}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <StoryCard businessName={story.businessName}
-                title={story.title}
-                content={story.content}
-                commentCount={story.commentCount}
-                good={story.good}
-                bad={story.bad}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <StoryCard businessName={story.businessName}
-                title={story.title}
-                content={story.content}
-                commentCount={story.commentCount}
-                good={story.good}
-                bad={story.bad}
-              />
-            </Grid>
+          <Grid item xs={4}>
+            <ReviewCard businessName={reviews.businessName}
+              content={reviews.content}
+              good={reviews.good}
+              bad={reviews.bad}
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={16} justify="center" alignItems="center">
+          <Grid item xs={12}>
+            <Typography type="display3" align="center">
+              Stories
+            </Typography>
+          </Grid><Grid item xs={12}>
+              <Button color="primary">Newest</Button>
+              <Button color="primary">Most Useful</Button>
+          </Grid>
+          <Grid item xs={4}>
+            <StoryCard businessName={story.businessName}
+              title={story.title}
+              content={story.content}
+              commentCount={story.commentCount}
+              good={story.good}
+              bad={story.bad}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <StoryCard businessName={story.businessName}
+              title={story.title}
+              content={story.content}
+              commentCount={story.commentCount}
+              good={story.good}
+              bad={story.bad}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <StoryCard businessName={story.businessName}
+              title={story.title}
+              content={story.content}
+              commentCount={story.commentCount}
+              good={story.good}
+              bad={story.bad}
+            />
           </Grid>
         </Grid>
       </Container>

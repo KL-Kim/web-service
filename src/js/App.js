@@ -6,6 +6,7 @@ import configureStore from './stores/user.store';
 import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage';
 import SigninPage from './components/SigninPage';
+import BusinessListPage from './components/BusinessListPage';
 
 // Dashboard
 import DashboardAccount from './components/dashboard/AccountPage';
@@ -34,7 +35,7 @@ const App = () => (
         <Route path="/dashboard/story" component={DashboardStory} />
         <Route path="/signup" component={SignupPage} />
         <Route path="/signin" component={SigninPage} />
-        <Route path="/business" component={BusinessPage} />
+        <Route path="/business" component={BusinessListPage} />
         <Route path="/story" component={StoryPage} />
       </div>
     </Router>

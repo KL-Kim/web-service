@@ -3,8 +3,11 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
+import Paper from 'material-ui/Paper';
 
-import Container from './Container.jsx'
+import Container from './Container.jsx';
+import SearchBar from './utils/SearchBar';
+import CategoryBar from './utils/CategoryBar';
 import BusinessCard from './utils/BusinessCard';
 import StoryCard from './utils/StoryCard';
 
@@ -29,7 +32,12 @@ const story = {
 };
 
 
-const styles = theme => ({});
+const styles = theme => ({
+  paper: {
+    padding: theme.spacing.unit * 5,
+    color: theme.palette.text.secondary
+  },
+});
 
 class HomePage extends Component {
   render() {
@@ -39,8 +47,18 @@ class HomePage extends Component {
       <Container>
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
+            <Paper className={classes.paper} >
+              <SearchBar />
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper className={classes.paper} >
+              <CategoryBar />
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
             <Typography type="display3" gutterBottom align="center">
-              Featured Bussiness
+              Hot & New Bussiness
             </Typography>
           </Grid>
           <Grid item xs={4}>

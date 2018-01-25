@@ -29,6 +29,7 @@ class ReviewPage extends Component {
               </Grid>
               <Grid item xs={6}>
                 <ReviewCard businessName={reviews.businessName}
+                  rating={reviews.rating}
                   content={reviews.content}
                   good={reviews.good}
                   bad={reviews.bad}
@@ -36,6 +37,7 @@ class ReviewPage extends Component {
               </Grid>
               <Grid item xs={6}>
                 <ReviewCard businessName={reviews.businessName}
+                  rating={reviews.rating}
                   content={reviews.content}
                   good={reviews.good}
                   bad={reviews.bad}
@@ -43,6 +45,7 @@ class ReviewPage extends Component {
               </Grid>
               <Grid item xs={6}>
                 <ReviewCard businessName={reviews.businessName}
+                  rating={reviews.rating}
                   content={reviews.content}
                   good={reviews.good}
                   bad={reviews.bad}
@@ -50,6 +53,7 @@ class ReviewPage extends Component {
               </Grid>
               <Grid item xs={6}>
                 <ReviewCard businessName={reviews.businessName}
+                  rating={reviews.rating}
                   content={reviews.content}
                   good={reviews.good}
                   bad={reviews.bad}

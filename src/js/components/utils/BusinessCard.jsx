@@ -27,8 +27,7 @@ class BusinessCard extends Component {
           />
           <CardContent>
             <Typography type="headline" component="h2">{this.props.title}</Typography>
-            <Typography component="p">Good: {this.props.good}</Typography>
-            <Typography component="p">Bad: {this.props.bad}</Typography>
+            <Typography type="body1">Rating: { this.props.rating }</Typography>
           </CardContent>
           <CardActions>
             <Button dense color="primary">Share</Button>

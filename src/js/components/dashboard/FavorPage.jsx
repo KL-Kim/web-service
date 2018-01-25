@@ -11,7 +11,6 @@ import BusinessCard from '../utils/BusinessCard';
 const business = {
   id: '1',
   title: 'SteakHouse',
-  description: 'Awesome Steak House',
   rating: 5
 };
 
@@ -33,7 +32,7 @@ class FavorPage extends Component {
             </Grid>
             <Grid container>
               <Grid item xs={3}>
-                <BusinessCard title={business.title} />
+                <BusinessCard title={business.title} rating={business.rating}/>
               </Grid>
               <Grid item xs={3}>
                 <BusinessCard title={business.title} />

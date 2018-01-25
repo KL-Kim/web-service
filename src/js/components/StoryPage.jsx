@@ -7,7 +7,6 @@ import Paper from 'material-ui/Paper';
 
 import Container from './Container'
 import ReviewCard from './utils/ReviewCard';
-import StoryCard from './utils/StoryCard';
 
 import image from '../../css/logo.svg';
 
@@ -38,8 +37,10 @@ const story = {
   businessId: '5a4ef8f5537cd042155581a3',
   businessName: 'SteakHouse',
   title: 'Tasting SteakHouse',
-  content: 'Bla bla bla',
+  author: 'Kim',
+  content: 'The stories, ideas and lessons are enough to fill a year’s worth of articles, but for now I wanted to share the ideas straight from the people creating the disruption. Below are my most impactful takeaways from the last few days: No one belongs here more than me. When in doubt of your surroundings, this is the mantra. The ultimate currency is being uncool. Be vulnerably you and watch how you connect. The opposite of scarcity is enough. Be confident that if you’re doing work t matters to you, you are enough. There is no comparison. Unused creativity is not benign – it turns into grief. Do something with it. Get in the arena, show up, do your thing and don’t be afraid to get your ass kicked a little bit. Who you are will always trump who you think people want you to be. You can’t control if someone loves you back. Love them anyway.',
   commentCount: 10,
+  date: 'Jan 24, 2018',
   good: 10,
   bad: 2
 };
@@ -62,26 +63,19 @@ class StoryPage extends Component {
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
             <Typography type="display3" gutterBottom align="center">
-              Story Title
+              {story.title}
             </Typography>
             <Typography type="title" gutterBottom align="center">
-              By Kim
+              By {story.author}
             </Typography>
             <Typography type="caption" gutterBottom align="center">
-              2017.01.24
+              {story.date}
             </Typography>
           </Grid>
           <Grid item xs={8}>
             <Paper className={classes.paper}>
               <Typography type="body1">
-                The stories, ideas and lessons are enough to fill a year’s worth of articles, but for now I wanted to share the ideas straight from the people creating the disruption. Below are my most impactful takeaways from the last few days:
-No one belongs here more than me. When in doubt of your surroundings, this is the mantra.
-The ultimate currency is being uncool. Be vulnerably you and watch how you connect.
-The opposite of scarcity is enough. Be confident that if you’re doing work that matters to you, you are enough. There is no comparison.
-Unused creativity is not benign – it turns into grief. Do something with it.
-Get in the arena, show up, do your thing and don’t be afraid to get your ass kicked a little bit.
-Who you are will always trump who you think people want you to be.
-You can’t control if someone loves you back. Love them anyway.
+                {story.content}
               </Typography>
             </Paper>
           </Grid>
@@ -89,7 +83,7 @@ You can’t control if someone loves you back. Love them anyway.
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
             <Typography type="display1" gutterBottom align="center">
-              comments
+              Comments
             </Typography>
           </Grid>
           <Grid item xs={8}>
