@@ -18,7 +18,6 @@ const styles = theme => ({});
 
 class BusinessListPage extends Component {
   render() {
-    const { classes } = this.props;
     return (
       <Container>
         <Grid container spacing={16} justify="center">

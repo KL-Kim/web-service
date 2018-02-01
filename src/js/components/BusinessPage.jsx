@@ -14,24 +14,25 @@ import StoryCard from './utils/StoryCard';
 import image from '../../css/logo.svg';
 
 const business = {
-  id: '1',
-  title: 'SteakHouse',
-  description: 'Awesome Steak House',
-  rating: 5,
-  phone: '123-1234-1234',
-  district: 'Xianlin',
-  address: '77 Massachusetts Ave, Cambridge, MA',
+  id: '000000001',
+  category: 'french',
+  tags: 'steak',
+  rating: 4.5,
+  title: 'Steak House',
+  description: 'Awesome steak, impressive.',
+  phone: ['025-1234-1234', '123-1234-1234'],
+  address: '仙林文枢东路7号晴天广场2F (청은마트 2층)',
+  coordinate: '32.0968400000,118.9135000000',
   price: '100 ~ 150',
-  image: image,
-  other: {
-    businessTime: '11:00 ~ 02:00',
-    Delivery: 'Yes',
-    language: 'Korean',
-    rest: 'No',
-    payment: 'VISA, MasterCard',
-    parking: 'Yes',
-  },
-  menu: ['Menu1: 100', 'Menu2: 200', 'Menu3: 300'],
+  status: 'open',
+  views: '12345',
+  serviceTime: '11:00am ~ 02:00am',
+  delivery: true,
+  korean: true,
+  rest: '연중무휴',
+  payment: ['VISA', 'Master Card', 'Union pay', 'Alipay'],
+  menu: [{name: 'steak', price: 100, hot: true, new: false}],
+  businessImageUri: image,
 };
 
 const reviews = {
@@ -76,7 +77,7 @@ class BusinessPage extends Component {
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={4}>
             <Paper className={classes.paper}>
-              <img src={business.image} alt="business.title" />
+              <img src={business.businessImageUri} alt="business.title" />
             </Paper>
           </Grid>
           <Grid item xs={4}>

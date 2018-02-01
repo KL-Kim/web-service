@@ -74,7 +74,9 @@ class LoginForm extends Component {
         </form>
         <Grid container justify="center" alignItems="center">
           <Grid item xs>
-            <Button className={classes.button} color="primary" type="submit">Forget your password?</Button>
+            <Link to="/forget-password">
+              <Button className={classes.button} color="primary" type="submit">Forget your password?</Button>
+            </Link>
             <Link to="/signup">
               <Button className={classes.button} color="primary" type="submit">Sign up</Button>
             </Link>

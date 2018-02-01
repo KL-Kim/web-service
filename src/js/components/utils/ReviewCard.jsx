@@ -6,7 +6,7 @@ import Button from 'material-ui/Button';
 
 const styles = {
   card: {
-    width: 500,
+    // width: 500,
   },
   media: {
     height: 200,

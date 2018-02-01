@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography';
+import Copyright from 'material-ui-icons/Copyright';
 
 import Alert from '../../containers/Alert';
 
@@ -26,7 +27,7 @@ class Footer extends Component{
         <Grid container spacing={16} justify="center" alignItems="center" >
           <Grid item xs={12}>
             <Typography type="caption" align="center">
-               © 2018 iKoreaTown
+               <Copyright /> 2018 iKoreaTown
             </Typography>
           </Grid>
         </Grid>

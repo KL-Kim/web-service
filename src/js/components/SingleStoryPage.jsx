@@ -7,6 +7,7 @@ import Paper from 'material-ui/Paper';
 
 import Container from './Container'
 import ReviewCard from './utils/ReviewCard';
+import BusinessCard from './utils/BusinessCard';
 
 import image from '../../css/logo.svg';
 
@@ -79,7 +80,20 @@ class StoryPage extends Component {
               </Typography>
             </Paper>
           </Grid>
+
         </Grid>
+
+        <Grid container spacing={16} justify="center">
+          <Grid item xs={4}>
+            <Paper className={classes.paper}>
+              Author: {story.author}
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <BusinessCard title={business.title} rating={business.rating}/>
+          </Grid>
+        </Grid>
+
         <Grid container spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
             <Typography type="display1" gutterBottom align="center">

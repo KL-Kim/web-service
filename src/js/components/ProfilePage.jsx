@@ -80,9 +80,7 @@ const styles = (theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
-  profilePhoto: {
-    width: 200
-  },
+  
   button: {
     margin: theme.spacing.unit,
   },

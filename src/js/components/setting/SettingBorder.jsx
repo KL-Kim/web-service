@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 
-import DashboardHeader from './DashboardHeader';
-import DashboardFooter from './DashboardFooter';
+import SettingHeader from './SettingHeader';
+import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
 
 const styles = (theme) => ({
@@ -29,18 +29,18 @@ const styles = (theme) => ({
   },
 });
 
-class Dashboard extends Component {
+class SettingBorder extends Component {
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <DashboardHeader />
+        <SettingHeader />
         <Sidebar />
         <div className={classes.appFrame}>
           <main className={classes.content}>
             {this.props.children}
-            <DashboardFooter />
+            <SettingFooter />
           </main>
         </div>
       </div>
@@ -48,4 +48,4 @@ class Dashboard extends Component {
   }
 }
 
-export default withStyles(styles)(Dashboard);
+export default withStyles(styles)(SettingBorder);

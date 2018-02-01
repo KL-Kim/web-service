@@ -7,6 +7,8 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 
+import AccountCircle from 'material-ui-icons/AccountCircle';
+
 const styles = theme => ({
   appBar: {
     position: 'fixed',
@@ -29,12 +31,17 @@ class Header extends Component {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography type="title" color="inherit" align="left" className={classes.flex}>
-            iKoreaTown
+            <NavLink to="/"><Button color="contrast">iKoreaTown</Button></NavLink>
           </Typography>
-          <NavLink to="/"><Button color="contrast">Home</Button></NavLink>
-          <NavLink to="/business"><Button color="contrast">Business</Button></NavLink>
-          <NavLink to="/dashboard/account"><Button color="contrast">profile</Button></NavLink>
-          <NavLink to="/signin"><Button color="contrast">Sign in</Button></NavLink>
+
+          <NavLink to="/business">
+            <Button color="contrast">
+              Business
+            </Button>
+          </NavLink>
+          <NavLink to="/story"><Button color="contrast">Story</Button></NavLink>
+          <NavLink to="/setting/account"><Button color="contrast">profile</Button></NavLink>
+          <NavLink to="/signin"><Button color="contrast"><AccountCircle /></Button></NavLink>
         </Toolbar>
       </AppBar>
     );
