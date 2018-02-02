@@ -27,7 +27,7 @@ class ReviewCard extends Component {
             <Typography component="p">Bad: {this.props.bad}</Typography>
           </CardContent>
           <CardActions>
-            <Button dense color="primary">Edit</Button>
+            <Button color="primary">Edit</Button>
           </CardActions>
         </Card>
       </div>

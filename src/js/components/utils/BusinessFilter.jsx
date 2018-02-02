@@ -27,11 +27,11 @@ const styles = theme => ({});
 class BusinessFilter extends Component {
   render() {
     const categoryList = categories.map((i) => (
-      <Button dense color="primary" key={i}>{i}</Button>
+      <Button color="primary" key={i}>{i}</Button>
     ));
 
     const districtList = district.map((i) => (
-      <Button dense color="primary" key={i}>{i}</Button>
+      <Button color="primary" key={i}>{i}</Button>
     ));
 
     return (

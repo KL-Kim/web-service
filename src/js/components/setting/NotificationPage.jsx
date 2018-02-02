@@ -31,7 +31,7 @@ class ChangePasswordPage extends Component {
 
     return (
       <SettingBorder>
-        <Grid container className={classes.root} spacing={16} justify="center" alignItems="top">
+        <Grid container className={classes.root} spacing={16} justify="center" alignItems="flex-start">
           <Grid item xs={12}>
             <Typography type="display3" gutterBottom>
               Notifications

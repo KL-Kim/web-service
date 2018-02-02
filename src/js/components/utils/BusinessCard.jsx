@@ -30,7 +30,7 @@ class BusinessCard extends Component {
             <Typography type="body1">Rating: { this.props.rating }</Typography>
           </CardContent>
           <CardActions>
-            <Button dense color="primary">Share</Button>
+            <Button color="primary">Share</Button>
           </CardActions>
         </Card>
       </div>

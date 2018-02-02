@@ -35,7 +35,7 @@ class StoryCard extends Component {
             <Typography component="p">Bad: {this.props.bad}</Typography>
           </CardContent>
           <CardActions>
-            <Button dense color="primary">Edit</Button>
+            <Button color="primary">Edit</Button>
             <Button raised color="primary">Share</Button>
           </CardActions>
         </Card>

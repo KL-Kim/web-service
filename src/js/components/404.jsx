@@ -13,7 +13,7 @@ const styles = theme => ({
   }
 });
 
-class AboutPage extends Component {
+class NotFoundPage extends Component {
   render() {
     const { classes } = this.props;
     return (
@@ -29,11 +29,10 @@ class AboutPage extends Component {
               </Typography>
             </Paper>
           </Grid>
-
         </Grid>
       </Container>
     );
   }
 }
 
-export default withStyles(styles)(AboutPage);
+export default withStyles(styles)(NotFoundPage);

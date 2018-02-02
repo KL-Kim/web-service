@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography';
-import Copyright from 'material-ui-icons/Copyright';
 
 import Alert from './Alert';
 
@@ -42,8 +41,8 @@ class Footer extends Component{
           </Grid>
           <Grid item xs={4}>
             <Typography type="caption" align="right">
-              <Copyright />
-              2018 iKoreaTown
+
+              Copyright 2018 iKoreaTown
             </Typography>
           </Grid>
         </Grid>

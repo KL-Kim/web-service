@@ -1,23 +1,24 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import validator from 'validator';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
+import Typography from 'material-ui/Typography';
+import { FormControl } from 'material-ui/Form';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
-import Typography from 'material-ui/Typography';
+
 
 import { login } from '../actions/user.actions';
 
 const styles = (theme) => ({
-  button: {
-    marginTop: theme.spacing.unit * 4,
+  root: {
+    margin: theme.spacing.unit * 10
   },
-  input: {
-    width: 270,
-    margin: theme.spacing.unit * 2
-  }
-})
+  button: {
+    marginTop: theme.spacing.unit * 3,
+  },
+});
 
 class LoginForm extends Component {
   constructor(props) {
@@ -26,10 +27,12 @@ class LoginForm extends Component {
     this.state = {
       email: '',
       password: '',
-    }
+      showError: false
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.validateEmail = this.validateEmail.bind(this);
   }
 
   handleChange(e) {
@@ -39,53 +42,67 @@ class LoginForm extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-
+    let reponse;
     const { email, password } = this.state;
     if (email && password) {
-       this.props.login(email, password);
+      this.props.login(email, password);
+    }
+  }
+
+  validateEmail(e) {
+    e.preventDefault();
+
+    if(!this.state.email || !validator.isEmail(this.state.email)) {
+      this.setState({
+        showError: true
+      });
+    } else {
+      this.setState({
+        showError: false
+      });
     }
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, error } = this.props;
+    //
     return (
-      <div>
-        <form className="loginForm" noValidate autoComplete="off" onSubmit={this.handleSubmit}>
-            <Typography type="display1" align="center">
-              Sign in
-            </Typography>
-            <TextField
-              label="Email"
-              id="email"
-              name="email"
-              className={classes.input}
-              onChange={this.handleChange} />
-            <br />
-            <TextField
-              type="password"
-              label="Password"
-              margin="normal"
-              id="password"
-              name="password"
-              className={classes.input}
-              onChange={this.handleChange} />
-            <br />
-            <Button className={classes.button} raised color="primary" type="submit">Sign in</Button>
-        </form>
-        <Grid container justify="center" alignItems="center">
-          <Grid item xs>
-            <Link to="/forget-password">
-              <Button className={classes.button} color="primary" type="submit">Forget your password?</Button>
-            </Link>
-            <Link to="/signup">
-              <Button className={classes.button} color="primary" type="submit">Sign up</Button>
-            </Link>
-          </Grid>
-        </Grid>
+      <div className={classes.root}>
+        <FormControl fullWidth onSubmit={this.handleSubmit}>
+          <Typography type="display1" align="center">Sign in</Typography>
+          <TextField
+            fullWidth
+            error={this.state.showError}
+            margin="normal"
+            label="Email"
+            id="email"
+            name="email"
+            helperText={this.state.showError ? "Error: Input an valid email" : ''}
+            className={classes.input}
+            onChange={this.handleChange}
+            onBlur={this.validateEmail} />
+          <br />
+          <TextField
+            fullWidth
+            margin="normal"
+            type="password"
+            label="Password"
+            id="password"
+            name="password"
+            helperText="Error: Wrong password"
+            className={classes.input}
+            onChange={this.handleChange} />
+          <br />
+          <Button className={classes.button} raised color="primary" type="submit">Sign in</Button>
+        </FormControl>
       </div>
     );
   }
 }
+
+LoginForm.propTypes = {
+  login: PropTypes.func.isRequired
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {};

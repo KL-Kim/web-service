@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-
 import AccountCircle from 'material-ui-icons/AccountCircle';
+
+import LinkContainer from '../utils/LinkContainer';
 
 const styles = theme => ({
   appBar: {
@@ -31,17 +32,17 @@ class Header extends Component {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <Typography type="title" color="inherit" align="left" className={classes.flex}>
-            <NavLink to="/"><Button color="contrast">iKoreaTown</Button></NavLink>
+            <LinkContainer to="/"><Button color="inherit">iKoreaTown</Button></LinkContainer>
           </Typography>
 
-          <NavLink to="/business">
-            <Button color="contrast">
+          <LinkContainer to="/business">
+            <Button color="inherit">
               Business
             </Button>
-          </NavLink>
-          <NavLink to="/story"><Button color="contrast">Story</Button></NavLink>
-          <NavLink to="/setting/account"><Button color="contrast">profile</Button></NavLink>
-          <NavLink to="/signin"><Button color="contrast"><AccountCircle /></Button></NavLink>
+          </LinkContainer>
+          <LinkContainer to="/story"><Button color="inherit">Story</Button></LinkContainer>
+          <LinkContainer to="/setting/account"><Button color="inherit">profile</Button></LinkContainer>
+          <LinkContainer to="/signin"><Button color="inherit"><AccountCircle /></Button></LinkContainer>
         </Toolbar>
       </AppBar>
     );
