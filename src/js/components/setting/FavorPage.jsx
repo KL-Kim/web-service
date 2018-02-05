@@ -3,7 +3,7 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 
-import SettingBorder from './SettingBorder';
+import SettingContainer from './SettingContainer';
 import BusinessCard from '../utils/BusinessCard';
 
 
@@ -23,7 +23,7 @@ class FavorPage extends Component {
     // const { classes } = this.props;
 
     return (
-        <SettingBorder>
+        <SettingContainer>
           <Grid container spacing={16}>
             <Grid item xs={12}>
               <Typography type="display2" gutterBottom>
@@ -81,7 +81,7 @@ class FavorPage extends Component {
               </Grid>
             </Grid>
           </Grid>
-        </SettingBorder>
+        </SettingContainer>
     );
   }
 }

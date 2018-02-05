@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography';
-
-import Alert from './Alert';
 
 const styles = (theme) => ({
   footer: {
@@ -24,8 +23,7 @@ class Footer extends Component{
     const { classes } = this.props;
     return (
       <footer className={classes.footer}>
-        <Grid container spacing={16} justify="center" alignItems="center" >
-
+        <Grid container spacing={16} justify="space-between" alignItems="center" >
           <Grid item xs={8}>
             <Grid container spacing={16}>
               <Grid item xs={2}>
@@ -41,15 +39,17 @@ class Footer extends Component{
           </Grid>
           <Grid item xs={4}>
             <Typography type="caption" align="right">
-
               Copyright 2018 iKoreaTown
             </Typography>
           </Grid>
         </Grid>
-        <Alert />
       </footer>
     );
   }
 }
+
+Footer.propTypes = {
+  classes: PropTypes.object.isRequired
+};
 
 export default withStyles(styles)(Footer);

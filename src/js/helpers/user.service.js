@@ -15,10 +15,18 @@ export const loginFetch = (email, password) => {
 
   return fetch(userSerivceUri.login, options)
     .then(response => {
-      if (!response.ok) {
-        return Promise.reject(response);
-      } else {
+      if (response.ok) {
         return response.json();
+      } else {
+        let error = new Error(response.statusText);
+        error.status = response.status;
+
+        if (response.status === 401) {
+          error.message = "Invalid email or password";
+        } else {
+          error.message = "Unknown Error";
+        }
+        return Promise.reject(error);
       }
     })
     .then(json => {

@@ -59,6 +59,7 @@ const App = () => {
           <Route path="/admin/setting/reviews" component={AdminReviewsList} />
           <Route path="/admin/setting/stories" component={AdminStoriesList} />
 
+          {/*  Error Routes */}
           <Route component={NoMatchPage} />
         </Switch>
       </Router>

@@ -13,7 +13,7 @@ import Divider from 'material-ui/Divider';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import TextField from 'material-ui/TextField';
 
-import SettingBorder from '../SettingBorder';
+import SettingContainer from '../SettingContainer';
 
 // Mock data
 const reviews = {
@@ -63,7 +63,7 @@ class ReviewsList extends Component {
     const { expanded} = this.state;
 
     return (
-      <SettingBorder>
+      <SettingContainer>
         <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
           <Grid item xs={12}>
             <Typography type="display3" gutterBottom>
@@ -92,7 +92,7 @@ class ReviewsList extends Component {
             </Paper>
           </Grid>
         </Grid>
-      </SettingBorder>
+      </SettingContainer>
     );
   }
 }

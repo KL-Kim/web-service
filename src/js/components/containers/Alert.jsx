@@ -3,13 +3,20 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Snackbar from 'material-ui/Snackbar';
 import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui-icons/Close';
 import Fade from 'material-ui/transitions/Fade';
+import CloseIcon from 'material-ui-icons/Close';
+import ErrorIcon from 'material-ui-icons/Error';
+import CheckCircle from 'material-ui-icons/CheckCircle';
 
 import { connect } from 'react-redux';
-import { alertClear } from '../actions/alert.actions'
+import { alertClear } from '../../actions/alert.actions'
 
 const styles = theme => ({
+  icon: {
+    verticalAlign: 'middle',
+    marginRight: 15,
+    // color: theme.palette.error.main
+  },
   close: {
     width: theme.spacing.unit * 4,
     height: theme.spacing.unit * 4,
@@ -53,7 +60,11 @@ class Alert extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, message, error } = this.props;
+
+    const messageContent = error ?
+      (<div id="message-id"><ErrorIcon className={classes.icon} color="error" /><span>{message}</span></div>)
+      : (<div id="message-id"><CheckCircle className={classes.icon} />{message}</div>)
     return (
         <Snackbar
           anchorOrigin={anchorOrigin}
@@ -62,7 +73,7 @@ class Alert extends Component {
           autoHideDuration={hideDuration}
           onClose={this.handleClose}
           SnackbarContentProps={SnackbarContentProps}
-          message={<span id="message-id">{this.props.message}</span>}
+          message={messageContent}
           action={
             <IconButton
               key="close"
@@ -81,12 +92,15 @@ class Alert extends Component {
 
 Alert.propTypes = {
   classes: PropTypes.object.isRequired,
+  id: PropTypes.string,
+  message: PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     id: state.alertReducer.id,
     message: state.alertReducer.message,
+    error: state.alertReducer.error
   };
 };
 

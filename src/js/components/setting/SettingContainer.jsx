@@ -4,6 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import SettingHeader from './SettingHeader';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
+import Alert from '../containers/Alert';
 
 const styles = (theme) => ({
   root: {
@@ -29,7 +30,7 @@ const styles = (theme) => ({
   },
 });
 
-class SettingBorder extends Component {
+class SettingContainer extends Component {
   render() {
     const { classes } = this.props;
 
@@ -43,9 +44,10 @@ class SettingBorder extends Component {
             <SettingFooter />
           </main>
         </div>
+        <Alert />
       </div>
     );
   }
 }
 
-export default withStyles(styles)(SettingBorder);
+export default withStyles(styles)(SettingContainer);

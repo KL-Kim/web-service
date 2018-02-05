@@ -4,8 +4,6 @@ import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography';
 import Copyright from 'material-ui-icons/Copyright';
 
-import Alert from '../../containers/Alert';
-
 const styles = theme => ({
   footer: {
     paddingTop: theme.spacing.unit,
@@ -31,7 +29,6 @@ class Footer extends Component{
             </Typography>
           </Grid>
         </Grid>
-        <Alert />
       </footer>
     );
   }

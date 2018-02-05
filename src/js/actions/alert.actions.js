@@ -23,7 +23,7 @@ export const alertFailure = response => ({
   error: true,
   payload: {
     id: uuidv4(),
-    message: response
+    message: response || 'Unknown Error'
   }
 });
 

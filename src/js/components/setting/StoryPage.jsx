@@ -3,7 +3,7 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 
-import SettingBorder from './SettingBorder';
+import SettingContainer from './SettingContainer';
 import StoryCard from '../utils/StoryCard';
 
 const story = {
@@ -27,7 +27,7 @@ class StoryPage extends Component {
     const { classes } = this.props;
 
     return (
-      <SettingBorder>
+      <SettingContainer>
         <Grid container>
               <Grid item xs={12}>
                 <Typography type="display3" gutterBottom>
@@ -64,7 +64,7 @@ class StoryPage extends Component {
                 </Grid>
               </Grid>
             </Grid>
-      </SettingBorder>
+      </SettingContainer>
     );
   }
 }

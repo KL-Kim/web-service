@@ -15,6 +15,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: true,
+        isLoggedIn: false
       };
 
     case userTypes.LOGIN_SUCCESS:
@@ -26,7 +27,12 @@ const userReducer = (state = initialState, action) => {
       };
 
     case userTypes.LOGIN_FAILURE:
-    return {};
+    return {
+      ...state,
+      error: action.payload.error,
+      isFetching: false,
+      isLoggedIn: false,
+    };
 
     default:
       return state;

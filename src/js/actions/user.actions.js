@@ -57,8 +57,9 @@ export const login = (email, password) => {
 
       }, error => {
         dispath(loginFailure(error));
-        dispath(AlertActions.alertFailure(error.statusText));
-
+        if (error.message) {
+          dispath(AlertActions.alertFailure(error.message));
+        }
       });
   }
 };

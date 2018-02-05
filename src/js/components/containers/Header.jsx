@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
@@ -7,7 +8,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import AccountCircle from 'material-ui-icons/AccountCircle';
 
-import LinkContainer from '../components/utils/LinkContainer';
+import LinkContainer from '../utils/LinkContainer';
 
 const styles = theme => ({
   flex: {
@@ -23,7 +24,7 @@ class Header extends Component {
   render() {
     const { classes } = this.props;
     return (
-      <AppBar className={classes.appBar} position="static">
+      <AppBar position="static">
         <Toolbar>
           <Typography type="title" color="inherit" align="left" className={classes.flex}>
             <LinkContainer to="/"><Button color="inherit">iKoreaTown</Button></LinkContainer>
@@ -39,6 +40,13 @@ class Header extends Component {
     );
   }
 }
+
+Header.propTypes = {
+  classes: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {

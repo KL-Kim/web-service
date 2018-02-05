@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 
-import Header from '../containers/Header';
-import Footer from '../containers/Footer';
+import Header from './containers/Header';
+import Footer from './containers/Footer';
+import Alert from './containers/Alert';
 
 const styles = theme => ({
   root: {
@@ -28,7 +30,7 @@ const styles = theme => ({
   }
 });
 
-class HomePage extends Component {
+class Container extends Component {
   render() {
     const { classes } = this.props;
 
@@ -39,9 +41,15 @@ class HomePage extends Component {
           {this.props.children}
         </main>
         <Footer />
+        <Alert />
       </div>
     );
   }
 }
 
-export default withRouter(withStyles(styles)(HomePage));
+Container.propTypes = {
+  classes: PropTypes.object.isRequired,
+  children: PropTypes.element.isRequired
+}
+
+export default withRouter(withStyles(styles)(Container));

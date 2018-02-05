@@ -19,7 +19,7 @@ import Radio, { RadioGroup } from 'material-ui/Radio';
 import Avatar from 'material-ui/Avatar';
 
 
-import SettingBorder from './SettingBorder';
+import SettingContainer from './SettingContainer';
 import ChangeModule from './ChangeModule';
 
 // Mock data
@@ -105,7 +105,7 @@ class AccountPage extends Component {
     const { classes } = this.props;
     const { expanded } = this.state;
     return (
-      <SettingBorder>
+      <SettingContainer>
         <Grid container justify="center" className={classes.container}>
           <Grid item xs={8}>
             <Typography type="display2">
@@ -340,7 +340,7 @@ class AccountPage extends Component {
             </Paper>
           </Grid>
         </Grid>
-      </SettingBorder>
+      </SettingContainer>
     );
   }
 }

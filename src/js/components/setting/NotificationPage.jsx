@@ -8,7 +8,7 @@ import List, { ListItem, ListItemSecondaryAction, ListItemText } from 'material-
 import Checkbox from 'material-ui/Checkbox';
 import Divider from 'material-ui/Divider';
 
-import SettingBorder from './SettingBorder';
+import SettingContainer from './SettingContainer';
 
 // Mock data
 const notifications = {
@@ -30,7 +30,7 @@ class ChangePasswordPage extends Component {
     const { classes } = this.props;
 
     return (
-      <SettingBorder>
+      <SettingContainer>
         <Grid container className={classes.root} spacing={16} justify="center" alignItems="flex-start">
           <Grid item xs={12}>
             <Typography type="display3" gutterBottom>
@@ -57,7 +57,7 @@ class ChangePasswordPage extends Component {
             </Paper>
           </Grid>
         </Grid>
-      </SettingBorder>
+      </SettingContainer>
     );
   }
 }

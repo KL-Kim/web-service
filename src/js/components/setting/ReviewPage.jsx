@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 
-import SettingBorder from './SettingBorder';
+import SettingContainer from './SettingContainer';
 import ReviewCard from '../utils/ReviewCard';
 
 // Mock data
@@ -19,7 +19,7 @@ const reviews = {
 class ReviewPage extends Component {
   render() {
     return (
-      <SettingBorder>
+      <SettingContainer>
         <Grid container spacing={16} justify="center" alignItems="center">
               <Grid item xs={8}>
                 <Typography type="display3" gutterBottom>
@@ -59,7 +59,7 @@ class ReviewPage extends Component {
                 />
               </Grid>
         </Grid>
-      </SettingBorder>
+      </SettingContainer>
     );
   }
 }
