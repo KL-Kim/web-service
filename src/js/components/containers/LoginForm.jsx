@@ -10,35 +10,34 @@ import Button from 'material-ui/Button';
 import { login } from '../../actions/user.actions';
 
 const styles = (theme) => ({
-  root: {
-    // margin: theme.spacing.unit * 10
-  },
   button: {
     marginTop: theme.spacing.unit * 4,
   },
 });
+
+const passwordMinLength = 8;
 
 class LoginForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: '',
-      password: '',
-      emailError: {
+      email: {
+        value: '',
         showError: false,
         errorMessage: '',
       },
-      passwordError: {
+      password: {
+        value: '',
         showError: false,
-        errorMessage: ''
-      },
+        errorMessage: '',
+      }
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.validateEmail = this.validateEmail.bind(this);
-    this.validatePassword = this.validatePassword.bind(this);
+    this.isValideEmail = this.isValideEmail.bind(this);
+    this.isValidePassword = this.isValidePassword.bind(this);
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -48,7 +47,8 @@ class LoginForm extends Component {
 
     if (nextProps.loginError) {
       this.setState({
-        passwordError: {
+        password: {
+          value: this.state.password.value,
           showError: true,
           errorMessage: nextProps.loginError.message
         }
@@ -58,11 +58,21 @@ class LoginForm extends Component {
 
   handleChange(e) {
     const { name, value } = e.target;
-    this.setState({ [name]: value });
 
-    if (this.state.password) {
+    if (validator.equals('email', name)) {
       this.setState({
-        passwordError: {
+        email: {
+          value: value,
+          showError: false,
+          errorMessage: ''
+        }
+      });
+    }
+
+    if (validator.equals('password', name)) {
+      this.setState({
+        password: {
+          value: value,
           showError: false,
           errorMessage: ''
         }
@@ -70,39 +80,47 @@ class LoginForm extends Component {
     }
   }
 
-  validateEmail() {
-    if(!this.state.email || !validator.isEmail(this.state.email)) {
+  isValideEmail() {
+    if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
       this.setState({
-        emailError: {
+        email: {
+          value: this.state.email.value,
           showError: true,
           errorMessage: 'Error: Input a valid Email'
-        }
+        },
       });
+      return false;
     } else {
       this.setState({
-        emailError: {
+        email: {
+          value: this.state.email.value,
           showError: false,
           errorMessage: ''
-        }
+        },
       });
+      return true;
     }
   }
 
-  validatePassword() {
-    if (this.state.password.length <= 7) {
+  isValidePassword() {
+    if (this.state.password.value.length < passwordMinLength) {
       this.setState({
-        passwordError: {
+        password: {
+          value: this.state.password.value,
           showError: true,
-          errorMessage: 'Password should not be shorter than 7'
-        }
+          errorMessage: 'Password should not be shorter than ' + passwordMinLength
+        },
       });
+      return false;
     } else {
       this.setState({
-        passwordError: {
+        password: {
+          value: this.state.password.value,
           showError: false,
           errorMessage: ''
-        }
+        },
       });
+      return true;
     }
   }
 
@@ -110,26 +128,9 @@ class LoginForm extends Component {
     e.preventDefault();
 
     const { email, password } = this.state;
-    if (!email) {
-      this.setState({
-        emailError: {
-          showError: true,
-          errorMessage: 'Error: Input a valid Email'
-        }
-      });
-    }
 
-    if (!password) {
-      this.setState({
-        passwordError: {
-          showError: true,
-          errorMessage: 'Password should not empty'
-        }
-      });
-    }
-
-    if (email && password) {
-      this.props.login(email, password);
+    if (this.isValideEmail() && this.isValidePassword()) {
+      this.props.login(email.value, password.value);
     }
   }
 
@@ -137,14 +138,14 @@ class LoginForm extends Component {
     const { classes } = this.props;
 
     return (
-      <form className={classes.root} onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit}>
         <Typography type="display1" align="center">Sign In</Typography>
         <TextField
           name="email"
-          error={this.state.emailError.showError}
-          helperText={this.state.emailError.showError ? this.state.emailError.errorMessage : ' '}
+          error={this.state.email.showError}
+          helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
           onChange={this.handleChange}
-          onBlur={this.validateEmail}
+          onBlur={this.isValideEmail}
           fullWidth
           margin="normal"
           label="Email"
@@ -152,10 +153,10 @@ class LoginForm extends Component {
         <br />
         <TextField
           name="password"
-          error={this.state.passwordError.showError}
-          helperText={this.state.passwordError.showError ? this.state.passwordError.errorMessage : ' '}
+          error={this.state.password.showError}
+          helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
           onChange={this.handleChange}
-          onBlur={this.validatePassword}
+          onBlur={this.isValidePassword}
           fullWidth
           margin="normal"
           type="password"
@@ -164,7 +165,7 @@ class LoginForm extends Component {
         <br />
         <Button
           name="signin"
-          disabled={this.state.emailError.showError || this.state.passwordError.showError}
+          disabled={this.state.email.showError || this.state.password.showError}
           className={classes.button}
           raised
           color="primary"
@@ -192,5 +193,5 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-// export { LoginForm };
+export { LoginForm };
 export default connect(mapStateToProps, { login })(withStyles(styles)(LoginForm));

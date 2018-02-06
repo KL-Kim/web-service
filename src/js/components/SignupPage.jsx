@@ -29,134 +29,212 @@ const styles = theme => ({
   }
 });
 
+const passwordMinLength = 8;
+
 class UserSignup extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: '',
-      password: '',
-      passwordConfirmation: '',
-      emailError: {
+      email: {
+        value: '',
         showError: false,
         errorMessage: '',
       },
-      usernameError: {
+      username: {
+        value: '',
         showError: false,
         errorMessage: '',
       },
-      passwordError: {
+      password: {
+        value: '',
         showError: false,
         errorMessage: ''
       },
-      passwordConfirmationError: {
+      passwordConfirmation: {
+        value: '',
         showError: false,
         errorMessage: ''
       }
     };
 
-    this.validateEmail = this.validateEmail.bind(this);
-    this.validatePassword = this.validatePassword.bind(this);
-    this.validateUsername = this.validateUsername.bind(this);
+    this.isValidEmail = this.isValidEmail.bind(this);
+    this.isValidPassword = this.isValidPassword.bind(this);
+    this.isValidPasswordConfirmation = this.isValidPasswordConfirmation.bind(this);
+    this.isValidUsername = this.isValidUsername.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange(e) {
     const { name, value } = e.target;
-    this.setState({ [name]: value });
 
-    if (this.state.password) {
+    if (validator.equals('email', name)) {
       this.setState({
-        passwordError: {
+        email: {
+          value: value,
           showError: false,
           errorMessage: ''
-        }
+        },
+      });
+    }
+
+    if (validator.equals('username', name)) {
+      this.setState({
+        username: {
+          value: value,
+          showError: false,
+          errorMessage: ''
+        },
+      });
+    }
+
+    if (validator.equals('password', name)) {
+      this.setState({
+        password: {
+          value: value,
+          showError: false,
+          errorMessage: ''
+        },
+        passwordConfirmation: {
+          value: this.state.passwordConfirmation.value,
+          showError: false,
+          errorMessage: ''
+        },
+      });
+    }
+
+    if (validator.equals('passwordConfirmation', name)) {
+      this.setState({
+        passwordConfirmation: {
+          value: value,
+          showError: false,
+          errorMessage: ''
+        },
       });
     }
   }
 
-  validateEmail(e) {
-    e.preventDefault();
-
-    if(!this.state.email || !validator.isEmail(this.state.email)) {
+  isValidEmail() {
+    if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
       this.setState({
-        emailError: {
+        email: {
+          value: this.state.email.value,
           showError: true,
           errorMessage: 'Error: Input a valid Email'
         }
       });
+      return false;
     } else {
       this.setState({
-        emailError: {
+        email: {
+          value: this.state.email.value,
           showError: false,
           errorMessage: ''
         }
       });
+      return true;
     }
   }
 
-  validateUsername(e) {
-    e.preventDefault();
-  }
-
-
-  validatePassword() {
-    if (this.state.password.length <= 7) {
+  isValidUsername() {
+    if (!this.state.username.value) {
       this.setState({
-        passwordError: {
+        username: {
+          value: this.state.username.value,
           showError: true,
-          errorMessage: 'Password should not be shorter than 7'
+          errorMessage: 'Error: Username should not be empty'
         }
       });
+      return false;
     } else {
       this.setState({
-        passwordError: {
+        username: {
+          value: this.state.username.value,
           showError: false,
           errorMessage: ''
         }
       });
+      return true;
     }
+  }
 
-    if (this.state.passwordConfirmation !== this.state.password) {
+  isValidPassword() {
+    if (this.state.password.value.length <= 7) {
       this.setState({
-        passwordConfirmationError: {
+        password: {
+          value: this.state.password.value,
+          showError: true,
+          errorMessage: 'Password should not be shorter than ' + passwordMinLength
+        }
+      });
+      return false;
+    } else {
+      this.setState({
+        password: {
+          value: this.state.password.value,
+          showError: false,
+          errorMessage: ''
+        }
+      });
+      return true;
+    }
+  }
+
+  isValidPasswordConfirmation() {
+    if (!validator.equals(this.state.password.value, this.state.passwordConfirmation.value)) {
+      this.setState({
+        passwordConfirmation: {
+          value: this.state.passwordConfirmation.value,
           showError: true,
           errorMessage: 'Confirm password is not match with password'
         }
       });
+      return false;
     } else {
       this.setState({
-        passwordConfirmationError: {
+        passwordConfirmation: {
+          value: this.state.passwordConfirmation.value,
           showError: false,
           errorMessage: ''
         }
       });
+      return true
     }
-
   }
 
   handleSubmit(e) {
     e.preventDefault();
+
+    const {email, username, password, passwordConfirmation} = this.state;
+
+    if (this.isValidEmail() && this.isValidUsername() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
+      // this.props.register(email, username, password, passwordConfirmation);
+      alert(`Email: ${email.value}
+        Username: ${username.value}
+        Password: ${password.value}
+        Confirm password: ${passwordConfirmation.value}`);
+    }
   }
 
   render() {
     const { classes } = this.props;
+
     return (
       <Container>
         <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
           <Grid item sm={5}>
             <Paper className={classes.paper}>
-              <form noValidate>
-                <Typography type="display1" align="center">
-                  Sign up
-                </Typography>
+              <Typography type="display1" align="center">
+                Sign up
+              </Typography>
+              <form noValidate onSubmit={this.handleSubmit}>
                 <TextField
                   name="email"
-                  error={this.state.emailError.showError}
-                  helperText={this.state.emailError.showError ? this.state.emailError.errorMessage : ' '}
+                  error={this.state.email.showError}
+                  helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
                   onChange={this.handleChange}
-                  onBlur={this.validateEmail}
+                  onBlur={this.isValidEmail}
                   fullWidth
                   margin="normal"
                   label="Email"
@@ -165,10 +243,10 @@ class UserSignup extends Component {
                 <br />
                 <TextField
                   name="username"
-                  error={this.state.usernameError.showError}
-                  helperText={this.state.usernameError.showError ? this.state.usernameError.errorMessage : ' '}
+                  error={this.state.username.showError}
+                  helperText={this.state.username.showError ? this.state.username.errorMessage : ' '}
                   onChange={this.handleChange}
-                  onBlur={this.validateUsername}
+                  onBlur={this.isValidUsername}
                   label="Username"
                   id="username"
                   margin="normal"
@@ -177,10 +255,10 @@ class UserSignup extends Component {
                 <br />
                 <TextField
                   name="password"
-                  error={this.state.passwordError.showError}
-                  helperText={this.state.passwordError.showError ? this.state.passwordError.errorMessage : ' '}
+                  error={this.state.password.showError}
+                  helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
                   onChange={this.handleChange}
-                  onBlur={this.validatePassword}
+                  onBlur={this.isValidPassword}
                   fullWidth
                   margin="normal"
                   label="Password"
@@ -189,11 +267,11 @@ class UserSignup extends Component {
                 <br />
                 <TextField
                   name="passwordConfirmation"
-                  error={this.state.passwordConfirmationError.showError}
-                  helperText={this.state.passwordConfirmationError.showError
-                    ? this.state.passwordConfirmationError.errorMessage : ' '}
+                  error={this.state.passwordConfirmation.showError}
+                  helperText={this.state.passwordConfirmation.showError
+                    ? this.state.passwordConfirmation.errorMessage : ' '}
                   onChange={this.handleChange}
-                  onBlur={this.validatePassword}
+                  onBlur={this.isValidPasswordConfirmation}
                   fullWidth
                   margin="normal"
                   label="Confirm password"
@@ -201,14 +279,19 @@ class UserSignup extends Component {
                   type="password" />
                 <br />
                 <Button
-                  onClick={this.props.register}
+                  disabled = {
+                    this.state.email.showError
+                    || this.state.username.showError
+                    || this.state.password.showError
+                    || this.state.passwordConfirmation.showError
+                  }
                   className={classes.button}
                   raised
                   color="primary"
                   fullWidth
+                  type="submit"
                   >Sign up</Button>
               </form>
-
             </Paper>
             <Grid container align="center">
               <Grid item xs align="center">
@@ -225,6 +308,7 @@ class UserSignup extends Component {
 }
 
 UserSignup.propTypes = {
+  history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
 };
 

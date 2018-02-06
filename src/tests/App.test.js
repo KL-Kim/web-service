@@ -6,6 +6,7 @@ import { configure,
 import { createShallow } from 'material-ui/test-utils';
 import Adapter from 'enzyme-adapter-react-16';
 import { expect } from 'chai';
+import { MemoryRouter } from 'react-router-dom';
 
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
@@ -25,7 +26,11 @@ describe('Web service', () => {
     shallow = createShallow({
       dive: true
     });
-    wrapper = shallow(<App />);
+    wrapper = shallow(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
   });
 
   it('Should render without throwing an Error', () => {

@@ -5,8 +5,8 @@ import { configure,
   render } from 'enzyme';
 import { createShallow } from 'material-ui/test-utils';
 import Adapter from 'enzyme-adapter-react-16';
-import { expect } from 'chai';
-import MemoryRouter from 'react-router-dom';
+// import { expect } from 'chai';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureStore from '../js/stores/user.store';
 
@@ -30,14 +30,14 @@ describe('Web service sign in spec', () => {
     });
     wrapper = shallow(
       <MemoryRouter>
-        <LoginForm />
+        <LoginFormConnected />
       </MemoryRouter>
     );
   });
 
   it('Should render without throwing an Error', () => {
-    const button = wrapper.find('Button');
+    // const button = wrapper.find('Button');
 
-    expect(wrapper.containsMatchingElement(<Typography type="display1" align="center">Sign In</Typography>)).to.equal(true);
+    expect(wrapper.contains(<Typography type="display1" align="center">Sign In</Typography>)).toBe(true);
   });
 });
