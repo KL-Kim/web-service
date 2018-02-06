@@ -7,6 +7,7 @@ import { createShallow } from 'material-ui/test-utils';
 import Adapter from 'enzyme-adapter-react-16';
 import { expect } from 'chai';
 import { MemoryRouter } from 'react-router-dom';
+import createRouterContext from 'react-router-test-context';
 
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
@@ -18,7 +19,7 @@ import App from '../js/components/404';
 
 configure({ adapter: new Adapter() });
 
-describe('Web service', () => {
+describe('Testing with createShallow', () => {
   let wrapper;
   let shallow;
 
@@ -26,10 +27,9 @@ describe('Web service', () => {
     shallow = createShallow({
       dive: true
     });
+    const context = createRouterContext();
     wrapper = shallow(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <App />
     );
   });
 

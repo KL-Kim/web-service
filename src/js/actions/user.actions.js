@@ -48,18 +48,19 @@ export const login = (email, password) => {
   return (dispath, getState) => {
     dispath(requestLogin(email, password));
     return loginFetch(email, password)
-      .then(res => {
-        if (res.token) {
-          sessionStorage.setItem('token', JSON.stringify(res.token));
-        }
-        dispath(loginSuccess(res));
-        dispath(AlertActions.alertSuccess("Login Successfully"));
-
-      }, error => {
-        dispath(loginFailure(error));
-        if (error.message) {
-          dispath(AlertActions.alertFailure(error.message));
-        }
+      .then(
+        res => {
+          if (res.token) {
+            sessionStorage.setItem('token', JSON.stringify(res.token));
+          }
+          dispath(loginSuccess(res));
+          dispath(AlertActions.alertSuccess("Login Successfully"));
+        },
+        error => {
+          dispath(loginFailure(error));
+          if (error.message) {
+            dispath(AlertActions.alertFailure(error.message));
+          }
       });
   }
 };
