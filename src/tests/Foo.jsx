@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { NavLink } from 'react-router-dom';
 import Grid from 'material-ui/Grid';
@@ -13,7 +14,9 @@ const styles = theme => ({
   }
 });
 
-const propTypes = {};
+const propTypes = {
+  buttonName: PropTypes.string.isRequired
+};
 
 const defaultProps = {};
 
@@ -28,7 +31,7 @@ class Foo extends Component {
         <Grid container>
           <Grid item>
             <NavLink to="/">
-              <Button>Click</Button>
+              <Button id="button">{this.props.buttonName}</Button>
             </NavLink>
           </Grid>
         </Grid>

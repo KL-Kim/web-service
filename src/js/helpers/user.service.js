@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import config from '../constants/config';
 
-export const userSerivceUri = {
+const userSerivceUri = {
   login: config.API_ROOT + '/auth/login',
   logout: config.API_ROOT + '/auth/logout',
 };

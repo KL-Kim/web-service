@@ -36,8 +36,8 @@ class LoginForm extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.isValideEmail = this.isValideEmail.bind(this);
-    this.isValidePassword = this.isValidePassword.bind(this);
+    this.isValidEmail = this.isValidEmail.bind(this);
+    this.isValidPassword = this.isValidPassword.bind(this);
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -80,8 +80,8 @@ class LoginForm extends Component {
     }
   }
 
-  isValideEmail() {
-    if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
+  isValidEmail() {
+    if (!this.state.email.value || !validator.isEmail(this.state.email.value)) {
       this.setState({
         email: {
           value: this.state.email.value,
@@ -102,7 +102,7 @@ class LoginForm extends Component {
     }
   }
 
-  isValidePassword() {
+  isValidPassword() {
     if (this.state.password.value.length < passwordMinLength) {
       this.setState({
         password: {
@@ -129,7 +129,7 @@ class LoginForm extends Component {
 
     const { email, password } = this.state;
 
-    if (this.isValideEmail() && this.isValidePassword()) {
+    if (this.isValidEmail() && this.isValidPassword()) {
       this.props.login(email.value, password.value);
     }
   }
@@ -145,7 +145,7 @@ class LoginForm extends Component {
           error={this.state.email.showError}
           helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
           onChange={this.handleChange}
-          onBlur={this.isValideEmail}
+          onBlur={this.isValidEmail}
           fullWidth
           margin="normal"
           label="Email"
@@ -156,7 +156,7 @@ class LoginForm extends Component {
           error={this.state.password.showError}
           helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
           onChange={this.handleChange}
-          onBlur={this.isValidePassword}
+          onBlur={this.isValidPassword}
           fullWidth
           margin="normal"
           type="password"

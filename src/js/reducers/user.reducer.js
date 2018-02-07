@@ -4,9 +4,10 @@
 import userTypes from '../constants/user.types.js'
 
 const initialState = {
-  user: {},
+  user: null,
   isFetching: false,
   isLoggedIn: false,
+  error: null
 };
 
 const userReducer = (state = initialState, action) => {
@@ -15,7 +16,8 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: true,
-        isLoggedIn: false
+        isLoggedIn: false,
+        error: null
       };
 
     case userTypes.LOGIN_SUCCESS:
@@ -23,7 +25,8 @@ const userReducer = (state = initialState, action) => {
         ...state,
         token: action.payload.token,
         isFetching: false,
-        isLoggedIn: true
+        isLoggedIn: true,
+        error: null
       };
 
     case userTypes.LOGIN_FAILURE:
