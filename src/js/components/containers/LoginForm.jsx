@@ -6,6 +6,7 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import { CircularProgress } from 'material-ui/Progress';
 
 import { login } from '../../actions/user.actions';
 
@@ -136,6 +137,7 @@ class LoginForm extends Component {
 
   render() {
     const { classes } = this.props;
+    const signInButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign in';
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -165,14 +167,14 @@ class LoginForm extends Component {
         <br />
         <Button
           name="signin"
-          disabled={this.state.email.showError || this.state.password.showError}
+          disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching}
           className={classes.button}
           raised
           color="primary"
           type="submit"
           fullWidth
         >
-          Sign in
+          {signInButton}
         </Button>
       </form>
     );
@@ -181,13 +183,16 @@ class LoginForm extends Component {
 
 LoginForm.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool,
   error: PropTypes.object,
   login: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
+  console.log(state.userReducer.isFetching);
   return {
+    isFetching: state.userReducer.isFetching,
     isLoggedIn: state.userReducer.isLoggedIn,
     loginError: state.userReducer.error,
   };

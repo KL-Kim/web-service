@@ -30,6 +30,6 @@ export const alertFailure = response => ({
 export const alertClear = () => ({
   type: alertTypes.ALERT_CLEAR,
   meta: {},
-  error: false,
+  error: null,
   payload: {}
 })

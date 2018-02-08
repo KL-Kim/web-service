@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import validator from 'validator';
+import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
+import { CircularProgress } from 'material-ui/Progress';
 
+import { register } from '../actions/user.actions'
 import Container from './Container';
 
 const styles = theme => ({
@@ -209,16 +212,24 @@ class UserSignup extends Component {
     const {email, username, password, passwordConfirmation} = this.state;
 
     if (this.isValidEmail() && this.isValidUsername() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
-      // this.props.register(email, username, password, passwordConfirmation);
-      alert(`Email: ${email.value}
-        Username: ${username.value}
-        Password: ${password.value}
-        Confirm password: ${passwordConfirmation.value}`);
+      const user = {
+        email: email.value,
+        username: username.value,
+        password: password.value,
+        passwordConfirmation: passwordConfirmation.value
+      };
+
+      this.props.register(user);
+      // alert(`Email: ${email.value}
+      //   Username: ${username.value}
+      //   Password: ${password.value}
+      //   Confirm password: ${passwordConfirmation.value}`);
     }
   }
 
   render() {
     const { classes } = this.props;
+    let signupButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up';
 
     return (
       <Container>
@@ -284,13 +295,16 @@ class UserSignup extends Component {
                     || this.state.username.showError
                     || this.state.password.showError
                     || this.state.passwordConfirmation.showError
+                    || this.props.isFetching
                   }
                   className={classes.button}
                   raised
                   color="primary"
                   fullWidth
                   type="submit"
-                  >Sign up</Button>
+                >
+                  {signupButton}
+                </Button>
               </form>
             </Paper>
             <Grid container align="center">
@@ -310,6 +324,17 @@ class UserSignup extends Component {
 UserSignup.propTypes = {
   history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
+  isFetching: PropTypes.bool,
+  isLoggedIn: PropTypes.bool.isRequired,
+  register: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(UserSignup);
+const mapStateToProps = (state, ownProps) => {
+  return {
+    isFetching: state.userReducer.isFetching,
+    isLoggedIn: state.userReducer.isLoggedIn,
+    requestError: state.userReducer.error,
+  };
+};
+
+export default connect(mapStateToProps, { register })(withStyles(styles)(UserSignup));

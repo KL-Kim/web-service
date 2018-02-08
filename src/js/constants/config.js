@@ -1,5 +1,5 @@
 const config = {
-  API_ROOT: '//localhost:3001/api/v1',
+  USER_SERVICE_API_ROOT: 'http://localhost:3001/api/v1',
 };
 
 export default config;
