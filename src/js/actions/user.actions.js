@@ -110,7 +110,6 @@ const registerFailure = error => ({
 export const register = (user) => {
   return (dispatch, getState) => {
     if (_.isEmpty(user.email)
-      || _.isEmpty(user.username)
       || _.isEmpty(user.password)
       || _.isEmpty(user.passwordConfirmation)) {
         const err = new Error("Something goes wrong");

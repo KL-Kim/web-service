@@ -47,33 +47,39 @@ export const registerFetch = (user) => {
   const options = {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({user}),
+    body: JSON.stringify({
+      email: user.email,
+      password: user.password,
+      passwordConfirmation: user.passwordConfirmation
+    }),
   };
 
   return fetch(userSerivceUri.register, options)
-   .then(response => {
-     if (response.ok) {
-       return response.json();
-     } else {
-       let error = new Error(response.statusText);
-       error.status = response.status;
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        let error = new Error(response.statusText);
+        error.status = response.status;
 
-       if (response.status === 400) {
-         error.message = "Bad JSON formatting in the request";
-       } else {
-         error.message = "Unknown Error";
-       }
-       return Promise.reject(error);
-     }
+        if (response.status === 400) {
+          error.message = "Bad JSON formatting in the request";
+        } else if (response.status === 409) {
+          error.message = "The email has been used by someone else."
+        } else {
+          error.message = "Unknown Server Error";
+        }
+        return Promise.reject(error);
+      }
    })
-   .then(json => {
-     if (json.user && json.token) {
-       return json;
-     } else {
-       const err = new Error("Bad response")
-       return Promise.reject(err);
-     }
-   }).catch(err => {
-     return Promise.reject(err);
-   });
+    .then(json => {
+      if (json.user && json.token) {
+        return json;
+      } else {
+        const err = new Error("Bad response")
+        return Promise.reject(err);
+      }
+    }).catch(err => {
+      return Promise.reject(err);
+    });
 }

@@ -15,6 +15,7 @@ import Container from './Container';
 
 const styles = theme => ({
   paper: {
+    marginTop: theme.spacing.unit * 5,
     paddingTop: theme.spacing.unit * 5,
     paddingBottom: theme.spacing.unit * 5,
     paddingLeft: theme.spacing.unit * 10,
@@ -44,11 +45,6 @@ class UserSignup extends Component {
         showError: false,
         errorMessage: '',
       },
-      username: {
-        value: '',
-        showError: false,
-        errorMessage: '',
-      },
       password: {
         value: '',
         showError: false,
@@ -64,9 +60,25 @@ class UserSignup extends Component {
     this.isValidEmail = this.isValidEmail.bind(this);
     this.isValidPassword = this.isValidPassword.bind(this);
     this.isValidPasswordConfirmation = this.isValidPasswordConfirmation.bind(this);
-    this.isValidUsername = this.isValidUsername.bind(this);
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.isLoggedIn) {
+      this.props.history.push('/');
+    }
+
+    if (nextProps.registerError) {
+      this.setState({
+        email: {
+          value: this.state.email.value,
+          showError: true,
+          errorMessage: nextProps.registerError.message
+        }
+      });
+    }
   }
 
   handleChange(e) {
@@ -75,16 +87,6 @@ class UserSignup extends Component {
     if (validator.equals('email', name)) {
       this.setState({
         email: {
-          value: value,
-          showError: false,
-          errorMessage: ''
-        },
-      });
-    }
-
-    if (validator.equals('username', name)) {
-      this.setState({
-        username: {
           value: value,
           showError: false,
           errorMessage: ''
@@ -140,28 +142,6 @@ class UserSignup extends Component {
     }
   }
 
-  isValidUsername() {
-    if (!this.state.username.value) {
-      this.setState({
-        username: {
-          value: this.state.username.value,
-          showError: true,
-          errorMessage: 'Error: Username should not be empty'
-        }
-      });
-      return false;
-    } else {
-      this.setState({
-        username: {
-          value: this.state.username.value,
-          showError: false,
-          errorMessage: ''
-        }
-      });
-      return true;
-    }
-  }
-
   isValidPassword() {
     if (this.state.password.value.length <= 7) {
       this.setState({
@@ -209,19 +189,17 @@ class UserSignup extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {email, username, password, passwordConfirmation} = this.state;
+    const {email, password, passwordConfirmation} = this.state;
 
-    if (this.isValidEmail() && this.isValidUsername() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
+    if (this.isValidEmail() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
       const user = {
         email: email.value,
-        username: username.value,
         password: password.value,
         passwordConfirmation: passwordConfirmation.value
       };
 
       this.props.register(user);
       // alert(`Email: ${email.value}
-      //   Username: ${username.value}
       //   Password: ${password.value}
       //   Confirm password: ${passwordConfirmation.value}`);
     }
@@ -252,18 +230,7 @@ class UserSignup extends Component {
                   id="email"
                   type="text" />
                 <br />
-                <TextField
-                  name="username"
-                  error={this.state.username.showError}
-                  helperText={this.state.username.showError ? this.state.username.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidUsername}
-                  label="Username"
-                  id="username"
-                  margin="normal"
-                  fullWidth
-                  type="text" />
-                <br />
+
                 <TextField
                   name="password"
                   error={this.state.password.showError}
@@ -292,7 +259,6 @@ class UserSignup extends Component {
                 <Button
                   disabled = {
                     this.state.email.showError
-                    || this.state.username.showError
                     || this.state.password.showError
                     || this.state.passwordConfirmation.showError
                     || this.props.isFetching
@@ -327,13 +293,14 @@ UserSignup.propTypes = {
   isFetching: PropTypes.bool,
   isLoggedIn: PropTypes.bool.isRequired,
   register: PropTypes.func.isRequired,
+  requestError: PropTypes.object,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     isFetching: state.userReducer.isFetching,
     isLoggedIn: state.userReducer.isLoggedIn,
-    requestError: state.userReducer.error,
+    registerError: state.userReducer.error,
   };
 };
 
