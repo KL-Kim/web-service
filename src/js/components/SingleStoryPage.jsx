@@ -5,7 +5,7 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
-import Container from './Container'
+import Container from './containers/Container'
 import ReviewCard from './utils/ReviewCard';
 import BusinessCard from './utils/BusinessCard';
 
@@ -61,67 +61,68 @@ class StoryPage extends Component {
     const { classes } = this.props;
     return (
       <Container>
-        <Grid container spacing={16} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom align="center">
-              {story.title}
-            </Typography>
-            <Typography type="title" gutterBottom align="center">
-              By {story.author}
-            </Typography>
-            <Typography type="caption" gutterBottom align="center">
-              {story.date}
-            </Typography>
-          </Grid>
-          <Grid item xs={8}>
-            <Paper className={classes.paper}>
-              <Typography type="body1">
-                {story.content}
+        <div>
+          <Grid container spacing={16} justify="center" alignItems="center">
+            <Grid item xs={12}>
+              <Typography type="display3" gutterBottom align="center">
+                {story.title}
               </Typography>
-            </Paper>
+              <Typography type="title" gutterBottom align="center">
+                By {story.author}
+              </Typography>
+              <Typography type="caption" gutterBottom align="center">
+                {story.date}
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Paper className={classes.paper}>
+                <Typography type="body1">
+                  {story.content}
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
 
-        </Grid>
+          <Grid container spacing={16} justify="center">
+            <Grid item xs={4}>
+              <Paper className={classes.paper}>
+                Author: {story.author}
+              </Paper>
+            </Grid>
+            <Grid item xs={4}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+          </Grid>
 
-        <Grid container spacing={16} justify="center">
-          <Grid item xs={4}>
-            <Paper className={classes.paper}>
-              Author: {story.author}
-            </Paper>
+          <Grid container spacing={16} justify="center" alignItems="center">
+            <Grid item xs={12}>
+              <Typography type="display1" gutterBottom align="center">
+                Comments
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <ReviewCard businessName={reviews.businessName}
+                content={reviews.content}
+                good={reviews.good}
+                bad={reviews.bad}
+              />
+            </Grid>
+            <Grid item xs={8}>
+              <ReviewCard businessName={reviews.businessName}
+                content={reviews.content}
+                good={reviews.good}
+                bad={reviews.bad}
+              />
+            </Grid>
+            <Grid item xs={8}>
+              <ReviewCard businessName={reviews.businessName}
+                content={reviews.content}
+                good={reviews.good}
+                bad={reviews.bad}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={16} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Typography type="display1" gutterBottom align="center">
-              Comments
-            </Typography>
-          </Grid>
-          <Grid item xs={8}>
-            <ReviewCard businessName={reviews.businessName}
-              content={reviews.content}
-              good={reviews.good}
-              bad={reviews.bad}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <ReviewCard businessName={reviews.businessName}
-              content={reviews.content}
-              good={reviews.good}
-              bad={reviews.bad}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <ReviewCard businessName={reviews.businessName}
-              content={reviews.content}
-              good={reviews.good}
-              bad={reviews.bad}
-            />
-          </Grid>
-        </Grid>
+        </div>
       </Container>
     );
   }

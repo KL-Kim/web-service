@@ -6,7 +6,7 @@ import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 
-import Container from './Container';
+import Container from './containers/Container';
 import LoginForm from './containers/LoginForm';
 
 const styles = theme => ({

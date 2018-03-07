@@ -1,5 +1,8 @@
 const config = {
-  USER_SERVICE_API_ROOT: 'http://localhost:3001/api/v1',
+  "passwordMinLength": 8,
+  "API_GATEWAY_ROOT": 'http://localhost:8080/api/v1',
+  "webStorageTokenKey": 'tid',
+  "webStorageUserKey": 'uid',
 };
 
 export default config;

@@ -15,11 +15,11 @@ import ExpansionPanel, {
 import Divider from 'material-ui/Divider';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 
-import Header from '../containers/Header';
-import Footer from '../containers/Footer';
-import BusinessCard from './BusinessCard';
-import ReviewCard from './ReviewCard';
-import StoryCard from './StoryCard';
+import Header from './Header';
+import Footer from './Footer';
+import BusinessCard from './utils/BusinessCard';
+import ReviewCard from './utils/ReviewCard';
+import StoryCard from './utils/StoryCard';
 import Sidebar from './setting/Sidebar';
 
 
@@ -80,7 +80,7 @@ const styles = (theme) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
-  
+
   button: {
     margin: theme.spacing.unit,
   },

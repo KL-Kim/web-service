@@ -8,7 +8,9 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
+import config from '../../constants/config';
 import { login } from '../../actions/user.actions';
+import { alertClear } from '../../actions/alert.actions';
 
 const styles = (theme) => ({
   button: {
@@ -16,22 +18,22 @@ const styles = (theme) => ({
   },
 });
 
-const passwordMinLength = 8;
+const passwordMinLength = config.passwordMinLength;
 
 class LoginForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: {
-        value: '',
-        showError: false,
-        errorMessage: '',
+      "email": {
+        "value": '',
+        "showError": false,
+        "errorMessage": '',
       },
-      password: {
-        value: '',
-        showError: false,
-        errorMessage: '',
+      "password": {
+        "value": '',
+        "showError": false,
+        "errorMessage": '',
       }
     };
 
@@ -39,6 +41,12 @@ class LoginForm extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.isValidEmail = this.isValidEmail.bind(this);
     this.isValidPassword = this.isValidPassword.bind(this);
+  }
+
+  componentWillMount() {
+    if (this.props.isLoggedIn) {
+      this.props.history.push('/');
+    }
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -185,12 +193,12 @@ LoginForm.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool,
   error: PropTypes.object,
-  login: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
+  login: PropTypes.func.isRequired,
+  alertClear: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(state.userReducer.isFetching);
   return {
     isFetching: state.userReducer.isFetching,
     isLoggedIn: state.userReducer.isLoggedIn,
@@ -199,4 +207,4 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 export { LoginForm };
-export default connect(mapStateToProps, { login })(withStyles(styles)(LoginForm));
+export default connect(mapStateToProps, { login, alertClear })(withStyles(styles)(LoginForm));

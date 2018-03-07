@@ -11,21 +11,22 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 const userContent = {
-  user: {
-    "_id": "5a4ef8f5537cd042155581a3",
-    "username": "regularUser0",
-    "email": "user0@abc.com",
-    "profilePhotoUrl": "",
-    "address": "",
-    "sex": "male",
-    "lastName": "Kim",
-    "firstName": "Tony",
-    "createdAt": "2018-01-05T04:03:01.458Z",
-    "lastLoginAt": "2018-02-03T08:53:59.513Z",
-    "profilePhotoUri": "",
-    "userStatus": "normal",
+  "user": {
+    "role": "regular",
     "point": 0,
-    "role": "regular"
+    "userStatus": "normal",
+    "isVerified": true,
+    "profilePhotoUri": "",
+    "lastLoginAt": "2018-03-02T08:50:06.008Z",
+    "createdAt": "2018-03-01T13:23:30.895Z",
+    "_id": "5a97fed2d6d28628efff8f16",
+    "username": "jinguanglong11",
+    "email": "jinguanglong11@hotmail.com",
+    "lastLoginIp": "::1",
+    "address": "Bla bla bla",
+    "gender": "male",
+    "lastName": "Kim",
+    "firstName": "Tony"
   },
   token: ''
 };
@@ -45,7 +46,7 @@ describe('User Actions', () => {
 
     it('should login successfully and alert success when email and password is match', () => {
       const credentials = {
-        email: 'user0@abc.com',
+        email: "jinguanglong11@hotmail.com",
         password: '1234567890'
       };
 
@@ -67,7 +68,6 @@ describe('User Actions', () => {
           error: null,
           payload: {
             user: userContent.user,
-            token: userContent.token
           }
         },
         {
@@ -156,9 +156,12 @@ describe('User Actions', () => {
     });
 
     it("should register successfully", () => {
+      let randomNumber = Math.floor(Math.random() * 100000);
+      let email = 'jinguanglong' + randomNumber + '@icloud.com';
+      console.log(email);
+
       const credentials = {
-        email: 'jinguanglong11@icloud.com',
-        username: 'tony',
+        email: email,
         password: '1234567890',
         passwordConfirmation: '1234567890',
       };
@@ -181,7 +184,6 @@ describe('User Actions', () => {
           error: null,
           payload: {
             user: userContent.user,
-            token: userContent.token
           }
         },
         {

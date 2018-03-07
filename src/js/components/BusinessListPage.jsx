@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 
-import Container from './Container';
+import Container from './containers/Container';
 import BusinessCard from './utils/BusinessCard';
 import BusinessFilter from './utils/BusinessFilter';
 
@@ -20,37 +20,39 @@ class BusinessListPage extends Component {
   render() {
     return (
       <Container>
-        <Grid container spacing={16} justify="center">
-          <Grid item xs={12}>
-            <BusinessFilter />
+        <div>
+          <Grid container spacing={16} justify="center">
+            <Grid item xs={12}>
+              <BusinessFilter />
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container spacing={16} justify="center">
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
+          <Grid container spacing={16} justify="center">
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
+            <Grid item xs={3}>
+              <BusinessCard title={business.title} rating={business.rating}/>
+            </Grid>
           </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-          <Grid item xs={3}>
-            <BusinessCard title={business.title} rating={business.rating}/>
-          </Grid>
-        </Grid>
+        </div>
       </Container>
     );
   }

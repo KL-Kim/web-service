@@ -10,50 +10,53 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import { CircularProgress } from 'material-ui/Progress';
 
-import { register } from '../actions/user.actions'
-import Container from './Container';
+import config from '../constants/config';
+import { register } from '../actions/user.actions';
+import { alertClear } from '../actions/alert.actions';
+import Container from './containers/Container';
 
 const styles = theme => ({
-  paper: {
-    marginTop: theme.spacing.unit * 5,
-    paddingTop: theme.spacing.unit * 5,
-    paddingBottom: theme.spacing.unit * 5,
-    paddingLeft: theme.spacing.unit * 10,
-    paddingRight: theme.spacing.unit * 10,
-    marginBottom: theme.spacing.unit,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
+  "root": {
+    "marginTop": theme.spacing.unit * 10,
   },
-  button: {
-    marginTop: theme.spacing.unit * 4,
+  "paper": {
+    "paddingTop": theme.spacing.unit * 5,
+    "paddingBottom": theme.spacing.unit * 5,
+    "paddingLeft": theme.spacing.unit * 10,
+    "paddingRight": theme.spacing.unit * 10,
+    "marginBottom": theme.spacing.unit,
+    "textAlign": 'center',
+    "color": theme.palette.text.secondary,
   },
-  input: {
-    width: 270,
-    margin: theme.spacing.unit * 2
+  "button": {
+    "marginTop": theme.spacing.unit * 4,
+  },
+  "input": {
+    "margin": theme.spacing.unit * 2
   }
 });
 
-const passwordMinLength = 8;
+const passwordMinLength = config.passwordMinLength;
 
 class UserSignup extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: {
-        value: '',
-        showError: false,
-        errorMessage: '',
+      "email": {
+        "value": '',
+        "showError": false,
+        "errorMessage": '',
       },
-      password: {
-        value: '',
-        showError: false,
-        errorMessage: ''
+      "password": {
+        "value": '',
+        "showError": false,
+        "errorMessage": ''
       },
-      passwordConfirmation: {
-        value: '',
-        showError: false,
-        errorMessage: ''
+      "passwordConfirmation": {
+        "value": '',
+        "showError": false,
+        "errorMessage": ''
       }
     };
 
@@ -72,12 +75,18 @@ class UserSignup extends Component {
 
     if (nextProps.registerError) {
       this.setState({
-        email: {
-          value: this.state.email.value,
-          showError: true,
-          errorMessage: nextProps.registerError.message
+        "email": {
+          "value": this.state.email.value,
+          "showError": true,
+          "errorMessage": nextProps.registerError.message
         }
       });
+    }
+  }
+
+  componentWillMount() {
+    if (this.props.isLoggedIn) {
+      this.props.history.push('/');
     }
   }
 
@@ -86,35 +95,35 @@ class UserSignup extends Component {
 
     if (validator.equals('email', name)) {
       this.setState({
-        email: {
-          value: value,
-          showError: false,
-          errorMessage: ''
+        "email": {
+          "value": value,
+          "showError": false,
+          "errorMessage": ''
         },
       });
     }
 
     if (validator.equals('password', name)) {
       this.setState({
-        password: {
-          value: value,
-          showError: false,
-          errorMessage: ''
+        "password": {
+          "value": value,
+          "showError": false,
+          "errorMessage": ''
         },
         passwordConfirmation: {
-          value: this.state.passwordConfirmation.value,
-          showError: false,
-          errorMessage: ''
+          "value": this.state.passwordConfirmation.value,
+          "showError": false,
+          "errorMessage": ''
         },
       });
     }
 
     if (validator.equals('passwordConfirmation', name)) {
       this.setState({
-        passwordConfirmation: {
-          value: value,
-          showError: false,
-          errorMessage: ''
+        "passwordConfirmation": {
+          "value": value,
+          "showError": false,
+          "errorMessage": ''
         },
       });
     }
@@ -123,19 +132,19 @@ class UserSignup extends Component {
   isValidEmail() {
     if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
       this.setState({
-        email: {
-          value: this.state.email.value,
-          showError: true,
-          errorMessage: 'Error: Input a valid Email'
+        "email": {
+          "value": this.state.email.value,
+          "showError": true,
+          "errorMessage": 'Error: Input a valid Email'
         }
       });
       return false;
     } else {
       this.setState({
-        email: {
-          value: this.state.email.value,
-          showError: false,
-          errorMessage: ''
+        "email": {
+          "value": this.state.email.value,
+          "showError": false,
+          "errorMessage": ''
         }
       });
       return true;
@@ -145,19 +154,19 @@ class UserSignup extends Component {
   isValidPassword() {
     if (this.state.password.value.length <= 7) {
       this.setState({
-        password: {
-          value: this.state.password.value,
-          showError: true,
-          errorMessage: 'Password should not be shorter than ' + passwordMinLength
+        "password": {
+          "value": this.state.password.value,
+          "showError": true,
+          "errorMessage": 'Password should not be shorter than ' + passwordMinLength
         }
       });
       return false;
     } else {
       this.setState({
-        password: {
-          value: this.state.password.value,
-          showError: false,
-          errorMessage: ''
+        "password": {
+          "value": this.state.password.value,
+          "showError": false,
+          "errorMessage": ''
         }
       });
       return true;
@@ -167,19 +176,19 @@ class UserSignup extends Component {
   isValidPasswordConfirmation() {
     if (!validator.equals(this.state.password.value, this.state.passwordConfirmation.value)) {
       this.setState({
-        passwordConfirmation: {
-          value: this.state.passwordConfirmation.value,
-          showError: true,
-          errorMessage: 'Confirm password is not match with password'
+        "passwordConfirmation": {
+          "value": this.state.passwordConfirmation.value,
+          "showError": true,
+          "errorMessage": 'Confirm password is not match with password'
         }
       });
       return false;
     } else {
       this.setState({
-        passwordConfirmation: {
-          value: this.state.passwordConfirmation.value,
-          showError: false,
-          errorMessage: ''
+        "passwordConfirmation": {
+          "value": this.state.passwordConfirmation.value,
+          "showError": false,
+          "errorMessage": ''
         }
       });
       return true
@@ -189,19 +198,16 @@ class UserSignup extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {email, password, passwordConfirmation} = this.state;
+    const { email, password, passwordConfirmation } = this.state;
 
     if (this.isValidEmail() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
       const user = {
-        email: email.value,
-        password: password.value,
-        passwordConfirmation: passwordConfirmation.value
+        "email": email.value,
+        "password": password.value,
+        "passwordConfirmation": passwordConfirmation.value
       };
 
       this.props.register(user);
-      // alert(`Email: ${email.value}
-      //   Password: ${password.value}
-      //   Confirm password: ${passwordConfirmation.value}`);
     }
   }
 
@@ -211,7 +217,7 @@ class UserSignup extends Component {
 
     return (
       <Container>
-        <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
+        <Grid container spacing={16} justify="center" alignItems="center" className={classes.root}>
           <Grid item sm={5}>
             <Paper className={classes.paper}>
               <Typography type="display1" align="center">
@@ -288,20 +294,21 @@ class UserSignup extends Component {
 }
 
 UserSignup.propTypes = {
-  history: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
-  isFetching: PropTypes.bool,
-  isLoggedIn: PropTypes.bool.isRequired,
-  register: PropTypes.func.isRequired,
-  requestError: PropTypes.object,
+  "history": PropTypes.object.isRequired,
+  "classes": PropTypes.object.isRequired,
+  "isFetching": PropTypes.bool,
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "register": PropTypes.func.isRequired,
+  "requestError": PropTypes.object,
+  "alertClear": PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    isFetching: state.userReducer.isFetching,
-    isLoggedIn: state.userReducer.isLoggedIn,
-    registerError: state.userReducer.error,
+    "isFetching": state.userReducer.isFetching,
+    "isLoggedIn": state.userReducer.isLoggedIn,
+    "registerError": state.userReducer.error,
   };
 };
 
-export default connect(mapStateToProps, { register })(withStyles(styles)(UserSignup));
+export default connect(mapStateToProps, { register, alertClear })(withStyles(styles)(UserSignup));

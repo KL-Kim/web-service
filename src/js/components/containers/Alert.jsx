@@ -41,12 +41,20 @@ class Alert extends Component {
     this.state = {
       open: false,
     };
+
+    this.handleClose = this.handleClose.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.alertClear();
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      open: true,
-    });
+    if (nextProps.message || nextProps.error) {
+      this.setState({
+        open: true,
+      });
+    }
   }
 
   handleClose = (event, reason) => {
@@ -65,6 +73,7 @@ class Alert extends Component {
     const messageContent = error ?
       (<div id="message-id"><ErrorIcon className={classes.icon} color="error" /><span>{message}</span></div>)
       : (<div id="message-id"><CheckCircle className={classes.icon} />{message}</div>)
+
     return (
         <Snackbar
           anchorOrigin={anchorOrigin}
@@ -94,6 +103,7 @@ Alert.propTypes = {
   classes: PropTypes.object.isRequired,
   id: PropTypes.string,
   message: PropTypes.string,
+  alertClear: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -104,4 +114,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default withStyles(styles)(connect(mapStateToProps, { alertClear })(Alert));
+export default connect(mapStateToProps, { alertClear })(withStyles(styles)(Alert));

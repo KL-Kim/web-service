@@ -5,7 +5,7 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
-import Container from './Container.jsx';
+import Container from './containers/Container';
 import SearchBar from './utils/SearchBar';
 import CategoryBar from './utils/CategoryBar';
 import BusinessCard from './utils/BusinessCard';
@@ -45,48 +45,50 @@ class HomePage extends Component {
 
     return (
       <Container>
-        <Grid container spacing={16} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Paper className={classes.paper} >
-              <SearchBar />
-            </Paper>
+        <div>
+          <Grid container spacing={16} justify="center" alignItems="center">
+            <Grid item xs={12}>
+              <Paper className={classes.paper} >
+                <SearchBar />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper className={classes.paper} >
+                <CategoryBar />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography type="display3" gutterBottom align="center">
+                Hot & New Bussiness
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <BusinessCard title={business.title} description={business.description} rating={business.rating} />
+            </Grid>
+            <Grid item xs={4}>
+              <BusinessCard title={business.title} description={business.description} rating={business.rating} />
+            </Grid>
+            <Grid item xs={4}>
+              <BusinessCard title={business.title} description={business.description} rating={business.rating} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Paper className={classes.paper} >
-              <CategoryBar />
-            </Paper>
+          <Grid container spacing={16} justify="center" alignItems="center">
+            <Grid item xs={12}>
+              <Typography type="display3" gutterBottom align="center">
+                Featured Story
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
+            </Grid>
+            <Grid item xs={4}>
+              <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
+            </Grid>
+            <Grid item xs={4}>
+              <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom align="center">
-              Hot & New Bussiness
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <BusinessCard title={business.title} description={business.description} rating={business.rating} />
-          </Grid>
-          <Grid item xs={4}>
-            <BusinessCard title={business.title} description={business.description} rating={business.rating} />
-          </Grid>
-          <Grid item xs={4}>
-            <BusinessCard title={business.title} description={business.description} rating={business.rating} />
-          </Grid>
-        </Grid>
-        <Grid container spacing={16} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom align="center">
-              Featured Story
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
-          </Grid>
-          <Grid item xs={4}>
-            <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
-          </Grid>
-          <Grid item xs={4}>
-            <StoryCard title={story.title} content={story.content} commentCount={story.commentCount}  good={story.good} bad={story.bad} />
-          </Grid>
-        </Grid>
+        </div>
       </Container>
     );
   }

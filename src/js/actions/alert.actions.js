@@ -5,12 +5,12 @@ import alertTypes from '../constants/alert.types';
  *  Alert success
  */
 export const alertSuccess = response => ({
-  type: alertTypes.ALERT_SUCCESS,
-  meta: {},
-  error: null,
-  payload: {
-    id: uuidv4(),
-    message: response
+  "type": alertTypes.ALERT_SUCCESS,
+  "meta": {},
+  "error": null,
+  "payload": {
+    "id": uuidv4(),
+    "message": response
   }
 });
 
@@ -18,18 +18,18 @@ export const alertSuccess = response => ({
  *  Alert failure
  */
 export const alertFailure = response => ({
-  type: alertTypes.ALERT_FAILURE,
-  meta: {},
-  error: true,
-  payload: {
-    id: uuidv4(),
-    message: response || 'Unknown Error'
+  "type": alertTypes.ALERT_FAILURE,
+  "meta": {},
+  "error": true,
+  "payload": {
+    "id": uuidv4(),
+    "message": response || 'Unknown Error'
   }
 });
 
 export const alertClear = () => ({
-  type: alertTypes.ALERT_CLEAR,
-  meta: {},
-  error: null,
-  payload: {}
-})
+  "type": alertTypes.ALERT_CLEAR,
+  "meta": {},
+  "error": null,
+  "payload": {}
+});
