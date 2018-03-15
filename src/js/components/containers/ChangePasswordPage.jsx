@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import validator from 'validator';
+import _ from 'lodash';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
@@ -10,7 +10,7 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
-import config from '../../constants/config';
+import config from '../../config/config';
 import Container from './Container';
 import { changePassword } from '../../actions/user.actions';
 
@@ -64,7 +64,7 @@ class ChangePasswordPage extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('password', name)) {
+    if (_.isEqual('password', name)) {
       this.setState({
         password: {
           value: value,
@@ -79,7 +79,7 @@ class ChangePasswordPage extends Component {
       });
     }
 
-    if (validator.equals('passwordConfirmation', name)) {
+    if (_.isEqual('passwordConfirmation', name)) {
       this.setState({
         passwordConfirmation: {
           value: value,
@@ -113,7 +113,7 @@ class ChangePasswordPage extends Component {
   }
 
   isValidPasswordConfirmation() {
-    if (!validator.equals(this.state.password.value, this.state.passwordConfirmation.value)) {
+    if (!_.isEqual(this.state.password.value, this.state.passwordConfirmation.value)) {
       this.setState({
         passwordConfirmation: {
           value: this.state.passwordConfirmation.value,
@@ -211,6 +211,7 @@ ChangePasswordPage.propTypes = {
   "isFetching": PropTypes.bool,
   "response": PropTypes.bool,
   "changePassword": PropTypes.func.isRequired,
+  "changePasswordError": PropTypes.object,
 };
 
 const mapStateToProps = (state, ownProps) => {

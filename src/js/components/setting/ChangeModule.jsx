@@ -21,7 +21,6 @@ const getSteps = (props) => {
   return ['New '+ props.name, 'Verification code'];
 }
 
-
 const getStepContent = (stepIndex, props) => {
   switch (stepIndex) {
     case 0:
@@ -50,7 +49,6 @@ const getStepContent = (stepIndex, props) => {
       return 'Uknown stepIndex';
   }
 }
-
 
 class ChangeModule extends Component {
   constructor(props) {

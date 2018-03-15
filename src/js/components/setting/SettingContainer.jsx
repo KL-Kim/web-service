@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
-import SettingHeader from './SettingHeader';
+import Header from '../Header';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
 import Alert from '../containers/Alert';
+import DevTools from '../DevTools';
+
+import { logout } from '../../actions/user.actions';
 
 const styles = (theme) => ({
   root: {
@@ -31,12 +36,24 @@ const styles = (theme) => ({
 });
 
 class SettingContainer extends Component {
+  // componentWillMount() {
+  //   if (!this.props.isLoggedIn) {
+  //     this.props.history.push('/');
+  //   }
+  // }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (!nextProps.isLoggedIn) {
+      this.props.history.push('/');
+    }
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, isLoggedIn, user, logout } = this.props;
 
     return (
       <div className={classes.root}>
-        <SettingHeader />
+        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"fixed"}/>
         <Sidebar />
         <div className={classes.appFrame}>
           <main className={classes.content}>
@@ -45,9 +62,26 @@ class SettingContainer extends Component {
           </main>
         </div>
         <Alert />
+        <DevTools />
       </div>
     );
   }
 }
 
-export default withStyles(styles)(SettingContainer);
+SettingContainer.propTypes = {
+  history: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+  children: PropTypes.element.isRequired,
+  user: PropTypes.object,
+  isLoggedIn: PropTypes.bool.isRequired,
+  logout: PropTypes.func.isRequired,
+}
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
+  };
+};
+
+export default connect(mapStateToProps, { logout })(withStyles(styles)(SettingContainer));

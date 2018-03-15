@@ -1,3 +1,6 @@
+/**
+ * Alert Actions
+ */
 import uuidv4 from 'uuid/v4';
 import alertTypes from '../constants/alert.types';
 
@@ -17,13 +20,13 @@ export const alertSuccess = response => ({
 /**
  *  Alert failure
  */
-export const alertFailure = response => ({
+export const alertFailure = errorMessage => ({
   "type": alertTypes.ALERT_FAILURE,
   "meta": {},
   "error": true,
   "payload": {
     "id": uuidv4(),
-    "message": response || 'Unknown Error'
+    "message": errorMessage || 'Unknown Error'
   }
 });
 

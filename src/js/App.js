@@ -1,11 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
-// import { PersistGate } from 'redux-persist/integration/react';
 
 // Redux Store
-// import store, { persistor } from './stores/user.store';
 import configureStore from './stores/user.store';
+import PrivateRoute from './helpers/PrivateRoute';
 
 // React Compontens
 import HomePage from './components/HomePage';
@@ -36,44 +35,51 @@ import AdminStoriesList from './components/setting/admin/StoriesList';
 import BusinessPage from './components/BusinessPage';
 import SingleStoryPage from './components/SingleStoryPage';
 
+import { getUserById } from './actions/user.actions';
+import { loadFromStorage } from './helpers/webStorage';
+import webStorageTypes from './constants/webStorage.types';
+
 const App = () => {
   const store = configureStore();
 
+  const uid = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+  if (uid) {
+    store.dispatch(getUserById(uid));
+  }
+
   return (
     <Provider store={store}>
-      {/*<PersistGate loading={null} persistor={persistor}> */}
-        <Router>
-          <Switch>
-            <Route exact path="/" component={HomePage} />
-            <Route path="/signup" component={SignupPage} />
-            <Route path="/signin" component={SigninPage} />
-            <Route path="/business/:id" component={BusinessPage} />
-            <Route path="/business" component={BusinessListPage} />
-            <Route path="/story" component={SingleStoryPage} />
-            <Route path="/about" component={AboutPage} />
-            <Route path="/terms-policy" component={TermsPolicyPage} />
-            <Route path="/license" component={LicensePage} />
-            <Route path="/verify/:token" component={AccountVerificationPage} />
-            <Route path="/forget-password" component={ForgetPasswordPage} />
-            <Route path="/change-password/:token" component={ChangePasswordPage} />
+      <Router>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/signup" component={SignupPage} />
+          <Route path="/signin" component={SigninPage} />
+          <Route path="/business/:id" component={BusinessPage} />
+          <Route path="/business" component={BusinessListPage} />
+          <Route path="/story" component={SingleStoryPage} />
+          <Route path="/about" component={AboutPage} />
+          <Route path="/terms-policy" component={TermsPolicyPage} />
+          <Route path="/license" component={LicensePage} />
+          <Route path="/verify/:token" component={AccountVerificationPage} />
+          <Route path="/forget-password" component={ForgetPasswordPage} />
+          <Route path="/change-password/:token" component={ChangePasswordPage} />
 
-            {/*  Setting Routes */}
-            <Route path="/setting/account" component={SettingAccount} />
-            <Route path="/setting/review" component={SettingReview} />
-            <Route path="/setting/favor" component={SettingFavor} />
-            <Route path="/setting/story" component={SettingStory} />
-            <Route path="/setting/notification" component={SettingNotification} />
+          {/*  Setting Routes */}
+          <PrivateRoute path="/setting/account" component={SettingAccount} />
+          <Route path="/setting/review" component={SettingReview} />
+          <Route path="/setting/favor" component={SettingFavor} />
+          <Route path="/setting/story" component={SettingStory} />
+          <Route path="/setting/notification" component={SettingNotification} />
 
-            {/*  Admin Routes */}
-            <Route path="/admin/setting/users" component={AdminUsersList} />
-            <Route path="/admin/setting/reviews" component={AdminReviewsList} />
-            <Route path="/admin/setting/stories" component={AdminStoriesList} />
+          {/*  Admin Routes */}
+          <Route path="/admin/setting/users" component={AdminUsersList} />
+          <Route path="/admin/setting/reviews" component={AdminReviewsList} />
+          <Route path="/admin/setting/stories" component={AdminStoriesList} />
 
-            {/*  Error Routes */}
-            <Route component={NoMatchPage} />
-          </Switch>
-        </Router>
-      {/*</PersistGate>*/}
+          {/*  Error Routes */}
+          <Route component={NoMatchPage} />
+        </Switch>
+      </Router>
     </Provider>
   );
 };

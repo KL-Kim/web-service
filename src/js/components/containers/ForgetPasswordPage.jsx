@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import validator from 'validator';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
@@ -9,8 +10,9 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 
+import emailTypes from '../../constants/email.types';
 import Container from './Container';
-import { sendChangePasswordEmail } from '../../actions/user.actions';
+import { sendEmail } from '../../actions/user.actions';
 
 const styles = theme => ({
   "root": {
@@ -53,7 +55,7 @@ class ForgetPasswordPage extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('email', name)) {
+    if (_.isEqual('email', name)) {
       this.setState({
         "email": {
           "value": value,
@@ -92,7 +94,7 @@ class ForgetPasswordPage extends Component {
     const { email } = this.state;
 
     if (this.isValidEmail(email.value)) {
-      this.props.sendChangePasswordEmail(email.value);
+      this.props.sendEmail(emailTypes.CHANGE_PASSWORD, email.value);
     }
   }
 
@@ -149,4 +151,4 @@ const mapStateToProps = (state, ownProps) => {
   return {};
 };
 
-export default connect(mapStateToProps, { sendChangePasswordEmail })(withStyles(styles)(ForgetPasswordPage));
+export default connect(mapStateToProps, { sendEmail })(withStyles(styles)(ForgetPasswordPage));

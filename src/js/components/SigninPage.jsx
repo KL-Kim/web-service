@@ -29,7 +29,7 @@ class SigninPage extends Component {
         <Grid container justify="center" alignItems="center">
           <Grid item xs={5}>
             <Paper className={classes.paper}>
-              <LoginForm history={history}/>
+              <LoginForm history={history} />
             </Paper>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>

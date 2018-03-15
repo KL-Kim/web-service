@@ -2,16 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
-import _ from 'lodash';
 
 import Header from '../Header';
 import Footer from '../Footer';
 import Alert from './Alert';
 import DevTools from '../DevTools';
 
-import config from '../../constants/config'
-import { getUserById } from '../../actions/user.actions';
-import { loadFromStorage } from '../../helpers/webStorage';
+import { logout } from '../../actions/user.actions';
 
 const styles = theme => ({
   root: {
@@ -37,19 +34,12 @@ const styles = theme => ({
 });
 
 class Container extends Component {
-  componentDidMount() {
-    const userId = loadFromStorage(config.webStorageUserKey);
-    if (!_.isEmpty(userId) && _.isEmpty(this.props.user)) {
-      this.props.getUserById(userId);
-    }
-  }
-
   render() {
-    const { classes, isLoggedIn, user } = this.props;
+    const { classes, isLoggedIn, user, logout } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} />
+        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"static"} />
         <main className={classes.appFrame}>
           {this.props.children}
         </main>
@@ -66,6 +56,7 @@ Container.propTypes = {
   children: PropTypes.element.isRequired,
   user: PropTypes.object,
   isLoggedIn: PropTypes.bool.isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -75,4 +66,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getUserById })(withStyles(styles)(Container));
+export default connect(mapStateToProps, { logout })(withStyles(styles)(Container));

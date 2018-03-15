@@ -2,8 +2,9 @@ import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
-import config from '../constants/config';
+import config from '../config/config';
 import { loadFromStorage, saveToStorage } from '../helpers/webStorage';
+import webStorageTypes from '../constants/webStorage.types';
 
 /**
  * Auth serivce uri
@@ -35,7 +36,7 @@ const newTokenFetch = () => {
         let error = new Error(response.statusText);
         error.status = response.status;
 
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           error.message = "Permission denied";
         } else {
           error.message = "Unknown Error";
@@ -46,7 +47,7 @@ const newTokenFetch = () => {
     })
     .then(res => {
       console.log("Get new token");
-      saveToStorage(config.webStorageTokenKey, res.token);
+      saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, res.token);
       return res.token;
     })
     .catch(err => {
@@ -60,7 +61,7 @@ const newTokenFetch = () => {
 export const getToken = () => {
   return new Promise((resolve, reject) => {
     // Get token form webStorage
-    const token = loadFromStorage(config.webStorageTokenKey);
+    const token = loadFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
     const decoded = _.isEmpty(token) ? null : jwt.decode(token, {});
     const now = _.now();
 
@@ -110,11 +111,11 @@ export const loginFetch = (email, password) => {
     })
     .then(json => {
       if (json.token) {
-        saveToStorage(config.webStorageTokenKey, json.token);
+        saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, json.token);
       }
 
       if (json.user) {
-        saveToStorage(config.webStorageUserKey, json.user._id);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, json.user._id);
         return json.user;
       } else {
         const err = new Error("Bad response");
@@ -122,6 +123,40 @@ export const loginFetch = (email, password) => {
       }
     })
     .catch(err => {
+      return Promise.reject(err);
+    });
+};
+
+/**
+ * Fetch log out
+ */
+export const logoutFetch = () => {
+  const options = {
+    "method": 'GET',
+    "headers": {
+      "Accept": "application/json",
+      'Content-Type': 'application/json',
+    },
+    "credentials": 'include',
+  };
+
+  return fetch(authSerivceUri.logoutUrl, options)
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        let error = new Error(response.statusText);
+        error.status = response.status;
+
+        if (response.status === 401 || response.status === 403) {
+          error.message = "Permission denied";
+        } else {
+          error.message = "Unknown Error";
+        }
+
+        return Promise.reject(error);
+      }
+    }).catch(err => {
       return Promise.reject(err);
     });
 };
@@ -146,7 +181,7 @@ export const verifyFetch = (token) => {
         let error = new Error(response.statusText);
         error.status = response.status;
 
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           error.message = "Permission denied";
         } else {
           error.message = "Unknown Error";

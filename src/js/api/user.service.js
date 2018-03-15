@@ -1,6 +1,8 @@
 import fetch from 'cross-fetch';
-import config from '../constants/config';
+import config from '../config/config';
 import { saveToStorage } from '../helpers/webStorage';
+import userTypes from '../constants/user.types';
+import emailTypes from '../constants/email.types';
 
 /**
  * User serivce uri
@@ -8,8 +10,10 @@ import { saveToStorage } from '../helpers/webStorage';
 const userSerivceUri = {
   registerUrl: config.API_GATEWAY_ROOT + '/user/register',
   changePasswordUrl: config.API_GATEWAY_ROOT + '/user/password',
+  sendEmailVerificationUrl: config.API_GATEWAY_ROOT + '/user/mail/verify',
   sendChangePasswordEmailUrl: config.API_GATEWAY_ROOT + '/user/mail/password',
-  getUserByIdUrl: config.API_GATEWAY_ROOT + '/user',
+  commonUserUrl: config.API_GATEWAY_ROOT + '/user',
+  updateUsernameUrl: config.API_GATEWAY_ROOT + '/user/useranme',
 };
 
 /**
@@ -24,7 +28,7 @@ export const getUserByIdFetch = (id, token) => {
     },
   };
 
-  return fetch(userSerivceUri.getUserByIdUrl + '/' + id, options)
+  return fetch(userSerivceUri.commonUserUrl + '/' + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -93,6 +97,7 @@ export const registerFetch = (user) => {
       }
 
       if (json.user) {
+        saveToStorage(config.webStorageUserKey, json.user._id);
         return json;
       } else {
         const err = new Error("Bad response")
@@ -146,7 +151,7 @@ export const changePasswordFetch = (token, password, passwordConfirmation) => {
 /**
  * Fetch sending changing password email
  */
-export const sendChangePasswordEmailFetch = (email) => {
+export const sendEmailFetch = (type, email) => {
   const options = {
     "method": 'POST',
     "headers": {
@@ -157,7 +162,19 @@ export const sendChangePasswordEmailFetch = (email) => {
     }),
   };
 
-  return fetch(userSerivceUri.sendChangePasswordEmailUrl, options)
+  let url;
+
+  switch (type) {
+    case emailTypes.CHANGE_PASSWORD:
+      url = userSerivceUri.sendChangePasswordEmailUrl
+      break;
+
+    case emailTypes.ACCOUNT_VERIFICATION:
+      url = userSerivceUri.sendEmailVerificationUrl
+      break;
+  }
+
+  return fetch(url, options)
     .then(response => {
       if (response.ok) {
         return response;
@@ -172,6 +189,67 @@ export const sendChangePasswordEmailFetch = (email) => {
         }
         return Promise.reject(error);
       }
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+};
+
+/**
+ * Fetch updating user profile
+ */
+export const updateUserFetch = (type = "PROFILE", token, id, data) => {
+  const options = {
+    "method": 'PUT',
+    "headers": {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    "body": JSON.stringify({...data}),
+  };
+  let url;
+  switch (type) {
+    case userTypes.UPDATE_USERNAME:
+      url = userSerivceUri.updateUsernameUrl + '/' + id;
+      break;
+
+    default:
+      url = userSerivceUri.commonUserUrl + '/' + id;
+  }
+
+  return fetch(url, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        let error = new Error(response.statusText);
+        error.status = response.status;
+
+        switch (response.status) {
+          case 400:
+            error.message = "Bad JSON Request";
+            break;
+
+          case 401:
+            error.message = "Unauthorized";
+            break;
+
+          case 403:
+            error.message = "Forbidden";
+            break;
+
+          case 409:
+            error.message = "Already exists";
+            break;
+
+          default:
+            error.message = "Unknown Server Error";
+        }
+
+        return Promise.reject(error);
+      }
+    })
+    .then(user => {
+      return user;
     }).catch(err => {
       return Promise.reject(err);
     });

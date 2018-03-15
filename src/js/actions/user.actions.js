@@ -1,12 +1,14 @@
-
 /**
  * User Actions
  */
 import _ from 'lodash';
+
 import userTypes from '../constants/user.types';
-import { registerFetch, changePasswordFetch, sendChangePasswordEmailFetch, getUserByIdFetch } from '../api/user.service';
-import { getToken, loginFetch, verifyFetch } from '../api/auth.service';
+import { registerFetch, changePasswordFetch, sendEmailFetch, getUserByIdFetch, updateUserFetch } from '../api/user.service';
+import { getToken, loginFetch, logoutFetch, verifyFetch } from '../api/auth.service';
 import * as AlertActions from './alert.actions';
+import { removeFromStorage } from '../helpers/webStorage';
+import webStorageTypes from '../constants/webStorage.types.js';
 
 /**
  *  Request login
@@ -37,10 +39,8 @@ const loginSuccess = user => ({
 const loginFailure = error => ({
   "type": userTypes.LOGIN_FAILURE,
   "meta": {},
-  "error": true,
-  "payload": {
-    "error": error
-  }
+  "error": error,
+  "payload": {}
 });
 
 /**
@@ -102,10 +102,8 @@ const registerSuccess = (user) => ({
 const registerFailure = error => ({
   "type": userTypes.REGISTER_FAILURE,
   "meta": {},
-  "error": true,
-  "payload": {
-    "error": error
-  }
+  "error": error,
+  "payload": {},
 });
 
 /**
@@ -169,10 +167,8 @@ const verifySuccess = user => ({
 const verifyFailure = error => ({
   "type": userTypes.VERIFY_FAILURE,
   "meta": {},
-  "error": true,
-  "payload": {
-    "error": error
-  }
+  "error": error,
+  "payload": {}
 });
 
 /**
@@ -268,19 +264,21 @@ export const changePassword = (token, password, passwordConfirmation) => {
 };
 
 /**
- * Send Change password email
+ * Send email
+ * @param {String} type - email type
+ * @param {String} email - user's email
  */
-export const sendChangePasswordEmail = (email) => {
+export const sendEmail = (type, email) => {
   return (dispatch, getState) => {
     let err;
 
-    if (_.isEmpty(email)) {
-      err = new Error("Email missing");
+    if (_.isEmpty(type) || _.isEmpty(email)) {
+      err = new Error("Bad requset");
       dispatch(AlertActions.alertFailure(err.message));
       return Promise.reject(err);
     }
 
-    return sendChangePasswordEmailFetch(email)
+    return sendEmailFetch(type, email)
       .then(res => {
         return dispatch(AlertActions.alertSuccess("Send email successfully"));
       }).catch(err => {
@@ -338,4 +336,133 @@ export const getUserById = (id) => {
         return dispatch(getUserByIdFailure(err));
       });
   };
+}
+
+/**
+ * Request log out
+ */
+const logoutRequest = () => ({
+  "type": userTypes.LOGOUT_REQUEST,
+  "meta": {},
+  "error": null,
+  "payload": {},
+});
+
+/**
+ * Log out success
+ */
+const logoutSuccess = () => ({
+  "type": userTypes.LOGOUT_SUCCESS,
+  "meta": {},
+  "error": null,
+  "payload": {},
+});
+
+/**
+ * Log out failure
+ */
+const logoutFailure = (error) => ({
+  "type": userTypes.LOGOUT_FAILURE,
+  "meta": {},
+  "error": error,
+  "payload": {},
+});
+
+/**
+ * Log out
+ */
+export const logout = () => {
+  return (dispatch, getState) => {
+    dispatch(logoutRequest);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    return logoutFetch().then(json => {
+      dispatch(logoutSuccess());
+      dispatch(AlertActions.alertSuccess("Log out successfully"));
+    }).catch(err => {
+      dispatch(logoutFailure(err));
+      if (err.message) {
+        dispatch(AlertActions.alertFailure(err.message));
+      }
+    });
+  };
+};
+
+/**
+ * Update user profile request
+ */
+const updateUserProfileRequest  = () => ({
+  "type": userTypes.UPDATE_USER_PROFILE_REQUEST,
+  "meta": {},
+  "error": null,
+  "payload": {},
+});
+
+/**
+ * Update user profile success
+ */
+const updateUserProfileSuccess  = (user) => ({
+  "type": userTypes.UPDATE_USER_PROFILE_SUCCESS,
+  "meta": {},
+  "error": null,
+  "payload": {
+    "user": user
+  },
+});
+
+/**
+ * Update user profile success
+ */
+const updateUserProfileFailure  = (error) => ({
+  "type": userTypes.UPDATE_USER_PROFILE_FAILURE,
+  "meta": {},
+  "error": error,
+  "payload": {},
+});
+
+/**
+ * Update user's profile
+ */
+export const updateUserProfile = (id, data) => {
+  return (dispatch, getState) => {
+    if (_.isEmpty(id) || _.isEmpty(data)) {
+      const error = new Error("Bad Request");
+      return Promise.reject(error);
+    }
+
+    const user = getState().userReducer.user;
+    let modified = false;
+
+    _.map(data, (value, name) => {
+      if (value !== user[name]) {
+        modified = true;
+      }
+    });
+
+    if (!modified) {
+      return dispatch(AlertActions.alertSuccess("Nothing changed"));
+    }
+
+    dispatch(updateUserProfileRequest());
+
+    return getToken().then(token => {
+      let type = 'PROFILE';
+      if (!_.isEmpty(data.username)) type = userTypes.UPDATE_USERNAME;
+
+      return updateUserFetch(type, token, id, data);
+    }).then(user => {
+        dispatch(updateUserProfileSuccess(user));
+        dispatch(AlertActions.alertSuccess("Updated successfully"));
+
+        return ;
+    }).catch(err => {
+      if (err.message) {
+        dispatch(AlertActions.alertFailure(err.message));
+      }
+      dispatch(updateUserProfileFailure(err));
+
+      return ;
+    });
+  }
 }

@@ -7,8 +7,8 @@ const initialState = {
   "user": null,
   "isFetching": false,
   "isLoggedIn": false,
+  "error": null,
   "response": null,
-  "error": null
 };
 
 const userReducer = (state = initialState, action) => {
@@ -19,6 +19,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.LOGIN_SUCCESS:
@@ -27,12 +28,13 @@ const userReducer = (state = initialState, action) => {
         "user": action.payload.user,
         "isFetching": false,
         "isLoggedIn": true,
+        "error": null,
       };
 
     case userTypes.LOGIN_FAILURE:
       return {
         ...state,
-        "error": action.payload.error,
+        "error": action.error,
         "isFetching": false,
         "user": null,
       };
@@ -42,6 +44,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.REGISTER_SUCCESS:
@@ -50,6 +53,7 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "isLoggedIn": true,
         "user": action.payload.user,
+        "error": null,
       };
 
     case userTypes.REGISTER_FAILURE:
@@ -57,7 +61,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "user": null,
-        "error": action.payload.error,
+        "error": action.error,
       };
 
     // Verify Account
@@ -65,6 +69,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.VERIFY_SUCCESS:
@@ -72,13 +77,14 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "user": action.payload.user,
+        "error": null,
       };
 
     case userTypes.VERIFY_FAILURE:
       return {
         ...state,
         "isFetching": false,
-        "error": action.payload.error,
+        "error": action.error,
       };
 
     // Change password
@@ -86,13 +92,15 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.CHANGE_PASSWORD_SUCCESS:
       return {
         ...state,
         "isFetching": false,
-        "response": true
+        "response": true,
+        "error": null,
       };
 
     case userTypes.CHANGE_PASSWORD_FAILURE:
@@ -124,6 +132,49 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "error": action.error,
       };
+
+    // Log out
+    case userTypes.LOGOUT_REQUEST:
+      return {
+        ...state,
+        "isFetching": true,
+      };
+
+    case userTypes.LOGOUT_SUCCESS:
+      return {
+        ...state,
+        "isFetching": false,
+        "user": null,
+        "isLoggedIn": false,
+      };
+    case userTypes.LOGOUT_FAILURE:
+      return {
+        ...state,
+        "isFetching": false,
+        "error": action.error,
+      };
+
+    // Update user profile
+    case userTypes.UPDATE_USER_PROFILE_REQUEST:
+      return {
+        ...state,
+        "isFetching": true,
+      };
+
+    case userTypes.UPDATE_USER_PROFILE_SUCCESS:
+      return {
+        ...state,
+        "isFetching": false,
+        "user": action.payload.user,
+        "error": null,
+      };
+
+    case userTypes.UPDATE_USER_PROFILE_FAILURE:
+    return {
+      ...state,
+      "isFetching": false,
+      "error": action.error,
+    };
 
     default:
       return state;

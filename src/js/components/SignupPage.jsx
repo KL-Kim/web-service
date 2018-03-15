@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import validator from 'validator';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
@@ -10,7 +11,7 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import { CircularProgress } from 'material-ui/Progress';
 
-import config from '../constants/config';
+import config from '../config/config';
 import { register } from '../actions/user.actions';
 import { alertClear } from '../actions/alert.actions';
 import Container from './containers/Container';
@@ -93,7 +94,7 @@ class UserSignup extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('email', name)) {
+    if (_.isEqual('email', name)) {
       this.setState({
         "email": {
           "value": value,
@@ -103,7 +104,7 @@ class UserSignup extends Component {
       });
     }
 
-    if (validator.equals('password', name)) {
+    if (_.isEqual('password', name)) {
       this.setState({
         "password": {
           "value": value,
@@ -118,7 +119,7 @@ class UserSignup extends Component {
       });
     }
 
-    if (validator.equals('passwordConfirmation', name)) {
+    if (_.isEqual('passwordConfirmation', name)) {
       this.setState({
         "passwordConfirmation": {
           "value": value,
@@ -174,7 +175,7 @@ class UserSignup extends Component {
   }
 
   isValidPasswordConfirmation() {
-    if (!validator.equals(this.state.password.value, this.state.passwordConfirmation.value)) {
+    if (!_.isEqual(this.state.password.value, this.state.passwordConfirmation.value)) {
       this.setState({
         "passwordConfirmation": {
           "value": this.state.passwordConfirmation.value,
@@ -215,7 +216,7 @@ class UserSignup extends Component {
     const { classes } = this.props;
     let signupButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up';
 
-    return (
+    return this.props.isLoggedIn ? null : (
       <Container>
         <Grid container spacing={16} justify="center" alignItems="center" className={classes.root}>
           <Grid item sm={5}>

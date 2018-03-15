@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import validator from 'validator';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
@@ -8,7 +9,7 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
-import config from '../../constants/config';
+import config from '../../config/config';
 import { login } from '../../actions/user.actions';
 import { alertClear } from '../../actions/alert.actions';
 
@@ -68,7 +69,7 @@ class LoginForm extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('email', name)) {
+    if (_.isEqual('email', name)) {
       this.setState({
         email: {
           value: value,
@@ -78,7 +79,7 @@ class LoginForm extends Component {
       });
     }
 
-    if (validator.equals('password', name)) {
+    if (_.isEqual('password', name)) {
       this.setState({
         password: {
           value: value,
