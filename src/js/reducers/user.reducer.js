@@ -2,17 +2,39 @@
  * User Reducer
  */
 import userTypes from '../constants/user.types.js';
+import emailTypes from '../constants/email.types.js';
 
 const initialState = {
   "user": null,
   "isFetching": false,
   "isLoggedIn": false,
   "error": null,
-  "response": null,
+  "updatedAt": null,
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
+
+    // Send Email
+    case emailTypes.SEND_EMAIL_REQUEST:
+      return {
+        ...state,
+        "isFetching": true,
+        "error": null,
+      };
+
+    case emailTypes.SEND_EMAIL_SUCCESS:
+      return {
+        ...state,
+        "isFetching": false,
+      };
+
+    case emailTypes.SEND_EMAIL_FAILURE:
+      return {
+        ...state,
+        "isFetching": false,
+        "error": action.error,
+      };
 
     // Login
     case userTypes.LOGIN_REQUEST:
@@ -25,10 +47,10 @@ const userReducer = (state = initialState, action) => {
     case userTypes.LOGIN_SUCCESS:
       return {
         ...state,
-        "user": action.payload.user,
         "isFetching": false,
         "isLoggedIn": true,
-        "error": null,
+        "user": action.payload.user,
+        "updatedAt": Date.now(),
       };
 
     case userTypes.LOGIN_FAILURE:
@@ -36,7 +58,6 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "error": action.error,
         "isFetching": false,
-        "user": null,
       };
 
     // Register
@@ -53,14 +74,13 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "isLoggedIn": true,
         "user": action.payload.user,
-        "error": null,
+        "updatedAt": Date.now(),
       };
 
     case userTypes.REGISTER_FAILURE:
       return {
         ...state,
         "isFetching": false,
-        "user": null,
         "error": action.error,
       };
 
@@ -77,7 +97,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "user": action.payload.user,
-        "error": null,
+        "updatedAt": Date.now(),
       };
 
     case userTypes.VERIFY_FAILURE:
@@ -99,8 +119,6 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
-        "response": true,
-        "error": null,
       };
 
     case userTypes.CHANGE_PASSWORD_FAILURE:
@@ -108,7 +126,6 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "error": action.error,
         "isFetching": false,
-        "response": false
       };
 
     // Get User By Id
@@ -116,14 +133,16 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.GET_USER_BY_ID_SUCCESS:
       return {
         ...state,
         "isFetching": false,
-        "user": action.payload.user,
         "isLoggedIn": true,
+        "user": action.payload.user,
+        "updatedAt": Date.now(),
       };
 
     case userTypes.GET_USER_BY_ID_FAILURE:
@@ -138,6 +157,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.LOGOUT_SUCCESS:
@@ -159,6 +179,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": true,
+        "error": null,
       };
 
     case userTypes.UPDATE_USER_PROFILE_SUCCESS:
@@ -166,15 +187,59 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "user": action.payload.user,
-        "error": null,
+        "updatedAt": Date.now(),
       };
 
     case userTypes.UPDATE_USER_PROFILE_FAILURE:
-    return {
-      ...state,
-      "isFetching": false,
-      "error": action.error,
-    };
+      return {
+        ...state,
+        "isFetching": false,
+        "error": action.error,
+      };
+
+    case userTypes.UPLOAD_PROFILE_PHOTO_REQUEST:
+      return {
+        ...state,
+        "isFetching": true,
+        "error": null,
+      };
+
+    case userTypes.UPLOAD_PROFILE_PHOTO_SUCCESS:
+      return {
+        ...state,
+        "isFetching": false,
+        "user": action.payload.user,
+        "updatedAt": Date.now(),
+      };
+
+    case userTypes.UPLOAD_PROFILE_PHOTO_FAILURE:
+      return {
+        ...state,
+        "isFetching": false,
+        "error": action.error,
+      };
+
+    case userTypes.UPDATE_MOBILE_PHONE_REQUEST:
+      return {
+        ...state,
+        "isFetching": true,
+        "error": null,
+      };
+
+    case userTypes.UPDATE_MOBILE_PHONE_SUCCESS:
+      return {
+        ...state,
+        "isFetching": false,
+        "user": action.payload.user,
+        "updatedAt": Date.now(),
+      };
+
+    case userTypes.UPDATE_MOBILE_PHONE_FAILURE:
+      return {
+        ...state,
+        "isFetching": false,
+        "error": action.error,
+      };
 
     default:
       return state;

@@ -194,9 +194,8 @@ class ChangePasswordPage extends Component {
                 </Button>
               </form>
             </Paper>
-            <Typography type="body" align="center">
-              {this.props.response ? "Your password has been changed successfully" : ""}
-              {this.props.changePasswordError? "Permission denied" : ""}
+            <Typography type="body" align="center" color={this.props.changePasswordError ? "error" : "inherit"}>
+              {this.props.message}
             </Typography>
           </Grid>
         </Grid>
@@ -209,16 +208,16 @@ ChangePasswordPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "match": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
-  "response": PropTypes.bool,
   "changePassword": PropTypes.func.isRequired,
-  "changePasswordError": PropTypes.object,
+  "changePasswordError": PropTypes.bool,
+  "message": PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "isFetching": state.userReducer.isFetching,
     "changePasswordError": state.userReducer.error,
-    "response": state.userReducer.response,
+    "message": state.alertReducer.message,
   };
 };
 

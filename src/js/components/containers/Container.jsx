@@ -35,11 +35,11 @@ const styles = theme => ({
 
 class Container extends Component {
   render() {
-    const { classes, isLoggedIn, user, logout } = this.props;
+    const { classes, isLoggedIn, user, updatedAt, logout } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"static"} />
+        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} updatedAt={updatedAt} position={"static"} />
         <main className={classes.appFrame}>
           {this.props.children}
         </main>
@@ -55,6 +55,7 @@ Container.propTypes = {
   classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   user: PropTypes.object,
+  updatedAt: PropTypes.number,
   isLoggedIn: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
 };
@@ -63,6 +64,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "updatedAt": state.userReducer.updatedAt,
   };
 };
 

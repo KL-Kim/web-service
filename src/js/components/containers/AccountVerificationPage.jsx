@@ -39,7 +39,7 @@ class AccountVerificationPage extends Component {
 
     this.state = {
       "isVerified": false,
-      "message": "Something goes wrong, Please sign in and verify your account.",
+      "message": "Verification failed, Please sign in and verify your account.",
     };
   }
 
@@ -57,7 +57,7 @@ class AccountVerificationPage extends Component {
 
     if (nextProps.verifyError) {
       this.setState({
-        "message": "Something goes wrong, Please sign in and verify your account."
+        "message": "Verification failed, Please sign in and verify your account."
       });
     }
 

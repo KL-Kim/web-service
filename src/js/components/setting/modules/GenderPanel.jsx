@@ -13,10 +13,12 @@ import ExpansionPanel, {
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import { FormControl, FormControlLabel } from 'material-ui/Form';
 import Radio, { RadioGroup } from 'material-ui/Radio';
+import { CircularProgress } from 'material-ui/Progress';
 
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
+    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
@@ -67,7 +69,7 @@ class GenderPanel extends Component {
   }
 
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, isFetching } = this.props;
     let { expanded } = this.state;
 
     return (
@@ -93,8 +95,8 @@ class GenderPanel extends Component {
           </FormControl>
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised color="primary" className={classes.button} onClick={this.handleSubmit}>
-            Update
+          <Button raised disabled={isFetching} color="primary" className={classes.button} onClick={this.handleSubmit}>
+            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
             Cancel
@@ -108,7 +110,8 @@ class GenderPanel extends Component {
 GenderPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.object,
+  "error": PropTypes.bool,
+  "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
 };
 

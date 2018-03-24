@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import validator from 'validator';
-import { connect } from 'react-redux';
+
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import TextField from 'material-ui/TextField';
@@ -10,8 +10,8 @@ import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
 import config from '../../config/config';
-import { login } from '../../actions/user.actions';
-import { alertClear } from '../../actions/alert.actions';
+import { loadFromStorage, saveToStorage } from '../../helpers/webStorage';
+import webStorageTypes from '../../constants/webStorage.types';
 
 const styles = (theme) => ({
   button: {
@@ -35,32 +35,25 @@ class LoginForm extends Component {
         "value": '',
         "showError": false,
         "errorMessage": '',
-      }
+      },
+      "waitUntil": null,
+      "goodToGo": true,
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.isValidEmail = this.isValidEmail.bind(this);
     this.isValidPassword = this.isValidPassword.bind(this);
-  }
-
-  componentWillMount() {
-    if (this.props.isLoggedIn) {
-      this.props.history.push('/');
-    }
+    this.handleTimeout = this.handleTimeout.bind(this);
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if (nextProps.isLoggedIn) {
-      this.props.history.push('/');
-    }
-
     if (nextProps.loginError) {
       this.setState({
         password: {
           value: this.state.password.value,
           showError: true,
-          errorMessage: nextProps.loginError.message
+          errorMessage: nextProps.errorMessage
         }
       });
     }
@@ -118,7 +111,7 @@ class LoginForm extends Component {
         password: {
           value: this.state.password.value,
           showError: true,
-          errorMessage: 'Password should not be shorter than ' + passwordMinLength
+          errorMessage: 'Should not be shorter than ' + passwordMinLength,
         },
       });
       return false;
@@ -139,14 +132,46 @@ class LoginForm extends Component {
 
     const { email, password } = this.state;
 
-    if (this.isValidEmail() && this.isValidPassword()) {
+    let loginFailedCount = loadFromStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED);
+
+    if (loginFailedCount >= 5) {
+      let time = 30;
+      var nInverId = setInterval(() => {
+        time = time - 1;
+
+        this.setState({
+          "waitUntil": time,
+        });
+        console.log("You can try after " + time);
+
+        if (time < 1) {
+          clearInterval(nInverId);
+          saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
+          this.setState({
+            "goodToGo": true
+          });
+        }
+      }, 1000);
+
+      this.setState({
+         "goodToGo": false
+      });
+    }
+
+    if (this.isValidEmail() && this.isValidPassword() && (loginFailedCount <= 5)) {
       this.props.login(email.value, password.value);
     }
   }
 
+  handleTimeout() {
+
+    this.setState({
+      captcha: false,
+    });
+  }
+
   render() {
     const { classes } = this.props;
-    const signInButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign in';
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -176,14 +201,14 @@ class LoginForm extends Component {
         <br />
         <Button
           name="signin"
-          disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching}
+          disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching || !this.state.goodToGo}
           className={classes.button}
           raised
           color="primary"
           type="submit"
           fullWidth
         >
-          {signInButton}
+          {this.props.isFetching ? (<CircularProgress size={20} />) : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')}
         </Button>
       </form>
     );
@@ -191,21 +216,11 @@ class LoginForm extends Component {
 }
 
 LoginForm.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool,
-  error: PropTypes.object,
-  history: PropTypes.object.isRequired,
+  loginError: PropTypes.bool,
+  errorMessage: PropTypes.string,
   login: PropTypes.func.isRequired,
-  alertClear: PropTypes.func,
-};
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    isFetching: state.userReducer.isFetching,
-    isLoggedIn: state.userReducer.isLoggedIn,
-    loginError: state.userReducer.error,
-  };
 };
 
 export { LoginForm };
-export default connect(mapStateToProps, { login, alertClear })(withStyles(styles)(LoginForm));
+export default withStyles(styles)(LoginForm);

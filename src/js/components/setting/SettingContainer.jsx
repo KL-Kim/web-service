@@ -36,12 +36,6 @@ const styles = (theme) => ({
 });
 
 class SettingContainer extends Component {
-  // componentWillMount() {
-  //   if (!this.props.isLoggedIn) {
-  //     this.props.history.push('/');
-  //   }
-  // }
-
   componentWillReceiveProps(nextProps, nextState) {
     if (!nextProps.isLoggedIn) {
       this.props.history.push('/');
@@ -49,12 +43,12 @@ class SettingContainer extends Component {
   }
 
   render() {
-    const { classes, isLoggedIn, user, logout } = this.props;
+    const { classes, isLoggedIn, user, logout, updatedAt } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"fixed"}/>
-        <Sidebar />
+        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"fixed"} updatedAt={updatedAt} />
+        <Sidebar user={user} />
         <div className={classes.appFrame}>
           <main className={classes.content}>
             {this.props.children}
@@ -73,6 +67,7 @@ SettingContainer.propTypes = {
   classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   user: PropTypes.object,
+  updatedAt: PropTypes.number,
   isLoggedIn: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
 }
@@ -80,6 +75,7 @@ SettingContainer.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "updatedAt": state.userReducer.updatedAt,
     "isLoggedIn": state.userReducer.isLoggedIn,
   };
 };

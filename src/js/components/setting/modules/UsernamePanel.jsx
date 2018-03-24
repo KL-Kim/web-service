@@ -13,10 +13,12 @@ import ExpansionPanel, {
 } from 'material-ui/ExpansionPanel';
 import Divider from 'material-ui/Divider';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import { CircularProgress } from 'material-ui/Progress';
 
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
+    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
@@ -54,7 +56,7 @@ class UsernamePanel extends Component {
       this.setState({
         "username": {
           "showError": true,
-          "errorMessage": nextProps.error.message,
+          "errorMessage": nextProps.errorMessage,
         }
       });
     }
@@ -134,7 +136,7 @@ class UsernamePanel extends Component {
   }
 
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, isFetching } = this.props;
     let { expanded } = this.state;
 
     return (
@@ -159,8 +161,8 @@ class UsernamePanel extends Component {
           />
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised disabled={this.state.username.showError} color="primary" onClick={this.handleSubmit} className={classes.button}>
-            Update
+          <Button raised disabled={this.state.username.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
+            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
             Cancel
@@ -174,7 +176,9 @@ class UsernamePanel extends Component {
 UsernamePanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.object,
+  "error": PropTypes.bool,
+  "errorMessage": PropTypes.string,
+  "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
 };
 

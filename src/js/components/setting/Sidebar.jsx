@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { withStyles } from 'material-ui/styles';
 import { MenuList, MenuItem } from 'material-ui/Menu';
 import { ListItemText, ListItemIcon } from 'material-ui/List';
@@ -25,68 +27,66 @@ const styles = theme => ({
 class Sidebar extends Component {
 
   render() {
-    const { classes } = this.props;
+    const { classes, user } = this.props;
+    let sidebar;
 
-    const drawer = (
-      <MenuList>
-        <LinkContainer to="/setting/account">
-          <MenuItem>
-            <ListItemIcon>
-              <AccountCircle />
-            </ListItemIcon>
-            <ListItemText primary="Account" />
-          </MenuItem>
-        </LinkContainer>
-        <LinkContainer to="/setting/story">
-          <MenuItem>
-            <ListItemIcon>
-              <Book />
-            </ListItemIcon>
-            <ListItemText primary="Story" />
-          </MenuItem>
-        </LinkContainer>
-        <LinkContainer to="/setting/review">
-          <MenuItem>
-            <ListItemIcon>
-              <QuestionAnswer />
-            </ListItemIcon>
-            <ListItemText primary="Reviews" />
-          </MenuItem>
-        </LinkContainer>
-        <LinkContainer to="/setting/favor">
-          <MenuItem>
-            <ListItemIcon>
-              <Favorite />
-            </ListItemIcon>
-            <ListItemText primary="Favor" />
-          </MenuItem>
-        </LinkContainer>
-        <LinkContainer to="/setting/notification">
-          <MenuItem>
-            <ListItemIcon>
-              <Notifications />
-            </ListItemIcon>
-            <ListItemText primary="Notifications" />
-          </MenuItem>
-        </LinkContainer>
-        <Divider />
-          <LinkContainer to="/admin/setting/users">
-            <MenuItem>
-              <ListItemText primary="Users"/>
-            </MenuItem>
-          </LinkContainer>
-          <LinkContainer to="/admin/setting/stories">
-            <MenuItem>
-              <ListItemText primary="Story"/>
-            </MenuItem>
-          </LinkContainer>
-          <LinkContainer to="/admin/setting/reviews">
-            <MenuItem>
-              <ListItemText primary="Review"/>
-            </MenuItem>
-          </LinkContainer>
-      </MenuList>
-    );
+    const role = (_.isEmpty(user) ? '' : user.role);
+
+    switch (role) {
+      case "manager":
+        sidebar = (
+          <div>
+            <Divider />
+            <LinkContainer to="/admin/setting/business">
+              <MenuItem>
+                <ListItemText primary="Business"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/stories">
+              <MenuItem>
+                <ListItemText primary="Stories"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/reviews">
+              <MenuItem>
+                <ListItemText primary="Reviews"/>
+              </MenuItem>
+            </LinkContainer>
+          </div>
+        );
+        break;
+
+      case "admin":
+        sidebar = (
+          <div>
+            <Divider />
+            <LinkContainer to="/admin/setting/users">
+              <MenuItem>
+                <ListItemText primary="Users"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/business">
+              <MenuItem>
+                <ListItemText primary="Business"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/stories">
+              <MenuItem>
+                <ListItemText primary="Stories"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/reviews">
+              <MenuItem>
+                <ListItemText primary="Reviews"/>
+              </MenuItem>
+            </LinkContainer>
+          </div>
+        );
+      break;
+
+      default:
+        sidebar = '';
+    }
 
     return (
       <div>
@@ -95,12 +95,59 @@ class Sidebar extends Component {
             classes={{
               paper: classes.drawerPaper
             }}>
-              {drawer}
+            <MenuList>
+              <LinkContainer to="/setting/account">
+                <MenuItem>
+                  <ListItemIcon>
+                    <AccountCircle />
+                  </ListItemIcon>
+                  <ListItemText primary="Account" />
+                </MenuItem>
+              </LinkContainer>
+              <LinkContainer to="/setting/story">
+                <MenuItem>
+                  <ListItemIcon>
+                    <Book />
+                  </ListItemIcon>
+                  <ListItemText primary="Story" />
+                </MenuItem>
+              </LinkContainer>
+              <LinkContainer to="/setting/review">
+                <MenuItem>
+                  <ListItemIcon>
+                    <QuestionAnswer />
+                  </ListItemIcon>
+                  <ListItemText primary="Reviews" />
+                </MenuItem>
+              </LinkContainer>
+              <LinkContainer to="/setting/favor">
+                <MenuItem>
+                  <ListItemIcon>
+                    <Favorite />
+                  </ListItemIcon>
+                  <ListItemText primary="Favor" />
+                </MenuItem>
+              </LinkContainer>
+              <LinkContainer to="/setting/notification">
+                <MenuItem>
+                  <ListItemIcon>
+                    <Notifications />
+                  </ListItemIcon>
+                  <ListItemText primary="Notifications" />
+                </MenuItem>
+              </LinkContainer>
+              {sidebar}
+            </MenuList>
           </Drawer>
 
       </div>
     );
   }
+}
+
+Sidebar.propTypes = {
+  "classes": PropTypes.object.isRequired,
+  "user": PropTypes.object,
 }
 
 export default withStyles(styles)(Sidebar);

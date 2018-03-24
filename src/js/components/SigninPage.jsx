@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 
 import Container from './containers/Container';
-import LoginForm from './containers/LoginForm';
+import LoginForm from './utils/LoginForm';
+import { login } from '../actions/user.actions';
 
 const styles = theme => ({
   paper: {
@@ -22,14 +24,27 @@ const styles = theme => ({
 });
 
 class SigninPage extends Component {
+  componentWillMount() {
+    if (this.props.isLoggedIn) {
+      this.props.history.push('/');
+    }
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.isLoggedIn) {
+      this.props.history.push('/');
+    }
+  }
+
   render() {
-    const { classes, history } = this.props;
+    const { classes } = this.props;
+
     return (
       <Container>
         <Grid container justify="center" alignItems="center">
           <Grid item xs={5}>
             <Paper className={classes.paper}>
-              <LoginForm history={history} />
+              <LoginForm isFetching={this.props.isFetching} loginError={this.props.loginError} errorMessage={this.props.errorMessage} login={this.props.login} />
             </Paper>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
@@ -55,6 +70,20 @@ SigninPage.propTypes = {
   history: PropTypes.object,
   location: PropTypes.object,
   match: PropTypes.object,
+  isLoggedIn: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool,
+  loginError: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  login: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(SigninPage);
+const mapStateToProps = (state, ownProps) => {
+  return {
+    isFetching: state.userReducer.isFetching,
+    isLoggedIn: state.userReducer.isLoggedIn,
+    loginError: state.alertReducer.error,
+    errorMessage: state.alertReducer.message,
+  };
+};
+
+export default connect(mapStateToProps, { login })(withStyles(styles)(SigninPage));

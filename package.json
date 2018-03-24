@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "cross-fetch": "^2.0.0",
+    "form-data": "^2.3.2",
     "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.4",
     "material-ui": "^1.0.0-beta.31",
@@ -17,8 +18,11 @@
     "normalizr": "^3.2.4",
     "pinyin": "^2.8.3",
     "prop-types": "^15.6.0",
+    "rc-slider": "^8.6.1",
     "react": "^16.2.0",
+    "react-avatar-editor": "^11.0.2",
     "react-dom": "^16.2.0",
+    "react-dropzone": "^4.2.9",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.17",
@@ -26,6 +30,7 @@
     "redux": "^3.7.2",
     "redux-persist": "^5.9.1",
     "redux-thunk": "^2.2.0",
+    "tooltip": "^1.6.1",
     "uuid": "^3.1.0",
     "validator": "^9.4.0"
   },

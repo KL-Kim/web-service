@@ -3,17 +3,21 @@ import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import config from '../config/config';
+import emailTypes from '../constants/email.types';
 import { loadFromStorage, saveToStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
+import responseErrorHandler from '../helpers/error-handler.js';
 
 /**
  * Auth serivce uri
  */
-const authSerivceUri = {
-  loginUrl: config.API_GATEWAY_ROOT + '/auth/login',
-  logoutUrl: config.API_GATEWAY_ROOT + '/auth/logout',
-  verifyAccountUrl: config.API_GATEWAY_ROOT + '/auth/verify',
-  getNewTokenUrl: config.API_GATEWAY_ROOT + '/auth/token',
+const authServiceUri = {
+  loginUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/login',
+  logoutUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/logout',
+  getNewTokenUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/token',
+  sendEmailVerificationUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/mail/verify',
+  sendChangePasswordEmailUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/mail/password',
+  sendPhoneVerificationCodeUrl: config.API_GATEWAY_ROOT + '/api/v1/auth/phoneVerificationCode',
 };
 
 /**
@@ -28,7 +32,7 @@ const newTokenFetch = () => {
     "credentials": "include",
   };
 
-  return fetch(authSerivceUri.getNewTokenUrl, options)
+  return fetch(authServiceUri.getNewTokenUrl, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -93,9 +97,10 @@ export const loginFetch = (email, password) => {
     "body": JSON.stringify({ email, password }),
   };
 
-  return fetch(authSerivceUri.loginUrl, options)
+  return fetch(authServiceUri.loginUrl, options)
     .then(response => {
       if (response.ok) {
+        saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
         return response.json();
       } else {
         let error = new Error(response.statusText);
@@ -103,9 +108,13 @@ export const loginFetch = (email, password) => {
 
         if (response.status === 401) {
           error.message = "Invalid email or password";
+          const loginFailedCount = loadFromStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED);
+          saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, loginFailedCount + 1);
+
         } else {
-          error.message = "Unknown Error";
+          error.message = "Unknown Server Error";
         }
+
         return Promise.reject(error);
       }
     })
@@ -118,7 +127,7 @@ export const loginFetch = (email, password) => {
         saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, json.user._id);
         return json.user;
       } else {
-        const err = new Error("Bad response");
+        const err = new Error("Bad Response");
         return Promise.reject(err);
       }
     })
@@ -140,21 +149,12 @@ export const logoutFetch = () => {
     "credentials": 'include',
   };
 
-  return fetch(authSerivceUri.logoutUrl, options)
+  return fetch(authServiceUri.logoutUrl, options)
     .then(response => {
       if (response.ok) {
         return response;
       } else {
-        let error = new Error(response.statusText);
-        error.status = response.status;
-
-        if (response.status === 401 || response.status === 403) {
-          error.message = "Permission denied";
-        } else {
-          error.message = "Unknown Error";
-        }
-
-        return Promise.reject(error);
+        return Promise.reject(responseErrorHandler(response));
       }
     }).catch(err => {
       return Promise.reject(err);
@@ -162,40 +162,60 @@ export const logoutFetch = () => {
 };
 
 /**
- * Fetch account verify
+ * Request sending changing password email
  */
-export const verifyFetch = (token) => {
+export const requestSendEmailFetch = (type, email) => {
+  const options = {
+    "method": 'GET',
+    "headers": {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  let url;
+
+  switch (type) {
+    case emailTypes.CHANGE_PASSWORD:
+      url = authServiceUri.sendChangePasswordEmailUrl
+      break;
+
+    case emailTypes.ACCOUNT_VERIFICATION:
+      url = authServiceUri.sendEmailVerificationUrl
+      break;
+
+    default:
+      return Promise.reject(new Error("Type missing"));
+  }
+
+  return fetch(url + '/' + email, options)
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+};
+
+/**
+ * Request sending phone verification code
+ */
+export const requestSendPhoneVerificationCodeFetch = (phoneNumber) => {
   const options = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      "Authorization": 'Bearer ' + token,
     },
   };
 
-  return fetch(authSerivceUri.verifyAccountUrl, options)
+  return fetch(authServiceUri.sendPhoneVerificationCodeUrl + '/' + phoneNumber, options)
     .then(response => {
       if (response.ok) {
-        return response.json();
+        return response;
       } else {
-        let error = new Error(response.statusText);
-        error.status = response.status;
-
-        if (response.status === 401 || response.status === 403) {
-          error.message = "Permission denied";
-        } else {
-          error.message = "Unknown Error";
-        }
-
-        return Promise.reject(error);
-      }
-    })
-    .then(json => {
-      if (json.user) {
-        return json;
-      } else {
-        const err = new Error("Bad response")
-        return Promise.reject(err);
+        return Promise.reject(responseErrorHandler(response));
       }
     })
     .catch(err => {

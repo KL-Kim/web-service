@@ -3,6 +3,10 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import IconButton from 'material-ui/IconButton';
+import Search from 'material-ui-icons/Search';
 
 const styles = theme => ({
   root: {
@@ -19,11 +23,26 @@ class SearchBar extends Component {
       <div className={classes.root}>
         <form noValidate autoComplete="off" >
           <Grid container spacing={8} justify="center" alignItems="center">
-            <Grid item xs={7}>
-              <TextField id="search" placeholder="Search placeholder..." fullWidth margin="normal" />
-            </Grid>
-            <Grid item xs={1}>
-              <Button raised color="primary">Search</Button>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                <Input
+                  id="search"
+                  type="text"
+                  onChange={this.handleChange}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="Toggle password visibility"
+                        onClick={this.handleSearch}
+
+                      >
+                        <Search />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
             </Grid>
           </Grid>
           <Grid container spacing={0} justify="center" alignItems="center">

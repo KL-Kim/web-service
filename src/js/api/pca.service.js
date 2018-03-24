@@ -8,7 +8,7 @@ import config from '../config/config';
  * Business serivce uri
  */
 const pcaSerivceUri = {
-  apiUrl: config.API_GATEWAY_ROOT + '/pca/',
+  apiUrl: config.API_GATEWAY_ROOT + '/pca',
 };
 
 
@@ -17,8 +17,13 @@ export const getPcaFetch = (type, code) => {
     "method": 'GET',
     "headers": {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': "*",
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Credentials': 'true',
     },
   };
+
   let url = pcaSerivceUri.apiUrl;
 
   if (_.isEqual('city', type)) {
@@ -26,7 +31,7 @@ export const getPcaFetch = (type, code) => {
   } else if (_.isEqual('area', type)) {
     url = url + '/areas/' + code;
   }
-  
+
   return fetch(url, options)
     .then(response => {
       if (response.ok) {

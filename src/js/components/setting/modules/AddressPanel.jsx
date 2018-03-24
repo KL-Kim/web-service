@@ -18,6 +18,7 @@ import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 import Select from 'material-ui/Select';
+import { CircularProgress } from 'material-ui/Progress';
 
 import { getCities, getAreas } from '../../../actions/pca.actions';
 import Provinces from '../../../constants/provinces';
@@ -25,6 +26,7 @@ import Provinces from '../../../constants/provinces';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
+    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
@@ -133,7 +135,7 @@ class AddressPanel extends Component {
   }
 
   render() {
-    const { classes, user, cities, areas } = this.props;
+    const { classes, user, cities, areas, isFetching } = this.props;
     let { expanded } = this.state;
 
     let province = !_.isUndefined(user.address) ? (!_.isEmpty(user.address.province.name) ? user.address.province.name : '') : '';
@@ -219,12 +221,16 @@ class AddressPanel extends Component {
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
           <Button raised
-            disabled={_.isEmpty(this.state.provinceCode) || _.isEmpty(this.state.cityCode) || _.isEmpty(this.state.areaCode) || _.isEmpty(this.state.street)}
+            disabled={_.isEmpty(this.state.provinceCode)
+              || _.isEmpty(this.state.cityCode)
+              || _.isEmpty(this.state.areaCode)
+              || _.isEmpty(this.state.street)
+              || isFetching}
             onClick={this.handleSubmit}
             color="primary"
             className={classes.button}
           >
-            Update
+            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
             Cancel
@@ -238,9 +244,10 @@ class AddressPanel extends Component {
 AddressPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.object,
+  "error": PropTypes.bool,
   "citis": PropTypes.array,
   "areas": PropTypes.array,
+  "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
   "getCities" : PropTypes.func.isRequired,
   "getAreas": PropTypes.func.isRequired,

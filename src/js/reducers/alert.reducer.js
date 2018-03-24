@@ -15,7 +15,7 @@ const alertReducer = (state = initialState, action) => {
         ...state,
         id: action.payload.id,
         message: action.payload.message,
-        error: action.error,
+        error: false
       };
 
     case alertTypes.ALERT_FAILURE:
@@ -23,7 +23,7 @@ const alertReducer = (state = initialState, action) => {
       ...state,
       id: action.payload.id,
       message: action.payload.message,
-      error: action.error,
+      error: true,
     };
 
     case alertTypes.ALERT_CLEAR:

@@ -9,10 +9,11 @@ import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import { CircularProgress } from 'material-ui/Progress';
 
 import emailTypes from '../../constants/email.types';
+import { sendEmail } from '../../actions/auth.actions';
 import Container from './Container';
-import { sendEmail } from '../../actions/user.actions';
 
 const styles = theme => ({
   "root": {
@@ -99,7 +100,7 @@ class ForgetPasswordPage extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, isFetching } = this.props;
 
     return (
       <Container>
@@ -124,14 +125,14 @@ class ForgetPasswordPage extends Component {
                 <br />
                 <Button
                   name="signin"
-                  disabled={this.state.email.showError}
+                  disabled={this.state.email.showError || isFetching}
                   className={classes.button}
                   raised
                   color="primary"
                   type="submit"
                   fullWidth
                 >
-                  Send Email
+                  {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
                 </Button>
               </form>
             </Paper>
@@ -144,11 +145,14 @@ class ForgetPasswordPage extends Component {
 
 ForgetPasswordPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "isFetching": PropTypes.bool,
   "sendChangePasswordEmail": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    "isFetching": state.userReducer.isFetching,
+  };
 };
 
 export default connect(mapStateToProps, { sendEmail })(withStyles(styles)(ForgetPasswordPage));

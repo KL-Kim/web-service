@@ -13,7 +13,6 @@ import { CircularProgress } from 'material-ui/Progress';
 
 import config from '../config/config';
 import { register } from '../actions/user.actions';
-import { alertClear } from '../actions/alert.actions';
 import Container from './containers/Container';
 
 const styles = theme => ({
@@ -79,7 +78,7 @@ class UserSignup extends Component {
         "email": {
           "value": this.state.email.value,
           "showError": true,
-          "errorMessage": nextProps.registerError.message
+          "errorMessage": nextProps.errorMessage
         }
       });
     }
@@ -300,16 +299,17 @@ UserSignup.propTypes = {
   "isFetching": PropTypes.bool,
   "isLoggedIn": PropTypes.bool.isRequired,
   "register": PropTypes.func.isRequired,
-  "requestError": PropTypes.object,
-  "alertClear": PropTypes.func,
+  "requestError": PropTypes.bool,
+  "errorMessage": PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "isFetching": state.userReducer.isFetching,
     "isLoggedIn": state.userReducer.isLoggedIn,
-    "registerError": state.userReducer.error,
+    "registerError": state.alertReducer.error,
+    "errorMessage": state.alertReducer.message,
   };
 };
 
-export default connect(mapStateToProps, { register, alertClear })(withStyles(styles)(UserSignup));
+export default connect(mapStateToProps, { register })(withStyles(styles)(UserSignup));

@@ -28,6 +28,7 @@ import SettingNotification from './components/setting/NotificationPage';
 
 // Admin Setting
 import AdminUsersList from './components/setting/admin/UsersList';
+import AdminBusinessList from './components/setting/admin/BusinessList';
 import AdminReviewsList from './components/setting/admin/ReviewsList';
 import AdminStoriesList from './components/setting/admin/StoriesList';
 
@@ -73,6 +74,7 @@ const App = () => {
 
           {/*  Admin Routes */}
           <Route path="/admin/setting/users" component={AdminUsersList} />
+          <Route path="/admin/setting/business" component={AdminBusinessList} />
           <Route path="/admin/setting/reviews" component={AdminReviewsList} />
           <Route path="/admin/setting/stories" component={AdminStoriesList} />
 

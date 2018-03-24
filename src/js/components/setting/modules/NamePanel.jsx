@@ -14,10 +14,12 @@ import ExpansionPanel, {
 import Divider from 'material-ui/Divider';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Grid from 'material-ui/Grid';
+import { CircularProgress } from 'material-ui/Progress';
 
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
+    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
@@ -76,10 +78,11 @@ class NamePanel extends Component {
       "firstName": this.state.firstName,
       "lastName": this.state.lastName,
     });
+
   }
 
   render() {
-    const { classes, user } = this.props;
+    const { classes, user, isFetching } = this.props;
     let { expanded } = this.state;
 
     return (
@@ -114,8 +117,15 @@ class NamePanel extends Component {
           </Grid>
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised color="primary" disabled={_.isEmpty(this.state.firstName) || _.isEmpty(this.state.lastName)} className={classes.button} onClick={this.handleSubmit}>
-            Update
+          <Button raised
+            color="primary"
+            disabled={
+              _.isEmpty(this.state.firstName)
+              || _.isEmpty(this.state.lastName)}
+            className={classes.button}
+            onClick={this.handleSubmit}
+          >
+            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
             Cancel
@@ -129,7 +139,8 @@ class NamePanel extends Component {
 NamePanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.object,
+  "error": PropTypes.bool,
+  "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
 };
 
