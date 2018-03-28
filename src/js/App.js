@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 // Redux Store
 import configureStore from './stores/user.store';
 import PrivateRoute from './helpers/PrivateRoute';
+import AdminRoute from './helpers/AdminRoute';
 
 // React Compontens
 import HomePage from './components/HomePage';
@@ -28,6 +29,7 @@ import SettingNotification from './components/setting/NotificationPage';
 
 // Admin Setting
 import AdminUsersList from './components/setting/admin/UsersList';
+import SingleUserInfoPage from './components/setting/admin/SingleUserInfoPage'
 import AdminBusinessList from './components/setting/admin/BusinessList';
 import AdminReviewsList from './components/setting/admin/ReviewsList';
 import AdminStoriesList from './components/setting/admin/StoriesList';
@@ -73,7 +75,8 @@ const App = () => {
           <Route path="/setting/notification" component={SettingNotification} />
 
           {/*  Admin Routes */}
-          <Route path="/admin/setting/users" component={AdminUsersList} />
+          <AdminRoute path="/admin/setting/users/:username" component={SingleUserInfoPage} />
+          <AdminRoute exact path="/admin/setting/users" component={AdminUsersList} />
           <Route path="/admin/setting/business" component={AdminBusinessList} />
           <Route path="/admin/setting/reviews" component={AdminReviewsList} />
           <Route path="/admin/setting/stories" component={AdminStoriesList} />

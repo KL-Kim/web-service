@@ -8,19 +8,14 @@ import config from '../config/config';
  * Business serivce uri
  */
 const pcaSerivceUri = {
-  apiUrl: config.API_GATEWAY_ROOT + '/pca',
+  apiUrl: config.API_GATEWAY_ROOT + '/api/v1/pca',
 };
-
 
 export const getPcaFetch = (type, code) => {
   const options = {
-    "method": 'GET',
-    "headers": {
+    method: 'GET',
+    headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': "*",
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Methods': '*',
-      'Access-Control-Allow-Credentials': 'true',
     },
   };
 

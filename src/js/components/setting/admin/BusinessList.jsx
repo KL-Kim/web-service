@@ -57,18 +57,6 @@ class BusinessList extends Component {
     };
   }
 
-  componentDidMount() {
-    if (_.isEmpty(this.props.user) || (this.props.user.role !== 'admin')) {
-      this.props.history.push('/404');
-    }
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
-    if (_.isEmpty(nextProps.user) || (nextProps.user.role !== 'admin')) {
-      this.props.history.push('/404');
-    }
-  }
-
   handleChange = panel => (event, expanded) => {
     this.setState({
       expanded: expanded ? panel : undefined

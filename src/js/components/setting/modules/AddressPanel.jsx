@@ -37,18 +37,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-  "formControl": {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
-  },
-  "chips": {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  "chip": {
-    margin: theme.spacing.unit / 4,
-  },
 });
 
 class AddressPanel extends Component {
@@ -159,6 +147,7 @@ class AddressPanel extends Component {
                 <InputLabel htmlFor="province">Province</InputLabel>
                 <Select native
                   name="province"
+                  className={classes.input}
                   value={this.state.provinceCode}
                   input={<Input id="province" />}
                   onChange={this.handleChange}

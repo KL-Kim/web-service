@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';

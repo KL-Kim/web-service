@@ -6,14 +6,9 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { FormControl, FormGroup, FormControlLabel } from 'material-ui/Form';
+import { FormControl, FormGroup, FormControlLabel, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import Select from 'material-ui/Select';
-import Divider from 'material-ui/Divider';
-import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
 import Checkbox from 'material-ui/Checkbox';
@@ -43,65 +38,48 @@ class UsersList extends Component {
     super(props);
 
     this.state = {
-      users: null,
-      totalCount: 0,
+      "users": null,
+      "totalCount": 0,
+      "rowsPerPage": 10,
+      "page": 0,
+      "search": '',
 
-      rowsPerPage: 10,
-      page: 0,
-
-      check: {
-        role: true,
-        status: true,
+      // User role check states
+      "role": {
+        "regular": false,
+        "manager": false,
+        "admin": false,
       },
+
+      // User status check states
+      "userStatus": {
+        "normal": false,
+        "suspended": false,
+      }
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleFilter = this.handleFilter.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
   }
 
   componentDidMount() {
-    // if (_.isEmpty(this.props.user) || (this.props.user.role !== 'admin')) {
-    //   this.props.history.push('/404');
-    // } else {
-    //   let rowsPerPage = 10;
-    //   let skip = 0;
-    //   this.props.getUsersList(rowsPerPage, skip).then(usersList => {
-    //     if (usersList) {
-    //       this.setState({
-    //         users: usersList
-    //       });
-    //     }
-    //   });
-    // }
-
-    // For sake of convenience
-
     this.props.getUsersList(this.state.rowsPerPage, 0).then(response => {
-      if (response.users) {
-        this.setState({
-          users: response.users,
-          totalCount: response.totalCount,
-        });
-      }
-    });
-
+        if (response.users) {
+          this.setState({
+            users: response.users,
+            totalCount: response.totalCount,
+          });
+        }
+      });
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    // if (_.isEmpty(nextProps.user) || (nextProps.user.role !== 'admin')) {
-    //   this.props.history.push('/404');
-    // }
-  }
-
-  handleChange(e) {
-    const { name, value } = e.target;
-
-    this.setState({
-      [name]: value
-    });
+    if (_.isEmpty(nextProps.user) && (nextProps.user.role !== 'admin')) {
+      this.props.history.push('/404');
+    }
   }
 
   handlePaginationChange(e, page) {
@@ -128,160 +106,221 @@ class UsersList extends Component {
     });
   }
 
-  handleSubmit = id => (e) => {
-    const { role, userStatus } = this.state;
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
 
-    const data = {
-      id: id,
-    };
+  handleFilter(e) {
+    const { value } = e.target;
+    const { role, userStatus } = this.state
 
-    if (role) data.role = role;
-    if (userStatus) data.userStatus = userStatus;
+    switch (value) {
+      case "regular":
+        role.regular = !role.regular
+        break;
 
-    if (role || userStatus)
-      this.props.adminEditUser(this.props.user._id, data);
+      case "manager":
+        role.manager = !role.manager
+        break;
+
+      case "admin":
+        role.admin = !role.admin
+        break;
+
+      case "normal":
+        userStatus.normal = !userStatus.normal;
+        break;
+
+      case "suspended":
+        userStatus.suspended = !userStatus.suspended;
+        break;
+
+
+      default:
+        break;
+    }
+
+    this.props.getUsersList(this.state.rowsPerPage, this.state.page * this.state.rowsPerPage, {
+      role: role,
+      userStatus: userStatus,
+    }, this.state.search)
+    .then(response => {
+      if (response.users) {
+        this.setState({
+          role: role,
+          userStatus: userStatus,
+          users: response.users,
+          totalCount: response.totalCount,
+        });
+      }
+    });
   }
 
   handleSearch(e) {
     e.preventDefault();
 
-    console.log("Clicked the search button");
+    this.props.getUsersList(this.state.rowsPerPage, this.state.page * this.state.rowsPerPage, {
+      role: this.state.role,
+      userStatus: this.state.userStatus,
+    }, this.state.search)
+    .then(response => {
+      if (response.users) {
+        this.setState({
+          users: response.users,
+          totalCount: response.totalCount,
+        });
+      }
+    });
   }
 
 
   render() {
-    const { classes, history } = this.props;
-    const { expanded } = this.state;
+    const { classes } = this.props;
 
     return (
-      <SettingContainer history={history} >
-        <Grid container className={classes.root} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom>
-              Users List
-            </Typography>
-            <form onSubmit={this.handleSearch}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="adornment-password">Search</InputLabel>
-                <Input
-                  id="search"
-                  type="text"
-                  value={this.state.search}
-                  onChange={this.handleChange}
-                  onKeyPress={this.handleKeyPress}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="Toggle password visibility"
-                        onClick={this.handleSearch}
-                      >
-                        <Search />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-            </form>
-            <Grid container spacing={16}>
-              <Grid item xs={4}>
-                <Typography type="display1">Role</Typography>
-                <FormGroup row>
-                  <FormControlLabel control={
-                      <Checkbox
-                        checked={this.state.check.role}
-                        onChange={this.handleChange}
-                        value="regular"
-                      />
-                    }
-                    label="Regular"
-                  />
-                  <FormControlLabel control={
-                      <Checkbox
-                        checked={this.state.check.role}
-                        onChange={this.handleChange}
-                        value="manager"
-                      />
-                    }
-                    label="Manager"
-                  />
-                  <FormControlLabel control={
-                      <Checkbox
-                        checked={this.state.check.role}
-                        onChange={this.handleChange}
-                        value="admin"
-                      />
-                    }
-                    label="Admin"
-                  />
-                </FormGroup>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography type="display1">Status</Typography>
-                <FormGroup row>
-                  <FormControlLabel control={
-                      <Checkbox
-                        checked={this.state.check.status}
-                        onChange={this.handleChange}
-                        value="normal"
-                      />
-                    }
-                    label="Nornaml"
-                  />
-                  <FormControlLabel control={
-                      <Checkbox
-                        checked={this.state.check.status}
-                        onChange={this.handleChange}
-                        value="suspended"
-                      />
-                    }
-                    label="Suspened"
-                  />
-                </FormGroup>
-              </Grid>
-            </Grid>
+      <SettingContainer history={this.props.history} >
 
-            <Paper className={classes.tableWrapper}>
-              <Table className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Index</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Username</TableCell>
-                    <TableCell>Role</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  { _.isEmpty(this.state.users) ? (<TableRow></TableRow>)
-                    : this.state.users.map((user, index) => (
-                      <LinkContainer to={"/admin/setting/users/" + user.username} key={index}>
-                        <TableRow hover >
-                          <TableCell>{index+1}</TableCell>
-                          <TableCell>{_.isEmpty(user) ? '' : user.email}</TableCell>
-                          <TableCell>{_.isEmpty(user) ? '' : user.username}</TableCell>
-                          <TableCell>{_.isEmpty(user) ? '' : user.role}</TableCell>
-                        </TableRow>
-                      </LinkContainer>
-                    ))
-                  }
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      colSpan={3}
-                      count={this.state.totalCount}
-                      rowsPerPage={this.state.rowsPerPage}
-                      rowsPerPageOptions={[10, 20, 30]}
-                      page={this.state.page}
-                      onChangePage={this.handlePaginationChange}
-                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                      Actions={TablePaginationActions}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </Paper>
-          </Grid>
+      <Typography type="display3" gutterBottom>
+        Users List
+      </Typography>
+
+      <Grid container spacing={16}>
+        <Grid item xs={6}>
+          <form onSubmit={this.handleSearch}>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="adornment-password">Search</InputLabel>
+              <Input
+                id="search"
+                type="text"
+                name="search"
+                onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="Toggle password visibility"
+                      onClick={this.handleSearch}
+                    >
+                      <Search />
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              <FormHelperText id="search-helper-text">Email or Username</FormHelperText>
+            </FormControl>
+          </form>
         </Grid>
+        <Grid item xs={3}>
+          <Typography type="subheading">Role</Typography>
+          <FormGroup row>
+            <FormControlLabel control={
+                <Checkbox
+                  checked={this.state.role.regular}
+                  onChange={this.handleFilter}
+                  value="regular"
+                />
+              }
+              label="Regular"
+            />
+            <FormControlLabel control={
+                <Checkbox
+                  checked={this.state.role.manager}
+                  onChange={this.handleFilter}
+                  value="manager"
+                />
+              }
+              label="Manager"
+            />
+            <FormControlLabel control={
+                <Checkbox
+                  checked={this.state.role.admin}
+                  onChange={this.handleFilter}
+                  value="admin"
+                />
+              }
+              label="Admin"
+            />
+          </FormGroup>
+        </Grid>
+        <Grid item xs={3}>
+          <Typography type="subheading">Status</Typography>
+          <FormGroup row>
+            <FormControlLabel control={
+                <Checkbox
+                  checked={this.state.userStatus.normal}
+                  onChange={this.handleFilter}
+                  value="normal"
+                />
+              }
+              label="Nornaml"
+            />
+            <FormControlLabel control={
+                <Checkbox
+                  checked={this.state.userStatus.suspended}
+                  onChange={this.handleFilter}
+                  value="suspended"
+                />
+              }
+              label="Suspended"
+            />
+          </FormGroup>
+        </Grid>
+      </Grid>
+
+      <Paper>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Index</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Username</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            { _.isEmpty(this.state.users) ? (<TableRow></TableRow>)
+              : this.state.users.map((user, index) => (
+                <LinkContainer to={{
+                    pathname: "/admin/setting/users/" + user.username,
+                    hash: '#',
+                    state: {
+                      "admin": this.props.user,
+                      "user": user
+                    }
+                  }} key={index}>
+                  <TableRow hover >
+                    <TableCell>{index+1}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.role}</TableCell>
+                    <TableCell>{user.userStatus}</TableCell>
+                  </TableRow>
+                </LinkContainer>
+              ))
+            }
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                colSpan={3}
+                count={this.state.totalCount}
+                rowsPerPage={this.state.rowsPerPage}
+                rowsPerPageOptions={[10, 20, 30]}
+                page={this.state.page}
+                onChangePage={this.handlePaginationChange}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                Actions={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </Paper>
+
+
       </SettingContainer>
     );
   }

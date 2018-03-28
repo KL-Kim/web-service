@@ -12,6 +12,8 @@ import Book from 'material-ui-icons/Book';
 import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import Favorite from 'material-ui-icons/Favorite';
 import Notifications from 'material-ui-icons/Notifications';
+import Group from 'material-ui-icons/Group';
+import Business from 'material-ui-icons/Business';
 
 import LinkContainer from '../utils/LinkContainer';
 
@@ -39,17 +41,26 @@ class Sidebar extends Component {
             <Divider />
             <LinkContainer to="/admin/setting/business">
               <MenuItem>
-                <ListItemText primary="Business"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/stories">
-              <MenuItem>
-                <ListItemText primary="Stories"/>
+                <ListItemIcon>
+                  <Business />
+                </ListItemIcon>
+                <ListItemText primary="Business List"/>
               </MenuItem>
             </LinkContainer>
             <LinkContainer to="/admin/setting/reviews">
               <MenuItem>
-                <ListItemText primary="Reviews"/>
+                <ListItemIcon>
+                  <QuestionAnswer />
+                </ListItemIcon>
+                <ListItemText primary="Reviews List"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/stories">
+              <MenuItem>
+                <ListItemIcon>
+                  <Book />
+                </ListItemIcon>
+                <ListItemText primary="Stories List"/>
               </MenuItem>
             </LinkContainer>
           </div>
@@ -60,24 +71,42 @@ class Sidebar extends Component {
         sidebar = (
           <div>
             <Divider />
-            <LinkContainer to="/admin/setting/users">
+            <LinkContainer to={{
+                pathname: "/admin/setting/users",
+                state: {
+                  admin: user
+                },
+              }}
+            >
               <MenuItem>
-                <ListItemText primary="Users"/>
+                <ListItemIcon>
+                  <Group />
+                </ListItemIcon>
+                <ListItemText primary="Users List"/>
               </MenuItem>
             </LinkContainer>
             <LinkContainer to="/admin/setting/business">
               <MenuItem>
-                <ListItemText primary="Business"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/stories">
-              <MenuItem>
-                <ListItemText primary="Stories"/>
+                <ListItemIcon>
+                  <Business />
+                </ListItemIcon>
+                <ListItemText primary="Business List"/>
               </MenuItem>
             </LinkContainer>
             <LinkContainer to="/admin/setting/reviews">
               <MenuItem>
-                <ListItemText primary="Reviews"/>
+                <ListItemIcon>
+                  <QuestionAnswer />
+                </ListItemIcon>
+                <ListItemText primary="Reviews List"/>
+              </MenuItem>
+            </LinkContainer>
+            <LinkContainer to="/admin/setting/stories">
+              <MenuItem>
+                <ListItemIcon>
+                  <Book />
+                </ListItemIcon>
+                <ListItemText primary="Stories List"/>
               </MenuItem>
             </LinkContainer>
           </div>

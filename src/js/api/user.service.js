@@ -1,4 +1,6 @@
+import Promise from 'bluebird';
 import fetch from 'cross-fetch';
+
 import config from '../config/config';
 import { saveToStorage } from '../helpers/webStorage';
 import userTypes from '../constants/user.types';
@@ -282,22 +284,24 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
  * Get Users List
  * @role admin
  */
-export const getUsersListFetch = (token, limit, skip) => {
+export const getUsersListFetch = (token, limit, skip, filter, search) => {
   const options = {
-    "method": 'GET',
+    "method": 'POST',
     "headers": {
       'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
+    "body": JSON.stringify({
+      "limit": limit,
+      "skip": skip,
+      "filter": filter
+    }),
   };
 
-  let url = userServiceUri.commonUserUrl + '?';
+  let url = userServiceUri.commonUserUrl;
 
-  if (limit)
-    url  = url + 'limit=' + limit;
-
-  if (skip)
-    url = url + '&skip=' + skip;
+  if (search)
+    url = url + '?search=' + search;
 
   return fetch(url, options)
     .then(response => {
