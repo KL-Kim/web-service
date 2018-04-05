@@ -28,9 +28,13 @@ import SettingStory from './components/setting/StoryPage';
 import SettingNotification from './components/setting/NotificationPage';
 
 // Admin Setting
-import AdminUsersList from './components/setting/admin/UsersList';
-import SingleUserInfoPage from './components/setting/admin/SingleUserInfoPage'
-import AdminBusinessList from './components/setting/admin/BusinessList';
+import SettingUsersList from './components/setting/admin/UsersList';
+import SettingSingleUserPage from './components/setting/admin/SingleUserInfoPage'
+import SettingBusinessList from './components/setting/admin/BusinessList';
+import SettingSingleBusinessPage from './components/setting/admin/SingleBusinessPage'
+import SettingCategoriesList from './components/setting/admin/CategoriesList';
+import SettingTagsList from './components/setting/admin/TagsList';
+
 import AdminReviewsList from './components/setting/admin/ReviewsList';
 import AdminStoriesList from './components/setting/admin/StoriesList';
 
@@ -75,9 +79,15 @@ const App = () => {
           <Route path="/setting/notification" component={SettingNotification} />
 
           {/*  Admin Routes */}
-          <AdminRoute path="/admin/setting/users/:username" component={SingleUserInfoPage} />
-          <AdminRoute exact path="/admin/setting/users" component={AdminUsersList} />
-          <Route path="/admin/setting/business" component={AdminBusinessList} />
+          <AdminRoute exact path="/admin/setting/users" component={SettingUsersList} />
+          <AdminRoute path="/admin/setting/users/:username" component={SettingSingleUserPage} />
+
+          <AdminRoute exact path="/admin/setting/business" component={SettingBusinessList} />
+          <AdminRoute path="/admin/setting/business/:business" component={SettingSingleBusinessPage} />
+
+          <AdminRoute exact path="/admin/setting/category" component={SettingCategoriesList} />
+          <AdminRoute exact path="/admin/setting/tag" component={SettingTagsList} />
+
           <Route path="/admin/setting/reviews" component={AdminReviewsList} />
           <Route path="/admin/setting/stories" component={AdminStoriesList} />
 

@@ -37,16 +37,7 @@ const newTokenFetch = () => {
       if (response.ok) {
         return response.json();
       } else {
-        let error = new Error(response.statusText);
-        error.status = response.status;
-
-        if (response.status === 401 || response.status === 403) {
-          error.message = "Permission denied";
-        } else {
-          error.message = "Unknown Error";
-        }
-
-        return Promise.reject(error);
+        return Promise.reject(responseErrorHandler(response));
       }
     })
     .then(res => {
@@ -85,6 +76,8 @@ export const getToken = () => {
 
 /**
  * Fetch login
+ * @param {String} email - User's email
+ * @param {String} password - User's password
  */
 export const loginFetch = (email, password) => {
   const options = {
@@ -163,6 +156,8 @@ export const logoutFetch = () => {
 
 /**
  * Request sending changing password email
+ * @param {String} type - Email type
+ * @param {String} email - User's email
  */
 export const requestSendEmailFetch = (type, email) => {
   const options = {
@@ -201,6 +196,7 @@ export const requestSendEmailFetch = (type, email) => {
 
 /**
  * Request sending phone verification code
+ * @param {String} phoneNumber - Phone number
  */
 export const requestSendPhoneVerificationCodeFetch = (phoneNumber) => {
   const options = {

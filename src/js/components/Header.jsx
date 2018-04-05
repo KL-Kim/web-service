@@ -16,6 +16,7 @@ import ExitToApp from 'material-ui-icons/ExitToApp';
 
 import LinkContainer from './utils/LinkContainer';
 import Avatar from './utils/Avatar';
+import AdminSidebarMenuList from './utils/AdminSidebarMenuList';
 
 const styles = theme => ({
   "appBar": {
@@ -69,7 +70,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, user, isLoggedIn, updatedAt, position } = this.props;
+    const { classes, user, isLoggedIn, updatedAt, position, match } = this.props;
     let button;
 
     if (isLoggedIn) {
@@ -86,38 +87,41 @@ class Header extends Component {
       ? user.username
       : ((_.isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (_.isEmpty(user.lastName) ? '' : user.lastName)));
 
+    const role = _.isEmpty(user) ? '' : user.role;
+
     const drawer = isLoggedIn
      ? (<Drawer
-        anchor="right"
-        open={this.state.open}
-        onClose={this.toggleDrawer}
-        variant="temporary"
-        classes={{paper: classes.drawerPaper}}
-       >
-        <div className={classes.account}>
-          <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
-          <Typography type="body1" className={classes.name}>{name}</Typography>
-        </div>
+          anchor="right"
+          open={this.state.open}
+          onClose={this.toggleDrawer}
+          variant="temporary"
+          classes={{paper: classes.drawerPaper}}
+        >
+          <div className={classes.account}>
+            <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
+            <Typography type="body1" className={classes.name}>{name}</Typography>
+          </div>
 
-        <Divider />
+          <Divider />
 
-        <MenuList>
-          <LinkContainer to="/setting/account">
+          <MenuList>
+            <LinkContainer to="/setting/account">
+              <MenuItem>
+                <ListItemIcon>
+                  <AccountCircle />
+                </ListItemIcon>
+                <ListItemText primary="account" />
+              </MenuItem>
+            </LinkContainer>
             <MenuItem>
               <ListItemIcon>
-                <AccountCircle />
+                <ExitToApp />
               </ListItemIcon>
-              <ListItemText primary="account" />
+              <ListItemText primary="logout" onClick={this.handleLogout}/>
             </MenuItem>
-          </LinkContainer>
-          <MenuItem>
-            <ListItemIcon>
-              <ExitToApp />
-            </ListItemIcon>
-            <ListItemText primary="logout" onClick={this.handleLogout}/>
-          </MenuItem>
-        </MenuList>
-       </Drawer>)
+          </MenuList>
+          {_.isUndefined(role) ? '' : (<AdminSidebarMenuList admin={user} match={match} />)}
+        </Drawer>)
       : null;
 
     return (

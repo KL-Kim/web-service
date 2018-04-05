@@ -15,23 +15,10 @@ import Checkbox from 'material-ui/Checkbox';
 
 import SettingContainer from '../SettingContainer';
 import LinkContainer from '../../utils/LinkContainer';
-import { getUsersList, adminEditUser } from '../../../actions/admin.actions.js';
 import TablePaginationActions from '../../utils/TablePaginationActions';
+import { getUsersList, adminEditUser } from '../../../actions/admin.actions.js';
 
-const styles = (theme) => ({
-  button: {
-    margin: theme.spacing.unit,
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: '40%',
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-});
+const styles = (theme) => ({});
 
 class UsersList extends Component {
   constructor(props) {
@@ -77,7 +64,7 @@ class UsersList extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if (_.isEmpty(nextProps.user) && (nextProps.user.role !== 'admin')) {
+    if (_.isEmpty(nextProps.admin) && (nextProps.admin.role !== 'admin')) {
       this.props.history.push('/404');
     }
   }
@@ -181,144 +168,148 @@ class UsersList extends Component {
     const { classes } = this.props;
 
     return (
-      <SettingContainer history={this.props.history} >
+      <SettingContainer>
+        <div>
+          <Typography type="display1" gutterBottom>
+            Users List
+          </Typography>
 
-      <Typography type="display3" gutterBottom>
-        Users List
-      </Typography>
-
-      <Grid container spacing={16}>
-        <Grid item xs={6}>
-          <form onSubmit={this.handleSearch}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="adornment-password">Search</InputLabel>
-              <Input
-                id="search"
-                type="text"
-                name="search"
-                onChange={this.handleChange}
-                onKeyPress={this.handleKeyPress}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="Toggle password visibility"
-                      onClick={this.handleSearch}
-                    >
-                      <Search />
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              <FormHelperText id="search-helper-text">Email or Username</FormHelperText>
-            </FormControl>
-          </form>
-        </Grid>
-        <Grid item xs={3}>
-          <Typography type="subheading">Role</Typography>
-          <FormGroup row>
-            <FormControlLabel control={
-                <Checkbox
-                  checked={this.state.role.regular}
-                  onChange={this.handleFilter}
-                  value="regular"
-                />
-              }
-              label="Regular"
-            />
-            <FormControlLabel control={
-                <Checkbox
-                  checked={this.state.role.manager}
-                  onChange={this.handleFilter}
-                  value="manager"
-                />
-              }
-              label="Manager"
-            />
-            <FormControlLabel control={
-                <Checkbox
-                  checked={this.state.role.admin}
-                  onChange={this.handleFilter}
-                  value="admin"
-                />
-              }
-              label="Admin"
-            />
-          </FormGroup>
-        </Grid>
-        <Grid item xs={3}>
-          <Typography type="subheading">Status</Typography>
-          <FormGroup row>
-            <FormControlLabel control={
-                <Checkbox
-                  checked={this.state.userStatus.normal}
-                  onChange={this.handleFilter}
-                  value="normal"
-                />
-              }
-              label="Nornaml"
-            />
-            <FormControlLabel control={
-                <Checkbox
-                  checked={this.state.userStatus.suspended}
-                  onChange={this.handleFilter}
-                  value="suspended"
-                />
-              }
-              label="Suspended"
-            />
-          </FormGroup>
-        </Grid>
-      </Grid>
-
-      <Paper>
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Index</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            { _.isEmpty(this.state.users) ? (<TableRow></TableRow>)
-              : this.state.users.map((user, index) => (
-                <LinkContainer to={{
-                    pathname: "/admin/setting/users/" + user.username,
-                    hash: '#',
-                    state: {
-                      "admin": this.props.user,
-                      "user": user
+          <Grid container spacing={16}>
+            <Grid item xs={6}>
+              <form onSubmit={this.handleSearch}>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                  <Input
+                    id="search"
+                    type="text"
+                    name="search"
+                    onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleSearch}
+                        >
+                          <Search />
+                        </IconButton>
+                      </InputAdornment>
                     }
-                  }} key={index}>
-                  <TableRow hover >
-                    <TableCell>{index+1}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.role}</TableCell>
-                    <TableCell>{user.userStatus}</TableCell>
-                  </TableRow>
-                </LinkContainer>
-              ))
-            }
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                colSpan={3}
-                count={this.state.totalCount}
-                rowsPerPage={this.state.rowsPerPage}
-                rowsPerPageOptions={[10, 20, 30]}
-                page={this.state.page}
-                onChangePage={this.handlePaginationChange}
-                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                Actions={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </Paper>
+                  />
+                  <FormHelperText id="search-helper-text">Email or Username</FormHelperText>
+                </FormControl>
+              </form>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography type="subheading">Role</Typography>
+              <FormGroup row>
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.role.regular}
+                      onChange={this.handleFilter}
+                      value="regular"
+                    />
+                  }
+                  label="Regular"
+                />
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.role.manager}
+                      onChange={this.handleFilter}
+                      value="manager"
+                    />
+                  }
+                  label="Manager"
+                />
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.role.admin}
+                      onChange={this.handleFilter}
+                      value="admin"
+                    />
+                  }
+                  label="Admin"
+                />
+              </FormGroup>
+            </Grid>
+            <Grid item xs={3}>
+              <Typography type="subheading">Status</Typography>
+              <FormGroup row>
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.userStatus.normal}
+                      onChange={this.handleFilter}
+                      value="normal"
+                    />
+                  }
+                  label="Nornaml"
+                />
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.userStatus.suspended}
+                      onChange={this.handleFilter}
+                      value="suspended"
+                    />
+                  }
+                  label="Suspended"
+                />
+              </FormGroup>
+            </Grid>
+          </Grid>
+
+          <Paper>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Index</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Role</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                { _.isEmpty(this.state.users) ? (<TableRow></TableRow>)
+                  : this.state.users.map((user, index) => (
+                    <LinkContainer to={{
+                        pathname: "/admin/setting/users/" + user.username,
+                        hash: '#',
+                        state: {
+                          "admin": this.props.admin,
+                          "user": user
+                        }
+                      }} key={index}
+                    >
+                      <TableRow hover >
+                        <TableCell>{index+1}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.username}</TableCell>
+                        <TableCell>{user.role}</TableCell>
+                        <TableCell>{user.userStatus}</TableCell>
+                      </TableRow>
+                    </LinkContainer>
+                  ))
+                }
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    colSpan={3}
+                    count={this.state.totalCount}
+                    rowsPerPage={this.state.rowsPerPage}
+                    rowsPerPageOptions={[10, 20, 30]}
+                    page={this.state.page}
+                    onChangePage={this.handlePaginationChange}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                    Actions={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </Paper>
+        </div>
+
+
 
 
       </SettingContainer>
@@ -328,12 +319,12 @@ class UsersList extends Component {
 
 UsersList.propTypes = {
   "classes": PropTypes.object.isRequired,
-  "user": PropTypes.object,
+  "admin": PropTypes.object,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
+    "admin": state.userReducer.user,
   };
 };
 

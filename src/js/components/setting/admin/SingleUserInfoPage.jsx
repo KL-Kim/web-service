@@ -80,11 +80,11 @@ class SingleUserInfoPage extends Component {
   }
 
   render() {
-    const { classes, history, location } = this.props;
+    const { classes, location } = this.props;
     const user = _.isUndefined(location.state) ? '' : location.state.user;
 
     return _.isEmpty(user) ? '' :(
-      <SettingContainer history={history}>
+      <SettingContainer>
         <div>
           <Typography type="display1" gutterBottom>Email -  {(_.isEmpty(user) ? '' : user.email)}</Typography>
           <Paper className={classes.paper}>

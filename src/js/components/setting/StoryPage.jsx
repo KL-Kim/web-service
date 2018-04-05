@@ -27,43 +27,43 @@ class StoryPage extends Component {
     const { classes } = this.props;
 
     return (
-      <SettingContainer>
+      <SettingContainer history={this.props.history} location={this.props.location}>
         <Grid container>
-              <Grid item xs={12}>
-                <Typography type="display3" gutterBottom>
-                  Story
-                </Typography>
-                <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
-                  <Grid item xs={4}>
-                    <StoryCard businessName={story.businessName}
-                      title={story.title}
-                      content={story.content}
-                      commentCount={story.commentCount}
-                      good={story.good}
-                      bad={story.bad}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <StoryCard businessName={story.businessName}
-                      title={story.title}
-                      content={story.content}
-                      commentCount={story.commentCount}
-                      good={story.good}
-                      bad={story.bad}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <StoryCard businessName={story.businessName}
-                      title={story.title}
-                      content={story.content}
-                      commentCount={story.commentCount}
-                      good={story.good}
-                      bad={story.bad}
-                    />
-                  </Grid>
-                </Grid>
+          <Grid item xs={12}>
+            <Typography type="display3" gutterBottom>
+              Story
+            </Typography>
+            <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
+              <Grid item xs={4}>
+                <StoryCard businessName={story.businessName}
+                  title={story.title}
+                  content={story.content}
+                  commentCount={story.commentCount}
+                  good={story.good}
+                  bad={story.bad}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <StoryCard businessName={story.businessName}
+                  title={story.title}
+                  content={story.content}
+                  commentCount={story.commentCount}
+                  good={story.good}
+                  bad={story.bad}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <StoryCard businessName={story.businessName}
+                  title={story.title}
+                  content={story.content}
+                  commentCount={story.commentCount}
+                  good={story.good}
+                  bad={story.bad}
+                />
               </Grid>
             </Grid>
+          </Grid>
+        </Grid>
       </SettingContainer>
     );
   }

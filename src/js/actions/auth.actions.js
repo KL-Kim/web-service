@@ -13,21 +13,21 @@ import { requestSendEmailFetch } from '../api/auth.service';
  * @param {string} phoneNumer - mobile phone number
  */
 export const sendPhoneVerificationCode = (phoneNumber) => {
-  const sendPhoneVerificationCodeRequest = () => ({
+  const _sendPhoneVerificationCodeRequest = () => ({
     "type": authTypes.SEND_PHONE_VERIFICATION_CODE_REQUEST,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const sendPhoneVerificationCodeSuccess = () => ({
+  const _sendPhoneVerificationCodeSuccess = () => ({
     "type": authTypes.SEND_PHONE_VERIFICATION_CODE_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const sendPhoneVerificationCodeFailure = (error) => ({
+  const _sendPhoneVerificationCodeFailure = (error) => ({
     "type": authTypes.SEND_PHONE_VERIFICATION_CODE_FAILURE,
     "meta": {},
     "error": error,
@@ -41,17 +41,17 @@ export const sendPhoneVerificationCode = (phoneNumber) => {
       return Promise.reject(err);
     }
 
-    dispatch(sendPhoneVerificationCodeRequest());
+    dispatch(_sendPhoneVerificationCodeRequest());
 
     return requestSendPhoneVerificationCodeFetch(phoneNumber)
       .then(response => {
-        dispatch(sendPhoneVerificationCodeSuccess());
+        dispatch(_sendPhoneVerificationCodeSuccess());
         dispatch(AlertActions.alertSuccess("Send verification code successfully"));
 
         return true;
       })
       .catch(err => {
-        dispatch(sendPhoneVerificationCodeFailure(err));
+        dispatch(_sendPhoneVerificationCodeFailure(err));
 
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
@@ -67,21 +67,21 @@ export const sendPhoneVerificationCode = (phoneNumber) => {
  * @param {String} email - user's email
  */
 export const sendEmail = (type, email) => {
-  const requestSendEmail = () => ({
+  const _requestSendEmail = () => ({
     "type": emailTypes.SEND_EMAIL_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  const sendEmailSuccess = () => ({
+  const _sendEmailSuccess = () => ({
     "type": emailTypes.SEND_EMAIL_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  const sendEmailFailure = (error) => ({
+  const _sendEmailFailure = (error) => ({
     "type": emailTypes.SEND_EMAIL_FAILURE,
     "meta": {},
     "error": error,
@@ -97,13 +97,13 @@ export const sendEmail = (type, email) => {
       return Promise.reject(err);
     }
 
-    dispatch(requestSendEmail());
+    dispatch(_requestSendEmail());
     return requestSendEmailFetch(type, email)
       .then(res => {
-        dispatch(sendEmailSuccess());
+        dispatch(_sendEmailSuccess());
         return dispatch(AlertActions.alertSuccess("Send email successfully"));
       }).catch(err => {
-        dispatch(sendEmailFailure());
+        dispatch(_sendEmailFailure());
         return dispatch(AlertActions.alertFailure("Send email failed"));
       });
   };

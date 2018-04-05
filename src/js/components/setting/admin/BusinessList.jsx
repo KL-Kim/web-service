@@ -6,45 +6,29 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
+import { FormControl, FormGroup, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import IconButton from 'material-ui/IconButton';
+import Search from 'material-ui-icons/Search';
+import Checkbox from 'material-ui/Checkbox';
 import Button from 'material-ui/Button';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  ExpansionPanelActions
-} from 'material-ui/ExpansionPanel';
-import Divider from 'material-ui/Divider';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
-import TextField from 'material-ui/TextField';
 
 import SettingContainer from '../SettingContainer';
-
-// Mock data
-const user = {
-  "username": "regularUser0",
-  "email": "user0@abc.com",
-  "address": "Bla bla bla bla bla",
-  "gender": "male",
-  "lastName": "Kim",
-  "firstName": "Tony",
-  "userStatus": "normal",
-  "profilePhotoUri": '',
-  "point": 0,
-  "role": "regular"
-};
-
+import LinkContainer from '../../utils/LinkContainer';
+import TablePaginationActions from '../../utils/TablePaginationActions';
+import { getBusinessList } from '../../../actions/business.actions.js';
 
 const styles = (theme) => ({
-  button: {
+  "container": {
+    marginBottom: theme.spacing.unit,
+  },
+  "buttonContainer": {
+    "display": "flex",
+    "justifyContent": "flex-end",
+  },
+  "button": {
     margin: theme.spacing.unit,
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: '40%',
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
   },
 });
 
@@ -53,50 +37,144 @@ class BusinessList extends Component {
     super(props);
 
     this.state = {
-      expanded: null
+      "dialogOpen": false,
+      "search": '',
+      "rowsPerPage": 10,
+      "page": 0,
     };
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange = panel => (event, expanded) => {
+  componentDidMount(){
+    this.props.getBusinessList(0, this.state.rowsPerPage);
+  }
+
+  handlePaginationChange(e, page) {
     this.setState({
-      expanded: expanded ? panel : undefined
+      page: page,
     });
   }
 
+  handleChangeRowsPerPage(e) {
+    this.setState({
+      rowsPerPage: e.target.value,
+    });
+  }
+
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
   render() {
-    const { classes } = this.props;
-    const { expanded} = this.state;
+    const { classes, admin, businessList = {} } = this.props;
 
     return (
       <SettingContainer>
-        <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom>
+        <div>
+          <Typography type="display1" gutterBottom>
             Business List
-            </Typography>
-            <Typography type="body1">Search: </Typography>
-            <TextField id="username" type="text" />
+          </Typography>
 
-            <Paper className={classes.paper}>
-              <ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography type="body1" className={classes.heading}>Username</Typography>
-                  <Typography type="body1" className={classes.secondaryHeading}>{user.username}</Typography>
-                </ExpansionPanelSummary>
-                <Divider />
-                <ExpansionPanelDetails>
-                  <TextField id="username" type="text" />
-                </ExpansionPanelDetails>
+          <Grid container spacing={16} className={classes.container}>
+            <Grid item xs={4}>
+              <form onSubmit={this.handleSearch}>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                  <Input
+                    id="search"
+                    type="text"
+                    name="search"
+                    onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleSearch}
+                        >
+                          <Search />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </form>
+            </Grid>
 
-                <ExpansionPanelActions>
-                  <Button raised color="primary" className={classes.button}>
-                    Save
+            <Grid item xs={8}>
+              <div className={classes.buttonContainer}>
+                <LinkContainer to={{
+                    pathname: "/admin/setting/business/new",
+                    hash: '#',
+                    state: {
+                      "admin": this.props.admin,
+                    }
+                  }}
+                >
+                  <Button raised color="primary" aria-label="add" size="large" onClick={this.handleAddNew}>
+                    Add New
                   </Button>
-                </ExpansionPanelActions>
-              </ExpansionPanel>
-            </Paper>
+                </LinkContainer>
+              </div>
+            </Grid>
           </Grid>
-        </Grid>
+
+          <Paper>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Index</TableCell>
+                  <TableCell>中文名</TableCell>
+                  <TableCell>힌국어</TableCell>
+                  <TableCell>Business category</TableCell>
+                  <TableCell>Views Count</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {
+                  _.isEmpty(businessList) ? (<TableRow></TableRow>)
+                  : businessList.map((business, index) => (
+                    <LinkContainer to={{
+                        pathname: "/admin/setting/business/" + business.cnName,
+                        hash: '#',
+                        state: {
+                          "admin": this.props.admin,
+                          "business": business
+                        }
+                      }} key={index}
+                    >
+                      <TableRow hover >
+                        <TableCell>{index+1}</TableCell>
+                        <TableCell>{business.cnName}</TableCell>
+                        <TableCell>{business.krName}</TableCell>
+                        <TableCell>{_.isEmpty(business.category) ? '' : business.category.krName}</TableCell>
+                        <TableCell>{business.viewsCount}</TableCell>
+                      </TableRow>
+                    </LinkContainer>
+                  ))
+                }
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    colSpan={3}
+                    count={this.props.totalCount}
+                    rowsPerPage={this.state.rowsPerPage}
+                    rowsPerPageOptions={[10, 20, 30]}
+                    page={this.state.page}
+                    onChangePage={this.handlePaginationChange}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                    Actions={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </Paper>
+        </div>
       </SettingContainer>
     );
   }
@@ -104,13 +182,18 @@ class BusinessList extends Component {
 
 BusinessList.propTypes = {
   "classes": PropTypes.object.isRequired,
-  "user": PropTypes.object.isRequired,
+  "history": PropTypes.object.isRequired,
+  "admin": PropTypes.object.isRequired,
+  "getBusinessList": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
+    "admin": state.userReducer.user,
+    "businessList": state.businessReducer.businessList,
+    "totalCount": state.businessReducer.totalCount,
+    "isFetching": state.businessReducer.isFetching,
   };
 };
 
-export default connect(mapStateToProps, {})(withStyles(styles)(BusinessList));
+export default connect(mapStateToProps, { getBusinessList })(withStyles(styles)(BusinessList));

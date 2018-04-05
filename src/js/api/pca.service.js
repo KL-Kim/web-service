@@ -5,12 +5,17 @@ import _ from 'lodash';
 import config from '../config/config';
 
 /**
- * Business serivce uri
+ * Pca serivce uri
  */
 const pcaSerivceUri = {
   apiUrl: config.API_GATEWAY_ROOT + '/api/v1/pca',
 };
 
+/**
+ * Get cities
+ * @param {String} type - Province, City, Areas
+ * @param {Number} code - Province code
+ */
 export const getPcaFetch = (type, code) => {
   const options = {
     method: 'GET',

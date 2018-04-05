@@ -31,7 +31,7 @@ export const alertFailure = errorMessage => ({
 });
 
 /**
- *  Clear alert
+ * Clear alert
  */
 export const alertClear = () => ({
   "type": alertTypes.ALERT_CLEAR,

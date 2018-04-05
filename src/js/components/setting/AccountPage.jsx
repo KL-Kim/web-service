@@ -29,10 +29,10 @@ const styles = (theme) => ({
 class AccountPage extends Component {
 
   render() {
-    const { history, classes, user, updatedAt, error, isFetching, errorMessage, updateUserProfile } = this.props;
+    const { classes, user, updatedAt, error, isFetching, errorMessage, updateUserProfile } = this.props;
 
     return _.isEmpty(user) ? null : (
-      <SettingContainer history={history}>
+      <SettingContainer history={this.props.history} location={this.props.location}>
         <div>
           <Grid container justify="center" className={classes.container}>
             <Grid item xs={8}>

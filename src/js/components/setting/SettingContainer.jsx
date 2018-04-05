@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { withStyles } from 'material-ui/styles';
-
 import Header from '../Header';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
@@ -37,8 +37,10 @@ const styles = (theme) => ({
 
 class SettingContainer extends Component {
   componentWillReceiveProps(nextProps, nextState) {
-    if (!nextProps.isLoggedIn) {
-      this.props.history.push('/');
+    if (process.env.REACT_APP_ENV !== 'DEVELOPMENT') {
+      if (!nextProps.isLoggedIn) {
+        this.props.history.push('/404');
+      }
     }
   }
 
@@ -47,8 +49,8 @@ class SettingContainer extends Component {
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} position={"fixed"} updatedAt={updatedAt} />
-        <Sidebar user={user} />
+        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} updatedAt={updatedAt} position={"fixed"} />
+        <Sidebar user={user} match={this.props.match}/>
         <div className={classes.appFrame}>
           <main className={classes.content}>
             {this.props.children}
@@ -64,6 +66,7 @@ class SettingContainer extends Component {
 
 SettingContainer.propTypes = {
   history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   user: PropTypes.object,
@@ -80,4 +83,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { logout })(withStyles(styles)(SettingContainer));
+export default withRouter(connect(mapStateToProps, { logout })(withStyles(styles)(SettingContainer)));

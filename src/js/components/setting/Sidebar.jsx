@@ -5,21 +5,18 @@ import { withStyles } from 'material-ui/styles';
 import { MenuList, MenuItem } from 'material-ui/Menu';
 import { ListItemText, ListItemIcon } from 'material-ui/List';
 import Drawer from 'material-ui/Drawer';
-import Divider from 'material-ui/Divider';
-
 import AccountCircle from 'material-ui-icons/AccountCircle';
 import Book from 'material-ui-icons/Book';
 import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import Favorite from 'material-ui-icons/Favorite';
 import Notifications from 'material-ui-icons/Notifications';
-import Group from 'material-ui-icons/Group';
-import Business from 'material-ui-icons/Business';
 
 import LinkContainer from '../utils/LinkContainer';
+import AdminSidebarMenuList from '../utils/AdminSidebarMenuList';
 
 const styles = theme => ({
   // drawerHeader: theme.mixins.toolbar,
-  drawerPaper: {
+  "drawerPaper": {
     width: 260,
     position: 'fixed',
     marginTop: theme.spacing.unit * 8,
@@ -27,95 +24,9 @@ const styles = theme => ({
 });
 
 class Sidebar extends Component {
-
   render() {
-    const { classes, user } = this.props;
-    let sidebar;
-
-    const role = (_.isEmpty(user) ? '' : user.role);
-
-    switch (role) {
-      case "manager":
-        sidebar = (
-          <div>
-            <Divider />
-            <LinkContainer to="/admin/setting/business">
-              <MenuItem>
-                <ListItemIcon>
-                  <Business />
-                </ListItemIcon>
-                <ListItemText primary="Business List"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/reviews">
-              <MenuItem>
-                <ListItemIcon>
-                  <QuestionAnswer />
-                </ListItemIcon>
-                <ListItemText primary="Reviews List"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/stories">
-              <MenuItem>
-                <ListItemIcon>
-                  <Book />
-                </ListItemIcon>
-                <ListItemText primary="Stories List"/>
-              </MenuItem>
-            </LinkContainer>
-          </div>
-        );
-        break;
-
-      case "admin":
-        sidebar = (
-          <div>
-            <Divider />
-            <LinkContainer to={{
-                pathname: "/admin/setting/users",
-                state: {
-                  admin: user
-                },
-              }}
-            >
-              <MenuItem>
-                <ListItemIcon>
-                  <Group />
-                </ListItemIcon>
-                <ListItemText primary="Users List"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/business">
-              <MenuItem>
-                <ListItemIcon>
-                  <Business />
-                </ListItemIcon>
-                <ListItemText primary="Business List"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/reviews">
-              <MenuItem>
-                <ListItemIcon>
-                  <QuestionAnswer />
-                </ListItemIcon>
-                <ListItemText primary="Reviews List"/>
-              </MenuItem>
-            </LinkContainer>
-            <LinkContainer to="/admin/setting/stories">
-              <MenuItem>
-                <ListItemIcon>
-                  <Book />
-                </ListItemIcon>
-                <ListItemText primary="Stories List"/>
-              </MenuItem>
-            </LinkContainer>
-          </div>
-        );
-      break;
-
-      default:
-        sidebar = '';
-    }
+    const { classes, user, match } = this.props;
+    const role = _.isEmpty(user) ? '' : user.role;
 
     return (
       <div>
@@ -126,55 +37,55 @@ class Sidebar extends Component {
             }}>
             <MenuList>
               <LinkContainer to="/setting/account">
-                <MenuItem>
+                <MenuItem selected={match.path === "/setting/account"} >
                   <ListItemIcon>
                     <AccountCircle />
                   </ListItemIcon>
-                  <ListItemText primary="Account" />
+                  <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
               <LinkContainer to="/setting/story">
-                <MenuItem>
+                <MenuItem selected={match.path === "/setting/story"}>
                   <ListItemIcon>
                     <Book />
                   </ListItemIcon>
-                  <ListItemText primary="Story" />
+                  <ListItemText primary="Story" classes={match.path === "/setting/story" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
               <LinkContainer to="/setting/review">
-                <MenuItem>
+                <MenuItem selected={match.path === "/setting/review"}>
                   <ListItemIcon>
                     <QuestionAnswer />
                   </ListItemIcon>
-                  <ListItemText primary="Reviews" />
+                  <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
               <LinkContainer to="/setting/favor">
-                <MenuItem>
+                <MenuItem selected={match.path === "/setting/favor"}>
                   <ListItemIcon>
                     <Favorite />
                   </ListItemIcon>
-                  <ListItemText primary="Favor" />
+                  <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
               <LinkContainer to="/setting/notification">
-                <MenuItem>
+                <MenuItem selected={match.path === "/setting/notification"}>
                   <ListItemIcon>
                     <Notifications />
                   </ListItemIcon>
-                  <ListItemText primary="Notifications" />
+                  <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
-              {sidebar}
             </MenuList>
+            {_.isUndefined(role) ? '' : (<AdminSidebarMenuList admin={user} match={match} />)}
           </Drawer>
-
       </div>
     );
   }
 }
 
 Sidebar.propTypes = {
+  "match": PropTypes.object.isRequired,
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object,
 }

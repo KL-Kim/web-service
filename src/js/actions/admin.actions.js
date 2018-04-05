@@ -6,6 +6,14 @@ import _ from 'lodash';
 import { getToken } from '../api/auth.service';
 import { getUsersListFetch, adminEditUserFetch } from '../api/user.service';
 
+/**
+ * Fetch Users List
+ * @role admin
+ * @param {Number} skip - Number of users to be skipped.
+ * @param {Number} limit - Limit Number of users to be returned.
+ * @param {Object} rawFilter - Filter users list
+ * @param {String} search - Search String
+ */
 export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
   return (dispatch, getState) => {
     return getToken()
@@ -43,6 +51,12 @@ export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
   };
 };
 
+/**
+ * Admin edit user
+ * @role admin
+ * @param {String} id - User's id
+ * @param {Object} data - User's account object
+ */
 export const adminEditUser = (id, data) => {
   return (dispatch, getState) => {
     return getToken()

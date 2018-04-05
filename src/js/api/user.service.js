@@ -25,6 +25,10 @@ const userServiceUri = {
 
 /**
  * Fetch registering user
+ * @param {Object} user - User credential Object
+ * @property {String} user.email - User's email
+ * @property {String} user.password - Users's password
+ * @property {String} user.passwordConfirmation - User's password confirmation
  */
 export const registerFetch = (user) => {
   const options = {
@@ -47,7 +51,7 @@ export const registerFetch = (user) => {
         error.status = response.status;
 
         if (response.status === 400) {
-          error.message = "Bad JSON formatting in the request";
+          error.message = "Bad request formatting in the request";
         } else if (response.status === 409) {
           error.message = "The email has been used by someone else."
         } else {
@@ -75,6 +79,7 @@ export const registerFetch = (user) => {
 
 /**
  * Fetch account verify
+ * @param {String} token - Bearer Token
  */
 export const verifyFetch = (token) => {
   const options = {
@@ -103,6 +108,8 @@ export const verifyFetch = (token) => {
 
 /**
  * Fetch user by Id
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
  */
 export const getUserByIdFetch = (token, id) => {
   const options = {
@@ -122,7 +129,7 @@ export const getUserByIdFetch = (token, id) => {
         error.status = response.status;
 
         if (response.status === 400) {
-          error.message = "Bad JSON formatting in the request";
+          error.message = "Bad request formatting in the request";
         } else if (response.status === 409) {
           error.message = "The email has been used by someone else."
         } else {
@@ -145,6 +152,9 @@ export const getUserByIdFetch = (token, id) => {
 
 /**
  * Request changing password
+ * @param {String} token - Verification Token
+ * @param {String} user.password - Users's password
+ * @param {String} user.passwordConfirmation - User's password confirmation
  */
 export const changePasswordFetch = (token, password, passwordConfirmation) => {
   const options = {
@@ -173,6 +183,10 @@ export const changePasswordFetch = (token, password, passwordConfirmation) => {
 
 /**
  * Fetch updating user profile
+ * @param {String} type - Updating type
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
+ * @param {Object} data - User's account Object
  */
 export const updateUserFetch = (type = "PROFILE", token, id, data) => {
   const options = {
@@ -211,6 +225,9 @@ export const updateUserFetch = (type = "PROFILE", token, id, data) => {
 
 /**
  * Upload user profile photo
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
+ * @param {formData} data - Image formdata
  */
 export const uploadProfilePhotoFetch = (token, id, data) => {
   const options = {
@@ -238,6 +255,10 @@ export const uploadProfilePhotoFetch = (token, id, data) => {
 
 /**
  * Upddate user's phone
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
+ * @param {String} phoneNumber - Phone Number
+ * @param {Number} code - Verification code
  */
 export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
   const options = {
@@ -281,8 +302,13 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
 };
 
 /**
- * Get Users List
+ * Fetch Users List
  * @role admin
+ * @param {String} token - Bearer Token
+ * @param {Number} skip - Number of users to be skipped.
+ * @param {Number} limit - Limit Number of users to be returned.
+ * @param {Object} filter - Filter users list
+ * @param {String} search - Search String
  */
 export const getUsersListFetch = (token, limit, skip, filter, search) => {
   const options = {
@@ -321,6 +347,9 @@ export const getUsersListFetch = (token, limit, skip, filter, search) => {
 /**
  * Admin edit user
  * @role admin
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
+ * @param {Object} data - User's account Object
  */
 export const adminEditUserFetch = (token, id, data) => {
   const options = {

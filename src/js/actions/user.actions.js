@@ -18,14 +18,11 @@ import { removeFromStorage } from '../helpers/webStorage';
 
 /**
  * Login
- * @param {string} email
- * @param {string} password
+ * @param {String} email - User's email
+ * @param {String} password - User's password
  */
 export const login = (email, password) => {
-  /**
-   *  Request login
-   */
-  const requestLogin = () => ({
+  const _requestLogin = () => ({
       "type": userTypes.LOGIN_REQUEST,
       "meta": {},
       "error": null,
@@ -33,10 +30,7 @@ export const login = (email, password) => {
     }
   );
 
-  /**
-   *  Login success
-   */
-  const loginSuccess = user => ({
+  const _loginSuccess = user => ({
     "type": userTypes.LOGIN_SUCCESS,
     "meta": {},
     "error": null,
@@ -45,10 +39,7 @@ export const login = (email, password) => {
     }
   });
 
-  /**
-   *  Login failure
-   */
-  const loginFailure = error => ({
+  const _loginFailure = error => ({
     "type": userTypes.LOGIN_FAILURE,
     "meta": {},
     "error": error,
@@ -58,16 +49,16 @@ export const login = (email, password) => {
   return (dispatch, getState) => {
     if (_.isEmpty(email) || _.isEmpty(password)) {
       const error = new Error("Email or password is empty")
-      dispatch(loginFailure(error));
+      dispatch(_loginSuccess(error));
       dispatch(AlertActions.alertFailure("Email and passwords should not be empty"));
       return Promise.reject(error);
     }
 
     dispatch(AlertActions.alertClear());
-    dispatch(requestLogin());
+    dispatch(_requestLogin());
     return loginFetch(email, password)
       .then(user => {
-        dispatch(loginSuccess(user));
+        dispatch(_loginSuccess(user));
         dispatch(AlertActions.alertSuccess("Login successfully"));
 
         return ;
@@ -75,7 +66,7 @@ export const login = (email, password) => {
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
         }
-        dispatch(loginFailure(err));
+        dispatch(_loginFailure(err));
 
         return ;
       });
@@ -85,15 +76,12 @@ export const login = (email, password) => {
 /**
  * Register user
  * @param {Object} user - User
- * @property {string} email - User's email
- * @property {string} password - User's passwords
- * @property {string} passwordConfirmation - Password Confirmation
+ * @property {String} user.email - User's email
+ * @property {String} user.password - User's passwords
+ * @property {String} user.passwordConfirmation - Password Confirmation
  */
 export const register = (user) => {
-  /**
-   *  Request register
-   */
-  const requestRegister = () => ({
+  const _requestRegister = () => ({
       "type": userTypes.REGISTER_REQUEST,
       "meta": {},
       "error": null,
@@ -101,10 +89,7 @@ export const register = (user) => {
     }
   );
 
-  /**
-   *  Register success
-   */
-  const registerSuccess = (user) => ({
+  const _registerSuccess = (user) => ({
     "type": userTypes.REGISTER_SUCCESS,
     "meta": {},
     "error": null,
@@ -113,10 +98,7 @@ export const register = (user) => {
     }
   });
 
-  /**
-   *  Register failure
-   */
-  const registerFailure = error => ({
+  const _registerFailure = error => ({
     "type": userTypes.REGISTER_FAILURE,
     "meta": {},
     "error": error,
@@ -133,16 +115,16 @@ export const register = (user) => {
     }
 
     dispatch(AlertActions.alertClear());
-    dispatch(requestRegister());
+    dispatch(_requestRegister());
     return registerFetch(user)
       .then(res => {
-        dispatch(registerSuccess(res.user));
+        dispatch(_registerSuccess(res.user));
         dispatch(AlertActions.alertSuccess("Sign up successfully"));
 
         return ;
 
       }).catch(err => {
-        dispatch(registerFailure(err));
+        dispatch(_registerFailure(err));
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
         }
@@ -153,13 +135,13 @@ export const register = (user) => {
 
 /**
  * Account Verification
- * @param {string} token - Access Token
+ * @param {String} token - Access Token
  */
 export const verifyAccount = (token) => {
   /**
    *  Request verify account
    */
-  const requestVerify = () => ({
+  const _requestVerify = () => ({
     "type": userTypes.VERIFY_REQUEST,
     "meta": {},
     "error": null,
@@ -169,7 +151,7 @@ export const verifyAccount = (token) => {
   /**
    *  Verify account success
    */
-  const verifySuccess = user => ({
+  const _verifySuccess = user => ({
     "type": userTypes.VERIFY_SUCCESS,
     "meta": {},
     "error": null,
@@ -181,7 +163,7 @@ export const verifyAccount = (token) => {
   /**
    *  Verify account failure
    */
-  const verifyFailure = error => ({
+  const _verifyFailure = error => ({
     "type": userTypes.VERIFY_FAILURE,
     "meta": {},
     "error": error,
@@ -195,47 +177,38 @@ export const verifyAccount = (token) => {
       return Promise.reject(err);
     }
 
-    dispatch(requestVerify());
+    dispatch(_requestVerify());
     return verifyFetch(token)
       .then(user => {
-        return dispatch(verifySuccess(user))
+        return dispatch(_verifySuccess(user))
       }).catch(err => {
-        return dispatch(verifyFailure(err));
+        return dispatch(_verifyFailure(err));
       });
   };
 };
 
 /**
  * Change password
- * @param {string} token - Access Token
- * @param {string} password - Password
- * @param {string} passwordConfirmation - Password Confirmation
+ * @param {String} token - Access Token
+ * @param {String} password - Password
+ * @param {String} passwordConfirmation - Password Confirmation
  */
 export const changePassword = (token, password, passwordConfirmation) => {
-  /**
-   * Requset change password
-   */
-  const requestChangePassword = () => ({
+  const _requestChangePassword = () => ({
     "type": userTypes.CHANGE_PASSWORD_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  /**
-   * Change password success
-   */
-  const changePasswordSuccess = () => ({
+  const _changePasswordSuccess = () => ({
     "type": userTypes.CHANGE_PASSWORD_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  /**
-   * Change password failure
-   */
-  const changePasswordFailure = (error) => ({
+  const _changePasswordFailure = (error) => ({
     "type": userTypes.CHANGE_PASSWORD_FAILURE,
     "meta": {},
     "error": error,
@@ -257,15 +230,15 @@ export const changePassword = (token, password, passwordConfirmation) => {
       return Promise.reject(err);
     }
 
-    dispatch(requestChangePassword());
+    dispatch(_requestChangePassword());
     return changePasswordFetch(token, password, passwordConfirmation)
       .then(res => {
-        dispatch(changePasswordSuccess());
+        dispatch(_changePasswordSuccess());
         dispatch(AlertActions.alertSuccess("Your password has been changed successfully"));
 
         return ;
       }).catch(err => {
-        dispatch(changePasswordFailure(err));
+        dispatch(_changePasswordFailure(err));
         dispatch(AlertActions.alertFailure("Permission denied"));
 
         return ;
@@ -275,23 +248,17 @@ export const changePassword = (token, password, passwordConfirmation) => {
 
 /**
  * Get user by Id
- * @param {string} id - User id
+ * @param {String} id - User's id
  */
 export const getUserById = (id) => {
-  /**
-   * Requset get user by Id
-   */
-  const requestGetUserById = () => ({
+  const _requestGetUserById = () => ({
     "type": userTypes.GET_USER_BY_ID_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  /**
-   * Get user by Id success
-   */
-  const getUserByIdSuccess = (user) => ({
+  const _getUserByIdSuccess = (user) => ({
     "type": userTypes.GET_USER_BY_ID_SUCCESS,
     "meta": {},
     "error": null,
@@ -300,10 +267,7 @@ export const getUserById = (id) => {
     }
   });
 
-  /**
-   * Get user by Id failure
-   */
-  const getUserByIdFailure = (error) => ({
+  const _getUserByIdFailure = (error) => ({
     "type": userTypes.GET_USER_BY_ID_FAILURE,
     "meta": {},
     "error": error,
@@ -313,13 +277,13 @@ export const getUserById = (id) => {
   return (dispatch, getState) => {
     getToken()
       .then(token => {
-        dispatch(requestGetUserById());
+        dispatch(_requestGetUserById());
         return getUserByIdFetch(token, id);
       })
       .then(user => {
-        return dispatch(getUserByIdSuccess(user));
+        return dispatch(_getUserByIdSuccess(user));
       }).catch(err => {
-        return dispatch(getUserByIdFailure(err));
+        return dispatch(_getUserByIdFailure(err));
       });
   };
 }
@@ -331,7 +295,7 @@ export const logout = () => {
   /**
    * Request log out
    */
-  const logoutRequest = () => ({
+  const _logoutRequest = () => ({
     "type": userTypes.LOGOUT_REQUEST,
     "meta": {},
     "error": null,
@@ -341,7 +305,7 @@ export const logout = () => {
   /**
    * Log out success
    */
-  const logoutSuccess = () => ({
+  const _logoutSuccess = () => ({
     "type": userTypes.LOGOUT_SUCCESS,
     "meta": {},
     "error": null,
@@ -351,7 +315,7 @@ export const logout = () => {
   /**
    * Log out failure
    */
-  const logoutFailure = (error) => ({
+  const _logoutFailure = (error) => ({
     "type": userTypes.LOGOUT_FAILURE,
     "meta": {},
     "error": error,
@@ -359,17 +323,17 @@ export const logout = () => {
   });
 
   return (dispatch, getState) => {
-    dispatch(logoutRequest);
+    dispatch(_logoutRequest);
     removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
     removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
 
     return logoutFetch().then(json => {
-      dispatch(logoutSuccess());
+      dispatch(_logoutSuccess());
       dispatch(AlertActions.alertSuccess("Log out successfully"));
 
       return ;
     }).catch(err => {
-      dispatch(logoutFailure(err));
+      dispatch(_logoutFailure(err));
       if (err.message) {
         dispatch(AlertActions.alertFailure(err.message));
       }
@@ -381,24 +345,18 @@ export const logout = () => {
 
 /**
  * Update user's profile
- * @param {string} id - Users' id
- * @param {object} data - User's profile object
+ * @param {String} id - Users' id
+ * @param {Object} data - User's profile Object
  */
 export const updateUserProfile = (id, data) => {
-  /**
-   * Update user profile request
-   */
-  const updateUserProfileRequest  = () => ({
+  const _updateUserProfileRequest  = () => ({
     "type": userTypes.UPDATE_USER_PROFILE_REQUEST,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  /**
-   * Update user profile success
-   */
-  const updateUserProfileSuccess  = (user) => ({
+  const _updateUserProfileSuccess  = (user) => ({
     "type": userTypes.UPDATE_USER_PROFILE_SUCCESS,
     "meta": {},
     "error": null,
@@ -407,10 +365,7 @@ export const updateUserProfile = (id, data) => {
     },
   });
 
-  /**
-   * Update user profile success
-   */
-  const updateUserProfileFailure  = (error) => ({
+  const _updateUserProfileFailure  = (error) => ({
     "type": userTypes.UPDATE_USER_PROFILE_FAILURE,
     "meta": {},
     "error": error,
@@ -436,7 +391,7 @@ export const updateUserProfile = (id, data) => {
       return dispatch(AlertActions.alertSuccess("Nothing changed"));
     }
 
-    dispatch(updateUserProfileRequest());
+    dispatch(_updateUserProfileRequest());
 
     return getToken()
       .then(token => {
@@ -445,7 +400,7 @@ export const updateUserProfile = (id, data) => {
 
         return updateUserFetch(type, token, id, data);
       }).then(user => {
-          dispatch(updateUserProfileSuccess(user));
+          dispatch(_updateUserProfileSuccess(user));
           dispatch(AlertActions.alertSuccess("Updated successfully"));
 
           return ;
@@ -453,7 +408,7 @@ export const updateUserProfile = (id, data) => {
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
         }
-        dispatch(updateUserProfileFailure(err));
+        dispatch(_updateUserProfileFailure(err));
 
         return ;
       });
@@ -462,18 +417,18 @@ export const updateUserProfile = (id, data) => {
 
 /**
  * Upload user's profile photo
- * @param {string} id - Users' id
+ * @param {String} id - Users' id
  * @param {FormData} formData - Users' profile photo image
  */
 export const uploadProfilePhoto = (id, formData) => {
-  const uploadProfilePhotoRequset = () => ({
+  const _uploadProfilePhotoRequset = () => ({
     "type": userTypes.UPLOAD_PROFILE_PHOTO_REQUEST,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const uploadProfilePhotoSuccess = (user) => ({
+  const _uploadProfilePhotoSuccess = (user) => ({
     "type": userTypes.UPLOAD_PROFILE_PHOTO_SUCCESS,
     "meta": {},
     "error": null,
@@ -482,7 +437,7 @@ export const uploadProfilePhoto = (id, formData) => {
     },
   });
 
-  const uploadProfilePhotoFailure = (error) => ({
+  const _uploadProfilePhotoFailure = (error) => ({
     "type": userTypes.UPLOAD_PROFILE_PHOTO_FAILURE,
     "meta": {},
     "error": error,
@@ -495,18 +450,18 @@ export const uploadProfilePhoto = (id, formData) => {
       return Promise.reject(error);
     }
 
-    dispatch(uploadProfilePhotoRequset());
+    dispatch(_uploadProfilePhotoRequset());
 
     return getToken()
       .then(token => {
         return uploadProfilePhotoFetch(token, id, formData);
       }).then(user => {
-        dispatch(uploadProfilePhotoSuccess(user));
+        dispatch(_uploadProfilePhotoSuccess(user));
         dispatch(AlertActions.alertSuccess("Updated successfully"));
 
         return ;
       }).catch(err => {
-        dispatch(uploadProfilePhotoFailure(err));
+        dispatch(_uploadProfilePhotoFailure(err));
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
         }
@@ -518,19 +473,19 @@ export const uploadProfilePhoto = (id, formData) => {
 
 /**
  * Update users' mobile phone
- * @param {string} id - Users' id
- * @param {string} phoneNumber - Mobile phone phoneNumber
- * @param {string} code - Verification Code
+ * @param {String} id - Users' id
+ * @param {String} phoneNumber - Mobile phone phoneNumber
+ * @param {Number} code - Verification Code
  */
 export const updateMobilePhone = (id, phoneNumber, code) => {
-  const updateMobilePhoneRequset = () => ({
+  const _updateMobilePhoneRequset = () => ({
     "type": userTypes.UPDATE_MOBILE_PHONE_REQUEST,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const updateMobilePhoneSuccess = (user) => ({
+  const _updateMobilePhoneSuccess = (user) => ({
     "type": userTypes.UPDATE_MOBILE_PHONE_SUCCESS,
     "meta": {},
     "error": null,
@@ -539,7 +494,7 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
     },
   });
 
-  const updateMobilePhoneFailure = (error) => ({
+  const _updateMobilePhoneFailure = (error) => ({
     "type": userTypes.UPDATE_MOBILE_PHONE_FAILURE,
     "meta": {},
     "error": error,
@@ -552,17 +507,17 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
       return Promise.reject(error);
     }
 
-    dispatch(updateMobilePhoneRequset());
+    dispatch(_updateMobilePhoneRequset());
     return getToken()
       .then(token => {
         return updateMobilePhoneFetch(token, id, phoneNumber, code);
       }).then(user => {
-        dispatch(updateMobilePhoneSuccess(user));
+        dispatch(_updateMobilePhoneSuccess(user));
         dispatch(AlertActions.alertSuccess("Updated successfully"));
 
         return true;
       }).catch(err => {
-        dispatch(updateMobilePhoneFailure(err));
+        dispatch(_updateMobilePhoneFailure(err));
         if (err.message) {
           dispatch(AlertActions.alertFailure(err.message));
         }
@@ -570,6 +525,4 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
         return false;
       });
   };
-
-
 }
