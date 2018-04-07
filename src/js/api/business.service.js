@@ -9,6 +9,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const businessSerivceUri = {
   buinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business',
+  getSingleBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/single/',
   categoryUrl: config.API_GATEWAY_ROOT + '/api/v1/business/category',
   tagUrl: config.API_GATEWAY_ROOT + '/api/v1/business/tag',
 };
@@ -18,7 +19,7 @@ const businessSerivceUri = {
  * @param {number} skip - Number of business to skip
  * @param {number} limit - Number of business to limit
  */
-export const fetchBusinessList = (skip, limit) => {
+export const fetchBusinessList = (type, skip, limit) => {
   const options = {
     method: 'GET',
     headers: {
@@ -43,9 +44,40 @@ export const fetchBusinessList = (skip, limit) => {
 }
 
 /**
- * Add business
+ * Fetch single business
+ * @param {String} id - Business id
  */
-export const AddBusinessFetch = (type, token, data) => {
+export const fetchSingleBusiness = (id) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  return fetch(businessSerivceUri.getSingleBusinessUrl + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .then(json => {
+      return json;
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Add, update, delete business
+ * @param {String} type - Operation type
+ * @param {String} token - Verification code
+ * @param {Object} data - Business data
+ */
+export const businessOpertationFetch = (type, token, data) => {
   const options = {
     method: '',
     headers: {
@@ -75,13 +107,10 @@ export const AddBusinessFetch = (type, token, data) => {
   return fetch(businessSerivceUri.buinessUrl, options)
     .then(response => {
       if (response.ok) {
-        return response.json();
+        return response;
       } else {
         return Promise.reject(responseErrorHandler(response));
       }
-    })
-    .then(json => {
-      return json;
     })
     .catch(err => {
       return Promise.reject(err);

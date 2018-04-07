@@ -10,8 +10,8 @@ import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
-import Container from './Container';
-import { verifyAccount } from '../../actions/user.actions.js';
+import Container from './utils/Container';
+import { verifyAccount } from '../actions/user.actions.js';
 
 const styles = theme => ({
   root: {

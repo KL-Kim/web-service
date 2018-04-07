@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
-import Container from './containers/Container'
+import Container from './utils/Container'
 import ReviewCard from './utils/ReviewCard';
 import BusinessCard from './utils/BusinessCard';
 
@@ -128,4 +127,4 @@ class StoryPage extends Component {
   }
 }
 
-export default withRouter(withStyles(styles)(StoryPage));
+export default withStyles(styles)(StoryPage);

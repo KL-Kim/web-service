@@ -7,7 +7,7 @@ import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Divider from 'material-ui/Divider';
 
-import Container from './containers/Container'
+import Container from './utils/Container'
 import ReviewCard from './utils/ReviewCard';
 import StoryCard from './utils/StoryCard';
 

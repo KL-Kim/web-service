@@ -6,26 +6,22 @@ import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
-import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { FormControl, FormGroup, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import { FormControl } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
-import MoreVert from 'material-ui-icons/MoreVert';
 import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
-import SettingContainer from '../SettingContainer';
-import LinkContainer from '../../utils/LinkContainer';
-import TablePaginationActions from '../../utils/TablePaginationActions';
-import { getTagsList, addNewTag, updateTag, deleteTag } from '../../../actions/tag.actions.js';
+import SettingContainer from '../setting/SettingContainer';
+import { getCategoriesList, addNewCategory, updateCategory, deleteCategory } from '../../actions/category.actions.js';
 
 const styles = (theme) => ({
   "container": {
@@ -40,7 +36,7 @@ const styles = (theme) => ({
   },
 });
 
-class TagsList extends Component {
+class CategoryList extends Component {
   constructor(props) {
     super(props);
 
@@ -54,6 +50,7 @@ class TagsList extends Component {
       "enName": '',
       "krName": '',
       "cnName": '',
+      'parent': '',
     };
 
     this.handleAddNew = this.handleAddNew.bind(this);
@@ -65,13 +62,13 @@ class TagsList extends Component {
   }
 
   componentDidMount() {
-    this.props.getTagsList();
+    this.props.getCategoriesList();
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.tagsList) {
+    if (nextProps.categoriesList) {
       this.setState({
-        list: nextProps.tagsList
+        list: nextProps.categoriesList
       });
     }
 
@@ -85,9 +82,21 @@ class TagsList extends Component {
     });
   }
 
+  handleRowClick(e, category) {
+    this.setState({
+      _id: category._id,
+      code: category.code,
+      krName: category.krName,
+      cnName: category.cnName,
+      enName: category.enName,
+      parent: category.parent || '',
+      dialogOpen: true,
+    });
+  }
+
   handleDelete() {
     if (this.state._id) {
-      this.props.deleteTag(this.state._id);
+      this.props.deleteCategory(this.state._id);
     }
 
     this.setState({
@@ -104,6 +113,7 @@ class TagsList extends Component {
       "enName": '',
       "krName": '',
       "cnName": '',
+      'parent': '',
     });
   }
 
@@ -111,17 +121,12 @@ class TagsList extends Component {
     this.setState({
       dialogOpen: false,
       "isNew": false,
-    });
-  }
-
-  handleRowClick(e, tag) {
-    this.setState({
-      _id: tag._id,
-      code: tag.code,
-      krName: tag.krName,
-      cnName: tag.cnName,
-      enName: tag.enName,
-      dialogOpen: true,
+      "_id": '',
+      "code": '',
+      "enName": '',
+      "krName": '',
+      "cnName": '',
+      'parent': '',
     });
   }
 
@@ -129,28 +134,30 @@ class TagsList extends Component {
     e.preventDefault();
     const { search } = this.state;
 
-    this.props.getTagsList(search);
+    this.props.getCategoriesList(search);
   }
 
   handleSubmit() {
-    const { _id, code, enName, krName, cnName, isNew } = this.state;
+    const { _id, code, enName, krName, cnName, parent, isNew } = this.state;
 
     if (code && enName && krName && cnName) {
       if (isNew) {
-        this.props.addNewTag({
+        this.props.addNewCategory({
           code: code,
           enName: enName,
           krName: krName,
           cnName: cnName,
+          parent: parent,
         });
       } else {
-        this.props.updateTag({
+        this.props.updateCategory({
           _id: _id,
           code: code,
           enName: enName,
           krName: krName,
           cnName: cnName,
-        })
+          parent: parent,
+        });
       }
     }
 
@@ -163,14 +170,14 @@ class TagsList extends Component {
 
 
   render() {
-    const { classes, admin } = this.props;
-    const { anchorEl, code, enName, krName, cnName, isNew } = this.state;
+    const { classes } = this.props;
+    const { code, enName, krName, cnName, isNew } = this.state;
 
     return (
       <SettingContainer history={this.props.history} location={this.props.location}>
         <div>
           <Typography type="display1" gutterBottom>
-            Tags List
+            Category List
           </Typography>
 
           <Grid container spacing={16} className={classes.container}>
@@ -215,6 +222,7 @@ class TagsList extends Component {
                   <TableCell>한국어</TableCell>
                   <TableCell>中文名</TableCell>
                   <TableCell>Slug</TableCell>
+                  <TableCell>Parent</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -229,6 +237,7 @@ class TagsList extends Component {
                         <TableCell>{c.krName}</TableCell>
                         <TableCell>{c.cnName}</TableCell>
                         <TableCell>{c.enName}</TableCell>
+                        <TableCell>{c.parent}</TableCell>
                       </TableRow>
 
                   ))
@@ -246,7 +255,7 @@ class TagsList extends Component {
             <DialogTitle id="alert-dialog-title">
               <Grid container>
                 <Grid item xs={6}>
-                  Tag
+                  Category
                 </Grid>
                 <Grid item xs={6}>
                   <div className={classes.buttonContainer}>
@@ -257,7 +266,7 @@ class TagsList extends Component {
                 </Grid>
               </Grid>
             </DialogTitle>
-            <DialogContent id="alert-dialog-description">
+            <DialogContent>
               <Grid container>
                 <Grid item xs={6}>
                   <TextField fullWidth id="code" label="Code" margin="normal" name="code" onChange={this.handleChange} value={this.state.code} />
@@ -271,8 +280,24 @@ class TagsList extends Component {
                 <Grid item xs={6}>
                   <TextField fullWidth id="cnName" label="中文名" margin="normal" name="cnName" onChange={this.handleChange} value={this.state.cnName} />
                 </Grid>
-              </Grid>
 
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="parent">Parent</InputLabel>
+                    <Select native
+                      name="parent"
+                      value={this.state.parent}
+                      onChange={this.handleChange}
+                      input={<Input id="parent" />}
+                    >
+                      <option value="" />
+                        {_.isEmpty(this.state.list) ? '' : this.state.list.map(item => (
+                          <option key={item.code} value={item.code}>{item.krName}</option>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
             </DialogContent>
             <DialogActions>
               <Button raised autoFocus color="primary" disabled={!(code && enName && krName && cnName)} onClick={this.handleSubmit}>
@@ -281,7 +306,7 @@ class TagsList extends Component {
               <Button color="primary" onClick={this.handleDialogClose}>
                 Cancel
               </Button>
-            </DialogActions>
+          </DialogActions>
           </Dialog>
         </div>
       </SettingContainer>
@@ -289,22 +314,22 @@ class TagsList extends Component {
   }
 }
 
-TagsList.propTypes = {
+CategoryList.propTypes = {
   "classes": PropTypes.object.isRequired,
   "history": PropTypes.object.isRequired,
   "admin": PropTypes.object.isRequired,
-  "getTagsList": PropTypes.func.isRequired,
-  "getTagsList": PropTypes.func.isRequired,
-  "updateTag": PropTypes.func.isRequired,
-  "deleteTag": PropTypes.func.isRequired,
+  "categoriesList": PropTypes.array.isRequired,
+  "isFetching": PropTypes.bool.isRequired,
+  "getCategoriesList": PropTypes.func.isRequired,
+  "addNewCategory": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "admin": state.userReducer.user,
-    "tagsList": state.tagReducer.tagsList,
-    "isFetching": state.tagReducer.isFetching,
+    "categoriesList": state.categoryReducer.categoriesList,
+    "isFetching": state.categoryReducer.isFetching,
   };
 };
 
-export default connect(mapStateToProps, { getTagsList, addNewTag, updateTag, deleteTag })(withStyles(styles)(TagsList));
+export default connect(mapStateToProps, { getCategoriesList, addNewCategory, updateCategory, deleteCategory })(withStyles(styles)(CategoryList));

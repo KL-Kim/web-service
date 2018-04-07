@@ -14,9 +14,9 @@ import Divider from 'material-ui/Divider';
 import AccountCircle from 'material-ui-icons/AccountCircle';
 import ExitToApp from 'material-ui-icons/ExitToApp';
 
-import LinkContainer from './utils/LinkContainer';
-import Avatar from './utils/Avatar';
-import AdminSidebarMenuList from './utils/AdminSidebarMenuList';
+import LinkContainer from './LinkContainer';
+import Avatar from './Avatar';
+import AdminSidebarMenuList from './AdminSidebarMenuList';
 
 const styles = theme => ({
   "appBar": {

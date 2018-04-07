@@ -13,7 +13,7 @@ import { CircularProgress } from 'material-ui/Progress';
 
 import config from '../config/config';
 import { register } from '../actions/user.actions';
-import Container from './containers/Container';
+import Container from './utils/Container';
 
 const styles = theme => ({
   "root": {

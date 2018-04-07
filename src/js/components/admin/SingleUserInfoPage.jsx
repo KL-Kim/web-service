@@ -13,8 +13,8 @@ import Select from 'material-ui/Select';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 
-import SettingContainer from '../SettingContainer';
-import { adminEditUser } from '../../../actions/admin.actions.js';
+import SettingContainer from '../setting/SettingContainer';
+import { adminEditUser } from '../../actions/admin.actions.js';
 
 const styles = (theme) => ({
   "paper": {

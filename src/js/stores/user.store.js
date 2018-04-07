@@ -5,7 +5,7 @@ import { createLogger } from 'redux-logger';
 import reducers from '../reducers';
 
 // Dev
-import DevTools from '../components/DevTools';
+import DevTools from '../components/utils/DevTools';
 
 
 const configureState = (preloadedState) => {

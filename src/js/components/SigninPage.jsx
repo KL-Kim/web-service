@@ -7,7 +7,7 @@ import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 
-import Container from './containers/Container';
+import Container from './utils/Container';
 import LoginForm from './utils/LoginForm';
 import { login } from '../actions/user.actions';
 

@@ -32,7 +32,7 @@ const SnackbarContentProps = {
   'aria-describedby': 'message-id',
 };
 
-const hideDuration = 2000;
+const hideDuration = 3000;
 
 class Alert extends Component {
   constructor(props) {

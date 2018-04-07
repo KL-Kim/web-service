@@ -16,9 +16,9 @@ import AboutPage from './components/AboutPage';
 import TermsPolicyPage from './components/TermsPolicyPage';
 import LicensePage from './components/LicensePage';
 import NoMatchPage from './components/404';
-import ForgetPasswordPage from './components/containers/ForgetPasswordPage';
-import AccountVerificationPage from './components/containers/AccountVerificationPage';
-import ChangePasswordPage from './components/containers/ChangePasswordPage';
+import ForgetPasswordPage from './components/ForgetPasswordPage';
+import AccountVerificationPage from './components/AccountVerificationPage';
+import ChangePasswordPage from './components/ChangePasswordPage';
 
 // Setting
 import SettingAccount from './components/setting/AccountPage';
@@ -28,15 +28,15 @@ import SettingStory from './components/setting/StoryPage';
 import SettingNotification from './components/setting/NotificationPage';
 
 // Admin Setting
-import SettingUsersList from './components/setting/admin/UsersList';
-import SettingSingleUserPage from './components/setting/admin/SingleUserInfoPage'
-import SettingBusinessList from './components/setting/admin/BusinessList';
-import SettingSingleBusinessPage from './components/setting/admin/SingleBusinessPage'
-import SettingCategoriesList from './components/setting/admin/CategoriesList';
-import SettingTagsList from './components/setting/admin/TagsList';
+import Admin_UsersList from './components/admin/UsersList';
+import Admin_SingleUserPage from './components/admin/SingleUserInfoPage'
+import Admin_BusinessList from './components/admin/BusinessList';
+import Admin_SingleBusinessPage from './components/admin/SingleBusinessPage'
+import Admin_CategoriesList from './components/admin/CategoriesList';
+import Admin_TagsList from './components/admin/TagsList';
 
-import AdminReviewsList from './components/setting/admin/ReviewsList';
-import AdminStoriesList from './components/setting/admin/StoriesList';
+import Admin_ReviewsList from './components/admin/ReviewsList';
+import Admin_StoriesList from './components/admin/StoriesList';
 
 // Temp
 import BusinessPage from './components/BusinessPage';
@@ -79,17 +79,17 @@ const App = () => {
           <Route path="/setting/notification" component={SettingNotification} />
 
           {/*  Admin Routes */}
-          <AdminRoute exact path="/admin/setting/users" component={SettingUsersList} />
-          <AdminRoute path="/admin/setting/users/:username" component={SettingSingleUserPage} />
+          <AdminRoute exact path="/admin/users" component={Admin_UsersList} />
+          <AdminRoute path="/admin/user/:username" component={Admin_SingleUserPage} />
 
-          <AdminRoute exact path="/admin/setting/business" component={SettingBusinessList} />
-          <AdminRoute path="/admin/setting/business/:business" component={SettingSingleBusinessPage} />
+          <AdminRoute exact path="/admin/business" component={Admin_BusinessList} />
+          <AdminRoute path="/admin/business/:business" component={Admin_SingleBusinessPage} />
 
-          <AdminRoute exact path="/admin/setting/category" component={SettingCategoriesList} />
-          <AdminRoute exact path="/admin/setting/tag" component={SettingTagsList} />
+          <AdminRoute exact path="/admin/category" component={Admin_CategoriesList} />
+          <AdminRoute exact path="/admin/tag" component={Admin_TagsList} />
 
-          <Route path="/admin/setting/reviews" component={AdminReviewsList} />
-          <Route path="/admin/setting/stories" component={AdminStoriesList} />
+          <Route path="/admin/reviews" component={Admin_ReviewsList} />
+          <Route path="/admin/stories" component={Admin_StoriesList} />
 
           {/*  Error Routes */}
           <Route component={NoMatchPage} />

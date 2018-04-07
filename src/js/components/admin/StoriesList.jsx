@@ -13,7 +13,7 @@ import Divider from 'material-ui/Divider';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import TextField from 'material-ui/TextField';
 
-import SettingContainer from '../SettingContainer';
+import SettingContainer from '../setting/SettingContainer';
 
 // Mock data
 const story = {

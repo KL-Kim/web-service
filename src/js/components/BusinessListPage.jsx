@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 
-import Container from './containers/Container';
+import Container from './utils/Container';
 import BusinessCard from './utils/BusinessCard';
 import BusinessFilter from './utils/BusinessFilter';
 

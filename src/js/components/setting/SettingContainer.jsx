@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from 'material-ui/styles';
-import Header from '../Header';
+
+import Header from '../utils/Header';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
-import Alert from '../containers/Alert';
-import DevTools from '../DevTools';
+import Alert from '../utils/Alert';
+import DevTools from '../utils/DevTools';
 
 import { logout } from '../../actions/user.actions';
 

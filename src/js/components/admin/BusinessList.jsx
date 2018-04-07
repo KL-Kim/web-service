@@ -7,17 +7,16 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { FormControl, FormGroup, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
-import Checkbox from 'material-ui/Checkbox';
 import Button from 'material-ui/Button';
 
-import SettingContainer from '../SettingContainer';
-import LinkContainer from '../../utils/LinkContainer';
-import TablePaginationActions from '../../utils/TablePaginationActions';
-import { getBusinessList } from '../../../actions/business.actions.js';
+import SettingContainer from '../setting/SettingContainer';
+import LinkContainer from '../utils/LinkContainer';
+import TablePaginationActions from '../utils/TablePaginationActions';
+import { getBusinessList } from '../../actions/business.actions.js';
 
 const styles = (theme) => ({
   "container": {
@@ -108,10 +107,10 @@ class BusinessList extends Component {
             <Grid item xs={8}>
               <div className={classes.buttonContainer}>
                 <LinkContainer to={{
-                    pathname: "/admin/setting/business/new",
+                    pathname: "/admin/business/new",
                     hash: '#',
                     state: {
-                      "admin": this.props.admin,
+                      "admin": admin,
                     }
                   }}
                 >
@@ -129,9 +128,10 @@ class BusinessList extends Component {
                 <TableRow>
                   <TableCell>Index</TableCell>
                   <TableCell>中文名</TableCell>
-                  <TableCell>힌국어</TableCell>
-                  <TableCell>Business category</TableCell>
+                  <TableCell>한국어</TableCell>
+                  <TableCell>Category</TableCell>
                   <TableCell>Views Count</TableCell>
+                  <TableCell>State</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -139,11 +139,11 @@ class BusinessList extends Component {
                   _.isEmpty(businessList) ? (<TableRow></TableRow>)
                   : businessList.map((business, index) => (
                     <LinkContainer to={{
-                        pathname: "/admin/setting/business/" + business.cnName,
+                        pathname: "/admin/business/" + business.cnName,
                         hash: '#',
                         state: {
-                          "admin": this.props.admin,
-                          "business": business
+                          "admin": admin,
+                          "businessId": business._id
                         }
                       }} key={index}
                     >
@@ -153,6 +153,7 @@ class BusinessList extends Component {
                         <TableCell>{business.krName}</TableCell>
                         <TableCell>{_.isEmpty(business.category) ? '' : business.category.krName}</TableCell>
                         <TableCell>{business.viewsCount}</TableCell>
+                        <TableCell>{_.upperFirst(business.state)}</TableCell>
                       </TableRow>
                     </LinkContainer>
                   ))

@@ -13,10 +13,10 @@ import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
 import Checkbox from 'material-ui/Checkbox';
 
-import SettingContainer from '../SettingContainer';
-import LinkContainer from '../../utils/LinkContainer';
-import TablePaginationActions from '../../utils/TablePaginationActions';
-import { getUsersList, adminEditUser } from '../../../actions/admin.actions.js';
+import SettingContainer from '../setting/SettingContainer';
+import LinkContainer from '../utils/LinkContainer';
+import TablePaginationActions from '../utils/TablePaginationActions';
+import { getUsersList, adminEditUser } from '../../actions/admin.actions.js';
 
 const styles = (theme) => ({});
 
@@ -272,7 +272,7 @@ class UsersList extends Component {
                 { _.isEmpty(this.state.users) ? (<TableRow></TableRow>)
                   : this.state.users.map((user, index) => (
                     <LinkContainer to={{
-                        pathname: "/admin/setting/users/" + user.username,
+                        pathname: "/admin/user/" + user.username,
                         hash: '#',
                         state: {
                           "admin": this.props.admin,

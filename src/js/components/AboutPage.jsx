@@ -4,7 +4,7 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
-import Container from './containers/Container';
+import Container from './utils/Container';
 
 const styles = theme => ({
   paper: {

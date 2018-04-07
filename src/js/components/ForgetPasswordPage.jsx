@@ -11,9 +11,9 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
-import emailTypes from '../../constants/email.types';
-import { sendEmail } from '../../actions/auth.actions';
-import Container from './Container';
+import emailTypes from '../constants/email.types';
+import { sendEmail } from '../actions/auth.actions';
+import Container from './utils/Container';
 
 const styles = theme => ({
   "root": {

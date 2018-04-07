@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
-import Header from '../Header';
-import Footer from '../Footer';
+import Header from './Header';
+import Footer from './Footer';
 import Alert from './Alert';
-import DevTools from '../DevTools';
+import DevTools from './DevTools';
 
 import { logout } from '../../actions/user.actions';
 

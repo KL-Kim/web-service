@@ -10,9 +10,9 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 
-import config from '../../config/config';
-import Container from './Container';
-import { changePassword } from '../../actions/user.actions';
+import config from '../config/config';
+import Container from './utils/Container';
+import { changePassword } from '../actions/user.actions';
 
 const styles = theme => ({
   root: {
