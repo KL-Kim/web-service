@@ -130,6 +130,7 @@ class ChangeAvatarModule extends Component {
               </Grid>
             </Grid>
           </Grid>
+            
           <Grid item xs={6}>
             <Grid container justify="center">
               <Grid item>

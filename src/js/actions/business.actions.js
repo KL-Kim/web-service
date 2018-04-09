@@ -12,8 +12,10 @@ import { fetchBusinessList, businessOpertationFetch, fetchSingleBusiness } from 
  * Get business list
  * @param {Number} skip - Number of business to skip
  * @param {Number} limit - Number of business to limit
+ * @param {Object} filter - Business list filter
+ * @param {search} search - Search business
  */
-export const getBusinessList = (skip, limit) => {
+export const getBusinessList = (skip, limit, filter, search) => {
   const _getBusinessListRequest = () => ({
     "type": businessTypes.GET_BUSINESS_LIST_REQUEST,
     "meta": {},
@@ -40,11 +42,11 @@ export const getBusinessList = (skip, limit) => {
 
   return (dispatch, getState) => {
     dispatch(_getBusinessListRequest());
-    return fetchBusinessList(skip, limit)
+    return fetchBusinessList(skip, limit, filter, search)
       .then(response => {
         dispatch(_getBusinessListSuccess(response));
 
-        return ;
+        return response;
       })
       .catch(err => {
         dispatch(_getBusinessListFailure(err));
@@ -67,13 +69,11 @@ export const getSingleBusiness = (id) => {
     "payload": {}
   });
 
-  const _getSignleBusinessSuccess = (response) => ({
+  const _getSignleBusinessSuccess = () => ({
     "type": businessTypes.GET_SINGLE_BUSINESS_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      business: response,
-    }
+    "payload": {}
   });
 
   const _getSingleBusinessFailure = (error) => ({
@@ -91,7 +91,7 @@ export const getSingleBusiness = (id) => {
     dispatch(_getSingleBusinessRequest());
     return fetchSingleBusiness(id)
       .then(business => {
-        dispatch(_getSignleBusinessSuccess(business));
+        dispatch(_getSignleBusinessSuccess());
 
         return business;
       })
@@ -242,8 +242,9 @@ export const deleteBusiness = (id) => {
       })
 
       .then(response => {
-        dispatch(_deleteBusinessSuccess(response));
+        dispatch(_deleteBusinessSuccess());
         dispatch(AlertActions.alertSuccess("Delete business successfully"));
+        dispatch(getBusinessList());
 
         return ;
       })

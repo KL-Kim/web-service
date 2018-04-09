@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import validator from 'validator';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
@@ -36,6 +35,8 @@ import { getTagsList } from '../../actions/tag.actions.js';
 import { getCities, getAreas } from '../../actions/pca.actions';
 import { getBusinessList, addBusiness, updateBusiness, deleteBusiness, getSingleBusiness } from '../../actions/business.actions';
 
+import UploadFiles from '../utils/UploadFiles';
+
 // Mock image
 import logo from '../../../css/logo.svg';
 
@@ -56,7 +57,7 @@ const paymentList = [
 
 const styles = (theme) => ({
   "container": {
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit,
   },
   "paper": {
     padding: theme.spacing.unit * 3,
@@ -131,7 +132,7 @@ class SingleBusinessPage extends Component {
         sun: '',
       },
       rest: '',
-      subDepartments: [],
+      chains: [],
       description: '',
       ratingAverage: 0,
       "viewsCount": 0,
@@ -140,6 +141,7 @@ class SingleBusinessPage extends Component {
       menu: [],
       thumbnailUri: {},
       imagesUri: [],
+      search: '',
     }
 
     this.state._id = _.isUndefined(this.props.location.state.businessId) ? '' : this.props.location.state.businessId;
@@ -156,6 +158,9 @@ class SingleBusinessPage extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeCategory = this.handleChangeCategory.bind(this);
+    this.handleChangeAddress = this.handleChangeAddress.bind(this);
+    this.handleChangeOpenningSpec = this.handleChangeOpenningSpec.bind(this);
     this.handleOpenSubDepartmentsDialog = this.handleOpenSubDepartmentsDialog.bind(this);
     this.handleCloseSubDepartmentsDialog = this.handleCloseSubDepartmentsDialog.bind(this);
     this.handleOpenAddMenuDialog = this.handleOpenAddMenuDialog.bind(this);
@@ -164,6 +169,7 @@ class SingleBusinessPage extends Component {
     this.handleRowClick = this.handleRowClick.bind(this);
     this.handleDeleteMenu = this.handleDeleteMenu.bind(this);
     this.handleOpenConfimationDialog = this.handleOpenConfimationDialog.bind(this);
+    this.handleCloseConfirmationDialog = this.handleCloseConfirmationDialog.bind(this);
     this.handleSwitch = this.handleSwitch.bind(this);
     this.handleSubdepartmentsRowClick = this.handleSubdepartmentsRowClick.bind(this);
     this.handleDeleteSubdepartmentChip = this.handleDeleteSubdepartmentChip.bind(this);
@@ -229,7 +235,7 @@ class SingleBusinessPage extends Component {
             sun: _.isEmpty(business.openningHoursSpec) ? '' : (business.openningHoursSpec.sun || ''),
           },
           rest: business.rest || '',
-          subDepartments: _.isEmpty(business.subDepartments) ? [] : business.subDepartments.slice(),
+          chains: _.isEmpty(business.chains) ? [] : business.chains.slice(),
           description: business.description || '',
           "viewsCount": business.viewsCount || 0,
           "favoredCount": business.favoredCount || 0,
@@ -258,19 +264,31 @@ class SingleBusinessPage extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    switch (name) {
-      case 'category':
-        this.setState({
-          "category": {
-            _id: value._id,
-            code: value.code,
-            krName: value.krName,
-            cnName: value.cnName,
-            enName: value.enName,
-          }
-        });
-        break;
+    this.setState({
+      [name]: value
+    });
+  }
 
+  handleChangeCategory(e) {
+    const { name, value } = e.target;
+
+    if (name === 'category') {
+      this.setState({
+        "category": {
+          _id: value._id,
+          code: value.code,
+          krName: value.krName,
+          cnName: value.cnName,
+          enName: value.enName,
+        }
+      });
+    }
+  }
+
+  handleChangeAddress(e) {
+    const { name, value } = e.target;
+
+    switch (name) {
       case 'province':
         this.setState({
           "address": {
@@ -337,6 +355,17 @@ class SingleBusinessPage extends Component {
         });
         break;
 
+      default:
+        this.setState({
+          [name]: value
+        });
+    }
+  }
+
+  handleChangeOpenningSpec(e) {
+    const { name, value } = e.target;
+
+    switch (name) {
       case 'mon':
         this.setState({
           "openningHoursSpec": {
@@ -405,7 +434,6 @@ class SingleBusinessPage extends Component {
           [name]: value
         });
     }
-
   }
 
   handleOpenSubDepartmentsDialog() {
@@ -420,28 +448,30 @@ class SingleBusinessPage extends Component {
     });
   }
 
-  handleSearchBusiness() {
-    console.log("Clicked Search");
+  handleSearchBusiness(e) {
+    e.preventDefault();
+
+    this.props.getBusinessList(0, 0, {}, this.state.search)
   }
 
   handleSubdepartmentsRowClick(e, subdepartment) {
-    const subDepartments = this.state.subDepartments.slice();
-    subDepartments.push(subdepartment);
+    const chains = this.state.chains.slice();
+    chains.push(subdepartment);
 
     this.setState({
-      subDepartments: subDepartments.slice()
+      chains: chains.slice()
     });
   }
 
   handleDeleteSubdepartmentChip = data => e => {
-    const subDepartments = this.state.subDepartments.slice();
-    const index = this.state.subDepartments.indexOf(data);
+    const chains = this.state.chains.slice();
+    const index = this.state.chains.indexOf(data);
 
-    subDepartments.splice(index, 1);
-    const newSubdepartments = subDepartments.slice();
+    chains.splice(index, 1);
+    const newSubdepartments = chains.slice();
 
     this.setState({
-      subDepartments: newSubdepartments
+      chains: newSubdepartments
     });
   }
 
@@ -530,6 +560,12 @@ class SingleBusinessPage extends Component {
     });
   }
 
+  handleCloseConfirmationDialog() {
+    this.setState({
+      confirmationDialogOpen: false
+    });
+  }
+
   handleSwitch = name => e => {
     this.setState({
       [name]: e.target.checked
@@ -578,7 +614,7 @@ class SingleBusinessPage extends Component {
           sun: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.sun || ''),
         },
         rest: this.state.rest || '',
-        subDepartments: _.isEmpty(this.state.subDepartments) ? [] : this.state.subDepartments,
+        chains: _.isEmpty(this.state.chains) ? [] : this.state.chains,
         description: this.state.description || '',
         "event": this.state.event || '',
         menu: _.isEmpty(this.state.menu) ? [] : this.state.menu,
@@ -610,14 +646,14 @@ class SingleBusinessPage extends Component {
         data.tags = tags.slice();
       }
 
-      if (this.state.subDepartments) {
-        let subDepartments = [];
+      if (this.state.chains) {
+        let chains = [];
 
-        this.state.subDepartments.map(item => {
-          subDepartments.push(item._id)
-        })
+        this.state.chains.map(item =>
+          chains.push(item._id)
+        )
 
-        data.subDepartments = subDepartments.slice();
+        data.chains = chains.slice();
       }
 
       if (this.state._id) {
@@ -637,7 +673,7 @@ class SingleBusinessPage extends Component {
       <SettingContainer>
         {isFetching ? (<CircularProgress className={classes.progress} size={50} />) :
           (<div>
-            <Grid container spacing={24} alignItems="center" className={classes.container}>
+            <Grid container spacing={24} alignItems="center">
               <Grid item xs={6}>
                 <Typography type="display1" gutterBottom>{this.state.cnName + ' - ' + this.state.krName}</Typography>
               </Grid>
@@ -674,243 +710,20 @@ class SingleBusinessPage extends Component {
               </Grid>
               <Grid item xs={6}>
                 <Grid container spacing={16}>
-                  <Grid item xs={3}>
+                  <Grid item xs={6}>
                     <Paper>
                       <img src={logo} alt="photo1" />
                     </Paper>
                   </Grid>
-                  <Grid item xs={3}>
-                    <Paper>
-                      <img src={logo} alt="photo2" />
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Paper>
-                      <img src={logo} alt="photo2" />
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Paper>
-                      <img src={logo} alt="photo2" />
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Paper>
-                      <img src={logo} alt="photo2" />
-                    </Paper>
-                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
 
-            <Grid container spacing={24} alignItems="center">
-              <Grid item xs={3}>
+            <Grid container spacing={16}>
+              <Grid item xs={4}>
                 <Paper className={classes.paper}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="category" required>Category</InputLabel>
-                    <Select
-                      name="category"
-                      value={this.state.category.krName}
-                      onChange={this.handleChange}
-                      input={<Input id="category" />}
-                      renderValue={selected => selected}
-                    >
-                      {_.isEmpty(this.props.categoriesList) ? '' : this.props.categoriesList.map(item => (
-                        <MenuItem
-                          key={item.code}
-                          value={{
-                            _id: item._id,
-                            code: item.code,
-                            krName: item.krName,
-                            cnName: item.cnName,
-                            enName: item.enName,
-                          }}
-                        >
-                          <ListItemText primary={item.krName} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={3}>
-                <Paper className={classes.paper}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="tag">Tags</InputLabel>
-                    <Select multiple
-                      name="tags"
-                      value={this.state.tags}
-                      onChange={this.handleChange}
-                      input={<Input id="tag" />}
-                      renderValue={selected => selected.join(', ')}
-                    >
-                      {
-                        _.isEmpty(this.props.tagsList) ? '' : this.props.tagsList.map(item => (
-                          <MenuItem
-                            key={item.code}
-                            value={item.krName}
-                          >
-                            <Checkbox checked={this.state.tags.indexOf(item.krName) > -1} />
-                            <ListItemText primary={item.krName} />
-                          </MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </FormControl>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Paper className={classes.paper}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <Typography type="title">Sub Departments</Typography>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <div className={classes.buttonContainer}>
-                        <Button raised color="primary" onClick={this.handleOpenSubDepartmentsDialog}>Add</Button>
-                      </div>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      {
-                        this.state.subDepartments.map((data, index) => (
-                          <Chip
-                            key={index}
-                            label={data.krName}
-                            onDelete={this.handleDeleteSubdepartmentChip(data)}
-                            className={classes.chip}
-                          />
-                        ))
-                      }
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
-            </Grid>
-
-            <Paper className={classes.paper}>
-              <Grid container spacing={16} alignItems="center">
-                <Grid item xs={12}>
-                  <Typography type="title">Basic Info</Typography>
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField fullWidth required
-                    id="cnName"
-                    label="中文名"
-                    margin="normal"
-                    name="cnName"
-                    value={this.state.cnName}
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField fullWidth required
-                    id="krName"
-                    label="한국어"
-                    margin="normal"
-                    name="krName"
-                    value={this.state.krName}
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField fullWidth required
-                    id="enName"
-                    label="English"
-                    margin="normal"
-                    value={this.state.enName}
-                    name="enName"
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField fullWidth required
-                    id="tel"
-                    label="Tel"
-                    margin="normal"
-                    value={this.state.tel}
-                    name="tel"
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField
-                    fullWidth
-                    id="priceRange"
-                    label="Price Range"
-                    margin="normal"
-                    value={this.state.priceRange}
-                    name="priceRange"
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <TextField fullWidth
-                    id="delivery"
-                    label="Delivery"
-                    margin="normal"
-                    value={this.state.delivery}
-                    name="delivery"
-                    onChange={this.handleChange} />
-                </Grid>
-
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="language">Supported language</InputLabel>
-                    <Select multiple
-                      name="supportedLanguage"
-                      value={this.state.supportedLanguage}
-                      onChange={this.handleChange}
-                      input={<Input id="language" />}
-                      renderValue={selected => selected.join(', ')}
-                    >
-                      {
-                        languageList.map((item, index) => (
-                          <MenuItem
-                            key={index}
-                            value={item}
-                          >
-                            <Checkbox checked={this.state.supportedLanguage.indexOf(item) > -1} />
-                            <ListItemText primary={item} />
-                          </MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="payment">Supported payment</InputLabel>
-                    <Select multiple
-                      name="payment"
-                      value={this.state.payment}
-                      onChange={this.handleChange}
-                      input={<Input id="payment" />}
-                      renderValue={selected => selected.join(', ')}
-                    >
-                      {
-                        paymentList.map((item, index) => (
-                          <MenuItem
-                            key={index}
-                            value={item}
-                          >
-                            <Checkbox checked={this.state.payment.indexOf(item) > -1} />
-                            <ListItemText primary={item} />
-                          </MenuItem>
-                        ))
-                      }
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={6}>
                   <FormControl fullWidth >
-                    <FormLabel component="label" required>State</FormLabel>
+                    <FormLabel component="label" required error>State</FormLabel>
                     <RadioGroup
                       row
                       aria-label="state"
@@ -920,13 +733,15 @@ class SingleBusinessPage extends Component {
                     >
                       <FormControlLabel value="draft" control={<Radio />} label="Draft" />
                       <FormControlLabel value="published" control={<Radio />} label="Published" />
-                      <FormControlLabel value="deleted" control={<Radio />} label="Deleted" />
+                      <FormControlLabel value="trash" control={<Radio />} label="Trash" />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
+                </Paper>
+              </Grid>
 
-                <Grid item xs={6}>
-                  <FormControl fullWidth >
+              <Grid item xs={4}>
+                <Paper className={classes.paper}>
+                  <FormControl fullWidth error>
                     <FormLabel component="label" required>Business Status</FormLabel>
                     <RadioGroup
                       row
@@ -939,12 +754,225 @@ class SingleBusinessPage extends Component {
                       <FormControlLabel value="dissolute" control={<Radio />} label="Dissolute" />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
-
+                </Paper>
               </Grid>
-            </Paper>
 
-            <Grid container spacing={24}>
+              <Grid item xs={4}>
+                <Paper className={classes.paper}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <Typography type="title">Chain</Typography>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <div className={classes.buttonContainer}>
+                        <Button raised color="primary" onClick={this.handleOpenSubDepartmentsDialog}>Add</Button>
+                      </div>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      {
+                        this.state.chains.map((data, index) => (
+                          <Chip
+                            key={index}
+                            label={data.krName}
+                            onDelete={this.handleDeleteSubdepartmentChip(data)}
+                            className={classes.chip}
+                          />
+                        ))
+                      }
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              <Grid item xs={9}>
+                <Paper className={classes.paper}>
+                  <Grid container spacing={16} alignItems="center">
+                    <Grid item xs={12}>
+                      <Typography type="title">Basic Info</Typography>
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField fullWidth required error
+                        id="cnName"
+                        label="中文名"
+                        margin="normal"
+                        name="cnName"
+                        value={this.state.cnName}
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField fullWidth required error
+                        id="krName"
+                        label="한국어"
+                        margin="normal"
+                        name="krName"
+                        value={this.state.krName}
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField fullWidth required error
+                        id="enName"
+                        label="English"
+                        margin="normal"
+                        value={this.state.enName}
+                        name="enName"
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField fullWidth required error
+                        id="tel"
+                        label="Tel"
+                        margin="normal"
+                        value={this.state.tel}
+                        name="tel"
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField
+                        fullWidth
+                        id="priceRange"
+                        label="Price Range"
+                        margin="normal"
+                        value={this.state.priceRange}
+                        name="priceRange"
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <TextField fullWidth
+                        id="delivery"
+                        label="Delivery"
+                        margin="normal"
+                        value={this.state.delivery}
+                        name="delivery"
+                        onChange={this.handleChange} />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="language">Supported language</InputLabel>
+                        <Select multiple
+                          name="supportedLanguage"
+                          value={this.state.supportedLanguage}
+                          onChange={this.handleChange}
+                          input={<Input id="language" />}
+                          renderValue={selected => selected.join(', ')}
+                        >
+                          {
+                            languageList.map((item, index) => (
+                              <MenuItem
+                                key={index}
+                                value={item}
+                              >
+                                <Checkbox checked={this.state.supportedLanguage.indexOf(item) > -1} />
+                                <ListItemText primary={item} />
+                              </MenuItem>
+                            ))
+                          }
+                        </Select>
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={4}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="payment">Supported payment</InputLabel>
+                        <Select multiple
+                          name="payment"
+                          value={this.state.payment}
+                          onChange={this.handleChange}
+                          input={<Input id="payment" />}
+                          renderValue={selected => selected.join(', ')}
+                        >
+                          {
+                            paymentList.map((item, index) => (
+                              <MenuItem
+                                key={index}
+                                value={item}
+                              >
+                                <Checkbox checked={this.state.payment.indexOf(item) > -1} />
+                                <ListItemText primary={item} />
+                              </MenuItem>
+                            ))
+                          }
+                        </Select>
+                      </FormControl>
+                    </Grid>
+
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              <Grid item xs={3}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="category" required error>Category</InputLabel>
+                        <Select
+                          name="category"
+                          value={this.state.category.krName}
+                          onChange={this.handleChangeCategory}
+                          input={<Input id="category" />}
+                          renderValue={selected => selected}
+                        >
+                          {_.isEmpty(this.props.categoriesList) ? '' : this.props.categoriesList.map(item => (
+                            <MenuItem
+                              key={item.code}
+                              value={{
+                                _id: item._id,
+                                code: item.code,
+                                krName: item.krName,
+                                cnName: item.cnName,
+                                enName: item.enName,
+                              }}
+                            >
+                              <ListItemText primary={item.krName} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Paper>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="tag">Tags</InputLabel>
+                        <Select multiple
+                          name="tags"
+                          value={this.state.tags}
+                          onChange={this.handleChange}
+                          input={<Input id="tag" />}
+                          renderValue={selected => selected.join(', ')}
+                        >
+                          {
+                            _.isEmpty(this.props.tagsList) ? '' : this.props.tagsList.map(item => (
+                              <MenuItem
+                                key={item.code}
+                                value={item.krName}
+                              >
+                                <Checkbox checked={this.state.tags.indexOf(item.krName) > -1} />
+                                <ListItemText primary={item.krName} />
+                              </MenuItem>
+                            ))
+                          }
+                        </Select>
+                      </FormControl>
+                    </Paper>
+                  </Grid>
+
+
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={16}>
               <Grid item xs={6}>
                 <Paper className={classes.paper}>
                   <Grid container spacing={16} alignItems="center">
@@ -959,7 +987,7 @@ class SingleBusinessPage extends Component {
                           className={classes.input}
                           value={this.state.address.province.name}
                           input={<Input id="province" />}
-                          onChange={this.handleChange}
+                          onChange={this.handleChangeAddress}
                           renderValue={selected => selected}
                         >
                           {_.isEmpty(Provinces) ? '' : Provinces.map(p => (
@@ -985,7 +1013,7 @@ class SingleBusinessPage extends Component {
                           className={classes.input}
                           value={this.state.address.city.name}
                           input={<Input id="city" />}
-                          onChange={this.handleChange}
+                          onChange={this.handleChangeAddress}
                           renderValue={selected => selected}
                         >
                           {_.isEmpty(cities)
@@ -1013,7 +1041,7 @@ class SingleBusinessPage extends Component {
                           className={classes.input}
                           value={this.state.address.area.name}
                           input={<Input id="area" />}
-                          onChange={this.handleChange}
+                          onChange={this.handleChangeAddress}
                           renderValue={selected => selected}
                         >
                           {_.isEmpty(areas)
@@ -1037,13 +1065,13 @@ class SingleBusinessPage extends Component {
                       <TextField fullWidth id="street" label="Street"  margin="normal"
                         value={this.state.address.street}
                         name="street"
-                        onChange={this.handleChange} />
+                        onChange={this.handleChangeAddress} />
                     </Grid>
                   </Grid>
                 </Paper>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={3}>
                 <Paper className={classes.paper}>
                   <Grid container spacing={16} alignItems="center">
                     <Grid item xs={12}>
@@ -1055,7 +1083,7 @@ class SingleBusinessPage extends Component {
                         error={!_.toNumber(this.state.geo.lat)}
                         value={this.state.geo.lat}
                         name="lat"
-                        onChange={this.handleChange}
+                        onChange={this.handleChangeAddress}
                       />
                     </Grid>
 
@@ -1064,7 +1092,7 @@ class SingleBusinessPage extends Component {
                         error={!_.toNumber(this.state.geo.lat)}
                         value={this.state.geo.long}
                         name="long"
-                        onChange={this.handleChange}
+                        onChange={this.handleChangeAddress}
                       />
                     </Grid>
 
@@ -1072,77 +1100,40 @@ class SingleBusinessPage extends Component {
                 </Paper>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={3}>
+                <Paper className={classes.paper}>
+                  <Grid container spacing={16} alignItems="center">
+                    <Grid item xs={12}>
+                      <Typography type="title">Statics</Typography>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField fullWidth disabled id="viewsCount" label="Views Count"  margin="normal" defaultValue={this.state.viewsCount} />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" defaultValue={this.state.favoredCount} />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField fullWidth disabled id="rating" label="Rating"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField fullWidth disabled id="ratingCount" label="Rating Count"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    </Grid>
+
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              <Grid item xs={12}>
                 <Paper className={classes.paper}>
                   <Grid container spacing={16} alignItems="center">
                     <Grid item xs={12}>
                       <Typography type="title">Openning Days & Hours</Typography>
                     </Grid>
-                    <Grid item xs={4}>
-                      <TextField fullWidth  id="mon" label="Monday"  margin="normal"
-                        value={this.state.openningHoursSpec.mon}
-                        name="mon"
-                        onChange={this.handleChange}
-                      />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth  id="tue" label="Tuesday"  margin="normal"
-                        value={this.state.openningHoursSpec.tue}
-                        name="tue"
-                        onChange={this.handleChange}
-                      />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth  id="wed" label="Wednesday"  margin="normal"
-                        value={this.state.openningHoursSpec.wed}
-                        name="wed"
-                        onChange={this.handleChange}
-                      />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth
-                        id="thu"
-                        label="Thursday"
-                        margin="normal"
-                        value={this.state.openningHoursSpec.thu}
-                        name="thu"
-                        onChange={this.handleChange} />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth
-                        id="fri"
-                        label="Friday"
-                        margin="normal"
-                        value={this.state.openningHoursSpec.fri}
-                        name="fri"
-                        onChange={this.handleChange} />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth
-                        id="sat"
-                        label="Saturday"
-                        margin="normal"
-                        value={this.state.openningHoursSpec.sat}
-                        name="sat"
-                        onChange={this.handleChange}/>
-                    </Grid>
-
-                    <Grid item xs={4}>
-                      <TextField fullWidth
-                        id="sun"
-                        label="Sunday"
-                        margin="normal"
-                        value={this.state.openningHoursSpec.sun}
-                        name="sun"
-                        onChange={this.handleChange} />
-                    </Grid>
-
-                    <Grid item xs={8}>
+                    <Grid item xs={3}>
                       <TextField fullWidth
                         id="rest"
                         label="Rest Days"
@@ -1151,33 +1142,83 @@ class SingleBusinessPage extends Component {
                         name="rest"
                         onChange={this.handleChange} />
                     </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
 
-              <Grid item xs={6}>
-                <Paper className={classes.paper}>
-                  <Grid container spacing={16} alignItems="center">
-                    <Grid item xs={12}>
-                      <Typography type="title">Statics</Typography>
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="mon"
+                        label="Monday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.mon}
+                        name="mon"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
                     </Grid>
 
-                    <Grid item xs={6}>
-                      <TextField fullWidth disabled id="viewsCount" label="Views Count"  margin="normal" defaultValue={this.state.viewsCount} />
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="tue"
+                        label="Tuesday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.tue}
+                        name="tue"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
                     </Grid>
 
-                    <Grid item xs={6}>
-                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" defaultValue={this.state.favoredCount} />
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="wed"
+                        label="Wednesday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.wed}
+                        name="wed"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
                     </Grid>
 
-                    <Grid item xs={6}>
-                      <TextField fullWidth disabled id="rating" label="Rating"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="thu"
+                        label="Thursday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.thu}
+                        name="thu"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
                     </Grid>
 
-                    <Grid item xs={6}>
-                      <TextField fullWidth disabled id="ratingCount" label="Rating Count"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="fri"
+                        label="Friday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.fri}
+                        name="fri"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
                     </Grid>
 
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="sat"
+                        label="Saturday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.sat}
+                        name="sat"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
+                    </Grid>
+
+                    <Grid item xs={3}>
+                      <TextField fullWidth
+                        id="sun"
+                        label="Sunday"
+                        margin="normal"
+                        value={this.state.openningHoursSpec.sun}
+                        name="sun"
+                        onChange={this.handleChangeOpenningSpec}
+                      />
+                    </Grid>
                   </Grid>
                 </Paper>
               </Grid>
@@ -1206,7 +1247,7 @@ class SingleBusinessPage extends Component {
 
               <Grid item xs={12}>
                 <Paper className={classes.paper}>
-                  <Grid container>
+                  <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <Typography type="title">Menu</Typography>
                     </Grid>
@@ -1266,12 +1307,11 @@ class SingleBusinessPage extends Component {
               onClose={this.handleCloseSubDepartmentsDialog}
               aria-labelledby="sd-dialog-title"
               aria-describedby="sd-dialog-description1"
-
             >
               <DialogTitle id="sd-dialog-title" >
                 <Grid container justify="space-between" alignItems="center">
                   <Grid item xs={8}>
-                    Departments
+                    Chain
                   </Grid>
                   <Grid item xs={4}>
                     <form onSubmit={this.handleSearchBusiness}>
@@ -1402,6 +1442,7 @@ class SingleBusinessPage extends Component {
 
             <ConfirmationDialog
               open={this.state.confirmationDialogOpen}
+              handleClose={this.handleCloseConfirmationDialog}
               operation={this.props.deleteBusiness}
               params={this.state._id}
               title="Warning"

@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import fetch from 'cross-fetch';
+import _ from 'lodash';
 
 import config from '../config/config';
 import responseErrorHandler from '../helpers/error-handler.js';
@@ -16,10 +17,12 @@ const businessSerivceUri = {
 
 /**
  * Fetch business list
- * @param {number} skip - Number of business to skip
- * @param {number} limit - Number of business to limit
+ * @param {Number} skip - Number of business to skip
+ * @param {Number} limit - Number of business to limit
+ * @param {Object} filter - Business list filter
+ * @param {search} search - Search business
  */
-export const fetchBusinessList = (type, skip, limit) => {
+export const fetchBusinessList = (skip, limit, filter, search) => {
   const options = {
     method: 'GET',
     headers: {
@@ -27,7 +30,18 @@ export const fetchBusinessList = (type, skip, limit) => {
     },
   };
 
-  return fetch(businessSerivceUri.buinessUrl, options)
+  let url = businessSerivceUri.buinessUrl + '?';
+
+  if (_.isNumber(skip)) url = url + '&skip=' + skip;
+  if (_.isNumber(limit)) url = url + '&limit=' + limit;
+  if (!_.isEmpty(filter)) {
+    if (!!filter.state) url = url + '&state=' + filter.state;
+    if (!!filter.event) url = url + '&event=1';
+  }
+
+  if (!_.isUndefined(search)) url = url+ '&search=' + search;
+
+  return fetch(url, options)
     .then(response => {
       if (response.ok) {
         return response.json();

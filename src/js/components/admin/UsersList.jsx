@@ -125,7 +125,6 @@ class UsersList extends Component {
         userStatus.suspended = !userStatus.suspended;
         break;
 
-
       default:
         break;
     }
@@ -200,6 +199,7 @@ class UsersList extends Component {
                 </FormControl>
               </form>
             </Grid>
+
             <Grid item xs={3}>
               <Typography type="subheading">Role</Typography>
               <FormGroup row>
@@ -232,6 +232,7 @@ class UsersList extends Component {
                 />
               </FormGroup>
             </Grid>
+
             <Grid item xs={3}>
               <Typography type="subheading">Status</Typography>
               <FormGroup row>

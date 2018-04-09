@@ -5,7 +5,6 @@ import businessTypes from '../constants/business.types';
 
 const initialState = {
   businessList: null,
-  business: null,
   totalCount: 0,
   isFetching: false,
   error: null,
@@ -44,7 +43,6 @@ const businessReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        business: action.payload.business,
       };
 
     case businessTypes.GET_SINGLE_BUSINESS_FAILURE:
@@ -52,14 +50,12 @@ const businessReducer = (state = initialState, action) => {
         ...state,
         isFetching: false,
         error: action.error,
-        business: null,
       };
 
     case businessTypes.ADD_BUSINESS_SUCCESS:
       return {
         ...state,
-        isFetching: false,
-        business: action.payload.business,
+        isFetching: false
       };
 
     case businessTypes.ADD_BUSINESS_FAILURE:
@@ -67,7 +63,6 @@ const businessReducer = (state = initialState, action) => {
         ...state,
         isFetching: false,
         error: action.error,
-        business: null,
       };
 
     case businessTypes.UPDATE_BUSINESS_SUCCESS:
@@ -87,7 +82,6 @@ const businessReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        business: null,
       };
 
     case businessTypes.DELETE_BUSINESS_FAILURE:
@@ -96,7 +90,6 @@ const businessReducer = (state = initialState, action) => {
         isFetching: false,
         error: action.error,
       };
-
 
     default:
       return state;

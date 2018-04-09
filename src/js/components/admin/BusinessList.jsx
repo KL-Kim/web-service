@@ -7,11 +7,13 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { FormControl } from 'material-ui/Form';
+import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
 import Button from 'material-ui/Button';
+import Switch from 'material-ui/Switch';
+import Radio, { RadioGroup } from 'material-ui/Radio';
 
 import SettingContainer from '../setting/SettingContainer';
 import LinkContainer from '../utils/LinkContainer';
@@ -40,9 +42,14 @@ class BusinessList extends Component {
       "search": '',
       "rowsPerPage": 10,
       "page": 0,
+      "state": "",
+      "event": false,
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleSwitch = this.handleSwitch.bind(this);
+    this.handleChangeState = this.handleChangeState.bind(this);
   }
 
   componentDidMount(){
@@ -68,8 +75,52 @@ class BusinessList extends Component {
     })
   }
 
+  handleSwitch = name => e => {
+    const { page, rowsPerPage, state, search } = this.state;
+    const checked = e.target.checked;
+
+    this.props.getBusinessList(page, rowsPerPage, {
+      "state": state,
+      "event": checked,
+    }, search).then(response => {
+      if (response) {
+        this.setState({
+          "event": checked
+        });
+      }
+    })
+  }
+
+  handleChangeState(e) {
+    const { value } = e.target;
+    const { page, rowsPerPage, event, search } = this.state
+
+    this.props.getBusinessList(page, rowsPerPage, {
+      "state": value,
+      "event": event,
+    }, search)
+      .then(response => {
+        if (response) {
+          this.setState({
+            state: value,
+            event: event,
+          });
+        }
+      });
+  }
+
+  handleSearch(e) {
+    e.preventDefault();
+    const { page, rowsPerPage, state, event, search } = this.state;
+
+    this.props.getBusinessList(page, rowsPerPage, {
+      state,
+      event
+    }, search);
+  }
+
   render() {
-    const { classes, admin, businessList = {} } = this.props;
+    const { classes, admin, businessList } = this.props;
 
     return (
       <SettingContainer>
@@ -79,7 +130,7 @@ class BusinessList extends Component {
           </Typography>
 
           <Grid container spacing={16} className={classes.container}>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="adornment-password">Search</InputLabel>
@@ -103,8 +154,40 @@ class BusinessList extends Component {
                 </FormControl>
               </form>
             </Grid>
+          </Grid>
 
-            <Grid item xs={8}>
+          <Grid container>
+            <Grid item xs={4}>
+              <FormControl fullWidth >
+                <FormLabel component="label">State</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="State"
+                  name="state"
+                  value={this.state.state}
+                  onChange={this.handleChangeState}
+                >
+                  <FormControlLabel value="" control={<Radio />} label="All" />
+                  <FormControlLabel value="draft" control={<Radio />} label="Draft" />
+                  <FormControlLabel value="published" control={<Radio />} label="Published" />
+                  <FormControlLabel value="trash" control={<Radio />} label="Trash" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={4}>
+              <FormControl fullWidth >
+                <FormLabel component="label">Event</FormLabel>
+                <Switch
+                  color="primary"
+                  checked={this.state.event}
+                  onChange={this.handleSwitch('event')}
+                  value="event"
+                  />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={4}>
               <div className={classes.buttonContainer}>
                 <LinkContainer to={{
                     pathname: "/admin/business/new",

@@ -21,20 +21,7 @@ class ConfirmationDialog extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      open: props.open
-    };
-
-    this.handleClose = this.handleClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.open) {
-      this.setState({
-        open: nextProps.open
-      });
-    }
   }
 
   handleSubmit() {
@@ -45,19 +32,13 @@ class ConfirmationDialog extends Component {
     }
   }
 
-  handleClose() {
-    this.setState({
-      open: false
-    });
-  }
-
   render() {
     const { classes } = this.props;
 
     return (
       <Dialog fullWidth
-        open={this.state.open}
-        onClose={this.handleClose}
+        open={this.props.open}
+        onClose={this.props.handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -70,10 +51,10 @@ class ConfirmationDialog extends Component {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="primary" raised onClick={this.handleSubmit}>
+          <Button color="primary" raised onClick={this.handleSubmit} className={classes.button}>
             Ok
           </Button>
-          <Button color="primary" onClick={this.handleClose}>
+          <Button color="primary" onClick={this.props.handleClose} className={classes.button}>
             Cancel
           </Button>
         </DialogActions>
@@ -85,6 +66,7 @@ class ConfirmationDialog extends Component {
 ConfirmationDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
+  "handleClose": PropTypes.func.isRequired,
   "params": PropTypes.any,
   "title": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
