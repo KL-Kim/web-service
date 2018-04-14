@@ -4,7 +4,7 @@
 import categoryTypes from '../constants/category.types';
 
 const initialState = {
-  categoriesList: null,
+  categoriesList: [],
   totalCount: 0,
   isFetching: false,
   error: null,

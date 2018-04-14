@@ -5,6 +5,7 @@ import pcaReducer from './pca.reducer';
 import businessReducer from './business.reducer';
 import categoryReducer from './category.reducer';
 import tagReducer from './tag.reducer';
+import reviewReducer from './review.reducer';
 
 const reducer = combineReducers({
   userReducer,
@@ -13,6 +14,7 @@ const reducer = combineReducers({
   businessReducer,
   categoryReducer,
   tagReducer,
+  reviewReducer,
 });
 
 export default reducer;

@@ -85,7 +85,9 @@ export const addNewCategory = (data) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Added new category successfully"));
-        return dispatch(getCategoriesSuccess(response));
+        dispatch(getCategoriesSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getCategoriesFailure(err));
@@ -129,7 +131,9 @@ export const updateCategory = (data) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Update category successfully"));
-        return dispatch(getCategoriesSuccess(response));
+        dispatch(getCategoriesSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getCategoriesFailure(err));
@@ -162,7 +166,9 @@ export const deleteCategory = (id) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Delete category successfully"));
-        return dispatch(getCategoriesSuccess(response));
+        dispatch(getCategoriesSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getCategoriesFailure(err));

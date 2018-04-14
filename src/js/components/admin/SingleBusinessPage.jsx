@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import Quill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
@@ -25,20 +27,26 @@ import Chip from 'material-ui/Chip';
 import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import Switch from 'material-ui/Switch';
+import Badge from 'material-ui/Badge';
 import { CircularProgress } from 'material-ui/Progress';
+import AddCircleOutline from 'material-ui-icons/AddCircleOutline';
 
 import SettingContainer from '../setting/SettingContainer';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
+import BusinessImagesModule from './BusinessImagesModule';
 import Provinces from '../../constants/provinces';
 import { getCategoriesList } from '../../actions/category.actions.js';
 import { getTagsList } from '../../actions/tag.actions.js';
 import { getCities, getAreas } from '../../actions/pca.actions';
-import { getBusinessList, addBusiness, updateBusiness, deleteBusiness, getSingleBusiness } from '../../actions/business.actions';
-
-import UploadFiles from '../utils/UploadFiles';
-
-// Mock image
-import logo from '../../../css/logo.svg';
+import {
+  getBusinessList,
+  addBusiness,
+  updateBusiness,
+  deleteBusiness,
+  getSingleBusiness,
+  uploadImages,
+  deleteImage
+} from '../../actions/business.actions';
 
 const languageList = [
   '中文',
@@ -55,10 +63,23 @@ const paymentList = [
   'MasterCard',
 ];
 
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline','strike', 'blockquote', 'code', ],
+    [{'color': []}, {'background': []}],
+    [{ 'align': [] }, {'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    ['clean']
+  ]
+};
+
+const format = ['header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote', 'code',
+  'color', 'background',
+  'list', 'bullet', 'indent',
+];
+
 const styles = (theme) => ({
-  "container": {
-    marginBottom: theme.spacing.unit,
-  },
   "paper": {
     padding: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 2,
@@ -76,6 +97,12 @@ const styles = (theme) => ({
   },
   "chip": {
     margin: theme.spacing.unit,
+  },
+  "badge": {
+    margin: theme.spacing.unit * 2,
+  },
+  "title": {
+    paddingRight: theme.spacing.unit * 2,
   },
 });
 
@@ -139,22 +166,26 @@ class SingleBusinessPage extends Component {
       "favoredCount": 0,
       "event": '',
       menu: [],
+      "reports": [],
       thumbnailUri: {},
       imagesUri: [],
-      search: '',
     }
 
     this.state._id = _.isUndefined(this.props.location.state.businessId) ? '' : this.props.location.state.businessId;
+    this.state.search = '';
+    this.state.isNew = false;
+    this.state.addMenuDialogOpen = false;
+    this.state.menuIndex = null;
     this.state.newMenuName = '';
     this.state.newMenuPrice = '';
     this.state.newMenuIsHot = false;
     this.state.newMenuIsNew = false;
-    this.state.subDepartmentsDialogOpen = false;
-    this.state.addMenuDialogOpen = false;
+    this.state.chainDialogOpen = false;
     this.state.confirmationDialogOpen = false;
-    this.state.isNew = false;
-    this.state.menuIndex = null;
-    this.state.search = '';
+    this.state.reportDialogOpen = false;
+    this.state.reportIsCheck = false;
+    this.state.reportContent = '';
+    this.state.reportIndex = '';
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -166,14 +197,21 @@ class SingleBusinessPage extends Component {
     this.handleOpenAddMenuDialog = this.handleOpenAddMenuDialog.bind(this);
     this.handleCloseAddMenuDialog = this.handleCloseAddMenuDialog.bind(this);
     this.handleAddNewMenu = this.handleAddNewMenu.bind(this);
-    this.handleRowClick = this.handleRowClick.bind(this);
+    this.handleMenuRowClick = this.handleMenuRowClick.bind(this);
     this.handleDeleteMenu = this.handleDeleteMenu.bind(this);
     this.handleOpenConfimationDialog = this.handleOpenConfimationDialog.bind(this);
     this.handleCloseConfirmationDialog = this.handleCloseConfirmationDialog.bind(this);
-    this.handleSwitch = this.handleSwitch.bind(this);
-    this.handleSubdepartmentsRowClick = this.handleSubdepartmentsRowClick.bind(this);
-    this.handleDeleteSubdepartmentChip = this.handleDeleteSubdepartmentChip.bind(this);
+    this.handleMenuSwitch = this.handleMenuSwitch.bind(this);
+    this.handleChainRowClick = this.handleChainRowClick.bind(this);
+    this.handleDeleteChainChip = this.handleDeleteChainChip.bind(this);
     this.handleSearchBusiness = this.handleSearchBusiness.bind(this);
+    this.updateBusinessImages = this.updateBusinessImages.bind(this);
+    this.handleDeleteBusiness = this.handleDeleteBusiness.bind(this);
+    this.handleReportsRowClick = this.handleReportsRowClick.bind(this);
+    this.handleCloseReportDialog = this.handleCloseReportDialog.bind(this);
+    this.handleDeleteReport = this.handleDeleteReport.bind(this);
+    this.handleDescriptionEditorChange = this.handleDescriptionEditorChange.bind(this);
+    this.handleEventEditorChange = this.handleEventEditorChange.bind(this);
   }
 
   componentDidMount() {
@@ -186,15 +224,17 @@ class SingleBusinessPage extends Component {
     }
 
     if (this.state._id)
-      this.props.getSingleBusiness(this.state._id).then(business => {
+      this.props.getSingleBusiness("id", this.state._id).then(business => {
+        if (_.isEmpty(business)) return ;
+
         this.setState({
           "_id": business._id || '',
           "category": {
-            _id: business.category._id || '',
-            code: business.category.code || '',
-            krName: business.category.krName || '',
-            cnName: business.category.cnName || '',
-            enName: business.category.enName || '',
+            _id: _.isEmpty(business.category) ? '' : business.category._id,
+            code: _.isEmpty(business.category) ? '' : business.category.code || '',
+            krName: _.isEmpty(business.category) ? '' : business.category.krName || '',
+            cnName: _.isEmpty(business.category) ? '' : business.category.cnName || '',
+            enName: _.isEmpty(business.category) ? '' : business.category.enName || '',
           },
           state: business.state || '',
           cnName: business.cnName || '',
@@ -222,8 +262,8 @@ class SingleBusinessPage extends Component {
             street: business.address.street || '',
           },
           "geo": {
-            lat: business.geo.lat || '',
-            long: business.geo.long || '',
+            lat: business.geo.lat || 0,
+            long: business.geo.long || 0,
           },
           "openningHoursSpec": {
             mon: _.isEmpty(business.openningHoursSpec) ? '' : (business.openningHoursSpec.mon || ''),
@@ -242,6 +282,7 @@ class SingleBusinessPage extends Component {
           ratingAverage: business.ratingAverage || 0,
           "event": business.event || '',
           menu: _.isEmpty(business.menu) ? [] : business.menu.slice(),
+          reports: _.isEmpty(business.reports) ? [] : business.reports.slice(),
           thumbnailUri: {
             "default": _.isEmpty(business.thumbnailUri) ? '' : business.thumbnailUri.default,
             "hd": _.isEmpty(business.thumbnailUri) ? '' : business.thumbnailUri.hd,
@@ -297,7 +338,14 @@ class SingleBusinessPage extends Component {
               name: value.name,
               code: value.code
             },
-
+            "city": {
+              name: '',
+              code: ''
+            },
+            "area": {
+              name: '',
+              code: ''
+            }
           }
         });
         this.props.getCities(value.code);
@@ -310,6 +358,10 @@ class SingleBusinessPage extends Component {
             "city": {
               name: value.name,
               code: value.code
+            },
+            "area": {
+              name: '',
+              code: ''
             }
           }
         });
@@ -436,15 +488,19 @@ class SingleBusinessPage extends Component {
     }
   }
 
+  handleDescriptionEditorChange = (editorState) => this.setState({ description: editorState });
+
+  handleEventEditorChange = (editorState) => this.setState({ event: editorState });
+
   handleOpenSubDepartmentsDialog() {
     this.setState({
-      subDepartmentsDialogOpen: true,
+      chainDialogOpen: true,
     });
   }
 
   handleCloseSubDepartmentsDialog() {
     this.setState({
-      subDepartmentsDialogOpen: false,
+      chainDialogOpen: false,
     });
   }
 
@@ -454,7 +510,15 @@ class SingleBusinessPage extends Component {
     this.props.getBusinessList(0, 0, {}, this.state.search)
   }
 
-  handleSubdepartmentsRowClick(e, subdepartment) {
+  handleDeleteBusiness() {
+    this.props.deleteBusiness(this.state._id).then(response => {
+      if (response) {
+        this.props.history.goBack();
+      }
+    });
+  }
+
+  handleChainRowClick(e, subdepartment) {
     const chains = this.state.chains.slice();
     chains.push(subdepartment);
 
@@ -463,7 +527,7 @@ class SingleBusinessPage extends Component {
     });
   }
 
-  handleDeleteSubdepartmentChip = data => e => {
+  handleDeleteChainChip = data => e => {
     const chains = this.state.chains.slice();
     const index = this.state.chains.indexOf(data);
 
@@ -543,7 +607,7 @@ class SingleBusinessPage extends Component {
     }
   }
 
-  handleRowClick(e, menu, index) {
+  handleMenuRowClick(e, menu, index) {
     this.setState({
       addMenuDialogOpen: true,
       newMenuName: menu.name,
@@ -566,25 +630,63 @@ class SingleBusinessPage extends Component {
     });
   }
 
-  handleSwitch = name => e => {
+  handleMenuSwitch = name => e => {
     this.setState({
       [name]: e.target.checked
+    });
+  }
+
+  updateBusinessImages(images) {
+    this.setState({
+      thumbnailUri: Object.assign({}, images.thumbnailUri),
+      imagesUri: images.imagesUri.slice()
+    });
+  }
+
+  handleReportsRowClick(e, report, index) {
+    this.setState({
+      reportDialogOpen: true,
+      reportIsCheck: report.checked,
+      reportContent: report.content,
+      reportIndex: index,
+    });
+  }
+
+  handleCloseReportDialog() {
+    this.setState({
+      reportDialogOpen: false,
+      reportIsCheck: false,
+      reportContent: '',
+      reportIndex: '',
+    });
+  }
+
+  handleDeleteReport() {
+    if (_.isNumber(this.state.reportIndex)) this.state.reports.splice(this.state.reportIndex, 1);
+    const newReports = this.state.reports.slice();
+
+    this.setState({
+      reports: newReports.slice(),
+      reportDialogOpen: false,
+      reportIsCheck: false,
+      reportContent: '',
+      reportIndex: '',
     });
   }
 
   handleSubmit(e) {
     if (this.state.krName && this.state.cnName && this.state.enName && this.state.tel && this.state.category._id) {
       const data = {
-        state: this.state.state || '',
-        cnName: this.state.cnName || '',
-        krName: this.state.krName || '',
-        enName: this.state.enName || '',
-        tel: this.state.tel || '',
+        state: this.state.state,
+        cnName: this.state.cnName,
+        krName: this.state.krName,
+        enName: this.state.enName,
+        tel: this.state.tel,
         priceRange: this.state.priceRange || '',
-        supportedLanguage: this.state.supportedLanguage || '',
-        payment: this.state.payment || '',
+        supportedLanguage: this.state.supportedLanguage || null,
+        payment: this.state.payment || null,
         delivery: this.state.delivery || '',
-        status: this.state.status || '',
+        status: this.state.status,
         "address": {
           province: {
             name: this.state.address.province.name || '',
@@ -616,9 +718,9 @@ class SingleBusinessPage extends Component {
         rest: this.state.rest || '',
         chains: _.isEmpty(this.state.chains) ? [] : this.state.chains,
         description: this.state.description || '',
-        "event": this.state.event || '',
+        "event": this.state.event || null,
         menu: _.isEmpty(this.state.menu) ? [] : this.state.menu,
-        imagesUri: _.isEmpty(this.state.imagesUri) ? [] : this.state.imagesUri,
+        reports: _.isEmpty(this.state.reports) ? [] : this.state.reports,
       }
 
       // Set business category id
@@ -675,7 +777,13 @@ class SingleBusinessPage extends Component {
           (<div>
             <Grid container spacing={24} alignItems="center">
               <Grid item xs={6}>
-                <Typography type="display1" gutterBottom>{this.state.cnName + ' - ' + this.state.krName}</Typography>
+                {
+                  (this.state.reports.length > 0)
+                    ? <Badge color="secondary" badgeContent={this.state.reports.length}>
+                        <Typography type="display1" gutterBottom className={classes.title}>{this.state.cnName + ' - ' + this.state.krName}</Typography>
+                      </Badge>
+                    : <Typography type="display1" gutterBottom className={classes.title}>{this.state.cnName + ' - ' + this.state.krName}</Typography>
+                }
               </Grid>
 
               <Grid item xs={6}>
@@ -699,23 +807,6 @@ class SingleBusinessPage extends Component {
                     {this.state._id ? 'Update' : 'Save'}
                   </Button>
                 </div>
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={24} className={classes.container}>
-              <Grid item xs={6} cla>
-                <Paper>
-                  <img src={logo} alt="Main" />
-                </Paper>
-              </Grid>
-              <Grid item xs={6}>
-                <Grid container spacing={16}>
-                  <Grid item xs={6}>
-                    <Paper>
-                      <img src={logo} alt="photo1" />
-                    </Paper>
-                  </Grid>
-                </Grid>
               </Grid>
             </Grid>
 
@@ -759,14 +850,16 @@ class SingleBusinessPage extends Component {
 
               <Grid item xs={4}>
                 <Paper className={classes.paper}>
-                  <Grid container>
+                  <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <Typography type="title">Chain</Typography>
                     </Grid>
 
                     <Grid item xs={6}>
                       <div className={classes.buttonContainer}>
-                        <Button raised color="primary" onClick={this.handleOpenSubDepartmentsDialog}>Add</Button>
+                        <IconButton color="default" onClick={this.handleOpenSubDepartmentsDialog}>
+                          <AddCircleOutline />
+                        </IconButton>
                       </div>
                     </Grid>
 
@@ -776,7 +869,7 @@ class SingleBusinessPage extends Component {
                           <Chip
                             key={index}
                             label={data.krName}
-                            onDelete={this.handleDeleteSubdepartmentChip(data)}
+                            onDelete={this.handleDeleteChainChip(data)}
                             className={classes.chip}
                           />
                         ))
@@ -794,7 +887,8 @@ class SingleBusinessPage extends Component {
                     </Grid>
 
                     <Grid item xs={4}>
-                      <TextField fullWidth required error
+                      <TextField fullWidth required
+                        error={_.isEmpty(this.state.cnName)}
                         id="cnName"
                         label="中文名"
                         margin="normal"
@@ -804,7 +898,8 @@ class SingleBusinessPage extends Component {
                     </Grid>
 
                     <Grid item xs={4}>
-                      <TextField fullWidth required error
+                      <TextField fullWidth required
+                        error={_.isEmpty(this.state.krName)}
                         id="krName"
                         label="한국어"
                         margin="normal"
@@ -814,7 +909,8 @@ class SingleBusinessPage extends Component {
                     </Grid>
 
                     <Grid item xs={4}>
-                      <TextField fullWidth required error
+                      <TextField fullWidth required
+                        error={_.isEmpty(this.state.enName)}
                         id="enName"
                         label="English"
                         margin="normal"
@@ -824,7 +920,8 @@ class SingleBusinessPage extends Component {
                     </Grid>
 
                     <Grid item xs={4}>
-                      <TextField fullWidth required error
+                      <TextField fullWidth required
+                        error={_.isEmpty(this.state.tel)}
                         id="tel"
                         label="Tel"
                         margin="normal"
@@ -1071,25 +1168,23 @@ class SingleBusinessPage extends Component {
                 </Paper>
               </Grid>
 
-              <Grid item xs={3}>
+              <Grid item xs={6}>
                 <Paper className={classes.paper}>
                   <Grid container spacing={16} alignItems="center">
                     <Grid item xs={12}>
                       <Typography type="title">Geo</Typography>
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                       <TextField fullWidth id="lat" label="Latitude"  margin="normal"
-                        error={!_.toNumber(this.state.geo.lat)}
                         value={this.state.geo.lat}
                         name="lat"
                         onChange={this.handleChangeAddress}
                       />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                       <TextField fullWidth id="long" label="Longtitude"  margin="normal"
-                        error={!_.toNumber(this.state.geo.lat)}
                         value={this.state.geo.long}
                         name="long"
                         onChange={this.handleChangeAddress}
@@ -1100,30 +1195,60 @@ class SingleBusinessPage extends Component {
                 </Paper>
               </Grid>
 
-              <Grid item xs={3}>
+              <Grid item xs={6}>
                 <Paper className={classes.paper}>
                   <Grid container spacing={16} alignItems="center">
                     <Grid item xs={12}>
                       <Typography type="title">Statics</Typography>
                     </Grid>
 
-                    <Grid item xs={12}>
-                      <TextField fullWidth disabled id="viewsCount" label="Views Count"  margin="normal" defaultValue={this.state.viewsCount} />
+                    <Grid item xs={6}>
+                      <TextField fullWidth disabled id="viewsCount" label="Views Count"  margin="normal" defaultValue={this.state.viewsCount.toString()} />
                     </Grid>
 
-                    <Grid item xs={12}>
-                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" defaultValue={this.state.favoredCount} />
+                    <Grid item xs={6}>
+                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" defaultValue={this.state.favoredCount.toString()} />
                     </Grid>
 
-                    <Grid item xs={12}>
-                      <TextField fullWidth disabled id="rating" label="Rating"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    <Grid item xs={6}>
+                      <TextField fullWidth disabled id="rating" label="Rating"  margin="normal" defaultValue={this.state.ratingAverage.toString()} />
                     </Grid>
 
-                    <Grid item xs={12}>
-                      <TextField fullWidth disabled id="ratingCount" label="Rating Count"  margin="normal" defaultValue={this.state.ratingAverage} />
+                    <Grid item xs={6}>
+                      <TextField fullWidth disabled id="ratingCount" label="Rating Count"  margin="normal" defaultValue={this.state.ratingAverage.toString()} />
                     </Grid>
 
                   </Grid>
+                </Paper>
+              </Grid>
+
+
+              <Grid item xs={6}>
+                <Paper className={classes.paper}>
+                  <Typography type="title">Reports</Typography>
+                  <Table className={classes.table}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Index</TableCell>
+                      <TableCell>Checked</TableCell>
+                      <TableCell>Content</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {
+                      _.isEmpty(this.state.reports) ? (<TableRow></TableRow>)
+                      : this.state.reports.map((item, index) => (
+                        <TableRow hover key={index}
+                          onClick={event => this.handleReportsRowClick(event, item, index)}
+                        >
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{item.checked ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>{item.content}</TableCell>
+                        </TableRow>
+                      ))
+                    }
+                  </TableBody>
+                </Table>
                 </Paper>
               </Grid>
 
@@ -1225,23 +1350,21 @@ class SingleBusinessPage extends Component {
 
               <Grid item xs={6}>
                 <Paper className={classes.paper}>
-                  <Typography type="title">Description</Typography>
-                  <TextField fullWidth multiline id="description" label="Description"  margin="normal"
-                    name="description"
-                    value={this.state.description}
-                    onChange={this.handleChange}
-                  />
+                  <Typography type="title" gutterBottom>Description</Typography>
+                  <Quill value={this.state.description}
+                    modules={modules}
+                    format={format}
+                    onChange={this.handleDescriptionEditorChange} />
                 </Paper>
               </Grid>
 
               <Grid item xs={6}>
                 <Paper className={classes.paper}>
-                  <Typography type="title">Event</Typography>
-                  <TextField fullWidth multiline id="event" label="Event"  margin="normal"
-                    name="event"
-                    value={this.state.event}
-                    onChange={this.handleChange}
-                  />
+                  <Typography type="title" gutterBottom>Event</Typography>
+                  <Quill value={this.state.event}
+                    modules={modules}
+                    format={format}
+                    onChange={this.handleEventEditorChange} />
                 </Paper>
               </Grid>
 
@@ -1253,9 +1376,9 @@ class SingleBusinessPage extends Component {
                     </Grid>
                     <Grid item xs={6}>
                       <div className={classes.buttonContainer}>
-                        <Button raised color="primary" className={classes.button} onClick={this.handleOpenAddMenuDialog}>
-                          Add menu
-                        </Button>
+                        <IconButton color="default" onClick={this.handleOpenAddMenuDialog}>
+                          <AddCircleOutline />
+                        </IconButton>
                       </div>
                     </Grid>
                   </Grid>
@@ -1275,7 +1398,7 @@ class SingleBusinessPage extends Component {
                         _.isEmpty(this.state.menu) ? (<TableRow></TableRow>)
                         : this.state.menu.map((item, index) => (
                           <TableRow hover key={index}
-                            onClick={event => this.handleRowClick(event, item, index)}
+                            onClick={event => this.handleMenuRowClick(event, item, index)}
                           >
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{item.name}</TableCell>
@@ -1291,6 +1414,15 @@ class SingleBusinessPage extends Component {
               </Grid>
             </Grid>
 
+            <BusinessImagesModule
+              id={this.state._id}
+              handleUpload={this.props.uploadImages}
+              handleDelete={this.props.deleteImage}
+              thumbnailUri={this.state.thumbnailUri}
+              imagesUri={this.state.imagesUri}
+              updateBusinessImages={this.updateBusinessImages}
+            />
+
             <Paper className={classes.paper}>
               <Grid container spacing={16} alignItems="center">
                 <Grid item xs={12}>
@@ -1303,7 +1435,7 @@ class SingleBusinessPage extends Component {
             </Paper>
 
             <Dialog fullWidth
-              open={this.state.subDepartmentsDialogOpen}
+              open={this.state.chainDialogOpen}
               onClose={this.handleCloseSubDepartmentsDialog}
               aria-labelledby="sd-dialog-title"
               aria-describedby="sd-dialog-description1"
@@ -1356,7 +1488,7 @@ class SingleBusinessPage extends Component {
                           : this.props.businessList.map((item, index) => (
 
                               <TableRow hover key={index}
-                                onClick={event => this.handleSubdepartmentsRowClick(event, item)}
+                                onClick={event => this.handleChainRowClick(event, item)}
                               >
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{item.krName}</TableCell>
@@ -1412,7 +1544,7 @@ class SingleBusinessPage extends Component {
                       <Switch
                         color="primary"
                         checked={this.state.newMenuIsHot}
-                        onChange={this.handleSwitch('newMenuIsHot')}
+                        onChange={this.handleMenuSwitch('newMenuIsHot')}
                         value="newMenuIsHot"
                         />
                     </FormControl>
@@ -1423,7 +1555,7 @@ class SingleBusinessPage extends Component {
                         <Switch
                           color="primary"
                           checked={this.state.newMenuIsNew}
-                          onChange={this.handleSwitch('newMenuIsNew')}
+                          onChange={this.handleMenuSwitch('newMenuIsNew')}
                           value="newMenuIsNew"
                           />
                     </FormControl>
@@ -1440,15 +1572,48 @@ class SingleBusinessPage extends Component {
               </DialogActions>
             </Dialog>
 
+            <Dialog fullWidth
+              open={this.state.reportDialogOpen}
+              onClose={this.handleCloseReportDialog}
+              aria-labelledby="report-dialog-title"
+              aria-describedby="report-dialog-description"
+            >
+              <DialogTitle id="report-dialog-title">
+                <Grid container>
+                  <Grid item xs={6}>
+                    Report
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div className={classes.buttonContainer}>
+                      <Button color="secondary" onClick={this.handleDeleteReport}>
+                        Delete
+                      </Button>
+                    </div>
+                  </Grid>
+                </Grid>
+              </DialogTitle>
+              <DialogContent id="report-dialog-description">
+                <Typography type="body1">
+                  {this.state.reportContent}
+                </Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button color="primary" >
+                  Save
+                </Button>
+                <Button color="primary" onClick={this.handleCloseReportDialog}>
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
+
             <ConfirmationDialog
               open={this.state.confirmationDialogOpen}
               handleClose={this.handleCloseConfirmationDialog}
-              operation={this.props.deleteBusiness}
-              params={this.state._id}
+              operation={this.handleDeleteBusiness}
               title="Warning"
               content="Are your sure to delete the business?"
-              goBack={true}
-              />
+            />
           </div>)}
       </SettingContainer>
     );
@@ -1472,6 +1637,7 @@ SingleBusinessPage.propTypes = {
   "addBusiness": PropTypes.func.isRequired,
   "updateBusiness": PropTypes.func.isRequired,
   "deleteBusiness": PropTypes.func.isRequired,
+  "deleteImage": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -1496,4 +1662,6 @@ export default connect(mapStateToProps, {
   addBusiness,
   updateBusiness,
   deleteBusiness,
+  uploadImages,
+  deleteImage,
 })(withStyles(styles)(SingleBusinessPage));

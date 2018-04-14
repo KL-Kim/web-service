@@ -3,6 +3,7 @@ import fetch from 'cross-fetch';
 import _ from 'lodash';
 
 import config from '../config/config';
+import responseErrorHandler from '../helpers/error-handler.js';
 
 /**
  * Pca serivce uri
@@ -37,23 +38,10 @@ export const getPcaFetch = (type, code) => {
       if (response.ok) {
         return response.json();
       } else {
-        let error = new Error(response.statusText);
-        error.status = response.status;
-
-        if (response.status === 401 || response.status === 403) {
-          error.message = "Permission denied";
-        } else if (response.status === 404) {
-          error.message = "Not found";
-        } else {
-          error.message = "Unknown Error";
-        }
-
-        return Promise.reject(error);
+        return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(json => {
-      return json;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
-  });
+    });
 };

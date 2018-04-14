@@ -14,6 +14,7 @@ import Search from 'material-ui-icons/Search';
 import Button from 'material-ui/Button';
 import Switch from 'material-ui/Switch';
 import Radio, { RadioGroup } from 'material-ui/Radio';
+import Badge from 'material-ui/Badge';
 
 import SettingContainer from '../setting/SettingContainer';
 import LinkContainer from '../utils/LinkContainer';
@@ -28,8 +29,8 @@ const styles = (theme) => ({
     "display": "flex",
     "justifyContent": "flex-end",
   },
-  "button": {
-    margin: theme.spacing.unit,
+  "title": {
+    paddingRight: theme.spacing.unit * 2,
   },
 });
 
@@ -44,11 +45,13 @@ class BusinessList extends Component {
       "page": 0,
       "state": "",
       "event": false,
+      "reports": false,
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.handleSwitch = this.handleSwitch.bind(this);
+    this.handleEventSwitch = this.handleEventSwitch.bind(this);
+    this.handleReportSwitch = this.handleReportSwitch.bind(this);
     this.handleChangeState = this.handleChangeState.bind(this);
   }
 
@@ -75,13 +78,14 @@ class BusinessList extends Component {
     })
   }
 
-  handleSwitch = name => e => {
-    const { page, rowsPerPage, state, search } = this.state;
+  handleEventSwitch(e) {
+    const { page, rowsPerPage, state, search, reports } = this.state;
     const checked = e.target.checked;
 
     this.props.getBusinessList(page, rowsPerPage, {
       "state": state,
       "event": checked,
+      "reports": reports,
     }, search).then(response => {
       if (response) {
         this.setState({
@@ -91,13 +95,31 @@ class BusinessList extends Component {
     })
   }
 
+  handleReportSwitch(e) {
+    const { page, rowsPerPage, state, search, event } = this.state;
+    const checked = e.target.checked;
+
+    this.props.getBusinessList(page, rowsPerPage, {
+      "state": state,
+      "event": event,
+      "reports": checked
+    }, search).then(response => {
+      if (response) {
+        this.setState({
+          "reports": checked
+        });
+      }
+    })
+  }
+
   handleChangeState(e) {
     const { value } = e.target;
-    const { page, rowsPerPage, event, search } = this.state
+    const { page, rowsPerPage, event, reports, search } = this.state
 
     this.props.getBusinessList(page, rowsPerPage, {
       "state": value,
       "event": event,
+      "reports": reports,
     }, search)
       .then(response => {
         if (response) {
@@ -175,13 +197,25 @@ class BusinessList extends Component {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={2}>
               <FormControl fullWidth >
                 <FormLabel component="label">Event</FormLabel>
                 <Switch
                   color="primary"
                   checked={this.state.event}
-                  onChange={this.handleSwitch('event')}
+                  onChange={this.handleEventSwitch}
+                  value="event"
+                  />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={2}>
+              <FormControl fullWidth >
+                <FormLabel component="label">Reports</FormLabel>
+                <Switch
+                  color="primary"
+                  checked={this.state.reports}
+                  onChange={this.handleReportSwitch}
                   value="event"
                   />
               </FormControl>
@@ -232,7 +266,17 @@ class BusinessList extends Component {
                     >
                       <TableRow hover >
                         <TableCell>{index+1}</TableCell>
-                        <TableCell>{business.cnName}</TableCell>
+                        <TableCell>
+                          {
+                            (business.reports.length > 0)
+                              ? <Badge color="secondary" badgeContent={business.reports.length}>
+                                  <Typography type="body1" className={classes.title}>
+                                    {business.cnName}
+                                  </Typography>
+                                </Badge>
+                              : business.cnName
+                          }
+                        </TableCell>
                         <TableCell>{business.krName}</TableCell>
                         <TableCell>{_.isEmpty(business.category) ? '' : business.category.krName}</TableCell>
                         <TableCell>{business.viewsCount}</TableCell>

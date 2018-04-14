@@ -6,7 +6,13 @@ import _ from 'lodash';
 import businessTypes from '../constants/business.types';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
-import { fetchBusinessList, businessOpertationFetch, fetchSingleBusiness } from '../api/business.service';
+import {
+  fetchBusinessList,
+  businessOpertationFetch,
+  fetchSingleBusiness,
+  uploadImagesFetch,
+  deleteImageFetch
+} from '../api/business.service';
 
 /**
  * Get business list
@@ -59,9 +65,10 @@ export const getBusinessList = (skip, limit, filter, search) => {
 
 /**
  * Get single business
- * @param {String} id - Business id
+ * @param {String} type - Enum: id, enName
+ * @param {String} value - Type value
  */
-export const getSingleBusiness = (id) => {
+export const getSingleBusiness = (type, value) => {
   const _getSingleBusinessRequest = () => ({
     "type": businessTypes.GET_SINGLE_BUSINESS_REQUEST,
     "meta": {},
@@ -84,12 +91,12 @@ export const getSingleBusiness = (id) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id)) {
-      return dispatch(AlertActions.alertFailure("Id is missing"));
+    if (_.isEmpty(type) || _.isEmpty(value)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
     dispatch(_getSingleBusinessRequest());
-    return fetchSingleBusiness(id)
+    return fetchSingleBusiness(type, value)
       .then(business => {
         dispatch(_getSignleBusinessSuccess());
 
@@ -116,13 +123,11 @@ export const addBusiness = (data) => {
     "payload": {}
   });
 
-  const _addBusinessSuccess = (response) => ({
+  const _addBusinessSuccess = () => ({
     "type": businessTypes.ADD_BUSINESS_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      business: response
-    }
+    "payload": {}
   });
 
   const _addBusinessFailure = (error) => ({
@@ -142,11 +147,8 @@ export const addBusiness = (data) => {
       .then(token => {
         return businessOpertationFetch("ADD", token, data)
       })
-      .then(response => {
-        return response.json();
-      })
       .then(json => {
-        dispatch(_addBusinessSuccess(json));
+        dispatch(_addBusinessSuccess());
         dispatch(AlertActions.alertSuccess("Add business successfully"));
 
         return ;
@@ -172,11 +174,11 @@ export const updateBusiness = (data) => {
     "payload": {}
   });
 
-  const _updateBusinessSuccess = (response) => ({
+  const _updateBusinessSuccess = () => ({
     "type": businessTypes.UPDATE_BUSINESS_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": response
+    "payload": {}
   });
 
   const _updateBusinessFailure = (error) => ({
@@ -187,6 +189,10 @@ export const updateBusiness = (data) => {
   });
 
   return (dispatch, getState) => {
+    if (_.isEmpty(data)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
     dispatch(_updateBusinessRequest());
     return getToken()
       .then(token => {
@@ -194,7 +200,7 @@ export const updateBusiness = (data) => {
       })
 
       .then(response => {
-        dispatch(_updateBusinessSuccess(response));
+        dispatch(_updateBusinessSuccess());
         dispatch(AlertActions.alertSuccess("Update business successfully"));
 
         return ;
@@ -235,6 +241,10 @@ export const deleteBusiness = (id) => {
   });
 
   return (dispatch, getState) => {
+    if (_.isEmpty(id)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
     dispatch(_deleteBusinessRequest());
     return getToken()
       .then(token => {
@@ -246,10 +256,115 @@ export const deleteBusiness = (id) => {
         dispatch(AlertActions.alertSuccess("Delete business successfully"));
         dispatch(getBusinessList());
 
-        return ;
+        return response;
       })
       .catch(err => {
         dispatch(_deleteBusinessFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
+}
+
+/**
+ * Upload business images
+ * @param {String} id - Business id
+ * @param {FormData} formData - Business data
+ */
+export const uploadImages = (id, formData) => {
+  const _uploadImagesRequest = () => ({
+    "type": businessTypes.UPLOAD_IMAGES_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _uploadImagesSuccess = () => ({
+    "type": businessTypes.UPLOAD_IMAGES_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _uploadImagesFailure = (error) => ({
+    "type": businessTypes.UPLOAD_IMAGES_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+    dispatch(_uploadImagesRequest());
+
+    return getToken()
+      .then(token => {
+        return uploadImagesFetch(token, id, formData)
+      })
+      .then(response => {
+        dispatch(_uploadImagesSuccess());
+        dispatch(AlertActions.alertSuccess("Upload images successfully"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_uploadImagesFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
+}
+
+/**
+ * Delete business image
+ * @param {String} id - Business id
+ * @param {Object} data - Business image uri
+ */
+export const deleteImage = (id, data) => {
+  const _deleteImageRequest = () => ({
+    "type": businessTypes.DELETE_IMAGE_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _deleteImageSuccess = () => ({
+    "type": businessTypes.DELETE_IMAGE_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _deleteImageFailure = (error) => ({
+    "type": businessTypes.DELETE_IMAGE_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": null
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id) || _.isEmpty(data)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_deleteImageRequest());
+
+    return getToken()
+      .then(token => {
+        return deleteImageFetch(token, id, data)
+      })
+      .then(response => {
+        dispatch(_deleteImageSuccess());
+        dispatch(AlertActions.alertSuccess("Delete image successfully"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_deleteImageFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;

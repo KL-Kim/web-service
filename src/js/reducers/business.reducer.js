@@ -4,7 +4,7 @@
 import businessTypes from '../constants/business.types';
 
 const initialState = {
-  businessList: null,
+  businessList: [],
   totalCount: 0,
   isFetching: false,
   error: null,
@@ -18,10 +18,25 @@ const businessReducer = (state = initialState, action) => {
     case businessTypes.ADD_BUSINESS_REQUEST:
     case businessTypes.UPDATE_BUSINESS_REQUEST:
     case businessTypes.DELETE_BUSINESS_REQUEST:
+    case businessTypes.UPLOAD_IMAGES_REQUEST:
+    case businessTypes.DELETE_IMAGE_REQUEST:
       return {
         ...state,
         isFetching: true,
         error: null,
+      };
+
+    case businessTypes.GET_BUSINESS_LIST_FAILURE:
+    case businessTypes.GET_SINGLE_BUSINESS_FAILURE:
+    case businessTypes.ADD_BUSINESS_FAILURE:
+    case businessTypes.UPDATE_BUSINESS_FAILURE:
+    case businessTypes.DELETE_BUSINESS_FAILURE:
+    case businessTypes.UPLOAD_IMAGES_FAILURE:
+    case businessTypes.DELETE_IMAGE_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        error: action.error,
       };
 
     case businessTypes.GET_BUSINESS_LIST_SUCCESS:
@@ -32,24 +47,10 @@ const businessReducer = (state = initialState, action) => {
         totalCount: action.payload.totalCount,
       };
 
-    case businessTypes.GET_BUSINESS_LIST_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        error: action.error,
-      };
-
     case businessTypes.GET_SINGLE_BUSINESS_SUCCESS:
       return {
         ...state,
         isFetching: false,
-      };
-
-    case businessTypes.GET_SINGLE_BUSINESS_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        error: action.error,
       };
 
     case businessTypes.ADD_BUSINESS_SUCCESS:
@@ -58,37 +59,29 @@ const businessReducer = (state = initialState, action) => {
         isFetching: false
       };
 
-    case businessTypes.ADD_BUSINESS_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        error: action.error,
-      };
-
     case businessTypes.UPDATE_BUSINESS_SUCCESS:
       return {
         ...state,
         isFetching: false,
       };
 
-    case businessTypes.UPDATE_BUSINESS_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        error: action.error,
-      };
-
     case businessTypes.DELETE_BUSINESS_SUCCESS:
       return {
         ...state,
+        businessList: {},
         isFetching: false,
       };
 
-    case businessTypes.DELETE_BUSINESS_FAILURE:
+    case businessTypes.UPLOAD_IMAGES_SUCCESS:
       return {
         ...state,
         isFetching: false,
-        error: action.error,
+      };
+
+    case businessTypes.DELETE_IMAGE_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
       };
 
     default:

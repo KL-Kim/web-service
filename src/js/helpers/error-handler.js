@@ -19,6 +19,10 @@ const handleErrorResponse = (response, message) => {
       error.message = "Forbidden";
       break;
 
+    case 404:
+      error.message = "Not found";
+      break;
+
     case 409:
       error.message = "Already exists";
       break;

@@ -82,7 +82,9 @@ export const addNewTag = (data) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Added tag successfully"));
-        return dispatch(getTagsSuccess(response));
+        dispatch(getTagsSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getTagsFailure(err));
@@ -125,7 +127,9 @@ export const updateTag = (data) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Updated tag successfully"));
-        return dispatch(getTagsSuccess(response));
+        dispatch(getTagsSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getTagsFailure(err));
@@ -158,7 +162,9 @@ export const deleteTag = (id) => {
       })
       .then(response => {
         dispatch(AlertActions.alertSuccess("Deleted tag successfully"));
-        return dispatch(getTagsSuccess(response));
+        dispatch(getTagsSuccess(response));
+
+        return response;
       })
       .catch(err => {
         dispatch(getTagsFailure(err));

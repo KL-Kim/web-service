@@ -4,7 +4,7 @@
 import tagTypes from '../constants/tag.types';
 
 const initialState = {
-  tagsList: null,
+  tagsList: [],
   totalCount: 0,
   isFetching: false,
   error: null,

@@ -14,3 +14,7 @@ a {
 #root {
   height: 100%;
 }
+
+.ql-editor {
+  padding-bottom: 150px !important;
+}

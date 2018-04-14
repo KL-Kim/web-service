@@ -25,11 +25,7 @@ class ConfirmationDialog extends Component {
   }
 
   handleSubmit() {
-    this.props.operation(this.props.params);
-
-    if (this.props.goBack) {
-      this.props.history.goBack();
-    }
+    this.props.operation();
   }
 
   render() {
@@ -66,11 +62,9 @@ class ConfirmationDialog extends Component {
 ConfirmationDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
-  "handleClose": PropTypes.func.isRequired,
-  "params": PropTypes.any,
   "title": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
-  "goBack": PropTypes.bool.isRequired,
+  "handleClose": PropTypes.func.isRequired,
   "operation": PropTypes.func.isRequired,
 }
 

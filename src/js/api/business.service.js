@@ -13,6 +13,8 @@ const businessSerivceUri = {
   getSingleBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/single/',
   categoryUrl: config.API_GATEWAY_ROOT + '/api/v1/business/category',
   tagUrl: config.API_GATEWAY_ROOT + '/api/v1/business/tag',
+  businessImagesUrl: config.API_GATEWAY_ROOT + '/api/v1/business/images',
+
 };
 
 /**
@@ -37,9 +39,10 @@ export const fetchBusinessList = (skip, limit, filter, search) => {
   if (!_.isEmpty(filter)) {
     if (!!filter.state) url = url + '&state=' + filter.state;
     if (!!filter.event) url = url + '&event=1';
+    if (!!filter.reports) url = url + '&reports=1';
   }
 
-  if (!_.isUndefined(search)) url = url+ '&search=' + search;
+  if (!_.isEmpty(search)) url = url+ '&search=' + search;
 
   return fetch(url, options)
     .then(response => {
@@ -49,9 +52,6 @@ export const fetchBusinessList = (skip, limit, filter, search) => {
         return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(json => {
-      return json;
-    })
     .catch(err => {
       return Promise.reject(err);
     });
@@ -59,9 +59,10 @@ export const fetchBusinessList = (skip, limit, filter, search) => {
 
 /**
  * Fetch single business
- * @param {String} id - Business id
+ * @param {String} type - Enum: id, enName
+ * @param {String} value - Type value
  */
-export const fetchSingleBusiness = (id) => {
+export const fetchSingleBusiness = (type, value) => {
   const options = {
     method: 'GET',
     headers: {
@@ -69,16 +70,15 @@ export const fetchSingleBusiness = (id) => {
     },
   };
 
-  return fetch(businessSerivceUri.getSingleBusinessUrl + id, options)
+  let url = businessSerivceUri.getSingleBusinessUrl + '?' + type + '=' + value;
+
+  return fetch(url, options)
     .then(response => {
       if (response.ok) {
         return response.json();
       } else {
         return Promise.reject(responseErrorHandler(response));
       }
-    })
-    .then(json => {
-      return json;
     })
     .catch(err => {
       return Promise.reject(err);
@@ -132,6 +132,59 @@ export const businessOpertationFetch = (type, token, data) => {
 }
 
 /**
+ * Upload business images
+ * @param {String} token - Verification code
+ * @param {Object} data - Business data
+ */
+export const uploadImagesFetch = (token, id, data) => {
+  const options = {
+    "method": 'POST',
+    "headers": {
+      "Authorization": 'Bearer ' + token,
+    },
+    "body": data,
+  };
+
+  return fetch(businessSerivceUri.businessImagesUrl + '/' + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Delete business image
+ */
+export const deleteImageFetch = (token, id, data) => {
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify(data),
+  };
+
+  return fetch(businessSerivceUri.businessImagesUrl + '/' + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
  * Fetch business categories or tags list
  * @param {String} type - category or tag
  * @param {String} search - Search term
@@ -169,9 +222,7 @@ export const fetchCategoriesOrTags = (type, search) => {
         return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(json => {
-      return json;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
   });
 }
@@ -216,9 +267,7 @@ export const categoryOperationFetch = (type, token, data) => {
         return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(json => {
-      return json;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
   });
 
@@ -264,9 +313,7 @@ export const tagOperationFetch = (type, token, data) => {
         return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(json => {
-      return json;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
   });
 

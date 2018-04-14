@@ -20,6 +20,7 @@ import Dialog, {
 import TextField from 'material-ui/TextField';
 
 import SettingContainer from '../setting/SettingContainer';
+import ConfirmationDialog from '../utils/ConfirmationDialog';
 import { getTagsList, addNewTag, updateTag, deleteTag } from '../../actions/tag.actions.js';
 
 const styles = (theme) => ({
@@ -40,7 +41,8 @@ class TagsList extends Component {
     super(props);
 
     this.state = {
-      "dialogOpen": false,
+      "AddNewDiaglogOpen": false,
+      "confirmationDialogOpen": false,
       "search": '',
       "list": {},
       "isNew": false,
@@ -55,8 +57,10 @@ class TagsList extends Component {
     this.handleDialogClose = this.handleDialogClose.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.handleOpenDeleteDialog = this.handleOpenDeleteDialog.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleCloseConfirmationDialog = this.handleCloseConfirmationDialog.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentDidMount() {
@@ -80,19 +84,16 @@ class TagsList extends Component {
     });
   }
 
-  handleDelete() {
-    if (this.state._id) {
-      this.props.deleteTag(this.state._id);
-    }
-
+  handleOpenDeleteDialog() {
     this.setState({
-      dialogOpen: false
+      confirmationDialogOpen: true,
+      AddNewDiaglogOpen: false,
     });
   }
 
   handleAddNew() {
     this.setState({
-      "dialogOpen": true,
+      "AddNewDiaglogOpen": true,
       "isNew": true,
       "_id": '',
       "code": '',
@@ -104,7 +105,7 @@ class TagsList extends Component {
 
   handleDialogClose() {
     this.setState({
-      dialogOpen: false,
+      AddNewDiaglogOpen: false,
       "isNew": false,
     });
   }
@@ -116,7 +117,7 @@ class TagsList extends Component {
       krName: tag.krName,
       cnName: tag.cnName,
       enName: tag.enName,
-      dialogOpen: true,
+      AddNewDiaglogOpen: true,
     });
   }
 
@@ -150,12 +151,35 @@ class TagsList extends Component {
     }
 
     this.setState({
-      dialogOpen: false,
+      AddNewDiaglogOpen: false,
       isNew: false,
     });
   }
 
+  handleCloseConfirmationDialog() {
+    this.setState({
+      confirmationDialogOpen: false,
+    });
+  }
 
+  handleDelete() {
+    if (this.state._id) {
+      this.props.deleteTag(this.state._id).then(response => {
+        if (response) {
+          this.setState({
+            AddNewDiaglogOpen: false,
+            confirmationDialogOpen: false,
+            "isNew": false,
+            "_id": '',
+            "code": '',
+            "enName": '',
+            "krName": '',
+            "cnName": '',
+          });
+        }
+      });
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -233,7 +257,7 @@ class TagsList extends Component {
           </Paper>
 
           <Dialog
-            open={this.state.dialogOpen}
+            open={this.state.AddNewDiaglogOpen}
             onClose={this.handleDialogClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
@@ -245,7 +269,7 @@ class TagsList extends Component {
                 </Grid>
                 <Grid item xs={6}>
                   <div className={classes.buttonContainer}>
-                    <Button color="secondary" disabled={!(code && enName && krName && cnName) || isNew} onClick={this.handleDelete}>
+                    <Button color="secondary" disabled={!(code && enName && krName && cnName) || isNew} onClick={this.handleOpenDeleteDialog}>
                       Delete
                     </Button>
                   </div>
@@ -278,6 +302,14 @@ class TagsList extends Component {
               </Button>
             </DialogActions>
           </Dialog>
+
+          <ConfirmationDialog
+            open={this.state.confirmationDialogOpen}
+            handleClose={this.handleCloseConfirmationDialog}
+            operation={this.handleDelete}
+            title="Warning"
+            content="Are your sure to delete the category?"
+          />
         </div>
       </SettingContainer>
     );

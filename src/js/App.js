@@ -39,7 +39,7 @@ import Admin_ReviewsList from './components/admin/ReviewsList';
 import Admin_StoriesList from './components/admin/StoriesList';
 
 // Temp
-import BusinessPage from './components/BusinessPage';
+import SingleBusinessPage from './components/SingleBusinessPage';
 import SingleStoryPage from './components/SingleStoryPage';
 
 import { getUserById } from './actions/user.actions';
@@ -61,8 +61,8 @@ const App = () => {
           <Route exact path="/" component={HomePage} />
           <Route path="/signup" component={SignupPage} />
           <Route path="/signin" component={SigninPage} />
-          <Route path="/business/:id" component={BusinessPage} />
-          <Route path="/business" component={BusinessListPage} />
+          <Route path="/business/:slug" component={SingleBusinessPage} />
+          <Route exact path="/business" component={BusinessListPage} />
           <Route path="/story" component={SingleStoryPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />
