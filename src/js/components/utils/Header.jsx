@@ -16,6 +16,7 @@ import ExitToApp from 'material-ui-icons/ExitToApp';
 
 import LinkContainer from './LinkContainer';
 import Avatar from './Avatar';
+import ProperName from './ProperName';
 import AdminSidebarMenuList from './AdminSidebarMenuList';
 
 const styles = theme => ({
@@ -82,11 +83,7 @@ class Header extends Component {
     } else {
       button = (<LinkContainer to="/signin"><Button color="inherit">Sign In</Button></LinkContainer>)
     }
-
-    const name = _.isEmpty(user) ? '' :((_.isEmpty(user.firstName) && _.isEmpty(user.lastName))
-      ? user.username
-      : ((_.isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (_.isEmpty(user.lastName) ? '' : user.lastName)));
-
+    
     const role = _.isEmpty(user) ? '' : user.role;
 
     const drawer = isLoggedIn
@@ -99,7 +96,7 @@ class Header extends Component {
         >
           <div className={classes.account}>
             <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
-            <Typography type="body1" className={classes.name}>{name}</Typography>
+            <Typography type="body1" className={classes.name}><ProperName user={user} /></Typography>
           </div>
 
           <Divider />

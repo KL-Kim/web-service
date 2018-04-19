@@ -12,7 +12,11 @@ const initialState = {
 
 const businessReducer = (state = initialState, action) => {
   switch (action.type) {
-    // Get business list
+    // Clear busines reduer
+    case businessTypes.CLEAR_BUSINESS_LIST:
+      return initialState;
+
+    // Resquest
     case businessTypes.GET_BUSINESS_LIST_REQUEST:
     case businessTypes.GET_SINGLE_BUSINESS_REQUEST:
     case businessTypes.ADD_BUSINESS_REQUEST:

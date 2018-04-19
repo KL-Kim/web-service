@@ -106,13 +106,15 @@ class WriteReviewDialog extends Component {
 
   handleSubmit() {
     this.props.handleSubmit({
-      bid: this.props.business.id,
-      uid: this.props.user.id,
+      bid: this.props.business._id,
+      uid: this.props.user._id,
       rating: this.state.rating,
       content: this.state.content,
       serviceGood: this.state.serviceGood,
       envGood: this.state.envGood,
       comeback: this.state.comeback,
+    }).then(response => {
+      this.handleClose();
     });
   }
 
@@ -212,7 +214,7 @@ class WriteReviewDialog extends Component {
           </DialogContent>
 
           <DialogActions>
-            <Button raised autoFocus color="primary" disabled onClick={this.handleSubmit}>
+            <Button raised autoFocus color="primary" disabled={!this.state.rating} onClick={this.handleSubmit}>
               Save
             </Button>
             <Button color="primary" onClick={this.handleClose}>
@@ -230,6 +232,7 @@ WriteReviewDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
   "business": PropTypes.object.isRequired,
+  "user": PropTypes.object.isRequired,
   "handleClose": PropTypes.func.isRequired,
   "handleSubmit": PropTypes.func.isRequired,
 }

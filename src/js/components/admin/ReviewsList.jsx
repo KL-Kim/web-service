@@ -1,46 +1,24 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
+import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import Button from 'material-ui/Button';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  ExpansionPanelActions
-} from 'material-ui/ExpansionPanel';
-import Divider from 'material-ui/Divider';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import TextField from 'material-ui/TextField';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import IconButton from 'material-ui/IconButton';
+import Search from 'material-ui-icons/Search';
 
 import SettingContainer from '../setting/SettingContainer';
-
-// Mock data
-const reviews = {
-  id: '1',
-  userId: '5a4ef8f5537cd042155581a3',
-  businessId: '5a4ef8f5537cd042155581a3',
-  businessName: 'SteakHouse',
-  content: 'Very Delicious',
-  rating: 5,
-  good: 10,
-  bad: 2,
-};
-
+import TablePaginationActions from '../utils/TablePaginationActions';
+import { getReviews, clearReviewsList } from '../../actions/review.actions';
 
 const styles = (theme) => ({
-  button: {
-    margin: theme.spacing.unit,
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: '40%',
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
 });
 
 class ReviewsList extends Component {
@@ -48,47 +26,152 @@ class ReviewsList extends Component {
     super(props);
 
     this.state = {
-      expanded: null
+      "rowsPerPage": 20,
+      "page": 0,
+      "search": '',
     };
+
+    this.handleRowClick = this.handleRowClick.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
+    this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange = panel => (event, expanded) => {
-    this.setState({
-      expanded: expanded ? panel : undefined
+  componentDidMount() {
+    this.props.getReviews(0, this.state.rowsPerPage, {
+      "orderBy": "new"
     });
   }
 
+  componentWillUnmount() {
+    this.props.clearReviewsList();
+  }
+
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleRowClick() {
+    console.log("Click the row");
+  }
+
+  handlePaginationChange(e, page) {
+    this.props.getReviews(this.state.rowsPerPage, page * this.state.rowsPerPage, {
+      "orderBy": "new"
+    }, this.state.search)
+      .then(response => {
+        this.setState({
+          page: page,
+        });
+      });
+  }
+
+  handleChangeRowsPerPage(e) {
+    this.props.getReviews(e.target.value, this.state.page * e.target.value, {
+      "orderBy": "new"
+    }, this.state.search).then(response => {
+      if (response) {
+        this.setState({
+          rowsPerPage: e.target.value,
+        });
+      }
+    });
+  }
+
+  handleSearch(e) {
+    e.preventDefault();
+
+    this.props.getReviews(this.state.page, this.state.rowsPerPage, {
+      "orderBy": "new"
+    }, this.state.search);
+  }
+
   render() {
-    const { classes } = this.props;
-    const { expanded} = this.state;
+    const { classes, reviews } = this.props;
 
     return (
       <SettingContainer>
-        <Grid container className={classes.root} spacing={16} justify="center" alignItems="center">
+        <Grid container className={classes.root} spacing={16}>
           <Grid item xs={12}>
             <Typography type="display3" gutterBottom>
-            Reviews List
+              Reviews List
             </Typography>
-            <Typography type="body1">Search: </Typography>
-            <TextField id="username" type="text" />
+          </Grid>
+          <Grid item xs={4}>
+            <form onSubmit={this.handleSearch}>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                <Input
+                  id="search"
+                  type="text"
+                  name="search"
+                  onChange={this.handleChange}
+                  onKeyPress={this.handleKeyPress}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="Toggle password visibility"
+                        onClick={this.handleSearch}
+                      >
+                        <Search />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+            </form>
+          </Grid>
 
-            <Paper className={classes.paper}>
-              <ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography type="body1" className={classes.heading}>{reviews.userId}</Typography>
-                  <Typography type="body1" className={classes.secondaryHeading}>{reviews.content}</Typography>
-                </ExpansionPanelSummary>
-                <Divider />
-                <ExpansionPanelDetails>
-                  <TextField id="username" type="text" />
-                </ExpansionPanelDetails>
+          <Grid item xs={12}>
+            <Paper>
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Code</TableCell>
+                    <TableCell>User</TableCell>
+                    <TableCell>Business</TableCell>
+                    <TableCell>Content</TableCell>
+                    <TableCell>Quality</TableCell>
+                    <TableCell>Up Vote</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {
+                    _.isEmpty(reviews) ? (<TableRow></TableRow>)
+                    : reviews.map((review, index) => (
 
-                <ExpansionPanelActions>
-                  <Button raised color="primary" className={classes.button}>
-                    Save
-                  </Button>
-                </ExpansionPanelActions>
-              </ExpansionPanel>
+                        <TableRow hover key={index}
+                          onClick={event => this.handleRowClick(event, review)}
+                        >
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{review.userId}</TableCell>
+                          <TableCell>{review.businessId}</TableCell>
+                          <TableCell>{review.content}</TableCell>
+                          <TableCell>{review.quality}</TableCell>
+                          <TableCell>{review.upVote.length}</TableCell>
+                        </TableRow>
+                    ))
+                  }
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      colSpan={3}
+                      count={this.props.totalCount}
+                      rowsPerPage={this.state.rowsPerPage}
+                      rowsPerPageOptions={[10, 20, 30]}
+                      page={this.state.page}
+                      onChangePage={this.handlePaginationChange}
+                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                      Actions={TablePaginationActions}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
             </Paper>
           </Grid>
         </Grid>
@@ -97,4 +180,15 @@ class ReviewsList extends Component {
   }
 }
 
-export default withStyles(styles)(ReviewsList);
+const mapStateToProps = (state, ownProps) => {
+  return {
+    "user": state.userReducer.user,
+    "updatedAt": state.userReducer.updatedAt,
+    "isLoggedIn": state.userReducer.isLoggedIn,
+    "reviews": state.reviewReducer.reviews,
+    "totalCount": state.reviewReducer.totalCount,
+    "error": state.reviewReducer.error,
+  };
+};
+
+export default connect(mapStateToProps, { getReviews, clearReviewsList })(withStyles(styles)(ReviewsList));

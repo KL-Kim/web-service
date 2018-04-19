@@ -15,6 +15,15 @@ import {
 } from '../api/business.service';
 
 /**
+ * Clear business reduer
+ */
+export const clearBusinessList = () => {
+  return (dispatch) => dispatch({
+    "type": businessTypes.CLEAR_BUSINESS_LIST,
+  });
+};
+
+/**
  * Get business list
  * @param {Number} skip - Number of business to skip
  * @param {Number} limit - Number of business to limit

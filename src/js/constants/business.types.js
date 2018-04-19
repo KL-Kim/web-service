@@ -1,4 +1,8 @@
 const businessTypes = {
+
+  // Clear business reduer
+  "CLEAR_BUSINESS_LIST": "CLEAR_BUSINESS_LIST",
+
   // Get business list
   "GET_BUSINESS_LIST_REQUEST": "GET_BUSINESS_LIST_REQUEST",
   "GET_BUSINESS_LIST_SUCCESS": "GET_BUSINESS_LIST_SUCCESS",

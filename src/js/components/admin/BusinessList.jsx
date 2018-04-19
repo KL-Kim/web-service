@@ -19,7 +19,7 @@ import Badge from 'material-ui/Badge';
 import SettingContainer from '../setting/SettingContainer';
 import LinkContainer from '../utils/LinkContainer';
 import TablePaginationActions from '../utils/TablePaginationActions';
-import { getBusinessList } from '../../actions/business.actions.js';
+import { getBusinessList, clearBusinessList } from '../../actions/business.actions.js';
 
 const styles = (theme) => ({
   "container": {
@@ -55,8 +55,12 @@ class BusinessList extends Component {
     this.handleChangeState = this.handleChangeState.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.getBusinessList(0, this.state.rowsPerPage);
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   handlePaginationChange(e, page) {
@@ -324,4 +328,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList })(withStyles(styles)(BusinessList));
+export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(BusinessList));

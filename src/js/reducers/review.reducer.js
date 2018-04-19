@@ -12,8 +12,14 @@ const initialState = {
 
 const reviewReducer = (state = initialState, action) => {
   switch (action.type) {
+    // Clear review reducer
+    case reviewTypes.CLEAR_REVIEWS_LIST:
+      return initialState;
+
+    // Request
     case reviewTypes.GET_REVIEWS_REQUEST:
     case reviewTypes.ADD_NEW_REVIEW_REQUEST:
+    case reviewTypes.DELETE_REVIEW_REQUEST:
       return {
         ...state,
         isFetching: true,
@@ -22,6 +28,7 @@ const reviewReducer = (state = initialState, action) => {
 
     case reviewTypes.GET_REVIEWS_FAILURE:
     case reviewTypes.ADD_NEW_REVIEW_FAILURE:
+    case reviewTypes.DELETE_REVIEW_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -29,17 +36,13 @@ const reviewReducer = (state = initialState, action) => {
       };
 
     case reviewTypes.GET_REVIEWS_SUCCESS:
+    case reviewTypes.ADD_NEW_REVIEW_SUCCESS:
+    case reviewTypes.DELETE_REVIEW_SUCCESS:
       return {
         ...state,
         isFetching: false,
         reviews: action.payload.reviews,
         totalCount: action.payload.totalCount,
-      };
-
-    case reviewTypes.ADD_NEW_REVIEW_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
       };
 
     default:

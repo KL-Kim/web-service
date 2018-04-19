@@ -30,17 +30,6 @@ import { getReviews, addNewReview } from '../actions/review.actions';
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
 
-const reviews = {
-  id: '1',
-  userId: '5a4ef8f5537cd042155581a3',
-  businessId: '5a4ef8f5537cd042155581a3',
-  businessName: 'SteakHouse',
-  content: 'Very Delicious',
-  rating: 4,
-  upVote: 10,
-  downVote: 2,
-};
-
 const story = {
   id: '1',
   userId: '5a4ef8f5537cd042155581a3',
@@ -76,6 +65,8 @@ class BusinessPage extends Component {
     this.state = {
       "business": null,
       "AddNewDialogOpen": false,
+      "rowsPerPage": 20,
+      "page": 0,
     };
 
     this.handleReviewDialogOpen = this.handleReviewDialogOpen.bind(this);
@@ -87,7 +78,7 @@ class BusinessPage extends Component {
       this.setState({
         business: business,
       });
-      this.props.getReviews('bid', business._id);
+      this.props.getReviews(0, this.state.rowsPerPage, { 'bid': business._id });
     });
   }
 
@@ -112,7 +103,7 @@ class BusinessPage extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, reviews } = this.props;
     const { business } = this.state;
     const thumbnail = _.isEmpty(business) || _.isEmpty(business.thumbnailUri) ? image : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
 
@@ -257,15 +248,22 @@ class BusinessPage extends Component {
                 <Button raised color="primary" onClick={this.handleReviewDialogOpen}>Write a review</Button>
               </Grid>
               <Grid item xs={12}>
-                <Grid container justify="center">
-                  <Grid item xs={4}>
-                    <ReviewCard
-                      content={reviews.content}
-                      rating={reviews.rating}
-                      upVote={reviews.upVote}
-                      downVote={reviews.downVote}
-                    />
-                  </Grid>
+                <Grid container>
+                  {
+                    _.isEmpty(reviews) ? ''
+                      : reviews.map((review, index) => (
+                        <Grid item xs={3} key={index}>
+                          <ReviewCard
+                            id={review._id}
+                            user={review.user}
+                            content={review.content}
+                            rating={review.rating}
+                            upVote={review.upVote}
+                            downVote={review.downVote}
+                          />
+                        </Grid>
+                    ))
+                  }
                 </Grid>
               </Grid>
             </Grid>
