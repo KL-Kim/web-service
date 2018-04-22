@@ -10,6 +10,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const reviewSerivceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/review',
+  voteReviewUrl: config.API_GATEWAY_ROOT + '/api/v1/review/vote/',
 };
 
 /**
@@ -69,35 +70,7 @@ export const fetchReviews = (skip, limit, filter = {}, search) => {
 }
 
 /**
- * Add new review
- * @param {String} token - Verification Token
- * @param {Object} data - Review object
- */
-export const addNewReviewFetch = (token, data) => {
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      "Authorization": 'Bearer ' + token,
-    },
-    body: JSON.stringify(data),
-  };
-
-  return fetch(reviewSerivceUri.commonUrl, options)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return Promise.reject(responseErrorHandler(response));
-      }
-    })
-    .catch(err => {
-      return Promise.reject(err);
-    });
-}
-
-/**
- * Update, delete review
+ * Add, update, delete review
  * @param {String} type - UPDATE OR DELETE
  * @param {String} token - Verification token
  * @param {Object} data - Review data
@@ -113,6 +86,10 @@ export const reviewOperationFetch = (type, token, data) => {
   };
 
   switch (type) {
+    case "ADD":
+      options.method = 'POST';
+      break;
+
     case "UPDATE":
       options.method = 'PUT';
       break;
@@ -126,6 +103,35 @@ export const reviewOperationFetch = (type, token, data) => {
   }
 
   return fetch(reviewSerivceUri.commonUrl, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Vote review
+ * @param {String} token - Verification Token
+ * @param {String} id - Review id
+ * @param {Object} data - Review object
+ */
+export const voteReviewFetch = (token, id, data) => {
+  const options = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify(data),
+  };
+
+  return fetch(reviewSerivceUri.voteReviewUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();

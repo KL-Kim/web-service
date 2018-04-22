@@ -6,7 +6,7 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import reviewTypes from '../constants/review.types';
-import { fetchReviews, reviewOperationFetch, addNewReviewFetch } from '../api/review.service';
+import { fetchReviews, reviewOperationFetch, voteReviewFetch } from '../api/review.service';
 
 /**
  * Clear reviews reduer
@@ -102,7 +102,7 @@ export const addNewReview = (data) => {
 
     return getToken()
       .then(token => {
-        return addNewReviewFetch(token, data);
+        return reviewOperationFetch("ADD", token, data);
       })
       .then(response => {
         dispatch(_addNewReviewSuccess(response));
@@ -131,11 +131,14 @@ export const updateReview = (data) => {
     "payload": {}
   });
 
-  const _updateReviewSuccess = () => ({
+  const _updateReviewSuccess = (response) => ({
     "type": reviewTypes.UPDATE_REVIEW_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {},
+    "payload": {
+      reviews: response.list,
+      totalCount: response.totalCount,
+    },
   });
 
   const _updateReviewFailure = (error) => ({
@@ -157,7 +160,7 @@ export const updateReview = (data) => {
         return reviewOperationFetch("UPDATE", token, data)
       })
       .then(response => {
-        dispatch(_updateReviewSuccess());
+        dispatch(_updateReviewSuccess(response));
         dispatch(AlertActions.alertSuccess("Update review successfully"));
 
         return response;
@@ -218,6 +221,59 @@ export const deleteReview = (data) => {
       })
       .catch(err => {
         dispatch(_deleteReviewFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  }
+}
+
+/**
+ * Vote review
+ */
+export const voteReview = (id, data) => {
+  const _voteReviewRequest = () => ({
+    "type": reviewTypes.VOTE_REVIEW_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _voteReviewSuccess = (response) => ({
+    "type": reviewTypes.VOTE_REVIEW_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {
+      reviews: response.list,
+    },
+  });
+
+  const _voteReviewFailure = (error) => ({
+    "type": reviewTypes.VOTE_REVIEW_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id) && _.isEmpty(data)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_voteReviewRequest());
+
+    return getToken()
+      .then(token => {
+        return voteReviewFetch(token, id, data);
+      })
+      .then(response => {
+        dispatch(_voteReviewSuccess(response));
+        dispatch(AlertActions.alertSuccess("Vote successfully"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_voteReviewFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;

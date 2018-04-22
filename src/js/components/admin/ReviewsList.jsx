@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
@@ -9,14 +10,25 @@ import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
-import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from 'material-ui/Dialog';
+import Radio, { RadioGroup } from 'material-ui/Radio';
+import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
+import Select from 'material-ui/Select';
 
 import SettingContainer from '../setting/SettingContainer';
+import ProperName from '../utils/ProperName';
 import TablePaginationActions from '../utils/TablePaginationActions';
-import { getReviews, clearReviewsList } from '../../actions/review.actions';
+import { getReviews, clearReviewsList, updateReview } from '../../actions/review.actions';
+
+
+const Quality = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const styles = (theme) => ({
 });
@@ -29,6 +41,14 @@ class ReviewsList extends Component {
       "rowsPerPage": 20,
       "page": 0,
       "search": '',
+      "dialogOpen": false,
+      "reviewId": '',
+      "content": '',
+      "status": '',
+      "quality": 0,
+      "username": '',
+      "userId": '',
+      "businessName": '',
     };
 
     this.handleRowClick = this.handleRowClick.bind(this);
@@ -36,6 +56,8 @@ class ReviewsList extends Component {
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -55,8 +77,17 @@ class ReviewsList extends Component {
     });
   }
 
-  handleRowClick() {
-    console.log("Click the row");
+  handleRowClick(e, review) {
+    this.setState({
+      reviewId: review._id,
+      content: review.content,
+      status: review.status,
+      quality: review.quality,
+      username: review.user.username,
+      userId: review.user._id,
+      businessName: review.business.krName,
+      dialogOpen: true,
+    });
   }
 
   handlePaginationChange(e, page) {
@@ -90,105 +121,200 @@ class ReviewsList extends Component {
     }, this.state.search);
   }
 
+  handleDialogClose() {
+    this.setState({
+      "dialogOpen": false
+    });
+  }
+
+  handleSubmit() {
+    this.props.updateReview({
+      _id: this.state.reviewId,
+      uid: this.props.admin._id,
+      quality: this.state.quality,
+      status: this.state.status,
+    }).then(response => {
+      this.setState({
+        "dialogOpen": false,
+      });
+    });
+  }
+
   render() {
     const { classes, reviews } = this.props;
 
     return (
       <SettingContainer>
-        <Grid container className={classes.root} spacing={16}>
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom>
-              Reviews List
-            </Typography>
-          </Grid>
-          <Grid item xs={4}>
-            <form onSubmit={this.handleSearch}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="adornment-password">Search</InputLabel>
-                <Input
-                  id="search"
-                  type="text"
-                  name="search"
-                  onChange={this.handleChange}
-                  onKeyPress={this.handleKeyPress}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="Toggle password visibility"
-                        onClick={this.handleSearch}
-                      >
-                        <Search />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-            </form>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Paper>
-              <Table className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Code</TableCell>
-                    <TableCell>User</TableCell>
-                    <TableCell>Business</TableCell>
-                    <TableCell>Content</TableCell>
-                    <TableCell>Quality</TableCell>
-                    <TableCell>Up Vote</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {
-                    _.isEmpty(reviews) ? (<TableRow></TableRow>)
-                    : reviews.map((review, index) => (
-
-                        <TableRow hover key={index}
-                          onClick={event => this.handleRowClick(event, review)}
+        <div>
+          <Grid container className={classes.root} spacing={16}>
+            <Grid item xs={12}>
+              <Typography type="display3" gutterBottom>
+                Reviews List
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <form onSubmit={this.handleSearch}>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                  <Input
+                    id="search"
+                    type="text"
+                    name="search"
+                    onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleSearch}
                         >
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{review.userId}</TableCell>
-                          <TableCell>{review.businessId}</TableCell>
-                          <TableCell>{review.content}</TableCell>
-                          <TableCell>{review.quality}</TableCell>
-                          <TableCell>{review.upVote.length}</TableCell>
-                        </TableRow>
-                    ))
-                  }
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      colSpan={3}
-                      count={this.props.totalCount}
-                      rowsPerPage={this.state.rowsPerPage}
-                      rowsPerPageOptions={[10, 20, 30]}
-                      page={this.state.page}
-                      onChangePage={this.handlePaginationChange}
-                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                      Actions={TablePaginationActions}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </Paper>
+                          <Search />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </form>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Paper>
+                <Table className={classes.table}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Code</TableCell>
+                      <TableCell>User</TableCell>
+                      <TableCell>Business</TableCell>
+                      <TableCell>Content</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell>Quality</TableCell>
+                      <TableCell>Up Vote</TableCell>
+                      <TableCell>Down Vote</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {
+                      _.isEmpty(reviews) ? (<TableRow></TableRow>)
+                        : reviews.map((review, index) => (
+                          <TableRow hover key={index}
+                            onClick={e => this.handleRowClick(e, review)}
+                          >
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell><ProperName user={review.user} /></TableCell>
+                            <TableCell>{review.business.krName}</TableCell>
+                            <TableCell>{review.content}</TableCell>
+                            <TableCell>{review.status}</TableCell>
+                            <TableCell>{review.quality}</TableCell>
+                            <TableCell>{review.upVote.length}</TableCell>
+                            <TableCell>{review.downVote.length}</TableCell>
+                          </TableRow>
+                      ))
+                    }
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        colSpan={3}
+                        count={this.props.totalCount}
+                        rowsPerPage={this.state.rowsPerPage}
+                        rowsPerPageOptions={[10, 20, 30]}
+                        page={this.state.page}
+                        onChangePage={this.handlePaginationChange}
+                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        Actions={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+
+          <Dialog fullWidth
+            open={this.state.dialogOpen}
+            onClose={this.handleDialogClose}
+            aria-labelledby="review-dialog-title"
+            aria-describedby="review-dialog-description"
+          >
+            <DialogTitle id="review-dialog-title">
+              <Link to={{
+                  pathname: "/admin/user/" + this.state.username,
+                  hash: '#',
+                  state: {
+                    "admin": this.props.admin,
+                    "userId": this.state.userId,
+                  }
+                }}
+              >
+                {this.state.username}
+              </Link>
+            </DialogTitle>
+            <DialogContent>
+              <Grid container spacing={16}>
+                <Grid item xs={6}>
+                  <FormControl fullWidth >
+                    <FormLabel component="label">Staus</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-label="Status"
+                      name="status"
+                      value={this.state.status}
+                      onChange={this.handleChange}
+                    >
+                      <FormControlLabel value="normal" control={<Radio />} label="Normal" />
+                      <FormControlLabel value="suspended" control={<Radio />} label="Suspended" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="quality">Quality</InputLabel>
+                    <Select native
+                      name="quality"
+                      value={this.state.quality}
+                      onChange={this.handleChange}
+                      input={<Input id="quality" />}
+                    >
+
+                      {Quality.map(item => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  {this.state.content}
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button raised autoFocus color="primary" disabled={_.isEmpty(this.state.reviewId)} onClick={this.handleSubmit}>
+                Save
+              </Button>
+              <Button color="primary" onClick={this.handleDialogClose}>
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       </SettingContainer>
     );
   }
 }
 
+ReviewsList.propTypes = {
+  "classes": PropTypes.object.isRequired,
+  "reviews": PropTypes.array.isRequired,
+  "totalCount": PropTypes.number.isRequired,
+};
+
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
-    "updatedAt": state.userReducer.updatedAt,
-    "isLoggedIn": state.userReducer.isLoggedIn,
+    "admin": state.userReducer.user,
     "reviews": state.reviewReducer.reviews,
     "totalCount": state.reviewReducer.totalCount,
-    "error": state.reviewReducer.error,
   };
 };
 
-export default connect(mapStateToProps, { getReviews, clearReviewsList })(withStyles(styles)(ReviewsList));
+export default connect(mapStateToProps, { getReviews, clearReviewsList, updateReview })(withStyles(styles)(ReviewsList));

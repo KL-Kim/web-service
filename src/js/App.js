@@ -42,7 +42,7 @@ import Admin_StoriesList from './components/admin/StoriesList';
 import SingleBusinessPage from './components/SingleBusinessPage';
 import SingleStoryPage from './components/SingleStoryPage';
 
-import { getUserById } from './actions/user.actions';
+import { getMe } from './actions/user.actions';
 import { loadFromStorage } from './helpers/webStorage';
 import webStorageTypes from './constants/webStorage.types';
 
@@ -51,7 +51,7 @@ const App = () => {
 
   const uid = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
   if (uid) {
-    store.dispatch(getUserById(uid));
+    store.dispatch(getMe(uid));
   }
 
   return (

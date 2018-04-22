@@ -277,7 +277,7 @@ class UsersList extends Component {
                         hash: '#',
                         state: {
                           "admin": this.props.admin,
-                          "user": user
+                          "userId": user._id
                         }
                       }} key={index}
                     >

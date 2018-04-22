@@ -57,12 +57,12 @@ class WriteReviewDialog extends Component {
     super(props);
 
     this.state = {
-      rating: null,
-      content: '',
+      rating: props.rating || null,
+      content: props.content || '',
       images: [],
-      "serviceGood": false,
-      "envGood": false,
-      "comeback": false,
+      "serviceGood": props.serviceGood || false,
+      "envGood": props.envGood || false,
+      "comeback": props.comeback || false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -70,6 +70,18 @@ class WriteReviewDialog extends Component {
     this.handleStarChange = this.handleStarChange.bind(this);
     this.onDropImages = this.onDropImages.bind(this);
     this.handleClose = this.handleClose.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps) {
+      this.setState({
+        rating: nextProps.rating || null,
+        content: nextProps.content || '',
+        "serviceGood": nextProps.serviceGood || false,
+        "envGood": nextProps.envGood || false,
+        "comeback": nextProps.comeback || false,
+      });
+    }
   }
 
   handleChange = (content) => this.setState({ content: content });
@@ -93,7 +105,6 @@ class WriteReviewDialog extends Component {
   }
 
   handleClose() {
-    this.props.handleClose();
     this.setState({
       rating: null,
       content: '',
@@ -102,18 +113,26 @@ class WriteReviewDialog extends Component {
       "envGood": false,
       "comeback": false,
     });
+    this.props.handleClose();
   }
 
   handleSubmit() {
-    this.props.handleSubmit({
-      bid: this.props.business._id,
+    const data = {
       uid: this.props.user._id,
       rating: this.state.rating,
       content: this.state.content,
       serviceGood: this.state.serviceGood,
       envGood: this.state.envGood,
       comeback: this.state.comeback,
-    }).then(response => {
+    }
+
+    if (this.props.id) {
+      data._id = this.props.id;
+    } else {
+      data.bid = this.props.business._id;
+    }
+
+    this.props.handleSubmit(data).then(response => {
       this.handleClose();
     });
   }
@@ -233,6 +252,9 @@ WriteReviewDialog.propTypes = {
   "open": PropTypes.bool.isRequired,
   "business": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
+  "serviceGood": PropTypes.bool,
+  "envGood": PropTypes.bool,
+  "comeback": PropTypes.bool,
   "handleClose": PropTypes.func.isRequired,
   "handleSubmit": PropTypes.func.isRequired,
 }

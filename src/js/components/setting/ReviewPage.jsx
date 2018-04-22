@@ -8,7 +8,6 @@ import Typography from 'material-ui/Typography';
 
 import SettingContainer from './SettingContainer';
 import ReviewCard from '../utils/ReviewCard';
-import WriteReviewDialog from '../utils/WriteReviewDialog';
 import { getReviews, updateReview, deleteReview } from '../../actions/review.actions';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
@@ -20,10 +19,10 @@ class ReviewPage extends Component {
     super(props);
 
     this.state = {
-      "AddNewDialogOpen": false,
       "rowsPerPage": 20,
       "page": 0,
     };
+
   }
 
   componentDidMount() {
@@ -54,19 +53,24 @@ class ReviewPage extends Component {
                   <Grid item xs={3} key={index}>
                     <ReviewCard
                       id={review._id}
+                      owner={review.user}
                       business={review.business}
+                      showBusinessName={true}
                       isOwn={review.userId === this.props.user._id}
                       content={review.content}
                       rating={review.rating}
-                      upVote={review.upVote.length}
-                      downVote={review.downVote.length}
+                      upVoteNum={review.upVote.length}
+                      downVoteNum={review.downVote.length}
+                      serviceGood={review.serviceGood}
+                      envGood={review.envGood}
+                      comeback={review.comeback}
+                      handleUpdate={this.props.updateReview}
                       handleDelete={this.props.deleteReview}
                     />
                   </Grid>
                 ))
             }
           </Grid>
-
         </div>
       </SettingContainer>
     );

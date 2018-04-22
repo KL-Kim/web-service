@@ -247,19 +247,19 @@ export const changePassword = (token, password, passwordConfirmation) => {
 };
 
 /**
- * Get user by Id
+ * Get user own dasta
  * @param {String} id - User's id
  */
-export const getUserById = (id) => {
-  const _requestGetUserById = () => ({
-    "type": userTypes.GET_USER_BY_ID_REQUEST,
+export const getMe = (id) => {
+  const _getMeRequest = () => ({
+    "type": userTypes.GET_ME_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  const _getUserByIdSuccess = (user) => ({
-    "type": userTypes.GET_USER_BY_ID_SUCCESS,
+  const _getMeSuccess = (user) => ({
+    "type": userTypes.GET_ME_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {
@@ -267,8 +267,8 @@ export const getUserById = (id) => {
     }
   });
 
-  const _getUserByIdFailure = (error) => ({
-    "type": userTypes.GET_USER_BY_ID_FAILURE,
+  const _getMeFailure = (error) => ({
+    "type": userTypes.GET_ME_FAILURE,
     "meta": {},
     "error": error,
     "payload": {}
@@ -277,13 +277,15 @@ export const getUserById = (id) => {
   return (dispatch, getState) => {
     getToken()
       .then(token => {
-        dispatch(_requestGetUserById());
+        dispatch(_getMeRequest());
         return getUserByIdFetch(token, id);
       })
       .then(user => {
-        return dispatch(_getUserByIdSuccess(user));
+        dispatch(_getMeSuccess(user));
+
+        return user;
       }).catch(err => {
-        return dispatch(_getUserByIdFailure(err));
+        return dispatch(_getMeFailure(err));
       });
   };
 }

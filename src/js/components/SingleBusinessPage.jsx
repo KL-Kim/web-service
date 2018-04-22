@@ -25,7 +25,7 @@ import ReviewCard from './utils/ReviewCard';
 import StoryCard from './utils/StoryCard';
 import WriteReviewDialog from './utils/WriteReviewDialog';
 import { getSingleBusiness } from '../actions/business.actions';
-import { getReviews, addNewReview } from '../actions/review.actions';
+import { getReviews, addNewReview, updateReview, voteReview } from '../actions/review.actions';
 
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
@@ -64,7 +64,7 @@ class BusinessPage extends Component {
 
     this.state = {
       "business": null,
-      "AddNewDialogOpen": false,
+      "addNewDialogOpen": false,
       "rowsPerPage": 20,
       "page": 0,
     };
@@ -82,23 +82,15 @@ class BusinessPage extends Component {
     });
   }
 
-  componenWillUpdate() {
-    console.log("Will update");
-  }
-
-  componentWillReceiveProps() {
-    console.log("Will receive props");
-  }
-
   handleReviewDialogOpen() {
     this.setState({
-      "AddNewDialogOpen": true,
+      "addNewDialogOpen": true,
     });
   }
 
   handleReviewDialogClose() {
     this.setState({
-      "AddNewDialogOpen": false,
+      "addNewDialogOpen": false,
     });
   }
 
@@ -120,7 +112,7 @@ class BusinessPage extends Component {
                 <Paper className={classes.paper}>
                   <Typography type="display1" color="primary">{business.krName}</Typography>
                   <Typography type="body1" gutterBottom>{business.cnName}</Typography>
-                  <Stars count={5} size={24} value={business.ratingAverage} edit={false} />
+                  <Stars count={5} size={24} value={business.ratingSum/business.reviewsList.length} edit={false} />
                     <Typography type="body2">{business.category.krName}</Typography>
                   <Typography type="body1">Tel: {business.tel}</Typography>
                   <Typography type="body1">{business.address.area.name + ' ' + business.address.street}</Typography>
@@ -255,11 +247,16 @@ class BusinessPage extends Component {
                         <Grid item xs={3} key={index}>
                           <ReviewCard
                             id={review._id}
-                            user={review.user}
+                            owner={review.user}
+                            user={this.props.user}
+                            business={review.business}
+                            showUser={true}
                             content={review.content}
                             rating={review.rating}
-                            upVote={review.upVote}
-                            downVote={review.downVote}
+                            upVoteNum={review.upVote.length}
+                            downVoteNum={review.downVote.length}
+                            handleUpdate={this.props.updateReview}
+                            handleVote={this.props.voteReview}
                           />
                         </Grid>
                     ))
@@ -268,7 +265,7 @@ class BusinessPage extends Component {
               </Grid>
             </Grid>
 
-            <Grid container spacing={16} justify="center" alignItems="center">
+            <Grid container spacing={16}>
               <Grid item xs={12}>
                 <Typography type="display3" align="center">
                   Stories
@@ -287,33 +284,15 @@ class BusinessPage extends Component {
                   downVote={story.downVote}
                 />
               </Grid>
-              <Grid item xs={4}>
-                <StoryCard businessName={story.businessName}
-                  title={story.title}
-                  content={story.content}
-                  commentCount={story.commentCount}
-                  upVote={story.upVote}
-                  downVote={story.downVote}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <StoryCard businessName={story.businessName}
-                  title={story.title}
-                  content={story.content}
-                  commentCount={story.commentCount}
-                  upVote={story.upVote}
-                  downVote={story.downVote}
-                />
-              </Grid>
             </Grid>
 
             <WriteReviewDialog
               user={this.props.user}
               business={this.state.business}
-              open={this.state.AddNewDialogOpen}
+              open={this.state.addNewDialogOpen}
               handleSubmit={this.props.addNewReview}
               handleClose={this.handleReviewDialogClose}
-            />
+           />
           </div>
         }
       </Container>
@@ -335,4 +314,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getSingleBusiness, addNewReview, getReviews })(withStyles(styles)(BusinessPage));
+export default connect(mapStateToProps, { getSingleBusiness, addNewReview, getReviews, updateReview, voteReview })(withStyles(styles)(BusinessPage));

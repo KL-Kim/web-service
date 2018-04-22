@@ -256,7 +256,7 @@ class CategoryList extends Component {
                   : this.state.list.map((c, index) => (
 
                       <TableRow hover key={index}
-                        onClick={event => this.handleRowClick(event, c)}
+                        onClick={e => this.handleRowClick(e, c)}
                       >
                         <TableCell>{c.code}</TableCell>
                         <TableCell>{c.krName}</TableCell>

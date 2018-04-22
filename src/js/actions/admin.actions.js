@@ -4,7 +4,7 @@
 import * as AlertActions from './alert.actions';
 import _ from 'lodash';
 import { getToken } from '../api/auth.service';
-import { getUsersListFetch, adminEditUserFetch } from '../api/user.service';
+import { getUsersListFetch, adminEditUserFetch, getUserByIdFetch } from '../api/user.service';
 
 /**
  * Fetch Users List
@@ -52,6 +52,30 @@ export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
 };
 
 /**
+ * Get user by id
+ */
+export const adminGetUser = (id) => {
+  return (dispatch, getState) => {
+    if (_.isUndefined(id)) {
+      return dispatch(AlertActions.alertFailure("Bad request!"));
+    }
+
+    return getToken()
+      .then(token => {
+        return getUserByIdFetch(token, id)
+      })
+      .then(response => {
+        return response;
+      })
+      .catch(err => {
+        dispatch(AlertActions.alertFailure("Get user failed!"));
+
+        return ;
+      });
+  };
+}
+
+/**
  * Admin edit user
  * @role admin
  * @param {String} id - User's id
@@ -59,11 +83,15 @@ export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
  */
 export const adminEditUser = (id, data) => {
   return (dispatch, getState) => {
+    if (_.isUndefined(id) || _.isEmpty(data)) {
+      return dispatch(AlertActions.alertFailure("Bad request!"));
+    }
+
     return getToken()
       .then(token => {
         return adminEditUserFetch(token, id, data)
       })
-      .then(reponse => {
+      .then(response => {
         return dispatch(AlertActions.alertSuccess("Update successfully"));
       })
       .catch(err => {

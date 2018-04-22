@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 class ProperName extends Component {
   render() {
-    const {user} = this.props;
+    const { user } = this.props;
 
     const name = _.isEmpty(user) ? '' :((_.isEmpty(user.firstName) && _.isEmpty(user.lastName))
       ? user.username

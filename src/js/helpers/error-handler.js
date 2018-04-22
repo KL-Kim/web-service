@@ -8,27 +8,27 @@ const handleErrorResponse = (response, message) => {
 
   switch (response.status) {
     case 400:
-      error.message = "Bad JSON Request";
+      error.message = "Server: Bad JSON Request";
       break;
 
     case 401:
-      error.message = "Unauthorized";
+      error.message = "Server: Unauthorized";
       break;
 
     case 403:
-      error.message = "Forbidden";
+      error.message = "Server: Forbidden";
       break;
 
     case 404:
-      error.message = "Not found";
+      error.message = "Server: Not found";
       break;
 
     case 409:
-      error.message = "Already exists";
+      error.message = "Server: Already exists";
       break;
 
     default:
-      error.message = "Unknown Server Error";
+      error.message = "Server: Unknown Server Error";
   }
 
   return error;

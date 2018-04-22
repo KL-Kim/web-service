@@ -14,7 +14,7 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 
 import SettingContainer from '../setting/SettingContainer';
-import { adminEditUser } from '../../actions/admin.actions.js';
+import { adminEditUser, adminGetUser } from '../../actions/admin.actions.js';
 
 const styles = (theme) => ({
   "paper": {
@@ -35,11 +35,13 @@ class SingleUserInfoPage extends Component {
   constructor(props) {
     super(props);
 
-    const user = _.isUndefined(props.location.state) ? '' : props.location.state.user;
+    const userId = _.isUndefined(props.location.state) ? '' : props.location.state.userId;
 
     this.state = {
-      "userStatus": user.userStatus,
-      "role": user.role,
+      "userId": userId,
+      "userStatus": '',
+      "role": '',
+      'user': {},
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -48,8 +50,22 @@ class SingleUserInfoPage extends Component {
   }
 
   componentWillMount() {
-    if (_.isUndefined(this.props.location.state))
+    if (_.isEmpty(this.props.location.state.userId)  )
       this.props.history.push('/404');
+  }
+
+  componentDidMount() {
+    if (this.state.userId) {
+      this.props.adminGetUser(this.state.userId).then(user => {
+        if (user) {
+          this.setState({
+            user: Object.assign({}, user),
+            userStatus: user.userStatus,
+            role: user.role,
+          });
+        }
+      });
+    }
   }
 
   handleChange(e) {
@@ -60,19 +76,15 @@ class SingleUserInfoPage extends Component {
     });
   }
 
-  handleSubmit = id => (e) => {
+  handleSubmit() {
     const { role, userStatus } = this.state;
-
-    const data = {
-      id: id,
-    };
+    let data = {};
 
     if (role) data.role = role;
     if (userStatus) data.userStatus = userStatus;
 
     if (role || userStatus)
-      this.props.adminEditUser(this.props.admin._id, data);
-
+      this.props.adminEditUser(this.state.userId, data);
   }
 
   handleCancel() {
@@ -81,7 +93,7 @@ class SingleUserInfoPage extends Component {
 
   render() {
     const { classes, location } = this.props;
-    const user = _.isUndefined(location.state) ? '' : location.state.user;
+    const { user } = this.state;
 
     return _.isEmpty(user) ? '' :(
       <SettingContainer>
@@ -156,7 +168,7 @@ class SingleUserInfoPage extends Component {
               </Grid>
               <Grid item xs={12}>
                 <div className={classes.buttonContainer}>
-                  <Button raised color="primary" className={classes.button} onClick={this.handleSubmit(user._id)}>
+                  <Button raised color="primary" className={classes.button} onClick={this.handleSubmit}>
                     Update
                   </Button>
                   <Button color="primary" className={classes.button} onClick={this.handleCancel}>
@@ -208,4 +220,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { adminEditUser })(withStyles(styles)(SingleUserInfoPage));
+export default connect(mapStateToProps, { adminEditUser, adminGetUser })(withStyles(styles)(SingleUserInfoPage));

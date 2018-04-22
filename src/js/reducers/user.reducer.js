@@ -20,7 +20,7 @@ const userReducer = (state = initialState, action) => {
     case userTypes.REGISTER_REQUEST:
     case userTypes.VERIFY_REQUEST:
     case userTypes.CHANGE_PASSWORD_REQUEST:
-    case userTypes.GET_USER_BY_ID_REQUEST:
+    case userTypes.GET_ME_REQUEST:
     case userTypes.LOGOUT_REQUEST:
     case userTypes.UPDATE_USER_PROFILE_REQUEST:
     case userTypes.UPLOAD_PROFILE_PHOTO_REQUEST:
@@ -36,7 +36,7 @@ const userReducer = (state = initialState, action) => {
     case userTypes.REGISTER_FAILURE:
     case userTypes.VERIFY_FAILURE:
     case userTypes.CHANGE_PASSWORD_FAILURE:
-    case userTypes.GET_USER_BY_ID_FAILURE:
+    case userTypes.GET_ME_FAILURE:
     case userTypes.LOGOUT_FAILURE:
     case userTypes.UPDATE_USER_PROFILE_FAILURE:
     case userTypes.UPLOAD_PROFILE_PHOTO_FAILURE:
@@ -91,7 +91,7 @@ const userReducer = (state = initialState, action) => {
       };
 
     // Get User By Id
-    case userTypes.GET_USER_BY_ID_SUCCESS:
+    case userTypes.GET_ME_SUCCESS:
       return {
         ...state,
         "isFetching": false,
