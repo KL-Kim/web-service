@@ -91,7 +91,7 @@ class ReviewsList extends Component {
   }
 
   handlePaginationChange(e, page) {
-    this.props.getReviews(this.state.rowsPerPage, page * this.state.rowsPerPage, {
+    this.props.getReviews(page * this.state.rowsPerPage, this.state.rowsPerPage, {
       "orderBy": "new"
     }, this.state.search)
       .then(response => {
@@ -102,7 +102,7 @@ class ReviewsList extends Component {
   }
 
   handleChangeRowsPerPage(e) {
-    this.props.getReviews(e.target.value, this.state.page * e.target.value, {
+    this.props.getReviews(this.state.page * e.target.value, e.target.value, {
       "orderBy": "new"
     }, this.state.search).then(response => {
       if (response) {
@@ -116,7 +116,7 @@ class ReviewsList extends Component {
   handleSearch(e) {
     e.preventDefault();
 
-    this.props.getReviews(this.state.page, this.state.rowsPerPage, {
+    this.props.getReviews(this.state.page * this.state.rowsPerPage, this.state.rowsPerPage, {
       "orderBy": "new"
     }, this.state.search);
   }
@@ -202,7 +202,9 @@ class ReviewsList extends Component {
                             <TableCell>{index + 1}</TableCell>
                             <TableCell><ProperName user={review.user} /></TableCell>
                             <TableCell>{review.business.krName}</TableCell>
-                            <TableCell>{review.content}</TableCell>
+                            <TableCell>
+                              <div dangerouslySetInnerHTML={{__html: review.content}} />
+                            </TableCell>
                             <TableCell>{review.status}</TableCell>
                             <TableCell>{review.quality}</TableCell>
                             <TableCell>{review.upVote.length}</TableCell>
@@ -284,7 +286,7 @@ class ReviewsList extends Component {
                 </Grid>
 
                 <Grid item xs={12}>
-                  {this.state.content}
+                  <div dangerouslySetInnerHTML={{__html: this.state.content}} />
                 </Grid>
               </Grid>
             </DialogContent>

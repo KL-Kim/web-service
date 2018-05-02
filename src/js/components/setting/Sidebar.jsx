@@ -44,14 +44,7 @@ class Sidebar extends Component {
                   <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
-              <LinkContainer to="/setting/story">
-                <MenuItem selected={match.path === "/setting/story"}>
-                  <ListItemIcon>
-                    <Book />
-                  </ListItemIcon>
-                  <ListItemText primary="Story" classes={match.path === "/setting/story" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+
               <LinkContainer to="/setting/review">
                 <MenuItem selected={match.path === "/setting/review"}>
                   <ListItemIcon>
@@ -74,6 +67,14 @@ class Sidebar extends Component {
                     <Notifications />
                   </ListItemIcon>
                   <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
+                </MenuItem>
+              </LinkContainer>
+              <LinkContainer to="/setting/story">
+                <MenuItem selected={match.path === "/setting/story"}>
+                  <ListItemIcon>
+                    <Book />
+                  </ListItemIcon>
+                  <ListItemText primary="Story" classes={match.path === "/setting/story" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
             </MenuList>

@@ -6,13 +6,16 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import userTypes from '../constants/user.types';
 import webStorageTypes from '../constants/webStorage.types.js';
-import { registerFetch,
+import {
+  registerFetch,
   verifyFetch,
   changePasswordFetch,
   getUserByIdFetch,
   updateUserFetch,
   uploadProfilePhotoFetch,
-  updateMobilePhoneFetch, } from '../api/user.service';
+  updateMobilePhoneFetch,
+  faverOperationFetch,
+} from '../api/user.service';
 import { getToken, loginFetch, logoutFetch } from '../api/auth.service';
 import { removeFromStorage } from '../helpers/webStorage';
 
@@ -250,16 +253,16 @@ export const changePassword = (token, password, passwordConfirmation) => {
  * Get user own dasta
  * @param {String} id - User's id
  */
-export const getMe = (id) => {
+export const getMyself = (id) => {
   const _getMeRequest = () => ({
-    "type": userTypes.GET_ME_REQUEST,
+    "type": userTypes.GET_MYSELF_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
   const _getMeSuccess = (user) => ({
-    "type": userTypes.GET_ME_SUCCESS,
+    "type": userTypes.GET_MYSELF_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {
@@ -268,7 +271,7 @@ export const getMe = (id) => {
   });
 
   const _getMeFailure = (error) => ({
-    "type": userTypes.GET_ME_FAILURE,
+    "type": userTypes.GET_MYSELF_FAILURE,
     "meta": {},
     "error": error,
     "payload": {}
@@ -328,6 +331,7 @@ export const logout = () => {
     dispatch(_logoutRequest);
     removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
     removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
 
     return logoutFetch().then(json => {
       dispatch(_logoutSuccess());
@@ -527,4 +531,58 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
         return false;
       });
   };
+}
+
+/**
+  * Add or delete user's favorite business
+  * @param {String} id - User's id
+  * @param {String} bid - Business id
+ */
+export const favorOperation = (id, bid) => {
+  const _favorOperationRequest  = () => ({
+    "type": userTypes.FAVOR_OPERATION_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {},
+  });
+
+  const _favorOperationSuccess  = (user) => ({
+    "type": userTypes.FAVOR_OPERATION_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {
+      "user": user
+    },
+  });
+
+  const _favorOperationFailure  = (error) => ({
+    "type": userTypes.FAVOR_OPERATION_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {},
+  });
+
+  return (dispatch, getState) => {
+    if (_.isUndefined(id) || _.isUndefined(bid)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_favorOperationRequest());
+
+    return getToken()
+      .then(token => {
+        return faverOperationFetch(token, id, bid);
+      })
+      .then(response => {
+        dispatch(_favorOperationSuccess(response));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_favorOperationFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return;
+      });
+  }
 }

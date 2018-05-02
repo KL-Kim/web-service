@@ -18,6 +18,7 @@ const userServiceUri = {
   updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/useranme',
   updatePhoneUrl: config.API_GATEWAY_ROOT + '/api/v1/user/phone',
   uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto',
+  favorUrl: config.API_GATEWAY_ROOT + '/api/v1/user/favor/',
 
   // Admin related URI
   adminEditUserUrl: config.API_GATEWAY_ROOT + '/api/v1/user/admin',
@@ -67,6 +68,7 @@ export const registerFetch = (user) => {
 
       if (json.user) {
         saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, json.user._id);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, json.user.favors);
         return json;
       } else {
         const err = new Error("Bad response")
@@ -274,32 +276,66 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
   };
 
   return fetch(userServiceUri.updatePhoneUrl + '/' + id, options)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      const error = new Error(response.statusText);
-      error.status = response.status;
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        const error = new Error(response.statusText);
+        error.status = response.status;
 
-      switch (response.status) {
-        case 401:
-        case 403:
-          error.message = "Verification Code is not matched";
-          break;
+        switch (response.status) {
+          case 401:
+          case 403:
+            error.message = "Verification Code is not matched";
+            break;
 
-        default:
-          error.message = "Unknown Server Error";
+          default:
+            error.message = "Unknown Server Error";
+        }
+
+        return Promise.reject(error);
       }
-
-      return Promise.reject(error);
-    }
-  })
-  .then(user => {
-    return user;
-  }).catch(err => {
-    return Promise.reject(err);
-  });
+    })
+    .then(user => {
+      return user;
+    }).catch(err => {
+      return Promise.reject(err);
+    });
 };
+
+/**
+ * Add or delete user's favorite business
+ * @param {String} token - Bearer Token
+ * @param {String} id - User's id
+ * @param {String} bid - Business id
+ */
+export const faverOperationFetch = (token, id, bid) => {
+  const options = {
+    "method": 'POST',
+    "headers": {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    "body": JSON.stringify({
+      bid: bid
+    }),
+  };
+
+  return fetch(userServiceUri.favorUrl + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .then(user => {
+      saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, user.favors);
+      return user;
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+}
 
 /**
  * Fetch Users List
@@ -310,7 +346,7 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
  * @param {Object} filter - Filter users list
  * @param {String} search - Search String
  */
-export const getUsersListFetch = (token, limit, skip, filter, search) => {
+export const getUsersListFetch = (token, skip, limit, filter, search) => {
   const options = {
     "method": 'POST',
     "headers": {

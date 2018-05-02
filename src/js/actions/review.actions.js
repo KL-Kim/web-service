@@ -244,7 +244,7 @@ export const voteReview = (id, data) => {
     "meta": {},
     "error": null,
     "payload": {
-      reviews: response.list,
+      review: response.review
     },
   });
 

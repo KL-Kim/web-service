@@ -118,6 +118,7 @@ export const loginFetch = (email, password) => {
 
       if (json.user) {
         saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, json.user._id);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, json.user.favors);
         return json.user;
       } else {
         const err = new Error("Bad Response");

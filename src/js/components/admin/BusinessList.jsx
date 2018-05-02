@@ -43,7 +43,7 @@ class BusinessList extends Component {
       "search": '',
       "rowsPerPage": 10,
       "page": 0,
-      "state": "",
+      "state": '',
       "event": false,
       "reports": false,
     };
@@ -56,7 +56,9 @@ class BusinessList extends Component {
   }
 
   componentDidMount() {
-    this.props.getBusinessList(0, this.state.rowsPerPage);
+    this.props.getBusinessList(0, this.state.rowsPerPage, {
+      "state": ''
+    });
   }
 
   componentWillUnmount() {
@@ -79,7 +81,7 @@ class BusinessList extends Component {
     const { name, value } = e.target;
     this.setState({
       [name]: value
-    })
+    });
   }
 
   handleEventSwitch(e) {
@@ -194,8 +196,8 @@ class BusinessList extends Component {
                   onChange={this.handleChangeState}
                 >
                   <FormControlLabel value="" control={<Radio />} label="All" />
-                  <FormControlLabel value="draft" control={<Radio />} label="Draft" />
                   <FormControlLabel value="published" control={<Radio />} label="Published" />
+                  <FormControlLabel value="draft" control={<Radio />} label="Draft" />
                   <FormControlLabel value="trash" control={<Radio />} label="Trash" />
                 </RadioGroup>
               </FormControl>

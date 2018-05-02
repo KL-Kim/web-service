@@ -9,6 +9,7 @@ import Button from 'material-ui/Button';
 import ThumbUp from 'material-ui-icons/ThumbUp';
 import ThumbDown from 'material-ui-icons/ThumbDown';
 import IconButton from 'material-ui/IconButton';
+import Quill from 'react-quill';
 
 import ConfirmationDialog from './ConfirmationDialog';
 import WriteReviewDialog from './WriteReviewDialog';
@@ -16,11 +17,17 @@ import ProperName from './ProperName';
 
 import image from '../../../css/ikt-icon.gif';
 
-const styles = {
+const styles = theme => ({
+  container: {
+    width: '33.3%',
+  },
+  card: {
+    margin: theme.spacing.unit * 2,
+  },
   media: {
     height: 200,
   },
-};
+});
 
 class ReviewCard extends Component {
   constructor(props) {
@@ -30,6 +37,8 @@ class ReviewCard extends Component {
       "deleteDialogOpen": false,
       "editDialogOpen": false,
       "business": {},
+      "upVoteNum": props.upVoteNum,
+      "downVoteNum": props.downVoteNum,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -39,6 +48,15 @@ class ReviewCard extends Component {
     this.handleEditDialogClose = this.handleEditDialogClose.bind(this);
     this.handleClickUpVote = this.handleClickUpVote.bind(this);
     this.handleClickDownVote = this.handleClickDownVote.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps) {
+      this.setState({
+        "upVoteNum": nextProps.upVoteNum,
+        "downVoteNum": nextProps.downVoteNum,
+      });
+    }
   }
 
   handleDeleteDialogOpen() {
@@ -83,6 +101,13 @@ class ReviewCard extends Component {
       this.props.handleVote(this.props.id, {
         uid: this.props.user._id,
         vote: 'upVote',
+      }).then(response => {
+        if (response) {
+          this.setState({
+            "upVoteNum": response.review.upVote.length,
+            "downVoteNum": response.review.downVote.length
+          });
+        }
       });
     }
   }
@@ -92,6 +117,13 @@ class ReviewCard extends Component {
       this.props.handleVote(this.props.id, {
         uid: this.props.user._id,
         vote: 'downVote',
+      }).then(response => {
+        if (response) {
+          this.setState({
+            "upVoteNum": response.review.upVote.length,
+            "downVoteNum": response.review.downVote.length
+          });
+        }
       });
     }
   }
@@ -100,7 +132,7 @@ class ReviewCard extends Component {
     const { classes } = this.props;
 
     return (
-      <div>
+      <div className={classes.container}>
         <Card className={classes.card}>
           <CardMedia className={classes.media}
             image={image}
@@ -121,19 +153,26 @@ class ReviewCard extends Component {
                   </Typography>
                 : ''
             }
-            <Typography type="body1" gutterBottom>{this.props.content}</Typography>
+
+            <Quill
+              className="read-only"
+              value={this.props.content}
+              modules={{toolbar: []}}
+              format={[]}
+              readOnly
+            />
             <div>
               <span>
                 <IconButton onClick={this.handleClickUpVote}>
                   <ThumbUp color="primary" />
                 </IconButton>
-                {this.props.upVoteNum}
+                {this.state.upVoteNum}
               </span>
               <span>
                 <IconButton onClick={this.handleClickDownVote}>
                   <ThumbDown />
                 </IconButton>
-                {this.props.downVoteNum}
+                {this.state.downVoteNum}
               </span>
             </div>
           </CardContent>
@@ -184,7 +223,7 @@ ReviewCard.propTypes = {
   "id": PropTypes.string.isRequired,
   "isOwn": PropTypes.bool,
   "owner": PropTypes.object.isRequired,
-  "user": PropTypes.object.isRequired,
+  "user": PropTypes.object,
   "showUser": PropTypes.bool,
   "business": PropTypes.object.isRequired,
   "showBusinessName": PropTypes.bool,

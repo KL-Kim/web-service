@@ -54,7 +54,6 @@ const reviewReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        reviews: action.payload.reviews,
       };
 
     default:

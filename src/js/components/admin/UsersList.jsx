@@ -53,7 +53,7 @@ class UsersList extends Component {
   }
 
   componentDidMount() {
-    this.props.getUsersList(this.state.rowsPerPage, 0).then(response => {
+    this.props.getUsersList(0, this.state.rowsPerPage).then(response => {
         if (response.users) {
           this.setState({
             users: response.users,
@@ -70,7 +70,7 @@ class UsersList extends Component {
   }
 
   handlePaginationChange(e, page) {
-    this.props.getUsersList(this.state.rowsPerPage, page * this.state.rowsPerPage).then(response => {
+    this.props.getUsersList(page * this.state.rowsPerPage, this.state.rowsPerPage).then(response => {
       if (response.users) {
         this.setState({
           page: page,
@@ -82,7 +82,7 @@ class UsersList extends Component {
   }
 
   handleChangeRowsPerPage(e) {
-    this.props.getUsersList(e.target.value, this.state.page * e.target.value).then(response => {
+    this.props.getUsersList(this.state.page * e.target.value, e.target.value).then(response => {
       if (response.users) {
         this.setState({
           rowsPerPage: e.target.value,
@@ -129,7 +129,7 @@ class UsersList extends Component {
         break;
     }
 
-    this.props.getUsersList(this.state.rowsPerPage, this.state.page * this.state.rowsPerPage, {
+    this.props.getUsersList(this.state.page * this.state.rowsPerPage, this.state.rowsPerPage, {
       role: role,
       userStatus: userStatus,
     }, this.state.search)
@@ -148,7 +148,7 @@ class UsersList extends Component {
   handleSearch(e) {
     e.preventDefault();
 
-    this.props.getUsersList(this.state.rowsPerPage, this.state.page * this.state.rowsPerPage, {
+    this.props.getUsersList(this.state.page * this.state.rowsPerPage, this.state.rowsPerPage, {
       role: this.state.role,
       userStatus: this.state.userStatus,
     }, this.state.search)

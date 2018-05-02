@@ -14,7 +14,7 @@ import { getUsersListFetch, adminEditUserFetch, getUserByIdFetch } from '../api/
  * @param {Object} rawFilter - Filter users list
  * @param {String} search - Search String
  */
-export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
+export const getUsersList  = ( skip, limit, rawFilter = {}, search ) => {
   return (dispatch, getState) => {
     return getToken()
       .then(token => {
@@ -40,7 +40,7 @@ export const getUsersList  = ( limit, skip, rawFilter = {}, search ) => {
           filter.userStatus = userStatus;
         }
 
-        return getUsersListFetch(token, limit, skip, filter, search);
+        return getUsersListFetch(token, skip, limit, filter, search);
       })
       .then(usersList => {
         return usersList;

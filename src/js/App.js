@@ -42,7 +42,7 @@ import Admin_StoriesList from './components/admin/StoriesList';
 import SingleBusinessPage from './components/SingleBusinessPage';
 import SingleStoryPage from './components/SingleStoryPage';
 
-import { getMe } from './actions/user.actions';
+import { getMyself } from './actions/user.actions';
 import { loadFromStorage } from './helpers/webStorage';
 import webStorageTypes from './constants/webStorage.types';
 
@@ -51,7 +51,7 @@ const App = () => {
 
   const uid = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
   if (uid) {
-    store.dispatch(getMe(uid));
+    store.dispatch(getMyself(uid));
   }
 
   return (
@@ -61,8 +61,9 @@ const App = () => {
           <Route exact path="/" component={HomePage} />
           <Route path="/signup" component={SignupPage} />
           <Route path="/signin" component={SigninPage} />
-          <Route path="/business/:slug" component={SingleBusinessPage} />
-          <Route exact path="/business" component={BusinessListPage} />
+          <Route path="/business/category/:slug" component={BusinessListPage} />
+          <Route path="/business/s/:slug" component={SingleBusinessPage} />
+
           <Route path="/story" component={SingleStoryPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />

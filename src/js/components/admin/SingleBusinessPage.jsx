@@ -224,7 +224,7 @@ class SingleBusinessPage extends Component {
     }
 
     if (this.state._id)
-      this.props.getSingleBusiness("id", this.state._id).then(business => {
+      this.props.getSingleBusiness("id", this.state._id, this.props.admin._id).then(business => {
         if (_.isEmpty(business)) return ;
 
         this.setState({

@@ -26,6 +26,10 @@ class AdminSidebarMenuList extends Component {
     const { classes, admin, match } = this.props;
     const role = _.isEmpty(admin) ? '' : admin.role;
 
+    if (_.isEmpty(role) || role === 'regular') {
+      return '';
+    }
+
     return (
       <MenuList>
         <Divider />

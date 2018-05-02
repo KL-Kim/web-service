@@ -83,7 +83,7 @@ class Header extends Component {
     } else {
       button = (<LinkContainer to="/signin"><Button color="inherit">Sign In</Button></LinkContainer>)
     }
-    
+
     const role = _.isEmpty(user) ? '' : user.role;
 
     const drawer = isLoggedIn
@@ -128,7 +128,7 @@ class Header extends Component {
             <Typography type="title" color="inherit" align="left" className={classes.flex}>
               <LinkContainer to="/"><Button color="inherit">iKoreaTown</Button></LinkContainer>
             </Typography>
-            <LinkContainer to="/business"><Button color="inherit">Business</Button></LinkContainer>
+            <LinkContainer to="/business/category/restaurant"><Button color="inherit">Business</Button></LinkContainer>
             <LinkContainer to="/story"><Button color="inherit">Story</Button></LinkContainer>
 
             {/**

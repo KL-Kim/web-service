@@ -8,6 +8,7 @@ import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import {
   fetchBusinessList,
+  fetchBusinessListByCategory,
   businessOpertationFetch,
   fetchSingleBusiness,
   uploadImagesFetch,
@@ -23,48 +24,77 @@ export const clearBusinessList = () => {
   });
 };
 
+const getBusinessListRequest = () => ({
+  "type": businessTypes.GET_BUSINESS_LIST_REQUEST,
+  "meta": {},
+  "error": null,
+  "payload": {}
+});
+
+const getBusinessListSuccess = (response) => ({
+  "type": businessTypes.GET_BUSINESS_LIST_SUCCESS,
+  "meta": {},
+  "error": null,
+  "payload": {
+    list: response.list,
+    totalCount: response.totalCount
+  }
+});
+
+const getBusinessListFailure = (error) => ({
+  "type": businessTypes.GET_BUSINESS_LIST_FAILURE,
+  "meta": {},
+  "error": error,
+  "payload": {}
+});
+
 /**
- * Get business list
+ * Get business list by admin
  * @param {Number} skip - Number of business to skip
  * @param {Number} limit - Number of business to limit
  * @param {Object} filter - Business list filter
  * @param {search} search - Search business
  */
 export const getBusinessList = (skip, limit, filter, search) => {
-  const _getBusinessListRequest = () => ({
-    "type": businessTypes.GET_BUSINESS_LIST_REQUEST,
-    "meta": {},
-    "error": null,
-    "payload": {}
-  });
-
-  const _getBusinessListSuccess = (response) => ({
-    "type": businessTypes.GET_BUSINESS_LIST_SUCCESS,
-    "meta": {},
-    "error": null,
-    "payload": {
-      list: response.list,
-      totalCount: response.totalCount
-    }
-  });
-
-  const _getBusinessListFailure = (error) => ({
-    "type": businessTypes.GET_BUSINESS_LIST_FAILURE,
-    "meta": {},
-    "error": error,
-    "payload": {}
-  });
-
   return (dispatch, getState) => {
-    dispatch(_getBusinessListRequest());
-    return fetchBusinessList(skip, limit, filter, search)
+    dispatch(getBusinessListRequest());
+    return getToken()
+      .then(token => {
+        return fetchBusinessList(token, skip, limit, filter, search);
+      })
       .then(response => {
-        dispatch(_getBusinessListSuccess(response));
+        dispatch(getBusinessListSuccess(response));
 
         return response;
       })
       .catch(err => {
-        dispatch(_getBusinessListFailure(err));
+        dispatch(getBusinessListFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      })
+  }
+}
+
+/**
+ * Get business list by category
+ * @param {Number} skip - Number of business to skip
+ * @param {Number} limit - Number of business to limit
+ * @param {Object} filter - Business list filter
+ * @param {search} search - Search business
+ * @param {String} orderBy - List order
+ */
+export const getBusinessListByCategory = (name, limit, filter, orderBy) => {
+  return (dispatch, getState) => {
+    dispatch(getBusinessListRequest());
+    return fetchBusinessListByCategory(name, limit, filter, orderBy)
+      .then(response => {
+        dispatch(getBusinessListSuccess(response));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(getBusinessListFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;
@@ -76,8 +106,9 @@ export const getBusinessList = (skip, limit, filter, search) => {
  * Get single business
  * @param {String} type - Enum: id, enName
  * @param {String} value - Type value
+ * @param {String} by - User id
  */
-export const getSingleBusiness = (type, value) => {
+export const getSingleBusiness = (type, value, by) => {
   const _getSingleBusinessRequest = () => ({
     "type": businessTypes.GET_SINGLE_BUSINESS_REQUEST,
     "meta": {},
@@ -105,7 +136,7 @@ export const getSingleBusiness = (type, value) => {
     }
 
     dispatch(_getSingleBusinessRequest());
-    return fetchSingleBusiness(type, value)
+    return fetchSingleBusiness(type, value, by)
       .then(business => {
         dispatch(_getSignleBusinessSuccess());
 

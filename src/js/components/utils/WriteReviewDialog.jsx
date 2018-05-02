@@ -19,18 +19,17 @@ import AddPhoto from 'material-ui-icons/AddAPhoto';
 
 const modules = {
   toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline','strike', 'blockquote', 'code', ],
+    ['bold', 'italic', 'underline' ],
     [{'color': []}, {'background': []}],
-    [{ 'align': [] }, {'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    [{ 'align': [] }, {'list': 'ordered'}, {'list': 'bullet'}],
     ['clean']
   ]
 };
 
-const format = ['header',
-  'bold', 'italic', 'underline', 'strike', 'blockquote', 'code',
+const format = [
+  'bold', 'italic', 'underline',
   'color', 'background',
-  'list', 'bullet', 'indent',
+  'list', 'bullet',
 ];
 
 const styles = theme => ({
@@ -194,6 +193,7 @@ class WriteReviewDialog extends Component {
                   modules={modules}
                   format={format}
                   onChange={this.handleChange}
+                  theme="snow"
                 />
               </Grid>
             </Grid>
