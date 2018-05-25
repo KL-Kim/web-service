@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Quill from 'react-quill';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
 import Dropzone from 'react-dropzone';
@@ -14,23 +14,10 @@ import Dialog, {
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
+import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Tooltip from 'material-ui/Tooltip';
 import AddPhoto from 'material-ui-icons/AddAPhoto';
-
-const modules = {
-  toolbar: [
-    ['bold', 'italic', 'underline' ],
-    [{'color': []}, {'background': []}],
-    [{ 'align': [] }, {'list': 'ordered'}, {'list': 'bullet'}],
-    ['clean']
-  ]
-};
-
-const format = [
-  'bold', 'italic', 'underline',
-  'color', 'background',
-  'list', 'bullet',
-];
 
 const styles = theme => ({
   "button": {
@@ -83,7 +70,11 @@ class WriteReviewDialog extends Component {
     }
   }
 
-  handleChange = (content) => this.setState({ content: content });
+  handleChange(e) {
+    this.setState({
+      content: e.target.value
+    });
+  }
 
   handleStarChange(rating) {
     this.setState({
@@ -116,139 +107,155 @@ class WriteReviewDialog extends Component {
   }
 
   handleSubmit() {
-    const data = {
-      uid: this.props.user._id,
-      rating: this.state.rating,
-      content: this.state.content,
-      serviceGood: this.state.serviceGood,
-      envGood: this.state.envGood,
-      comeback: this.state.comeback,
+    if (this.props.user && !this.props.readOnly) {
+      const data = {
+        uid: this.props.user._id,
+        rating: this.state.rating,
+        content: this.state.content,
+        serviceGood: this.state.serviceGood,
+        envGood: this.state.envGood,
+        comeback: this.state.comeback,
+        bid: this.props.business._id,
+      }
+
+      this.props.addNewReview(data)
+        .then(response => {
+          this.handleClose();
+        });
     }
 
-    if (this.props.id) {
-      data._id = this.props.id;
-    } else {
-      data.bid = this.props.business._id;
-    }
-
-    this.props.handleSubmit(data).then(response => {
-      this.handleClose();
-    });
   }
 
   render() {
     const { classes, business } = this.props;
 
     return (
-      <div>
-        <Dialog
-          open={this.props.open}
-          onClose={this.handleClose}
-          aria-labelledby="review-dialog-title"
-          aria-describedby="review-dialog-description"
-        >
-          <DialogTitle id="review-dialog-title">
-            "{business.krName}"에 대한 리뷰
-          </DialogTitle>
-          <DialogContent>
-            <Grid container>
-              <Grid item xs={12}>
-                <Stars count={5} size={24} half={false} value={this.state.rating} onChange={this.handleStarChange}/>
-              </Grid>
-              <Grid item xs={12}>
-                <Tooltip id="tooltip-service" title="서비스가 좋은가요?" placement="bottom">
-                  <Button size="small"
-                    color="primary"
-                    className={classes.button}
-                    raised={this.state.serviceGood}
-                    onClick={this.handleClick("serviceGood")}
+      <Dialog fullWidth
+        open={this.props.open}
+        onClose={this.handleClose}
+        aria-labelledby="review-dialog-title"
+        aria-describedby="review-dialog-description"
+      >
+        <DialogTitle id="review-dialog-title">
+          <Link to={"/business/s/" + this.props.business.enName}>
+            "{business.krName}"
+          </Link>
+          에 대한 리뷰
+        </DialogTitle>
 
-                  >
-                    서비스 {this.state.serviceGood ? '+1' : ''}
-                  </Button>
-                </Tooltip>
-                <Tooltip id="tooltip-env" title="환경이 좋은가요?" placement="bottom">
-                  <Button size="small"
-                    color="primary"
-                    className={classes.button}
-                    raised={this.state.envGood}
-                    onClick={this.handleClick("envGood")}
-                  >
-                    환경 {this.state.envGood ? '+1' : ''}
-                  </Button>
-                </Tooltip>
-                <Tooltip id="tooltip-back" title="다시 오실 건가요?" placement="bottom">
-                  <Button size="small"
-                    color="primary"
-                    className={classes.button}
-                    raised={this.state.comeback}
-                    onClick={this.handleClick("comeback")}
-                  >
-                    다시 오고 싶다 {this.state.comeback ? '+1' : ''}
-                  </Button>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={12}>
-                <Quill value={this.state.content}
-                  modules={modules}
-                  format={format}
-                  onChange={this.handleChange}
-                  theme="snow"
-                />
-              </Grid>
+        <DialogContent>
+          <Grid container>
+            <Grid item xs={12}>
+              <Stars count={5} size={24} half={false} value={this.state.rating} onChange={this.handleStarChange} edit={!this.props.readOnly} />
             </Grid>
+            <Grid item xs={12}>
+              <Tooltip id="tooltip-service" title="서비스가 좋은가요?" placement="bottom">
+                <Button size="small"
+                  color="primary"
+                  disabled={this.props.readOnly}
+                  className={classes.button}
+                  raised={this.state.serviceGood}
+                  onClick={this.handleClick("serviceGood")}
 
-            <Grid container space={16}>
-              {
-                _.isEmpty(this.state.images) ? ''
-                : this.state.images.map((image, index) =>
-                    <Grid item xs={3}>
-                      <Img className={classes.image} src={image.preview} />
-                    </Grid>
-                  )
-              }
-              <Grid item xs={3}>
-                <Dropzone
-                  multiple={true}
-                  accept="image/*"
-                  onDrop={this.onDropImages}
-                  className={classes.dropZone}
                 >
-                  <AddPhoto style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: 50,
-                    height: 50,
-                    transform: 'translate(-50%, -50%)',
-                    opacity: 0.5,
-                    }}
-                  />
-                </Dropzone>
-              </Grid>
+                  서비스 {this.state.serviceGood ? '+1' : ''}
+                </Button>
+              </Tooltip>
+              <Tooltip id="tooltip-env" title="환경이 좋은가요?" placement="bottom">
+                <Button size="small"
+                  disabled={this.props.readOnly}
+                  color="primary"
+                  className={classes.button}
+                  raised={this.state.envGood}
+                  onClick={this.handleClick("envGood")}
+                >
+                  환경 {this.state.envGood ? '+1' : ''}
+                </Button>
+              </Tooltip>
+              <Tooltip id="tooltip-back" title="다시 오실 건가요?" placement="bottom">
+                <Button size="small"
+                  disabled={this.props.readOnly}
+                  color="primary"
+                  className={classes.button}
+                  raised={this.state.comeback}
+                  onClick={this.handleClick("comeback")}
+                >
+                  다시 오고 싶다 {this.state.comeback ? '+1' : ''}
+                </Button>
+              </Tooltip>
             </Grid>
-            <div>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <InputLabel htmlFor="content">Content</InputLabel>
+                <Input
+                  type="text"
+                  id="content"
+                  disabled={this.props.readOnly}
+                  multiline
+                  rows={10}
+                  name="content"
+                  value={this.state.content}
+                  onChange={this.handleChange}
+                />
+              </FormControl>
+            </Grid>
+          </Grid>
 
-            </div>
-          </DialogContent>
+          <Grid container space={16}>
+            {
+              _.isEmpty(this.state.images) ? ''
+              : this.state.images.map((image, index) =>
+                  <Grid item xs={3}>
+                    <Img className={classes.image} src={image.preview} />
+                  </Grid>
+                )
+            }
+            {
+              this.props.readOnly ? ''
+                : <Grid item xs={3}>
+                  <Dropzone
+                    multiple={true}
+                    accept="image/*"
+                    onDrop={this.onDropImages}
+                    className={classes.dropZone}
+                  >
+                    <AddPhoto style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      width: 50,
+                      height: 50,
+                      transform: 'translate(-50%, -50%)',
+                      opacity: 0.5,
+                      }}
+                    />
+                  </Dropzone>
+                </Grid>
+            }
 
-          <DialogActions>
-            <Button raised autoFocus color="primary" disabled={!this.state.rating} onClick={this.handleSubmit}>
-              Save
-            </Button>
-            <Button color="primary" onClick={this.handleClose}>
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
+          </Grid>
+        </DialogContent>
 
-      </div>
-    )
+        <DialogActions>
+          {
+            this.props.readOnly ? ''
+              : <Button raised autoFocus color="primary" disabled={!this.state.rating} onClick={this.handleSubmit}>
+                Save
+              </Button>
+          }
+
+          <Button color="primary" onClick={this.handleClose}>
+            {this.props.readOnly ? 'Close' : 'Cancel'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   }
 }
 
 WriteReviewDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "readOnly": PropTypes.bool,
   "open": PropTypes.bool.isRequired,
   "business": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
@@ -256,7 +263,7 @@ WriteReviewDialog.propTypes = {
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "handleClose": PropTypes.func.isRequired,
-  "handleSubmit": PropTypes.func.isRequired,
+  "handleSubmit": PropTypes.func,
 }
 
 export default withStyles(styles)(WriteReviewDialog);

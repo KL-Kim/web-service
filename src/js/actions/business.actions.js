@@ -8,11 +8,12 @@ import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import {
   fetchBusinessList,
-  fetchBusinessListByCategory,
+  fetchBusinessListByAdmin,
   businessOpertationFetch,
   fetchSingleBusiness,
   uploadImagesFetch,
-  deleteImageFetch
+  deleteImageFetch,
+  reportBusinessFetch,
 } from '../api/business.service';
 
 /**
@@ -49,19 +50,17 @@ const getBusinessListFailure = (error) => ({
 });
 
 /**
- * Get business list by admin
- * @param {Number} skip - Number of business to skip
- * @param {Number} limit - Number of business to limit
- * @param {Object} filter - Business list filter
- * @param {search} search - Search business
+ * Get business list
+ * @property {Number} params.skip - Number of business to skip
+ * @property {Number} params.limit - Number of business to limit
+ * @property {Object} params.filter - Business list filter
+ * @property {String} params.search - Search business
+ * @property {String} params.orderBy - List order
  */
-export const getBusinessList = (skip, limit, filter, search) => {
+export const getBusinessList = (params) => {
   return (dispatch, getState) => {
     dispatch(getBusinessListRequest());
-    return getToken()
-      .then(token => {
-        return fetchBusinessList(token, skip, limit, filter, search);
-      })
+    return fetchBusinessList(params)
       .then(response => {
         dispatch(getBusinessListSuccess(response));
 
@@ -84,10 +83,13 @@ export const getBusinessList = (skip, limit, filter, search) => {
  * @param {search} search - Search business
  * @param {String} orderBy - List order
  */
-export const getBusinessListByCategory = (name, limit, filter, orderBy) => {
+export const getBusinessListByAdmin = (params) => {
   return (dispatch, getState) => {
     dispatch(getBusinessListRequest());
-    return fetchBusinessListByCategory(name, limit, filter, orderBy)
+    return getToken()
+      .then(token => {
+        return fetchBusinessListByAdmin(token, params);
+      })
       .then(response => {
         dispatch(getBusinessListSuccess(response));
 
@@ -410,4 +412,49 @@ export const deleteImage = (id, data) => {
         return ;
       });
   };
+}
+
+export const reportBusiness = (id, content, contact) => {
+  const _reportBusinessRequest = () => ({
+    "type": businessTypes.REPORT_BUSINESS_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _reportBusinessSuccess = () => ({
+    "type": businessTypes.REPORT_BUSINESS_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _reportBusinessFailure = (error) => ({
+    "type": businessTypes.REPORT_BUSINESS_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id) || _.isEmpty(content)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_reportBusinessRequest());
+
+    return reportBusinessFetch(id, content, contact)
+      .then(response => {
+        dispatch(_reportBusinessSuccess());
+        dispatch(AlertActions.alertSuccess("Thank you for your kindness"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_reportBusinessFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return;
+      });
+  }
 }

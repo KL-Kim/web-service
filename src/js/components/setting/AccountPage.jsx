@@ -91,7 +91,8 @@ class AccountPage extends Component {
 }
 
 AccountPage.propTypes = {
-  "user": PropTypes.object,
+  "classes": PropTypes.object.isRequired,
+  "user": PropTypes.object.isRequired,
   "updatedAt": PropTypes.number,
   "isLoggedIn": PropTypes.bool.isRequired,
   "isFetching": PropTypes.bool,

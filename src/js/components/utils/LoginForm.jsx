@@ -7,7 +7,10 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import { CircularProgress } from 'material-ui/Progress';
+import Error from 'material-ui-icons/Error';
 
 import config from '../../config/config';
 import { loadFromStorage, saveToStorage } from '../../helpers/webStorage';
@@ -176,29 +179,44 @@ class LoginForm extends Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <Typography type="display1" align="center">Sign In</Typography>
-        <TextField
-          name="email"
-          error={this.state.email.showError}
-          helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
-          onChange={this.handleChange}
-          onBlur={this.isValidEmail}
-          fullWidth
-          margin="normal"
-          label="Email"
-          id="email" />
-        <br />
-        <TextField
-          name="password"
-          error={this.state.password.showError}
-          helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
-          onChange={this.handleChange}
-          onBlur={this.isValidPassword}
-          fullWidth
-          margin="normal"
-          type="password"
-          label="Password"
-          id="password" />
-        <br />
+        <FormControl fullWidth>
+          <InputLabel htmlFor="email">Email</InputLabel>
+          <Input
+            type="text"
+            id="email"
+            name="email"
+            error={this.state.email.showError}
+            onBlur={this.isValidEmail}
+            onChange={this.handleChange}
+            endAdornment={
+              this.state.email.showError
+                ? (<InputAdornment position="end">
+                    <Error color="secondary"/>
+                  </InputAdornment>)
+                : ''
+            }
+          />
+          <FormHelperText id="email-helper-text" error>{this.state.email.showError ? this.state.email.errorMessage : ' '}</FormHelperText>
+        </FormControl>
+        <FormControl fullWidth>
+          <InputLabel htmlFor="password">Password</InputLabel>
+          <Input
+            type="password"
+            id="password"
+            name="password"
+            error={this.state.password.showError}
+            onBlur={this.isValidPassword}
+            onChange={this.handleChange}
+            endAdornment={
+              this.state.password.showError
+                ? (<InputAdornment position="end">
+                    <Error color="secondary"/>
+                  </InputAdornment>)
+                : ''
+            }
+          />
+          <FormHelperText id="password-helper-text" error>{this.state.password.showError ? this.state.password.errorMessage : ' '}</FormHelperText>
+        </FormControl>
         <Button
           name="signin"
           disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching || !this.state.goodToGo}

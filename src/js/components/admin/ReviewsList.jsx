@@ -189,7 +189,6 @@ class ReviewsList extends Component {
                       <TableCell>Status</TableCell>
                       <TableCell>Quality</TableCell>
                       <TableCell>Up Vote</TableCell>
-                      <TableCell>Down Vote</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -208,7 +207,6 @@ class ReviewsList extends Component {
                             <TableCell>{review.status}</TableCell>
                             <TableCell>{review.quality}</TableCell>
                             <TableCell>{review.upVote.length}</TableCell>
-                            <TableCell>{review.downVote.length}</TableCell>
                           </TableRow>
                       ))
                     }

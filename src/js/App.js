@@ -3,15 +3,19 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 // Redux Store
-import configureStore from './stores/user.store';
+import configureStore from './stores/store';
+
+// Private Route Components
 import PrivateRoute from './helpers/PrivateRoute';
 import AdminRoute from './helpers/AdminRoute';
 
 // React Compontens
 import HomePage from './components/HomePage';
+import SearchPage from './components/SearchPage';
 import SignupPage from './components/SignupPage';
 import SigninPage from './components/SigninPage';
 import BusinessListPage from './components/BusinessListPage';
+import SingleBusinessPage from './components/SingleBusinessPage';
 import AboutPage from './components/AboutPage';
 import TermsPolicyPage from './components/TermsPolicyPage';
 import LicensePage from './components/LicensePage';
@@ -39,7 +43,6 @@ import Admin_ReviewsList from './components/admin/ReviewsList';
 import Admin_StoriesList from './components/admin/StoriesList';
 
 // Temp
-import SingleBusinessPage from './components/SingleBusinessPage';
 import SingleStoryPage from './components/SingleStoryPage';
 
 import { getMyself } from './actions/user.actions';
@@ -59,11 +62,11 @@ const App = () => {
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route path="/search" component={SearchPage} />
           <Route path="/signup" component={SignupPage} />
           <Route path="/signin" component={SigninPage} />
           <Route path="/business/category/:slug" component={BusinessListPage} />
           <Route path="/business/s/:slug" component={SingleBusinessPage} />
-
           <Route path="/story" component={SingleStoryPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />

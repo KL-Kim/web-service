@@ -1,65 +1,253 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
-import List, { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List';
+import List, { ListItem, ListItemSecondaryAction, ListItemText, ListItemIcon } from 'material-ui/List';
 import Checkbox from 'material-ui/Checkbox';
-import Divider from 'material-ui/Divider';
+import IconButton from 'material-ui/IconButton';
+import DeleteIcon from 'material-ui-icons/Delete';
+import FiberNew from 'material-ui-icons/FiberNew';
 
 import SettingContainer from './SettingContainer';
-
-// Mock data
-const notifications = {
-  id: 1,
-  uid: 1,
-  isRead: true,
-  category: 'story', // story, review, following
-  content: 'Bla bla bla'
-};
+import { getNotification, deleteNotification, clearReadNotifications } from '../../actions/notification.actions';
+import { loadFromStorage } from '../../helpers/webStorage';
+import webStorageTypes from '../../constants/webStorage.types';
+import MessageContent from '../utils/MessageContent';
+import ConfirmationDialog from '../utils/ConfirmationDialog';
+import getElapsedTime from '../../helpers/ElapsedTime';
 
 const styles = (theme) => ({
+  paper: {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
+  },
   button: {
     margin: theme.spacing.unit,
   },
 });
 
-class ChangePasswordPage extends Component {
+class NotificationPage extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      list: [],
+      dialogOpen: false,
+      limit: 20,
+      count: 0,
+      id: '',
+      hasMore: false,
+    };
+
+    this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleConfirmationDialogOpen = this.handleConfirmationDialogOpen.bind(this);
+    this.handleConfirmationDialogClose = this.handleConfirmationDialogClose.bind(this);
+    this.loadMore = this.loadMore.bind(this);
+    this.handleClearNotifications = this.handleClearNotifications.bind(this);
+    this.handleClickListItem = this.handleClickListItem.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getNotification({ uid: this.state.userId, limit: this.state.limit })
+      .then(response => {
+        if (response) {
+          this.setState({
+            list: response.list.slice(),
+            count: this.state.limit,
+            hasMore: this.state.limit < response.totalCount
+          });
+        }
+      });
+  }
+
+  handleDelete = (id, index) => e =>  {
+    this.props.deleteNotification(id)
+      .then(response => {
+        if (response) {
+          const list = this.state.list.slice();
+          list.splice(index, 1);
+
+          this.setState({
+            list: list,
+          });
+        }
+      });
+  }
+
+  handleConfirmationDialogOpen() {
+    this.setState({
+      dialogOpen: true,
+    });
+  }
+
+  handleConfirmationDialogClose() {
+    this.setState({
+      dialogOpen: false
+    });
+  }
+
+  handleClearNotifications() {
+    this.props.clearReadNotifications(this.state.userId)
+      .then(response => {
+        if (response) {
+          this.setState({
+            dialogOpen: false,
+            list: [],
+          });
+        }
+      });
+  }
+
+  handleClickListItem = item => e => {
+    switch (item.type) {
+      case "BUSINESS":
+        switch (item.event) {
+          case "START_EVENT":
+            this.props.history.push('/business/s/' + item.subjectUrl);
+            break;
+
+          default:
+            return ;
+        }
+        break;
+
+      case "REVIEW":
+        switch (item.event) {
+          case "UPVOTE":
+            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
+            break;
+
+          case "CANCEL_UPVOTE":
+            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
+            break;
+
+          default:
+            return ;
+        }
+        break;
+
+      default:
+
+    }
+  }
+
+  loadMore() {
+    if (this.state.hasMore) {
+      this.props.getNotification({
+        uid: this.state.userId,
+        limit: this.state.limit,
+        skip: this.state.count
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            count: this.state.count + this.state.limit,
+            hasMore: this.state.count + this.state.limit < this.props.totalCount,
+            list: this.state.list.concat(response.list),
+          });
+        }
+
+      });
+    }
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, notificationList } = this.props;
 
     return (
       <SettingContainer>
-        <Grid container className={classes.root} spacing={16} justify="center" alignItems="flex-start">
-          <Grid item xs={12}>
-            <Typography type="display3" gutterBottom>
-              Notifications
-            </Typography>
-            <Paper className={classes.paper}>
+        <div>
+          <Grid container className={classes.root} spacing={16} justify="center" alignItems="flex-start">
+            <Grid item xs={12}>
+              <Typography type="display1" gutterBottom>
+                Notifications
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Button color="primary" onClick={this.handleConfirmationDialogOpen}>Clear</Button>
+            </Grid>
+            <Grid item xs={12}>
               <List>
-                <ListItem className={classes.listItem}>
-                  <Checkbox tabIndex={-1} disableRipple />
-                  <ListItemText primary={notifications.content} />
-                  <ListItemSecondaryAction>
-                    <Button>Hide</Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                <Divider />
-                <ListItem className={classes.listItem}>
-                  <Checkbox checked={notifications.isRead} tabIndex={-1} disableRipple />
-                  <ListItemText primary={notifications.content} />
-                  <ListItemSecondaryAction>
-                    <Button>Hide</Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMore}
+                  hasMore={this.state.hasMore}
+                  loader={<div className="loader" key={0}>Loading ...</div>}
+                >
+                  {
+                    _.isEmpty(this.state.list) ? ''
+                      : this.state.list.map((item, index) =>
+                        <Paper className={classes.paper} key={index}>
+                          <ListItem className={classes.listItem} button onClick={this.handleClickListItem(item)}>
+                            {
+                              item.isRead ? ''
+                                : <ListItemIcon>
+                                    <FiberNew color="secondary"/>
+                                  </ListItemIcon>
+                            }
+                            <ListItemText
+                              primary={
+                                <MessageContent
+                                  key={item._id}
+                                  sender={item.senderId}
+                                  type={item.type}
+                                  event={item.event}
+                                  subjectTitle={item.subjectTitle}
+                                  subjectContent={item.subjectContent}
+                                  subjectUrl={item.subjectUrl}
+                                  commentId={item.commentId}
+                                  content={item.content}
+                                />
+                              }
+                              secondary={/*getElapsedTime(item.createdAt)*/ item.createdAt}
+                            />
+                            <ListItemSecondaryAction>
+                              <IconButton aria-label="Delete" onClick={this.handleDelete(item._id, index)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </ListItemSecondaryAction>
+                          </ListItem>
+                        </Paper>
+                      )
+                  }
+                </InfiniteScroll>
               </List>
-            </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+          <ConfirmationDialog
+            open={this.state.dialogOpen}
+            title="Warning"
+            content="Are you sure to clear all?"
+            operation={this.handleClearNotifications}
+            handleClose={this.handleConfirmationDialogClose}
+          />
+        </div>
       </SettingContainer>
     );
   }
 }
 
-export default withStyles(styles)(ChangePasswordPage);
+NotificationPage.propTypes = {
+  "classes": PropTypes.object.isRequired,
+  "user": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
+    "notificationList": state.notificationReducer.list,
+    "totalCount": state.notificationReducer.totalCount,
+  };
+};
+
+export default connect(mapStateToProps, { getNotification, deleteNotification, clearReadNotifications })(withStyles(styles)(NotificationPage));

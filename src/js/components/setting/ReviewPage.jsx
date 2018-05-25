@@ -12,7 +12,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 import SettingContainer from './SettingContainer';
 import ReviewCard from '../utils/ReviewCard';
-import { getReviews, updateReview, deleteReview } from '../../actions/review.actions';
+import { getReviews, deleteReview } from '../../actions/review.actions';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 
@@ -25,7 +25,7 @@ class ReviewPage extends Component {
     super(props);
 
     this.state = {
-      "limit": 10,
+      "limit": 9,
       "count": 0,
       'orderBy': 'new',
       'hasMore': false,
@@ -93,8 +93,8 @@ class ReviewPage extends Component {
         <div>
           <Grid container spacing={16}>
             <Grid item xs={12}>
-              <Typography type="display3" gutterBottom>
-                My Reviews Total Count: {this.props.totalCount}
+              <Typography type="display1" gutterBottom>
+                My Reviews
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -124,11 +124,9 @@ class ReviewPage extends Component {
                             content={review.content}
                             rating={review.rating}
                             upVoteNum={review.upVote.length}
-                            downVoteNum={review.downVote.length}
                             serviceGood={review.serviceGood}
                             envGood={review.envGood}
                             comeback={review.comeback}
-                            handleUpdate={this.props.updateReview}
                             handleDelete={this.props.deleteReview}
                           />
                       ))
@@ -139,12 +137,11 @@ class ReviewPage extends Component {
 
             <Grid item xs={12}>
               <Typography type="caption" align="center">
-                --- No more reviews ---
+                --- No more reviews, You have total {this.props.totalCount} reviews ---
               </Typography>
             </Grid>
           </Grid>
         </div>
-
       </SettingContainer>
     );
   }
@@ -166,4 +163,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getReviews, updateReview, deleteReview })(withStyles(styles)(ReviewPage));
+export default connect(mapStateToProps, { getReviews, deleteReview })(withStyles(styles)(ReviewPage));

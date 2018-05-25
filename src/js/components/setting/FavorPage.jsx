@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -31,11 +32,12 @@ class FavorPage extends Component {
 
   componentDidMount() {
     if (!_.isEmpty(this.props.user.favors)) {
-      this.props.getBusinessList(0, this.state.limit,
-        {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        filter: {
           list: this.props.user.favors
         }
-      )
+      })
       .then(response => {
         if (response) {
           this.setState({
@@ -45,11 +47,12 @@ class FavorPage extends Component {
         }
       });
     } else if (!_.isEmpty(this.state.favors)) {
-      this.props.getBusinessList(0, this.state.limit,
-        {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        filter: {
           list: this.state.favors
         }
-      )
+      })
       .then(response => {
         if (response) {
           this.setState({
@@ -87,52 +90,54 @@ class FavorPage extends Component {
 
     return (
       <SettingContainer>
+        <Typography type="display1" gutterBottom>
+          Favorite Business
+        </Typography>
         <InfiniteScroll
           pageStart={0}
           loadMore={this.loadMore}
           hasMore={this.state.hasMore}
           loader={<div className="loader" key={0}>Loading ...</div>}
         >
-        <Grid container spacing={16}>
-          <Grid item xs={12}>
-            <Typography type="display1" gutterBottom>
-              Favorite Business. Total count: {this.props.totalCount}
-            </Typography>
-          </Grid>
-          {
-            _.isEmpty(businessList)
-              ? <Grid item xs={12}><Typography type="body1" align="center">None</Typography></Grid>
-              : businessList.map((item, i) => {
-                if (!_.isEmpty(this.state.favors)) {
-                  index = this.state.favors.indexOf(item._id);
-                }
+          <Grid container spacing={16}>
+            {
+              _.isEmpty(businessList)
+                ? <Grid item xs={12}><Typography type="body1" align="center">None</Typography></Grid>
+                : businessList.map((item, i) => {
+                  if (!_.isEmpty(this.state.favors)) {
+                    index = this.state.favors.indexOf(item._id);
+                  }
 
-                return (
-                  <Grid item xs={3} key={i}>
-                    <BusinessCard
-                      bid={item._id}
-                      key={item._id}
-                      title={item.krName}
-                      enName={item.enName}
-                      rating={item.ratingSum / item.reviewsList.length}
-                      thumbnailUri={item.thumbnailUri}
-                      isFavor={index > -1 ? true : false}
-                    />
-                  </Grid>
-                );
-              })
-          }
-          <Grid item xs={12}>
-            <Typography type="caption" align="center">
-              --- No more favors ---
-            </Typography>
+                  return (
+                    <Grid item xs={3} key={i}>
+                      <BusinessCard
+                        bid={item._id}
+                        key={item._id}
+                        title={item.krName}
+                        enName={item.enName}
+                        rating={item.ratingAverage}
+                        thumbnailUri={item.thumbnailUri}
+                        isFavor={index > -1 ? true : false}
+                      />
+                    </Grid>
+                  );
+                })
+            }
+            <Grid item xs={12}>
+              <Typography type="caption" align="center">
+                --- No more favors. You have {this.props.totalCount} reviews ---
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
         </InfiniteScroll>
       </SettingContainer>
     );
   }
 }
+
+FavorPage.propTypes = {
+  "classes": PropTypes.object.isRequired,
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {

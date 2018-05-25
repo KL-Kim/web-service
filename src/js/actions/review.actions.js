@@ -6,7 +6,7 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import reviewTypes from '../constants/review.types';
-import { fetchReviews, reviewOperationFetch, voteReviewFetch } from '../api/review.service';
+import { fetchReviews, reviewOperationFetch, voteReviewFetch, fetchSingleReview } from '../api/review.service';
 
 /**
  * Clear reviews reduer
@@ -64,6 +64,23 @@ export const getReviews = (skip, limit, filter, search) => {
 
         return ;
       });
+  }
+}
+
+/**
+ * Get single review
+ * @param {String} id - Review id
+ */
+export const getSingleReview = (id) => {
+  return (dispatch, getState) => {
+    return fetchSingleReview(id)
+      .then(response => {
+        return response.review;
+      })
+      .catch(err => {
+        dispatch(AlertActions.alertFailure(err.message));
+        return ;
+      })
   }
 }
 
@@ -230,6 +247,9 @@ export const deleteReview = (data) => {
 
 /**
  * Vote review
+ * @param {Object} data - Review object
+ * @property {String} data.uid - user id
+ * @property {String} data.name - user name
  */
 export const voteReview = (id, data) => {
   const _voteReviewRequest = () => ({
@@ -268,7 +288,6 @@ export const voteReview = (id, data) => {
       })
       .then(response => {
         dispatch(_voteReviewSuccess(response));
-        dispatch(AlertActions.alertSuccess("Vote successfully"));
 
         return response;
       })

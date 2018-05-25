@@ -10,6 +10,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const reviewSerivceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/review',
+  getSingleUrl: config.API_GATEWAY_ROOT + '/api/v1/review/single/',
   voteReviewUrl: config.API_GATEWAY_ROOT + '/api/v1/review/vote/',
 };
 
@@ -57,6 +58,31 @@ export const fetchReviews = (skip, limit, filter = {}, search) => {
   }
 
   return fetch(url, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Fetch single review
+ * @param {String} id - Review id
+ */
+export const fetchSingleReview = id => {
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  return fetch(reviewSerivceUri.getSingleUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -120,6 +146,8 @@ export const reviewOperationFetch = (type, token, data) => {
  * @param {String} token - Verification Token
  * @param {String} id - Review id
  * @param {Object} data - Review object
+ * @property {String} data.uid - user id
+ * @property {String} data.name - user name
  */
 export const voteReviewFetch = (token, id, data) => {
   const options = {

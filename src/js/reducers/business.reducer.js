@@ -24,6 +24,7 @@ const businessReducer = (state = initialState, action) => {
     case businessTypes.DELETE_BUSINESS_REQUEST:
     case businessTypes.UPLOAD_IMAGES_REQUEST:
     case businessTypes.DELETE_IMAGE_REQUEST:
+    case businessTypes.REPORT_BUSINESS_REQUEST:
       return {
         ...state,
         isFetching: true,
@@ -37,6 +38,7 @@ const businessReducer = (state = initialState, action) => {
     case businessTypes.DELETE_BUSINESS_FAILURE:
     case businessTypes.UPLOAD_IMAGES_FAILURE:
     case businessTypes.DELETE_IMAGE_FAILURE:
+    case businessTypes.REPORT_BUSINESS_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -52,18 +54,11 @@ const businessReducer = (state = initialState, action) => {
       };
 
     case businessTypes.GET_SINGLE_BUSINESS_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-      };
-
     case businessTypes.ADD_BUSINESS_SUCCESS:
-      return {
-        ...state,
-        isFetching: false
-      };
-
     case businessTypes.UPDATE_BUSINESS_SUCCESS:
+    case businessTypes.UPLOAD_IMAGES_SUCCESS:
+    case businessTypes.DELETE_IMAGE_SUCCESS:
+    case businessTypes.REPORT_BUSINESS_SUCCESS:
       return {
         ...state,
         isFetching: false,
@@ -73,18 +68,6 @@ const businessReducer = (state = initialState, action) => {
       return {
         ...state,
         businessList: {},
-        isFetching: false,
-      };
-
-    case businessTypes.UPLOAD_IMAGES_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-      };
-
-    case businessTypes.DELETE_IMAGE_SUCCESS:
-      return {
-        ...state,
         isFetching: false,
       };
 

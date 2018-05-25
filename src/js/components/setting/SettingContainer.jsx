@@ -11,6 +11,7 @@ import Alert from '../utils/Alert';
 import DevTools from '../utils/DevTools';
 
 import { logout } from '../../actions/user.actions';
+import { getNotification } from '../../actions/notification.actions';
 
 const styles = (theme) => ({
   root: {
@@ -46,11 +47,19 @@ class SettingContainer extends Component {
   }
 
   render() {
-    const { classes, isLoggedIn, user, logout, updatedAt } = this.props;
+    const { classes, isLoggedIn, user, logout, updatedAt, notificationList, newNotificationCount } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} updatedAt={updatedAt} position={"fixed"} />
+        <Header
+          user={user}
+          isLoggedIn={isLoggedIn}
+          logout={logout}
+          updatedAt={updatedAt}
+          position={"fixed"}
+          newNotificationCount={newNotificationCount}
+          getNotification={this.props.getNotification}
+        />
         <Sidebar user={user} match={this.props.match}/>
         <div className={classes.appFrame}>
           <main className={classes.content}>
@@ -81,7 +90,8 @@ const mapStateToProps = (state, ownProps) => {
     "user": state.userReducer.user,
     "updatedAt": state.userReducer.updatedAt,
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "newNotificationCount": state.notificationReducer.unreadCount,
   };
 };
 
-export default withRouter(connect(mapStateToProps, { logout })(withStyles(styles)(SettingContainer)));
+export default withRouter(connect(mapStateToProps, { logout, getNotification })(withStyles(styles)(SettingContainer)));

@@ -7,7 +7,6 @@ import reducers from '../reducers';
 // Dev
 import DevTools from '../components/utils/DevTools';
 
-
 const configureState = (preloadedState) => {
   const loggerMiddleware = createLogger();
   const store =createStore(reducers, compose(applyMiddleware(thunkMiddleware, loggerMiddleware), DevTools.instrument()));

@@ -9,6 +9,7 @@ import Alert from './Alert';
 import DevTools from './DevTools';
 
 import { logout } from '../../actions/user.actions';
+import { getNotification } from '../../actions/notification.actions';
 
 const styles = theme => ({
   root: {
@@ -21,7 +22,7 @@ const styles = theme => ({
   appFrame: {
     width: 'auto',
     height: '100%',
-    marginTop: theme.spacing.unit * 5,
+    marginTop: theme.spacing.unit * 12,
     marginLeft: theme.spacing.unit * 16,
     marginRight: theme.spacing.unit * 16,
     paddingBottom: theme.spacing.unit * 10,
@@ -35,11 +36,19 @@ const styles = theme => ({
 
 class Container extends Component {
   render() {
-    const { classes, isLoggedIn, user, updatedAt, logout } = this.props;
+    const { classes, isLoggedIn, user, notificationList, newNotificationCount, updatedAt, logout } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header user={user} isLoggedIn={isLoggedIn} logout={logout} updatedAt={updatedAt} position={"static"} />
+        <Header
+          user={user}
+          isLoggedIn={isLoggedIn}
+          updatedAt={updatedAt}
+          newNotificationCount={newNotificationCount}
+          position={"fixed"}
+          logout={logout}
+          getNotification={this.props.getNotification}
+        />
         <main className={classes.appFrame}>
           {this.props.children}
         </main>
@@ -58,6 +67,7 @@ Container.propTypes = {
   updatedAt: PropTypes.number,
   isLoggedIn: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
+  getNotification: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -65,7 +75,8 @@ const mapStateToProps = (state, ownProps) => {
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "updatedAt": state.userReducer.updatedAt,
+    "newNotificationCount": state.notificationReducer.unreadCount,
   };
 };
 
-export default connect(mapStateToProps, { logout })(withStyles(styles)(Container));
+export default connect(mapStateToProps, { logout, getNotification })(withStyles(styles)(Container));

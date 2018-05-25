@@ -21,17 +21,23 @@ import Whatshot from 'material-ui-icons/Whatshot';
 import Share from 'material-ui-icons/Share';
 import FavoriteBorder from 'material-ui-icons/FavoriteBorder';
 import ErrorOutline from 'material-ui-icons/ErrorOutline';
+import Favorite from 'material-ui-icons/Favorite';
 
 import Container from './utils/Container'
 import ReviewCard from './utils/ReviewCard';
 import StoryCard from './utils/StoryCard';
 import WriteReviewDialog from './utils/WriteReviewDialog';
-import { getSingleBusiness } from '../actions/business.actions';
-import { getReviews, addNewReview, updateReview, voteReview, clearReviewsList } from '../actions/review.actions';
+import ContactDialog from './utils/ContactDialog';
+import { favorOperation } from '../actions/user.actions';
+import { getSingleBusiness, reportBusiness } from '../actions/business.actions';
+import { getReviews, addNewReview, voteReview, clearReviewsList, getSingleReview } from '../actions/review.actions';
+import { loadFromStorage } from '../helpers/webStorage';
+import webStorageTypes from '../constants/webStorage.types';
 
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
 
+// Mock story data
 const story = {
   id: '1',
   userId: '5a4ef8f5537cd042155581a3',
@@ -75,49 +81,115 @@ class SingleBusinessPage extends Component {
       'count': 0,
       "hasMore": false,
       "orderBy": 'recommended',
+      "review": {},
+      "reviewDialogOpen": false,
+      "reportDialogOpen": false,
+      "isMyFavor": false,
     };
 
-    this.handleReviewDialogOpen = this.handleReviewDialogOpen.bind(this);
-    this.handleReviewDialogClose = this.handleReviewDialogClose.bind(this);
+    if (props.location.state && !_.isEmpty(props.location.state.reviewId)) {
+      this.state.reviewId = props.location.state.reviewId;
+    }
+
+    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+
+    this.handleAddNewReviewDialogOpen = this.handleAddNewReviewDialogOpen.bind(this);
+    this.handleAddNewReviewDialogClose = this.handleAddNewReviewDialogClose.bind(this);
     this.handleOrderBy = this.handleOrderBy.bind(this);
     this.loadMoreReviews = this.loadMoreReviews.bind(this);
+    this.handleReviewDialogClose = this.handleReviewDialogClose.bind(this);
+    this.handleAddtoFavor = this.handleAddtoFavor.bind(this);
+    this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
+    this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
+    this.handleSubmitReport = this.handleSubmitReport.bind(this);
   }
 
   componentDidMount() {
-    this.props.getSingleBusiness("enName", this.props.match.params.slug).then(business => {
-      if (business) {
-        this.setState({
-          business: business,
-        });
-        return this.props.getReviews(0, this.state.limit, { 'bid': business._id });
-      }
-      
-      return ;
-    })
-    .then((response => {
-      if (response) {
-        this.setState({
-          hasMore: this.state.limit < response.totalCount,
-          count: this.state.count + this.state.limit,
-        });
-      }
-    }));
+    this.props.getSingleBusiness("enName", this.props.match.params.slug)
+      .then(business => {
+        if (_.isEmpty(business)) {
+          this.props.history.push('/404');
+        } else {
+          if (business.state === 'published') {
+            const index = this.state.myFavors.indexOf(business._id);
+            this.setState({
+              business: business,
+              isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
+            });
+            return this.props.getReviews(0, this.state.limit, { 'bid': business._id });
+          } else {
+            this.props.history.push('/404');
+          }
+        }
+
+        return ;
+      })
+      .then((response => {
+        if (response) {
+          this.setState({
+            hasMore: this.state.limit < response.totalCount,
+            count: this.state.count + this.state.limit,
+          });
+        }
+
+        if (this.state.reviewId) {
+          this.props.getSingleReview(this.state.reviewId)
+            .then(review => {
+              if (review) {
+                this.setState({
+                  reviewDialogOpen: true,
+                  review: Object.assign({}, review),
+                });
+              }
+            });
+        }
+
+      }));
   }
 
   componentWillUnmount() {
     this.props.clearReviewsList();
   }
 
-  handleReviewDialogOpen() {
+  handleAddNewReviewDialogOpen() {
     this.setState({
       "addNewDialogOpen": true,
     });
   }
 
-  handleReviewDialogClose() {
+  handleAddNewReviewDialogClose() {
     this.setState({
       "addNewDialogOpen": false,
     });
+  }
+
+  handleReviewDialogClose() {
+    this.setState({
+      "reviewDialogOpen": false,
+    });
+  }
+
+  handleReportDialogOpen() {
+    this.setState({
+      "reportDialogOpen": true
+    });
+  }
+
+  handleReportDialogClose() {
+    this.setState({
+      "reportDialogOpen": false
+    });
+  }
+
+  handleSubmitReport(content, contact) {
+    if (!_.isEmpty(this.state.business)) {
+      this.props.reportBusiness(this.state.business._id, content, contact)
+        .then(response => {
+          if (response) {
+            this.handleReportDialogClose();
+          }
+        })
+    }
   }
 
   handleOrderBy = (item) => e => {
@@ -133,6 +205,21 @@ class SingleBusinessPage extends Component {
         });
       }
     }));
+  }
+
+  handleAddtoFavor() {
+    if (!_.isEmpty(this.props.user) && !_.isEmpty(this.state.business)) {
+      this.props.favorOperation(this.props.user._id, this.state.business._id)
+        .then(response => {
+          if (response) {
+            this.setState({
+              isMyFavor: !this.state.isMyFavor
+            });
+          }
+        });
+    } else {
+      this.props.history.push('/signin');
+    }
   }
 
   loadMoreReviews() {
@@ -151,7 +238,7 @@ class SingleBusinessPage extends Component {
 
   render() {
     const { classes, reviews } = this.props;
-    const { business } = this.state;
+    const { business, review } = this.state;
     const thumbnail = _.isEmpty(business) || _.isEmpty(business.thumbnailUri) ? image : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
 
     return (
@@ -171,18 +258,15 @@ class SingleBusinessPage extends Component {
                     </Grid>
                     <Grid item xs={6}>
                       <div className={classes.buttonContainer}>
-                        <Tooltip id="share-icon" title="Share">
-                          <IconButton aria-label="Share">
-                            <Share />
-                          </IconButton>
-                        </Tooltip>
                         <Tooltip id="favor-icon" title="Add to Favor">
-                          <IconButton>
-                            <FavoriteBorder />
+                          <IconButton color={this.state.isMyFavor ? "secondary" : 'default'} onClick={this.handleAddtoFavor}>
+                            {
+                              this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
+                            }
                           </IconButton>
                         </Tooltip>
                         <Tooltip id="report-icon" title="Report">
-                          <IconButton>
+                          <IconButton onClick={this.handleReportDialogOpen}>
                             <ErrorOutline />
                           </IconButton>
                         </Tooltip>
@@ -190,7 +274,7 @@ class SingleBusinessPage extends Component {
                     </Grid>
                   </Grid>
                   <Typography type="body1" gutterBottom>{business.cnName}</Typography>
-                  <Stars count={5} size={24} value={business.ratingSum/business.reviewsList.length} edit={false} />
+                  <Stars count={5} size={24} value={business.ratingAverage} edit={false} />
                     <Typography type="body2">{business.category.krName}</Typography>
                   <Typography type="body1">Tel: {business.tel}</Typography>
                   <Typography type="body1">{business.address.area.name + ' ' + business.address.street}</Typography>
@@ -307,7 +391,7 @@ class SingleBusinessPage extends Component {
 
             <Grid container spacing={16} justify="space-between" alignItems="flex-start">
               <Grid item xs={12}>
-                <Typography type="display3" align="center">
+                <Typography type="display3" align="center" id="reviews">
                   Reviews
                 </Typography>
               </Grid>
@@ -317,7 +401,7 @@ class SingleBusinessPage extends Component {
                   <Button color="primary" onClick={this.handleOrderBy('useful')}>Most Useful</Button>
               </Grid>
               <Grid item xs={4}>
-                <Button raised color="primary" onClick={this.handleReviewDialogOpen}>Write a review</Button>
+                <Button raised color="primary" onClick={this.handleAddNewReviewDialogOpen}>Write a review</Button>
               </Grid>
               <Grid item xs={12}>
                 <InfiniteScroll
@@ -340,8 +424,6 @@ class SingleBusinessPage extends Component {
                             content={review.content}
                             rating={review.rating}
                             upVoteNum={review.upVote.length}
-                            downVoteNum={review.downVote.length}
-                            handleUpdate={this.props.updateReview}
                             handleVote={this.props.voteReview}
                           />
                         ))
@@ -377,13 +459,35 @@ class SingleBusinessPage extends Component {
               </Grid>
             </Grid>
 
-            <WriteReviewDialog
-              user={this.props.user}
-              business={this.state.business}
-              open={this.state.addNewDialogOpen}
-              handleSubmit={this.props.addNewReview}
-              handleClose={this.handleReviewDialogClose}
-           />
+            <div>
+              <WriteReviewDialog
+                user={this.props.user}
+                business={business}
+                open={this.state.addNewDialogOpen}
+                addNewReview={this.props.addNewReview}
+                handleClose={this.handleAddNewReviewDialogClose}
+              />
+
+              <WriteReviewDialog
+                readOnly
+                user={this.props.user}
+                rating={review.rating}
+                content={review.content}
+                serviceGood={review.serviceGood}
+                envGood={review.envGood}
+                comeback={review.comeback}
+                business={business}
+                open={this.state.reviewDialogOpen}
+                handleClose={this.handleReviewDialogClose}
+              />
+
+              <ContactDialog
+                open={this.state.reportDialogOpen}
+                param={this.state.business._id}
+                handleSubmit={this.handleSubmitReport}
+                handleClose={this.handleReportDialogClose}
+              />
+            </div>
           </div>
         }
       </Container>
@@ -408,4 +512,13 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getSingleBusiness, addNewReview, getReviews, updateReview, voteReview, clearReviewsList })(withStyles(styles)(SingleBusinessPage));
+export default connect(mapStateToProps, {
+  getSingleBusiness,
+  reportBusiness,
+  addNewReview,
+  getReviews,
+  voteReview,
+  clearReviewsList,
+  getSingleReview,
+  favorOperation
+})(withStyles(styles)(SingleBusinessPage));

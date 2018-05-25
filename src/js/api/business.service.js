@@ -9,42 +9,44 @@ import responseErrorHandler from '../helpers/error-handler.js';
  * Business serivce uri
  */
 const businessSerivceUri = {
-  buinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business',
-  getBusinessListByCategory: config.API_GATEWAY_ROOT + '/api/v1/business/category/',
+  commonUrl: config.API_GATEWAY_ROOT + '/api/v1/business?',
+  getBusinessListByAdmin: config.API_GATEWAY_ROOT + '/api/v1/business/admin?',
   getSingleBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/single/',
   categoryUrl: config.API_GATEWAY_ROOT + '/api/v1/category',
   tagUrl: config.API_GATEWAY_ROOT + '/api/v1/tag',
   businessImagesUrl: config.API_GATEWAY_ROOT + '/api/v1/business/images',
-
+  reportBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/report/',
 };
 
 /**
  * Fetch business list
- * @param {Number} skip - Number of business to skip
- * @param {Number} limit - Number of business to limit
- * @param {Object} filter - Business list filter
- * @param {search} search - Search business
+ * @property {Number} skip - Number of business to skip
+ * @property {Number} limit - Number of business to limit
+ * @property {Object} filter - Business list filter
+ * @property {String} search - Search business
+ * @property {String} orderBy - List order
  */
-export const fetchBusinessList = (token, skip, limit, filter, search) => {
+export const fetchBusinessList = ({ skip, limit, filter, search, orderBy } = {}) => {
   const options = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      "Authorization": 'Bearer ' + token,
     },
   };
 
-  let url = businessSerivceUri.buinessUrl + '?';
+  let url = businessSerivceUri.commonUrl;
 
   if (_.isNumber(skip)) url = url + '&skip=' + skip;
   if (_.isNumber(limit)) url = url + '&limit=' + limit;
   if (!_.isEmpty(filter)) {
-    if (!!filter.state) url = url + '&state=' + filter.state;
-    if (!!filter.event) url = url + '&event=1';
-    if (!!filter.reports) url = url + '&reports=1';
-    if (!!filter.list) url = url + '&list=' + filter.list;
     if (!!filter.category) url = url + '&category=' + filter.category;
     if (!!filter.area) url = url + '&area=' + filter.area;
+    if (!!filter.event) url = url + '&event=1';
+    if (!!filter.list) url = url + '&list=' + filter.list;
+  }
+
+  if (orderBy) {
+    url = url + '&orderBy=' + orderBy;
   }
 
   if (!_.isEmpty(search)) url = url+ '&search=' + search;
@@ -70,26 +72,31 @@ export const fetchBusinessList = (token, skip, limit, filter, search) => {
  * @param {String} search - Search business
  * @param {String} orderBy - List order
  */
-export const fetchBusinessListByCategory = (name, limit, filter, orderBy) => {
+export const fetchBusinessListByAdmin= (token, { skip, limit, filter = {}, search, orderBy } = {}) => {
   const options = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
     },
   };
 
-  let url = businessSerivceUri.getBusinessListByCategory + name + '?';
+  let url = businessSerivceUri.getBusinessListByAdmin;
 
-  if (_.isNumber(limit)) url = url + 'limit=' + limit;
+  if (_.isNumber(skip)) url = url + '&skip=' + skip;
+  if (_.isNumber(limit)) url = url + '&limit=' + limit;
 
   if (!_.isEmpty(filter)) {
+    if (!!filter.state) url = url + '&state=' + filter.state;
     if (!!filter.event) url = url + '&event=1';
-    if (!!filter.area) url = url + '&area=' + filter.area;
+    if (!!filter.reports) url = url + '&reports=1';
   }
 
   if (orderBy) {
     url = url + '&orderBy=' + orderBy;
   }
+
+  if (!_.isEmpty(search)) url = url+ '&search=' + search;
 
   return fetch(url, options)
     .then(response => {
@@ -168,7 +175,7 @@ export const businessOpertationFetch = (type, token, data) => {
       return Promise.reject(new Error("Type is missing"));
   }
 
-  return fetch(businessSerivceUri.buinessUrl, options)
+  return fetch(businessSerivceUri.commonUrl, options)
     .then(response => {
       if (response.ok) {
         return response;
@@ -232,6 +239,34 @@ export const deleteImageFetch = (token, id, data) => {
     .catch(err => {
       return Promise.reject(err);
     });
+}
+
+/**
+ * Report business
+ */
+export const reportBusinessFetch = (id, content, contact) => {
+  const options = {
+    "method": 'POST',
+    "headers": {
+      'Content-Type': 'application/json',
+    },
+    "body": JSON.stringify({
+      content,
+      contact,
+    }),
+  };
+
+  return fetch(businessSerivceUri.reportBusinessUrl + id, options)
+  .then(response => {
+    if (response.ok) {
+      return response;
+    } else {
+      return Promise.reject(responseErrorHandler(response));
+    }
+  })
+  .catch(err => {
+    return Promise.reject(err);
+  });
 }
 
 /**

@@ -39,16 +39,18 @@ class BusinessCard extends Component {
   }
 
   hanldeAddToFavor() {
-    if (!_.isEmpty(this.props.user)) {
-      this.props.favorOperation(this.props.user._id, this.props.bid).then(response => {
-        if (response) {
-          this.setState({
-            isFavor: !this.state.isFavor
-          });
-        }
-      });
+    if (!_.isEmpty(this.props.user) && !_.isEmpty(this.props.bid)) {
+      this.props.favorOperation(this.props.user._id, this.props.bid)
+        .then(response => {
+          if (response) {
+            this.setState({
+              isFavor: !this.state.isFavor
+            });
+          }
+        });
+    } else {
+      this.props.history.push('/signin');
     }
-
   }
 
   render() {
@@ -71,16 +73,16 @@ class BusinessCard extends Component {
             </CardContent>
           </Link>
           <CardActions>
-            <Tooltip id="share-icon" title="Share">
-              <IconButton aria-label="Share">
-                <Share />
-              </IconButton>
-            </Tooltip>
             <Tooltip id="favor-icon" title="Add to Favor">
               <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
                 {
                   this.state.isFavor ? <Favorite /> : <FavoriteBorder />
                 }
+              </IconButton>
+            </Tooltip>
+            <Tooltip id="share-icon" title="Share">
+              <IconButton aria-label="Share">
+                <Share />
               </IconButton>
             </Tooltip>
           </CardActions>

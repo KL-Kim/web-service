@@ -15,7 +15,7 @@ const userServiceUri = {
   registerUrl: config.API_GATEWAY_ROOT + '/api/v1/user/register',
   verifyAccountUrl: config.API_GATEWAY_ROOT + '/api/v1/user/verify',
   changePasswordUrl: config.API_GATEWAY_ROOT + '/api/v1/user/password',
-  updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/useranme',
+  updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/username',
   updatePhoneUrl: config.API_GATEWAY_ROOT + '/api/v1/user/phone',
   uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto',
   favorUrl: config.API_GATEWAY_ROOT + '/api/v1/user/favor/',

@@ -19,7 +19,7 @@ import Badge from 'material-ui/Badge';
 import SettingContainer from '../setting/SettingContainer';
 import LinkContainer from '../utils/LinkContainer';
 import TablePaginationActions from '../utils/TablePaginationActions';
-import { getBusinessList, clearBusinessList } from '../../actions/business.actions.js';
+import { getBusinessListByAdmin, clearBusinessList } from '../../actions/business.actions.js';
 
 const styles = (theme) => ({
   "container": {
@@ -53,11 +53,16 @@ class BusinessList extends Component {
     this.handleEventSwitch = this.handleEventSwitch.bind(this);
     this.handleReportSwitch = this.handleReportSwitch.bind(this);
     this.handleChangeState = this.handleChangeState.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
+    this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
   }
 
   componentDidMount() {
-    this.props.getBusinessList(0, this.state.rowsPerPage, {
+    this.props.getBusinessListByAdmin({
+      limit: this.state.rowsPerPage,
+      filter: {
       "state": ''
+      },
     });
   }
 
@@ -66,14 +71,46 @@ class BusinessList extends Component {
   }
 
   handlePaginationChange(e, page) {
-    this.setState({
-      page: page,
+    const { rowsPerPage, state, search, reports, event } = this.state;
+
+    this.props.getBusinessListByAdmin({
+      skip: page * rowsPerPage,
+      limit: rowsPerPage,
+      filter: {
+        "state": state,
+        "event": event,
+        "reports": reports,
+      },
+      search: search
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          page: page,
+        });
+      }
     });
   }
 
   handleChangeRowsPerPage(e) {
-    this.setState({
-      rowsPerPage: e.target.value,
+    const { page, state, search, reports, event } = this.state;
+
+    this.props.getBusinessListByAdmin({
+      skip: page * e.target.value,
+      limit: e.target.value,
+      filter: {
+        "state": state,
+        "event": event,
+        "reports": reports,
+      },
+      search: search
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          rowsPerPage: e.target.value,
+        });
+      }
     });
   }
 
@@ -88,28 +125,40 @@ class BusinessList extends Component {
     const { page, rowsPerPage, state, search, reports } = this.state;
     const checked = e.target.checked;
 
-    this.props.getBusinessList(page, rowsPerPage, {
+    this.props.getBusinessListByAdmin({
+      skip: page * rowsPerPage,
+      limit: rowsPerPage,
+      filter: {
       "state": state,
       "event": checked,
       "reports": reports,
-    }, search).then(response => {
+      },
+      search: search
+    })
+    .then(response => {
       if (response) {
         this.setState({
           "event": checked
         });
       }
-    })
+    });
   }
 
   handleReportSwitch(e) {
     const { page, rowsPerPage, state, search, event } = this.state;
     const checked = e.target.checked;
 
-    this.props.getBusinessList(page, rowsPerPage, {
-      "state": state,
-      "event": event,
-      "reports": checked
-    }, search).then(response => {
+    this.props.getBusinessListByAdmin({
+      skip: page * rowsPerPage,
+      limit: rowsPerPage,
+      filter: {
+        "state": state,
+        "event": event,
+        "reports": checked
+      },
+      search: search,
+    })
+    .then(response => {
       if (response) {
         this.setState({
           "reports": checked
@@ -122,29 +171,39 @@ class BusinessList extends Component {
     const { value } = e.target;
     const { page, rowsPerPage, event, reports, search } = this.state
 
-    this.props.getBusinessList(page, rowsPerPage, {
-      "state": value,
-      "event": event,
-      "reports": reports,
-    }, search)
-      .then(response => {
-        if (response) {
-          this.setState({
-            state: value,
-            event: event,
-          });
-        }
-      });
+    this.props.getBusinessListByAdmin({
+      skip: page * rowsPerPage,
+      limit: rowsPerPage,
+      filter: {
+        "state": value,
+        "event": event,
+        "reports": reports,
+      },
+      search: search
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          state: value,
+          event: event,
+        });
+      }
+    });
   }
 
   handleSearch(e) {
     e.preventDefault();
     const { page, rowsPerPage, state, event, search } = this.state;
 
-    this.props.getBusinessList(page, rowsPerPage, {
-      state,
-      event
-    }, search);
+    this.props.getBusinessListByAdmin({
+      skip: page * rowsPerPage,
+      limit: rowsPerPage,
+      filter: {
+        state,
+        event
+      },
+      search: search
+    });
   }
 
   render() {
@@ -161,7 +220,7 @@ class BusinessList extends Component {
             <Grid item xs={3}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                  <InputLabel htmlFor="search">Search</InputLabel>
                   <Input
                     id="search"
                     type="text"
@@ -171,7 +230,7 @@ class BusinessList extends Component {
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="Toggle password visibility"
+                          aria-label="Searching"
                           onClick={this.handleSearch}
                         >
                           <Search />
@@ -252,8 +311,10 @@ class BusinessList extends Component {
                   <TableCell>Index</TableCell>
                   <TableCell>中文名</TableCell>
                   <TableCell>한국어</TableCell>
+                  <TableCell>Priority</TableCell>
                   <TableCell>Category</TableCell>
-                  <TableCell>Views Count</TableCell>
+                  <TableCell>Month Views Count</TableCell>
+                  <TableCell>Total Views Count</TableCell>
                   <TableCell>State</TableCell>
                 </TableRow>
               </TableHead>
@@ -284,7 +345,9 @@ class BusinessList extends Component {
                           }
                         </TableCell>
                         <TableCell>{business.krName}</TableCell>
+                        <TableCell>{business.priority}</TableCell>
                         <TableCell>{_.isEmpty(business.category) ? '' : business.category.krName}</TableCell>
+                        <TableCell>{business.monthViewsCount}</TableCell>
                         <TableCell>{business.viewsCount}</TableCell>
                         <TableCell>{_.upperFirst(business.state)}</TableCell>
                       </TableRow>
@@ -318,7 +381,7 @@ BusinessList.propTypes = {
   "classes": PropTypes.object.isRequired,
   "history": PropTypes.object.isRequired,
   "admin": PropTypes.object.isRequired,
-  "getBusinessList": PropTypes.func.isRequired,
+  "getBusinessListByAdmin": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -330,4 +393,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(BusinessList));
+export default connect(mapStateToProps, { getBusinessListByAdmin, clearBusinessList })(withStyles(styles)(BusinessList));

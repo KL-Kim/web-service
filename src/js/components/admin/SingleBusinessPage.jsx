@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import Quill from 'react-quill';
@@ -63,6 +64,8 @@ const paymentList = [
   'MasterCard',
 ];
 
+const priorityList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 const modules = {
   toolbar: [
     [{ 'header': [1, 2, 3, false] }],
@@ -111,6 +114,7 @@ class SingleBusinessPage extends Component {
     super(props);
 
     this.state = {
+      "priority": 0,
       "category": {
         _id: '',
         code: '',
@@ -163,8 +167,11 @@ class SingleBusinessPage extends Component {
       description: '',
       ratingAverage: 0,
       "viewsCount": 0,
+      "weekViewsCount": 0,
+      "monthViewsCount": 0,
       "favoredCount": 0,
-      "event": '',
+      reviewsCount: 0,
+      "event": null,
       menu: [],
       "reports": [],
       thumbnailUri: {},
@@ -173,7 +180,6 @@ class SingleBusinessPage extends Component {
 
     this.state._id = _.isUndefined(this.props.location.state.businessId) ? '' : this.props.location.state.businessId;
     this.state.search = '';
-    this.state.isNew = false;
     this.state.addMenuDialogOpen = false;
     this.state.menuIndex = null;
     this.state.newMenuName = '';
@@ -228,7 +234,6 @@ class SingleBusinessPage extends Component {
         if (_.isEmpty(business)) return ;
 
         this.setState({
-          "_id": business._id || '',
           "category": {
             _id: _.isEmpty(business.category) ? '' : business.category._id,
             code: _.isEmpty(business.category) ? '' : business.category.code || '',
@@ -236,6 +241,7 @@ class SingleBusinessPage extends Component {
             cnName: _.isEmpty(business.category) ? '' : business.category.cnName || '',
             enName: _.isEmpty(business.category) ? '' : business.category.enName || '',
           },
+          priority: business.priority || 0,
           state: business.state || '',
           cnName: business.cnName || '',
           krName: business.krName || '',
@@ -248,22 +254,22 @@ class SingleBusinessPage extends Component {
           status: business.status || '',
           "address": {
             province: {
-              name: business.address.province.name || '',
-              code: business.address.province.code || '',
+              name: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.province) ? '' : (business.address.province.name || '')),
+              code: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.province) ? '' : (business.address.province.code || '')),
             },
             city: {
-              name: business.address.city.name || '',
-              code: business.address.city.code || '',
+              name: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.city) ? '' : (business.address.city.name || '')),
+              code: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.city) ? '' : (business.address.city.code || '')),
             },
             area: {
-              name: business.address.area.name || '',
-              code: business.address.area.code || '',
+              name: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.area) ? '' : (business.address.area.name || '')),
+              code: _.isEmpty(business.address) ? '' : (_.isEmpty(business.address.area) ? '' : (business.address.area.code || '')),
             },
-            street: business.address.street || '',
+            street:  _.isEmpty(business.address) ? '' : (business.address.street || ''),
           },
           "geo": {
-            lat: business.geo.lat || 0,
-            long: business.geo.long || 0,
+            lat:  _.isEmpty(business.geo) ? 0 : (business.geo.coordinates[0] || 0),
+            long:  _.isEmpty(business.geo) ? 0 : (business.geo.coordinates[1] || 0),
           },
           "openningHoursSpec": {
             mon: _.isEmpty(business.openningHoursSpec) ? '' : (business.openningHoursSpec.mon || ''),
@@ -277,10 +283,12 @@ class SingleBusinessPage extends Component {
           rest: business.rest || '',
           chains: _.isEmpty(business.chains) ? [] : business.chains.slice(),
           description: business.description || '',
-          "viewsCount": business.viewsCount || 0,
-          "favoredCount": business.favoredCount || 0,
-          ratingAverage: business.ratingAverage || 0,
-          "event": business.event || '',
+          "viewsCount": business.viewsCount,
+          weekViewsCount: business.weekViewsCount || 0,
+          monthViewsCount: business.monthViewsCount || 0,
+          favoredCount: business.favoredCount || 0,
+          reviewsCount: _.isEmpty(business.reviewsList) ? 0 : business.reviewsList.length,
+          event: business.event || null,
           menu: _.isEmpty(business.menu) ? [] : business.menu.slice(),
           reports: _.isEmpty(business.reports) ? [] : business.reports.slice(),
           thumbnailUri: {
@@ -393,7 +401,7 @@ class SingleBusinessPage extends Component {
         this.setState({
           "geo": {
             ...this.state.geo,
-            "lat": value,
+            lat: value,
           }
         });
         break;
@@ -402,7 +410,7 @@ class SingleBusinessPage extends Component {
         this.setState({
           "geo": {
             ...this.state.geo,
-            "long": value,
+            long: value,
           }
         });
         break;
@@ -507,7 +515,9 @@ class SingleBusinessPage extends Component {
   handleSearchBusiness(e) {
     e.preventDefault();
 
-    this.props.getBusinessList(0, 0, {}, this.state.search)
+    this.props.getBusinessList({
+      search: this.state.search
+    });
   }
 
   handleDeleteBusiness() {
@@ -675,49 +685,51 @@ class SingleBusinessPage extends Component {
   }
 
   handleSubmit(e) {
-    if (this.state.krName && this.state.cnName && this.state.enName && this.state.tel && this.state.category._id) {
+    if (this.state.krName
+      && this.state.cnName
+      && this.state.enName
+      && this.state.tel
+      && this.state.category._id
+      && this.state.address.area.code
+    ) {
       const data = {
         state: this.state.state,
+        priority: this.state.priority,
         cnName: this.state.cnName,
         krName: this.state.krName,
         enName: this.state.enName,
         tel: this.state.tel,
-        priceRange: this.state.priceRange || '',
-        supportedLanguage: this.state.supportedLanguage || null,
-        payment: this.state.payment || null,
-        delivery: this.state.delivery || '',
+        priceRange: this.state.priceRange,
+        supportedLanguage: this.state.supportedLanguage,
+        payment: this.state.payment,
+        delivery: this.state.delivery,
         status: this.state.status,
         "address": {
           province: {
-            name: this.state.address.province.name || '',
-            code: this.state.address.province.code || '',
+            name: this.state.address.province.name,
+            code: this.state.address.province.code,
           },
           city: {
-            name: this.state.address.city.name || '',
-            code: this.state.address.city.code || '',
+            name: this.state.address.city.name,
+            code: this.state.address.city.code,
           },
           area: {
-            name: this.state.address.area.name || '',
-            code: this.state.address.area.code || '',
+            name: this.state.address.area.name,
+            code: this.state.address.area.code,
           },
-          street: this.state.address.street || '',
-        },
-        "geo": {
-          lat: this.state.geo.lat || '',
-          long: this.state.geo.long || '',
+          street: this.state.address.street,
         },
         "openningHoursSpec": {
-          mon: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.mon || ''),
-          tue: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.tue || ''),
-          wed: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.wed || ''),
-          thu: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.thu || ''),
-          fri: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.fri || ''),
-          sat: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.sat || ''),
-          sun: _.isEmpty(this.state.openningHoursSpec) ? '' : (this.state.openningHoursSpec.sun || ''),
+          mon: this.state.openningHoursSpec.mon,
+          tue: this.state.openningHoursSpec.tue,
+          wed: this.state.openningHoursSpec.wed,
+          thu: this.state.openningHoursSpec.thu,
+          fri: this.state.openningHoursSpec.fri,
+          sat: this.state.openningHoursSpec.sat,
+          sun: this.state.openningHoursSpec.sun,
         },
-        rest: this.state.rest || '',
-        chains: _.isEmpty(this.state.chains) ? [] : this.state.chains,
-        description: this.state.description || '',
+        rest: this.state.rest,
+        description: this.state.description,
         "event": this.state.event || null,
         menu: _.isEmpty(this.state.menu) ? [] : this.state.menu,
         reports: _.isEmpty(this.state.reports) ? [] : this.state.reports,
@@ -729,7 +741,7 @@ class SingleBusinessPage extends Component {
       }
 
       // Set business tag
-      if (this.state.tags) {
+      if (!_.isEmpty(this.state.tags)) {
         let tags = [];
         let index;
 
@@ -748,7 +760,7 @@ class SingleBusinessPage extends Component {
         data.tags = tags.slice();
       }
 
-      if (this.state.chains) {
+      if (!_.isEmpty(this.state.chains)) {
         let chains = [];
 
         this.state.chains.map(item =>
@@ -756,6 +768,16 @@ class SingleBusinessPage extends Component {
         )
 
         data.chains = chains.slice();
+      }
+
+      if (!_.isEmpty(this.state.geo)) {
+        data.geo = {
+          type: "Point",
+          coordinates: [
+            _.isEmpty(this.state.geo.lat) ? 0 : this.state.geo.lat,
+            _.isEmpty(this.state.geo.long) ? 0 : this.state.geo.long,
+          ],
+        }
       }
 
       if (this.state._id) {
@@ -794,18 +816,25 @@ class SingleBusinessPage extends Component {
                   >
                     Delete
                   </Button>
+                  <Link to={'/business/s/' + this.state.enName}>
+                    <Button color="primary" className={classes.button}>
+                      View Page
+                    </Button>
+                  </Link>
                   <Button raised color="primary" className={classes.button}
                     onClick={this.handleSubmit}
-                    disabled={!(
-                      this.state.krName
-                      && this.state.cnName
-                      && this.state.enName
-                      && this.state.tel)
+                    disabled={
+                      _.isEmpty(this.state.krName)
+                      || _.isEmpty(this.state.cnName)
+                      || _.isEmpty(this.state.enName)
+                      || _.isEmpty(this.state.tel)
                       || _.isEmpty(this.state.category._id)
+                      || !this.state.address.area.code
                     }
                   >
                     {this.state._id ? 'Update' : 'Save'}
                   </Button>
+
                 </div>
               </Grid>
             </Grid>
@@ -1064,7 +1093,31 @@ class SingleBusinessPage extends Component {
                     </Paper>
                   </Grid>
 
-
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <FormControl fullWidth>
+                        <InputLabel htmlFor="tag">Priority</InputLabel>
+                        <Select
+                          name="priority"
+                          value={this.state.priority}
+                          onChange={this.handleChange}
+                          input={<Input id="priority" />}
+                          renderValue={selected => selected}
+                        >
+                          {
+                            priorityList.map(item => (
+                              <MenuItem
+                                key={item}
+                                value={item}
+                              >
+                                <ListItemText primary={item} />
+                              </MenuItem>
+                            ))
+                          }
+                        </Select>
+                      </FormControl>
+                    </Paper>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -1078,7 +1131,7 @@ class SingleBusinessPage extends Component {
                     </Grid>
                     <Grid item xs={4}>
                       <FormControl fullWidth>
-                        <InputLabel htmlFor="province">Province</InputLabel>
+                        <InputLabel htmlFor="province" required error>Province</InputLabel>
                         <Select
                           name="province"
                           className={classes.input}
@@ -1104,7 +1157,7 @@ class SingleBusinessPage extends Component {
 
                     <Grid item xs={4}>
                       <FormControl fullWidth>
-                        <InputLabel htmlFor="city">City</InputLabel>
+                        <InputLabel htmlFor="city" required error>City</InputLabel>
                         <Select
                           name="city"
                           className={classes.input}
@@ -1132,7 +1185,7 @@ class SingleBusinessPage extends Component {
 
                     <Grid item xs={4}>
                       <FormControl fullWidth>
-                        <InputLabel htmlFor="area">Area</InputLabel>
+                        <InputLabel htmlFor="area" required error>Area</InputLabel>
                         <Select
                           name="area"
                           className={classes.input}
@@ -1203,19 +1256,23 @@ class SingleBusinessPage extends Component {
                     </Grid>
 
                     <Grid item xs={6}>
-                      <TextField fullWidth disabled id="viewsCount" label="Views Count"  margin="normal" defaultValue={this.state.viewsCount.toString()} />
+                      <TextField fullWidth disabled id="viewsCount" label="Total Views Count"  margin="normal" value={this.state.viewsCount} />
                     </Grid>
 
                     <Grid item xs={6}>
-                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" defaultValue={this.state.favoredCount.toString()} />
+                      <TextField fullWidth disabled id="monthViewsCount" label="Month Views Count"  margin="normal" value={this.state.monthViewsCount} />
                     </Grid>
 
                     <Grid item xs={6}>
-                      <TextField fullWidth disabled id="rating" label="Rating"  margin="normal" defaultValue={this.state.ratingAverage.toString()} />
+                      <TextField fullWidth disabled id="weekViewsCount" label="Week Views Count"  margin="normal" value={this.state.weekViewsCount} />
                     </Grid>
 
                     <Grid item xs={6}>
-                      <TextField fullWidth disabled id="ratingCount" label="Rating Count"  margin="normal" defaultValue={this.state.ratingAverage.toString()} />
+                      <TextField fullWidth disabled id="favoredCount" label="Favored Count"  margin="normal" value={this.state.favoredCount} />
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <TextField fullWidth disabled id="ratingCount" label="Reviews Count"  margin="normal" value={this.state.reviewsCount} />
                     </Grid>
 
                   </Grid>
@@ -1422,17 +1479,6 @@ class SingleBusinessPage extends Component {
               imagesUri={this.state.imagesUri}
               updateBusinessImages={this.updateBusinessImages}
             />
-
-            <Paper className={classes.paper}>
-              <Grid container spacing={16} alignItems="center">
-                <Grid item xs={12}>
-                  <Typography type="title">Reviews List</Typography>
-                </Grid>
-                <Grid item xs={12}>
-
-                </Grid>
-              </Grid>
-            </Paper>
 
             <Dialog fullWidth
               open={this.state.chainDialogOpen}

@@ -209,11 +209,11 @@ class CategoryList extends Component {
             <Grid item xs={4}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor="adornment-password">Search</InputLabel>
                   <Input
                     id="search"
                     type="text"
                     name="search"
+                    placeholder="Search"
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
                     endAdornment={
