@@ -39,7 +39,6 @@ class BusinessList extends Component {
     super(props);
 
     this.state = {
-      "dialogOpen": false,
       "search": '',
       "rowsPerPage": 10,
       "page": 0,
@@ -222,11 +221,10 @@ class BusinessList extends Component {
                 <FormControl fullWidth>
                   <InputLabel htmlFor="search">Search</InputLabel>
                   <Input
-                    id="search"
                     type="text"
+                    id="search"
                     name="search"
                     onChange={this.handleChange}
-                    onKeyPress={this.handleKeyPress}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton

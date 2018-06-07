@@ -12,9 +12,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 import SettingContainer from './SettingContainer';
 import ReviewCard from '../utils/ReviewCard';
-import { getReviews, deleteReview } from '../../actions/review.actions';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
+import { getReviews, deleteReview } from '../../actions/review.actions';
 
 const styles = theme => ({
 

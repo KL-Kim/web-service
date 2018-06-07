@@ -135,8 +135,10 @@ class SingleUserInfoPage extends Component {
                     onChange={this.handleChange}
                   >
                     <option value="regular">Regular</option>
+                    <option value="writer">Writer</option>
                     <option value="manager">Manager</option>
                     <option value="admin">Admin</option>
+
                 </Select>
                 </FormControl>
               </Grid>

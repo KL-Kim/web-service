@@ -125,7 +125,7 @@ class FavorPage extends Component {
             }
             <Grid item xs={12}>
               <Typography type="caption" align="center">
-                --- No more favors. You have {this.props.totalCount} reviews ---
+                --- No more favors. You have total {this.props.totalCount} favors ---
               </Typography>
             </Grid>
           </Grid>

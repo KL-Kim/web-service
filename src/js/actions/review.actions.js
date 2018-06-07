@@ -1,5 +1,5 @@
 /**
- * reviews Category Actions
+ * Reviews actions
  */
 import _ from 'lodash';
 
@@ -115,6 +115,10 @@ export const addNewReview = (data) => {
 
 
   return (dispatch, getState) => {
+    if (_.isEmpty(data)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
     dispatch(_addNewReviewRequest());
 
     return getToken()

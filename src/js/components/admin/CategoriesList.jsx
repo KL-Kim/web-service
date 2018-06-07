@@ -325,7 +325,7 @@ class CategoryList extends Component {
               </Grid>
             </DialogContent>
             <DialogActions>
-              <Button raised autoFocus color="primary" disabled={!(code && enName && krName && cnName)} onClick={this.handleSubmit}>
+              <Button raised color="primary" disabled={!(code && enName && krName && cnName)} onClick={this.handleSubmit}>
                 Save
               </Button>
               <Button color="primary" onClick={this.handleDialogClose}>

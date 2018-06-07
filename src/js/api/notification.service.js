@@ -10,7 +10,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const notificationServiceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/notification/',
-  getUnreadCountUrl: config.API_GATEWAY_ROOT + '/api/v1/notification/news/',
+  getUnreadCountUrl: config.API_GATEWAY_ROOT + '/api/v1/notification/unread/',
   clearReadNotificationsUrl: config.API_GATEWAY_ROOT + '/api/v1/notification/clear/',
 };
 

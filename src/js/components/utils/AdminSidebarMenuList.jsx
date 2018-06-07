@@ -97,7 +97,12 @@ class AdminSidebarMenuList extends Component {
           </MenuItem>
         </LinkContainer>
 
-        <LinkContainer to="/admin/reviews">
+        <LinkContainer to={{
+            pathname: "/admin/reviews",
+            state: {
+              admin: admin
+            },
+          }}>
           <MenuItem selected={match.path === "/admin/reviews"}>
             <ListItemIcon>
               <QuestionAnswer />
@@ -105,12 +110,17 @@ class AdminSidebarMenuList extends Component {
             <ListItemText primary="Reviews" classes={match.path === "/admin/reviews" ? { primary: classes.selected } : {}} />
           </MenuItem>
         </LinkContainer>
-        <LinkContainer to="/admin/stories">
-          <MenuItem selected={match.path === "/admin/stories"}>
+        <LinkContainer to={{
+            pathname: "/admin/blog",
+            state: {
+              admin: admin
+            },
+          }}>
+          <MenuItem selected={match.path === "/admin/blog"}>
             <ListItemIcon>
               <Book />
             </ListItemIcon>
-            <ListItemText primary="Stories" classes={match.path === "/admin/stories" ? { primary: classes.selected } : {}} />
+            <ListItemText primary="Blog" classes={match.path === "/admin/blog" ? { primary: classes.selected } : {}} />
           </MenuItem>
         </LinkContainer>
       </MenuList>

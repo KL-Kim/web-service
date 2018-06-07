@@ -37,19 +37,6 @@ import webStorageTypes from '../constants/webStorage.types';
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
 
-// Mock story data
-const story = {
-  id: '1',
-  userId: '5a4ef8f5537cd042155581a3',
-  businessId: '5a4ef8f5537cd042155581a3',
-  businessName: 'SteakHouse',
-  title: 'Tasting SteakHouse',
-  content: 'Bla bla bla',
-  commentCount: 10,
-  upVote: 10,
-  downVote: 2
-};
-
 const styles = theme => ({
   "thumbnail": {
     width: '100%',
@@ -401,7 +388,9 @@ class SingleBusinessPage extends Component {
                   <Button color="primary" onClick={this.handleOrderBy('useful')}>Most Useful</Button>
               </Grid>
               <Grid item xs={4}>
-                <Button raised color="primary" onClick={this.handleAddNewReviewDialogOpen}>Write a review</Button>
+                <div className={classes.buttonContainer}>
+                  <Button raised color="primary" onClick={this.handleAddNewReviewDialogOpen}>Write a review</Button>
+                </div>
               </Grid>
               <Grid item xs={12}>
                 <InfiniteScroll
@@ -435,27 +424,6 @@ class SingleBusinessPage extends Component {
                 <Typography type="caption" align="center">
                   --- No more reviews ---
                 </Typography>
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={16}>
-              <Grid item xs={12}>
-                <Typography type="display3" align="center">
-                  Stories
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                  <Button color="primary">Newest</Button>
-                  <Button color="primary">Most Useful</Button>
-              </Grid>
-              <Grid item xs={4}>
-                <StoryCard businessName={story.businessName}
-                  title={story.title}
-                  content={story.content}
-                  commentCount={story.commentCount}
-                  upVote={story.upVote}
-                  downVote={story.downVote}
-                />
               </Grid>
             </Grid>
 

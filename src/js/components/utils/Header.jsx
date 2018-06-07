@@ -222,6 +222,9 @@ class Header extends Component {
             <LinkContainer to="/business/category/restaurant">
               <Button color="inherit">Business</Button>
             </LinkContainer>
+            <LinkContainer to="/blog">
+              <Button color="inherit">Blog</Button>
+            </LinkContainer>
             <IconButton color="inherit"
               onClick={this.handlePopoverOpen}
               buttonRef={node => {

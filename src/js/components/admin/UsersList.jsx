@@ -70,27 +70,29 @@ class UsersList extends Component {
   }
 
   handlePaginationChange(e, page) {
-    this.props.getUsersList(page * this.state.rowsPerPage, this.state.rowsPerPage).then(response => {
-      if (response.users) {
-        this.setState({
-          page: page,
-          users: response.users,
-          totalCount: response.totalCount,
-        });
-      }
-    });
+    this.props.getUsersList(page * this.state.rowsPerPage, this.state.rowsPerPage)
+      .then(response => {
+        if (response.users) {
+          this.setState({
+            page: page,
+            users: response.users,
+            totalCount: response.totalCount,
+          });
+        }
+      });
   }
 
   handleChangeRowsPerPage(e) {
-    this.props.getUsersList(this.state.page * e.target.value, e.target.value).then(response => {
-      if (response.users) {
-        this.setState({
-          rowsPerPage: e.target.value,
-          users: response.users,
-          totalCount: response.totalCount,
-        });
-      }
-    });
+    this.props.getUsersList(this.state.page * e.target.value, e.target.value)
+      .then(response => {
+        if (response.users) {
+          this.setState({
+            rowsPerPage: e.target.value,
+            users: response.users,
+            totalCount: response.totalCount,
+          });
+        }
+      });
   }
 
   handleChange(e) {
@@ -107,6 +109,10 @@ class UsersList extends Component {
     switch (value) {
       case "regular":
         role.regular = !role.regular
+        break;
+
+      case "writer":
+        role.writer = !role.writer
         break;
 
       case "manager":
@@ -211,6 +217,15 @@ class UsersList extends Component {
                     />
                   }
                   label="Regular"
+                />
+                <FormControlLabel control={
+                    <Checkbox
+                      checked={this.state.role.writer}
+                      onChange={this.handleFilter}
+                      value="writer"
+                    />
+                  }
+                  label="Writer"
                 />
                 <FormControlLabel control={
                     <Checkbox
