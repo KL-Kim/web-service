@@ -9,7 +9,6 @@ import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
 import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
@@ -18,8 +17,9 @@ import Dialog, {
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import Radio, { RadioGroup } from 'material-ui/Radio';
 import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
+import TextField from 'material-ui/TextField';
+import Radio, { RadioGroup } from 'material-ui/Radio';
 import Select from 'material-ui/Select';
 
 import SettingContainer from '../setting/SettingContainer';
@@ -72,6 +72,7 @@ class ReviewsList extends Component {
 
   handleChange(e) {
     const { name, value } = e.target;
+
     this.setState({
       [name]: value
     });
@@ -179,10 +180,10 @@ class ReviewsList extends Component {
 
             <Grid item xs={12}>
               <Paper>
-                <Table className={classes.table}>
+                <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Code</TableCell>
+                      <TableCell>Index</TableCell>
                       <TableCell>User</TableCell>
                       <TableCell>Business</TableCell>
                       <TableCell>Content</TableCell>

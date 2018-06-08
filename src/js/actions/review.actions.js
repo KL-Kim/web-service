@@ -9,7 +9,7 @@ import reviewTypes from '../constants/review.types';
 import { fetchReviews, reviewOperationFetch, voteReviewFetch, fetchSingleReview } from '../api/review.service';
 
 /**
- * Clear reviews reduer
+ * Clear review reducer
  */
 export const clearReviewsList = () => {
   return (dispatch) => dispatch({

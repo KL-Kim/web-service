@@ -82,6 +82,7 @@ class AdminSidebarMenuList extends Component {
             <ListItemText primary="Category" classes={match.path === "/admin/category" ? { primary: classes.selected } : {}} />
           </MenuItem>
         </LinkContainer>
+
         <LinkContainer to={{
             pathname: "/admin/tag",
             state: {
@@ -110,6 +111,7 @@ class AdminSidebarMenuList extends Component {
             <ListItemText primary="Reviews" classes={match.path === "/admin/reviews" ? { primary: classes.selected } : {}} />
           </MenuItem>
         </LinkContainer>
+
         <LinkContainer to={{
             pathname: "/admin/blog",
             state: {
@@ -121,6 +123,20 @@ class AdminSidebarMenuList extends Component {
               <Book />
             </ListItemIcon>
             <ListItemText primary="Blog" classes={match.path === "/admin/blog" ? { primary: classes.selected } : {}} />
+          </MenuItem>
+        </LinkContainer>
+
+        <LinkContainer to={{
+            pathname: "/admin/comments",
+            state: {
+              admin: admin
+            },
+          }}>
+          <MenuItem selected={match.path === "/admin/comments"}>
+            <ListItemIcon>
+              <QuestionAnswer />
+            </ListItemIcon>
+            <ListItemText primary="Comments" classes={match.path === "/admin/comments" ? { primary: classes.selected } : {}} />
           </MenuItem>
         </LinkContainer>
       </MenuList>

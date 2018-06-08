@@ -8,6 +8,7 @@ import tagReducer from './tag.reducer';
 import reviewReducer from './review.reducer';
 import notificationReducer from './notification.reducer';
 import blogReducer from './blog.reducer';
+import commentReducer from './comment.reducer';
 
 const reducer = combineReducers({
   userReducer,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   reviewReducer,
   notificationReducer,
   blogReducer,
+  commentReducer,
 });
 
 export default reducer;

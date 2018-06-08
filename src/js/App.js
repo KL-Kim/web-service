@@ -43,6 +43,7 @@ import Admin_CategoriesList from './components/admin/CategoriesList';
 import Admin_TagsList from './components/admin/TagsList';
 import Admin_ReviewsList from './components/admin/ReviewsList';
 import Admin_BlogList from './components/admin/BlogList';
+import Admin_CommentsList from './components/admin/CommentsList';
 
 // Temp
 import SingleStoryPage from './components/SingleStoryPage';
@@ -98,6 +99,7 @@ const App = () => {
 
           <AdminRoute path="/admin/reviews" component={Admin_ReviewsList} />
           <AdminRoute exact path="/admin/blog" component={Admin_BlogList} />
+          <AdminRoute exact path="/admin/comments" component={Admin_CommentsList} />
 
           { /** Temp **/}
           <Route path="/story" component={SingleStoryPage} />

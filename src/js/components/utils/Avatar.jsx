@@ -10,14 +10,20 @@ const styles = theme => ({
   "avatar": {
     "margin": 0,
   },
+  "small": {
+    "margin": 'auto',
+    "width": 70,
+    "height": 70,
+    "fontSize": "2em"
+  },
   "medium": {
-    "margin": 0,
-    "width": 150,
-    "height": 150,
-    "fontSize": "6em"
+    "margin": 'auto',
+    "width": 100,
+    "height": 100,
+    "fontSize": "4em"
   },
   "big": {
-    "margin": 0,
+    "margin": 'auto',
     "width": 250,
     "height": 250,
     "fontSize": "10em",
@@ -44,6 +50,12 @@ class AvatarModule extends Component {
           : (<Avatar className={classes.medium} alt={user.username[0]} src={avatarSrc} />);
         break;
 
+      case "SMALL":
+      avatar = _.isEmpty(user.profilePhotoUri)
+        ? (<Avatar className={classes.small}>{initial}</Avatar>)
+        : (<Avatar className={classes.small} alt={user.username[0]} src={avatarSrc} />);
+      break;
+
       default:
         avatar = _.isEmpty(user.profilePhotoUri)
           ? (<Avatar className={classes.avatar}>{initial}</Avatar>)
@@ -56,9 +68,10 @@ class AvatarModule extends Component {
 
 AvatarModule.propTypes = {
   classes: PropTypes.object.isRequired,
-  type: PropTypes.string,
-  user: PropTypes.object,
+  user: PropTypes.object.isRequired,
   updatedAt: PropTypes.number,
+  type: PropTypes.string,
+
 };
 
 export default withStyles(styles)(AvatarModule);
