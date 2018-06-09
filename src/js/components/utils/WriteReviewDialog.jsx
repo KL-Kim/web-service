@@ -71,8 +71,10 @@ class WriteReviewDialog extends Component {
   }
 
   handleChange(e) {
+    const { name, value } = e.target;
+
     this.setState({
-      content: e.target.value
+      [name]: value
     });
   }
 

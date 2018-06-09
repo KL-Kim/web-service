@@ -145,18 +145,24 @@ export const reviewOperationFetch = (type, token, data) => {
  * Vote review
  * @param {String} token - Verification Token
  * @param {String} id - Review id
- * @param {Object} data - Review object
- * @property {String} data.uid - user id
- * @property {String} data.name - user name
+ * @property {String} uid - User id
+ * @property {String} vote - Vote
+ * @property {String} businessName - Business name
+ * @property {String} businessSlug - Business slug
  */
-export const voteReviewFetch = (token, id, data) => {
+export const voteReviewFetch = (token, id, { uid, vote, businessName, businessSlug } = {}) => {
   const options = {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      uid,
+      vote,
+      businessName,
+      businessSlug,
+    }),
   };
 
   return fetch(reviewSerivceUri.voteReviewUrl + id, options)

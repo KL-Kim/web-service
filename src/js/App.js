@@ -77,7 +77,7 @@ const App = () => {
           <Route path="/business/category/:slug" component={BusinessListPage} />
           <Route path="/business/s/:slug" component={SingleBusinessPage} />
           <Route exact path="/blog" component={BlogListPage} />
-          <Route path="/blog/:id" component={SinglePostPage} />
+          <Route path="/post/s/:id" component={SinglePostPage} />
 
           {/*  Setting Routes */}
           <PrivateRoute path="/setting/account" component={SettingAccount} />

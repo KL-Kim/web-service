@@ -149,33 +149,18 @@ class Header extends Component {
   handleClickListItem = item => e => {
     switch (item.type) {
       case "BUSINESS":
-        switch (item.event) {
-          case "START_EVENT":
-            this.props.history.push('/business/s/' + item.subjectUrl);
-            break;
-
-          default:
-            return ;
-        }
+        this.props.history.push('/business/s/' + item.subjectUrl);
         break;
 
       case "REVIEW":
-        switch (item.event) {
-          case "UPVOTE":
-            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
-            break;
-
-          case "CANCEL_UPVOTE":
-            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
-            break;
-
-          default:
-            return ;
-        }
+        this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
         break;
 
-      default:
+      case "COMMENT":
+        this.props.history.push('/post/s/' + item.subjectUrl, { commentId: item.commentId });
 
+      default:
+        return ;
     }
   }
 
@@ -292,6 +277,7 @@ class Header extends Component {
                               subjectContent={item.subjectContent}
                               subjectUrl={item.subjectUrl}
                               commentId={item.commentId}
+                              commentContent={item.commentContent}
                               content={item.content}
                             />
                           }

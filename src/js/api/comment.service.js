@@ -25,7 +25,7 @@ const commentSerivceUri = {
  * @param {String} status - Comment status
  * @param {String} parentId - Parent comment id
  */
-export const fetchCommentsList = ({ skip, limit, search, uid, pid, status, parentId } = {}) => {
+export const fetchCommentsList = ({ skip, limit, search, uid, pid, status, parentId, orderBy } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -60,7 +60,11 @@ export const fetchCommentsList = ({ skip, limit, search, uid, pid, status, paren
   }
 
   if (parentId) {
-    url = url + '&parentId' + parentId
+    url = url + '&parentId=' + parentId
+  }
+
+  if (orderBy) {
+    url = url + '&orderBy=' + orderBy
   }
 
   return fetch(url, options)
@@ -78,8 +82,14 @@ export const fetchCommentsList = ({ skip, limit, search, uid, pid, status, paren
 
 /**
  * Add new comment
+ * @param {String} token - Verification Token
+ * @property {String} Content - Comment content
+ * @property {String} userId - User id
+ * @property {String} postId - Post id
+ * @property {String} parentId - Parent comment id
+ * @property {String} replyToUser - Reply to user
  */
-export const addNewCommentFetch = (token, { content, userId, postId, parentId, replyToComment, replyToUser } = {}) => {
+export const addNewCommentFetch = (token, { content, userId, postId, parentId, replyToUser } = {}) => {
   const options = {
     method: 'POST',
     headers: {
@@ -91,7 +101,6 @@ export const addNewCommentFetch = (token, { content, userId, postId, parentId, r
       uid: userId,
       pid: postId,
       parentId,
-      replyToComment,
       replyToUser,
     }),
   };
@@ -100,6 +109,40 @@ export const addNewCommentFetch = (token, { content, userId, postId, parentId, r
     .then(response => {
       if (response.ok) {
         return response;
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Vote comment
+ * @param {String} token - Verification Token
+ * @param {String} id - Comment id
+ * @property {String} uid - user id
+ * @property {String} postTitle - Post title
+ */
+export const voteCommentFetch = (token, id, { uid, vote, postTitle } = {}) => {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify({
+      uid,
+      vote,
+      postTitle,
+    }),
+  };
+
+  return fetch(commentSerivceUri.voteCommentUrl + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
       } else {
         return Promise.reject(responseErrorHandler(response));
       }

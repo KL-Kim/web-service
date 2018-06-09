@@ -251,11 +251,13 @@ export const deleteReview = (data) => {
 
 /**
  * Vote review
- * @param {Object} data - Review object
- * @property {String} data.uid - user id
- * @property {String} data.name - user name
+ * @param {String} id - Review id
+ * @property {String} uid - User id
+ * @property {String} vote - Vote
+ * @property {String} businessName - Business name
+ * @property {String} businessSlug - Business slug
  */
-export const voteReview = (id, data) => {
+export const voteReview = (id, { uid, vote, businessName, businessSlug } = {}) => {
   const _voteReviewRequest = () => ({
     "type": reviewTypes.VOTE_REVIEW_REQUEST,
     "meta": {},
@@ -280,7 +282,7 @@ export const voteReview = (id, data) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) && _.isEmpty(data)) {
+    if (_.isEmpty(id) || _.isEmpty(uid) || _.isEmpty(vote) || _.isEmpty(businessName) || _.isEmpty(businessSlug)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -288,7 +290,7 @@ export const voteReview = (id, data) => {
 
     return getToken()
       .then(token => {
-        return voteReviewFetch(token, id, data);
+        return voteReviewFetch(token, id, { uid, vote, businessName, businessSlug });
       })
       .then(response => {
         dispatch(_voteReviewSuccess(response));

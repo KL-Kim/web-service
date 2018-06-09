@@ -123,7 +123,7 @@ class ReviewPage extends Component {
                             isOwn={review.userId === this.props.user._id}
                             content={review.content}
                             rating={review.rating}
-                            upVoteNum={review.upVote.length}
+                            upvoteNum={review.upvote.length}
                             serviceGood={review.serviceGood}
                             envGood={review.envGood}
                             comeback={review.comeback}

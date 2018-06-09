@@ -109,33 +109,18 @@ class NotificationPage extends Component {
   handleClickListItem = item => e => {
     switch (item.type) {
       case "BUSINESS":
-        switch (item.event) {
-          case "START_EVENT":
-            this.props.history.push('/business/s/' + item.subjectUrl);
-            break;
-
-          default:
-            return ;
-        }
+        this.props.history.push('/business/s/' + item.subjectUrl);
         break;
 
       case "REVIEW":
-        switch (item.event) {
-          case "UPVOTE":
-            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
-            break;
-
-          case "CANCEL_UPVOTE":
-            this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
-            break;
-
-          default:
-            return ;
-        }
+        this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
         break;
 
-      default:
+      case "COMMENT":
+        this.props.history.push('/post/s/' + item.subjectUrl, {});
 
+      default:
+        return;
     }
   }
 
@@ -202,12 +187,13 @@ class NotificationPage extends Component {
                                   event={item.event}
                                   subjectTitle={item.subjectTitle}
                                   subjectContent={item.subjectContent}
+                                  commentContent={item.commentContent}
                                   subjectUrl={item.subjectUrl}
                                   commentId={item.commentId}
                                   content={item.content}
                                 />
                               }
-                              secondary={/*getElapsedTime(item.createdAt)*/ item.createdAt}
+                              secondary={getElapsedTime(item.createdAt)}
                             />
                             <ListItemSecondaryAction>
                               <IconButton aria-label="Delete" onClick={this.handleDelete(item._id, index)}>

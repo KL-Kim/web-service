@@ -408,11 +408,12 @@ class SingleBusinessPage extends Component {
                             id={review._id}
                             owner={review.user}
                             user={this.props.user}
+                            isOwn={review.user._id === this.props.user._id}
+                            showUser
                             business={review.business}
-                            showUser={true}
                             content={review.content}
                             rating={review.rating}
-                            upVoteNum={review.upVote.length}
+                            upvoteNum={review.upvote.length}
                             handleVote={this.props.voteReview}
                           />
                         ))

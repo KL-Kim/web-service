@@ -29,10 +29,12 @@ class MessageContent extends Component {
       "message": '',
       "commentId": '',
     }
+
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
-    const { type, event, subjectTitle, commentId } = this.props;
+    const { type, event, subjectTitle, commentId, commentContent } = this.props;
 
     switch (type) {
       case "BUSINESS":
@@ -56,16 +58,33 @@ class MessageContent extends Component {
             });
             break;
 
-          case "CANCEL_UPVOTE":
-            this.setState({
-              message: "cancel the like for your review about " + subjectTitle,
-            });
-            break;
-
           default:
             return ;
         }
         break;
+
+      case "COMMENT":
+        switch (event) {
+          case "UPVOTE":
+            this.setState({
+              message: "upvotes your comment",
+            });
+            break;
+
+          case "DOWNVOTE":
+            this.setState({
+              message: "downvotes your comment",
+            });
+            break;
+
+          case "REPLY":
+            this.setState({
+              message: "replyed to your comment",
+            });
+
+          default:
+            return ;
+        }
 
       default:
         return ;
@@ -80,13 +99,12 @@ class MessageContent extends Component {
 
   render() {
     const { classes } = this.props;
-    const { review } = this.state;
-
 
     return (
       <div>
         <strong>{_.isEmpty(this.props.sender) ? '' : this.props.sender.username}</strong>
         {' ' + this.state.message}
+        <Typography>{this.props.commentContent}</Typography>
       </div>
     )
   }

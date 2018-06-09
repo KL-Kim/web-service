@@ -50,7 +50,7 @@ class PostPanel extends Component {
 
     return (
       <div>
-        <Link to={"/blog/" + this.props.post._id}>
+        <Link to={"/post/s/" + this.props.post._id}>
           <Grid container>
             {this.props.rtl ? content : thumbnail}
             {this.props.rtl ? thumbnail : content}

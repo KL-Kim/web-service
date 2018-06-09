@@ -6,7 +6,7 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import commentTypes from '../constants/comment.types';
-import { fetchCommentsList, updateCommentStatusFetch, addNewCommentFetch } from '../api/comment.service';
+import { fetchCommentsList, updateCommentStatusFetch, addNewCommentFetch, voteCommentFetch } from '../api/comment.service';
 
 /**
  * Clear comment reducer
@@ -27,7 +27,7 @@ export const clearCommentsList = () => {
  * @param {String} status - Comment status
  * @param {String} parentId - Parent comment id
  */
-export const getComments = ({ skip, limit, search, uid, pid, status, parentId } = {}) => {
+export const getComments = ({ skip, limit, search, uid, pid, status, parentId, orderBy } = {}) => {
   const _getCommentsListRequest = () => ({
     "type": commentTypes.GET_COMMENTS_REQUEST,
     "meta": {},
@@ -55,7 +55,7 @@ export const getComments = ({ skip, limit, search, uid, pid, status, parentId } 
   return (dispatch, getState) => {
     dispatch(_getCommentsListRequest());
 
-    return fetchCommentsList({ skip, limit, search, uid, pid, status, parentId })
+    return fetchCommentsList({ skip, limit, search, uid, pid, status, parentId, orderBy })
       .then(response => {
         dispatch(_getCommentsListSuccess(response));
 
@@ -72,8 +72,13 @@ export const getComments = ({ skip, limit, search, uid, pid, status, parentId } 
 
 /**
  * Add new comment
+ * @property {String} Content - Comment content
+ * @property {String} userId - User id
+ * @property {String} postId - Post id
+ * @property {String} parentId - Parent comment id
+ * @property {String} replyToUser - Reply to user
  */
-export const addNewComment = ({ content, userId, postId, parentId, replyToComment, replyToUser } = {}) => {
+export const addNewComment = ({ content, userId, postId, parentId, replyToUser } = {}) => {
   const _addNewCommentRequest = () => ({
     "type": commentTypes.ADD_NEW_COMMENT_REQUEST,
     "meta": {},
@@ -104,7 +109,7 @@ export const addNewComment = ({ content, userId, postId, parentId, replyToCommen
 
     return getToken()
       .then(token => {
-        return addNewCommentFetch(token, { content, userId, postId, parentId, replyToComment, replyToUser });
+        return addNewCommentFetch(token, { content, userId, postId, parentId, replyToUser });
       })
       .then(response => {
         dispatch(_addNewCommentSuccess());
@@ -119,6 +124,54 @@ export const addNewComment = ({ content, userId, postId, parentId, replyToCommen
         return ;
       })
   }
+}
+
+/**
+ * Vote comment
+ */
+export const voteComment = (id, { uid, vote, postTitle } = {}) => {
+  const _voteCommentRequest = () => ({
+    "type": commentTypes.VOTE_COMMENT_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _voteCommentSuccess = (response) => ({
+    "type": commentTypes.VOTE_COMMENT_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _voteCommentFailure = (error) => ({
+    "type": commentTypes.VOTE_COMMENT_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isUndefined(id) || _.isUndefined(uid) || _.isUndefined(vote) || _.isUndefined(postTitle))
+      return dispatch(AlertActions.alertFailure("Bad request"));
+
+    return getToken()
+      .then(token => {
+        return voteCommentFetch(token, id, { uid, vote, postTitle });
+      })
+      .then(response => {
+        dispatch(_voteCommentSuccess());
+        dispatch(AlertActions.alertSuccess("Vote successfully!"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_voteCommentFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
 }
 
 /**

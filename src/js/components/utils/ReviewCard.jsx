@@ -33,7 +33,7 @@ class ReviewCard extends Component {
 
     this.state = {
       "deleteDialogOpen": false,
-      "upVoteNum": props.upVoteNum,
+      "upvoteNum": props.upvoteNum,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -45,7 +45,7 @@ class ReviewCard extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
       this.setState({
-        "upVoteNum": nextProps.upVoteNum,
+        "upvoteNum": nextProps.upvoteNum,
       });
     }
   }
@@ -81,11 +81,11 @@ class ReviewCard extends Component {
         uid: this.props.user._id,
         businessName: this.props.business.krName + '/' + this.props.business.cnName,
         businessSlug: this.props.business.enName,
-        vote: 'upVote',
+        vote: 'upvote',
       }).then(response => {
         if (response) {
           this.setState({
-            "upVoteNum": response.review.upVote.length,
+            "upvoteNum": response.review.upvote.length,
           });
         }
       });
@@ -124,9 +124,9 @@ class ReviewCard extends Component {
             <div>
               <span>
                 <IconButton onClick={this.handleClickUpVote} disabled={this.props.isOwn}>
-                  <ThumbUp color={this.props.isOwn ? "default" : "primary"} />
+                  <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
                 </IconButton>
-                {this.state.upVoteNum}
+                {this.state.upvoteNum}
               </span>
             </div>
           </CardContent>
@@ -171,7 +171,7 @@ ReviewCard.propTypes = {
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
-  "upVoteNum": PropTypes.number,
+  "upvoteNum": PropTypes.number,
   "handleDelete": PropTypes.func,
 };
 

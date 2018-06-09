@@ -13,7 +13,11 @@ import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Divider from 'material-ui/Divider';
-import Table, { TableBody, TableCell, TableHead, TableRow, } from 'material-ui/Table';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from 'material-ui/Dialog';
 import Badge from 'material-ui/Badge';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
@@ -33,7 +37,7 @@ import CommentPanel from './utils/CommentPanel';
 import ProperName from './utils/ProperName';
 import ElapsedTime from '../helpers/ElapsedTime';
 import { getSinglePost } from '../actions/blog.actions';
-import { getComments, addNewComment } from '../actions/comment.actions';
+import { getComments, addNewComment, voteComment } from '../actions/comment.actions';
 
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
@@ -60,14 +64,24 @@ class SinglePostPage extends Component {
     super(props);
 
     this.state = {
-      open: false,
+      sortPopperOpen: false,
       sortBy: 'useful',
+      writeCommentDialogOpen: false,
+      content: '',
+      parentId: '',
+      replyToComment: '',
+      replyToUser: '',
     };
 
     this.state.id = props.match.params.id;
 
-    this.handleSortPopperOpen = this.handleSortPopperOpen.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleToggleSortPopper = this.handleToggleSortPopper.bind(this);
     this.handleSortPopperClose = this.handleSortPopperClose.bind(this);
+    this.handleOpenWriteCommentDialog = this.handleOpenWriteCommentDialog.bind(this);
+    this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
+    this.handleSubmitComment = this.handleSubmitComment.bind(this);
+    this.getNewComments = this.getNewComments.bind(this);
   }
 
   componentDidMount() {
@@ -90,24 +104,94 @@ class SinglePostPage extends Component {
     }
   }
 
-  handleSortPopperOpen(e) {
-    console.log(this.state.open);
+  handleChange(e) {
+    const { name, value } = e.target;
 
     this.setState({
-      open: !this.state.open
+      [name]: value
     });
   }
 
-  handleSortPopperClose() {
+  handleToggleSortPopper() {
+    console.log(this.state.sortPopperOpen);
+
     this.setState({
-      open: false
+      sortPopperOpen: !this.state.sortPopperOpen
+    });
+  }
+
+  handleSortPopperClose(e) {
+    if (this.target.contains(e.target)) {
+      return;
+    }
+
+    this.setState({
+      sortPopperOpen: false
     });
   }
 
   handleSelectSort = sort => e => {
+    this.props.getComments({
+      pid: this.state.id,
+      orderBy: sort
+    }).then(response => {
+      if (response) {
+        this.setState({
+          sortBy: sort,
+          sortPopperOpen: false,
+        });
+      }
+    });
+  }
+
+  handleOpenWriteCommentDialog() {
     this.setState({
-      sortBy: sort,
-      open: false,
+      writeCommentDialogOpen: true,
+    })
+  }
+
+  handleCloseWriteCommentDialog() {
+    this.setState({
+      writeCommentDialogOpen: false,
+      content: '',
+    });
+  }
+
+  handleSubmitComment() {
+    if (this.props.user && this.state.id && this.state.content) {
+      this.props.addNewComment({
+        userId: this.props.user._id,
+        postId: this.state.id,
+        content: this.state.content,
+      })
+      .then(response => {
+        if (response) {
+          return this.props.getComments({
+            pid: this.state.id,
+            orderBy: 'new',
+          })
+        }
+
+        return ;
+      })
+      .then(response => {
+        this.setState({
+          writeCommentDialogOpen: false,
+          content: '',
+          sortBy: 'new'
+        });
+      });
+    }
+  }
+
+  getNewComments() {
+    this.props.getComments({
+      pid: this.state.id,
+      orderBy: 'new',
+    }).then(response => {
+      this.setState({
+        sortBy: 'new'
+      });
     });
   }
 
@@ -148,9 +232,9 @@ class SinglePostPage extends Component {
                               }}
                             >
                               <Button
-                                aria-owns={this.state.open ? 'menu-list-collapse' : null}
+                                aria-owns={this.state.sortPopperOpen ? 'menu-list-collapse' : null}
                                 aria-haspopup="true"
-                                onClick={this.handleSortPopperOpen}
+                                onClick={this.handleToggleSortPopper}
                               >
                                 {
                                   this.state.sortBy ? this.state.sortBy : "Sort By"
@@ -162,18 +246,18 @@ class SinglePostPage extends Component {
                           <Portal>
                             <Popper
                               placement="bottom-start"
-                              eventsEnabled={this.state.open}
-                              className={classNames({ [classes.popperClose]: !this.state.open })}
+                              eventsEnabled={this.state.sortPopperOpen}
+                              className={classNames({ [classes.popperClose]: !this.state.sortPopperOpen })}
                             >
                               <ClickAwayListener onClickAway={this.handleSortPopperClose}>
-                                <Collapse in={this.state.open} id="menu-list-collapse" style={{ transformOrigin: '0 0 0' }}>
+                                <Collapse in={this.state.sortPopperOpen} id="menu-list-collapse" style={{ transformOrigin: '0 0 0' }}>
                                   <Paper style={{ margin: 3 }}>
                                     <MenuList role="menu">
                                       <MenuItem selected={this.state.sortBy === 'useful'} onClick={this.handleSelectSort('useful')}>
                                         <ListItemText primary="Useful" />
                                       </MenuItem>
-                                      <MenuItem selected={this.state.sortBy === 'newest'} onClick={this.handleSelectSort('newest')}>
-                                        <ListItemText primary="Newest" />
+                                      <MenuItem selected={this.state.sortBy === 'new'} onClick={this.handleSelectSort('new')}>
+                                        <ListItemText primary="New" />
                                       </MenuItem>
                                     </MenuList>
                                   </Paper>
@@ -185,7 +269,7 @@ class SinglePostPage extends Component {
                       </Grid>
                       <Grid item xs={6}>
                         <div className={classes.buttonContainer}>
-                          <Button raised color="primary">
+                          <Button raised color="primary" onClick={this.handleOpenWriteCommentDialog}>
                             Write comment
                           </Button>
                         </div>
@@ -197,31 +281,59 @@ class SinglePostPage extends Component {
                       : comments.map((comment, index) => (
                         <Grid item xs={8} key={index}>
                           <CommentPanel
+                            commentId={comment._id}
+                            postId={this.state.id}
+                            postTitle={this.state.post.title}
                             status={comment.status}
                             content={comment.content}
-                            user={comment.userId}
-                            upVote={comment.upVote.length}
-                            downVote={comment.downVote.length}
+                            owner={comment.userId}
+                            user={this.props.user}
+                            isOwn={comment.userId._id === this.props.user._id}
+                            upvote={comment.upvote.length}
+                            downvote={comment.downvote.length}
                             createdAt={comment.createdAt}
+                            addNewComment={this.props.addNewComment}
+                            getNewComments={this.getNewComments}
+                            voteComment={this.props.voteComment}
                           />
                         </Grid>
                       ))
                   }
-                  <Grid item xs={8}>
-                    <FormControl fullWidth required>
-                      <InputLabel htmlFor="content">Content</InputLabel>
-                      <Input
-                        type="text"
-                        id="content"
-                        multiline
-                        rows={5}
-                        name="content"
-                        value={this.state.content}
-                        onChange={this.handleChange}
-                      />
-                    </FormControl>
-                  </Grid>
                 </Grid>
+                <div>
+                  <Dialog fullWidth
+                    open={this.state.writeCommentDialogOpen}
+                    onClose={this.handleCloseWriteCommentDialog}
+                    aria-labelledby="comment-dialog-title"
+                    aria-describedby="comment-dialog-description"
+                  >
+                    <DialogTitle id="comment-dialog-title">
+                      Write Comment
+                    </DialogTitle>
+                    <DialogContent id="comment-dialog-description">
+                      <FormControl fullWidth required>
+                        <InputLabel htmlFor="content">Content</InputLabel>
+                        <Input
+                          type="text"
+                          id="content"
+                          multiline
+                          rows={10}
+                          name="content"
+                          value={this.state.content}
+                          onChange={this.handleChange}
+                        />
+                      </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button raised color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                        Save
+                      </Button>
+                      <Button color="primary" onClick={this.handleCloseWriteCommentDialog}>
+                        Cancel
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </div>
               </div>
         }
       </Container>
@@ -245,4 +357,5 @@ export default connect(mapStateToProps, {
   getSinglePost,
   getComments,
   addNewComment,
+  voteComment
 })(withStyles(styles)(SinglePostPage));

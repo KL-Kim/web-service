@@ -1484,7 +1484,7 @@ class SingleBusinessPage extends Component {
               open={this.state.chainDialogOpen}
               onClose={this.handleCloseSubDepartmentsDialog}
               aria-labelledby="sd-dialog-title"
-              aria-describedby="sd-dialog-description1"
+              aria-describedby="sd-dialog-description"
             >
               <DialogTitle id="sd-dialog-title" >
                 <Grid container justify="space-between" alignItems="center">
