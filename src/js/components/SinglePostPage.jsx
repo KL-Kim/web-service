@@ -37,7 +37,12 @@ import CommentPanel from './utils/CommentPanel';
 import ProperName from './utils/ProperName';
 import ElapsedTime from '../helpers/ElapsedTime';
 import { getSinglePost } from '../actions/blog.actions';
-import { getComments, addNewComment, voteComment } from '../actions/comment.actions';
+import { getComments,
+  addNewComment,
+  voteComment,
+  deleteComment,
+  clearCommentsList,
+} from '../actions/comment.actions';
 
 import config from '../config/config';
 import image from '../../css/ikt-icon.gif';
@@ -65,12 +70,16 @@ class SinglePostPage extends Component {
 
     this.state = {
       sortPopperOpen: false,
-      sortBy: 'useful',
+      orderBy: 'useful',
       writeCommentDialogOpen: false,
       content: '',
       parentId: '',
       replyToComment: '',
       replyToUser: '',
+      hasMore: false,
+      limit: 5,
+      count: 0,
+      hasMore: false,
     };
 
     this.state.id = props.match.params.id;
@@ -82,26 +91,40 @@ class SinglePostPage extends Component {
     this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
+    this.loadMore = this.loadMore.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.id) {
-      this.props.getSinglePost(this.state.id)
-        .then(response => {
+    if (_.isEmpty(this.state.id)) this.props.history.push('/404');
+
+    this.props.getSinglePost(this.state.id)
+      .then(response => {
+        if (response && response.post.status === 'PUBLISHED') {
+          this.setState({
+            post: response.post
+          });
+        } else {
+          this.props.history.push('/404');
+        }
+      })
+      .then(() => {
+        this.props.getComments({
+          pid: this.state.id,
+          orderBy: 'useful',
+        }).then(response => {
           if (response) {
             this.setState({
-              post: response.post
+              count: this.state.limit,
+              hasMore: this.state.limit < response.totalCount,
             });
-          } else {
-            this.props.history.push('/404');
           }
         });
-      this.props.getComments({
-        pid: this.state.id
-      });
-    } else {
-      this.props.history.push('/404');
-    }
+      })
+
+  }
+
+  componentWillUnmount() {
+    this.props.clearCommentsList();
   }
 
   handleChange(e) {
@@ -137,7 +160,7 @@ class SinglePostPage extends Component {
     }).then(response => {
       if (response) {
         this.setState({
-          sortBy: sort,
+          orderBy: sort,
           sortPopperOpen: false,
         });
       }
@@ -147,7 +170,7 @@ class SinglePostPage extends Component {
   handleOpenWriteCommentDialog() {
     this.setState({
       writeCommentDialogOpen: true,
-    })
+    });
   }
 
   handleCloseWriteCommentDialog() {
@@ -158,7 +181,11 @@ class SinglePostPage extends Component {
   }
 
   handleSubmitComment() {
-    if (this.props.user && this.state.id && this.state.content) {
+    if (!this.props.isLoggedIn) {
+      this.props.history.push('/signin');
+    }
+
+    if (!_.isEmpty(this.props.user) && this.state.id && this.state.content) {
       this.props.addNewComment({
         userId: this.props.user._id,
         postId: this.state.id,
@@ -178,21 +205,44 @@ class SinglePostPage extends Component {
         this.setState({
           writeCommentDialogOpen: false,
           content: '',
-          sortBy: 'new'
+          orderBy: 'new'
         });
       });
     }
   }
 
   getNewComments() {
+    if (this.state.id) {
+      this.props.getComments({
+        pid: this.state.id,
+        limit: this.state.count,
+        orderBy: 'new',
+      }).then(response => {
+        if (response) {
+          this.setState({
+            orderBy: 'new',
+            count: this.state.count,
+            hasMore: this.state.count < response.totalCount,
+          });
+        }
+      });
+    }
+  }
+
+  loadMore() {
     this.props.getComments({
       pid: this.state.id,
-      orderBy: 'new',
-    }).then(response => {
-      this.setState({
-        sortBy: 'new'
-      });
-    });
+      orderBy: this.state.orderBy,
+      limit: this.state.count + this.state.limit,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          count: this.state.count + this.state.limit,
+          hasMore: this.state.count + this.state.limit < response.totalCount,
+        })
+      }
+    })
   }
 
   render() {
@@ -218,6 +268,7 @@ class SinglePostPage extends Component {
                     </Paper>
                   </Grid>
                 </Grid>
+
                 <Grid container justify="center">
                   <Grid item xs={8}>
                     <Typography type="display1" align="center" gutterBottom>Comments</Typography>
@@ -237,7 +288,7 @@ class SinglePostPage extends Component {
                                 onClick={this.handleToggleSortPopper}
                               >
                                 {
-                                  this.state.sortBy ? this.state.sortBy : "Sort By"
+                                  this.state.orderBy ? this.state.orderBy : "Sort By"
                                 }
                                 <ExpandMoreIcon className={classes.rightIcon} />
                               </Button>
@@ -253,10 +304,10 @@ class SinglePostPage extends Component {
                                 <Collapse in={this.state.sortPopperOpen} id="menu-list-collapse" style={{ transformOrigin: '0 0 0' }}>
                                   <Paper style={{ margin: 3 }}>
                                     <MenuList role="menu">
-                                      <MenuItem selected={this.state.sortBy === 'useful'} onClick={this.handleSelectSort('useful')}>
+                                      <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSelectSort('useful')}>
                                         <ListItemText primary="Useful" />
                                       </MenuItem>
-                                      <MenuItem selected={this.state.sortBy === 'new'} onClick={this.handleSelectSort('new')}>
+                                      <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleSelectSort('new')}>
                                         <ListItemText primary="New" />
                                       </MenuItem>
                                     </MenuList>
@@ -276,30 +327,43 @@ class SinglePostPage extends Component {
                       </Grid>
                     </Grid>
                   </Grid>
-                  {
-                    _.isEmpty(comments) ? ''
-                      : comments.map((comment, index) => (
-                        <Grid item xs={8} key={index}>
-                          <CommentPanel
-                            commentId={comment._id}
-                            postId={this.state.id}
-                            postTitle={this.state.post.title}
-                            status={comment.status}
-                            content={comment.content}
-                            owner={comment.userId}
-                            user={this.props.user}
-                            isOwn={comment.userId._id === this.props.user._id}
-                            upvote={comment.upvote.length}
-                            downvote={comment.downvote.length}
-                            createdAt={comment.createdAt}
-                            addNewComment={this.props.addNewComment}
-                            getNewComments={this.getNewComments}
-                            voteComment={this.props.voteComment}
-                          />
-                        </Grid>
-                      ))
-                  }
                 </Grid>
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMore}
+                  hasMore={this.state.hasMore}
+                  loader={<div className="loader" key={0}>Loading ...</div>}
+                >
+                  <Grid container justify="center">
+                    {
+                      _.isEmpty(comments) ? ''
+                        : comments.map((comment, index) => (
+                          <Grid item xs={8} key={index}>
+                            <CommentPanel
+                              commentId={comment._id}
+                              postId={this.state.id}
+                              postTitle={this.state.post.title}
+                              parentComment={comment.parentId}
+                              replyToUser={comment.replyToUser}
+                              status={comment.status}
+                              content={comment.content}
+                              owner={comment.userId}
+                              user={this.props.user}
+                              isOwn={comment.userId._id === this.props.user._id}
+                              upvote={comment.upvote.length}
+                              downvote={comment.downvote.length}
+                              createdAt={comment.createdAt}
+                              addNewComment={this.props.addNewComment}
+                              getNewComments={this.getNewComments}
+                              voteComment={this.props.voteComment}
+                              deleteComment={this.props.deleteComment}
+                            />
+                          </Grid>
+                      ))
+                    }
+                  </Grid>
+                </InfiniteScroll>
+
                 <div>
                   <Dialog fullWidth
                     open={this.state.writeCommentDialogOpen}
@@ -348,6 +412,7 @@ SinglePostPage.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "comments": state.commentReducer.comments,
     "totalCount": state.commentReducer.totalCount,
   };
@@ -357,5 +422,7 @@ export default connect(mapStateToProps, {
   getSinglePost,
   getComments,
   addNewComment,
-  voteComment
+  voteComment,
+  deleteComment,
+  clearCommentsList,
 })(withStyles(styles)(SinglePostPage));

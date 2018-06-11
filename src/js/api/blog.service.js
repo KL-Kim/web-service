@@ -13,6 +13,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
 const blogServiceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/post',
   singleCommonUrl: config.API_GATEWAY_ROOT + '/api/v1/post/single/',
+  adminCommonUrl: config.API_GATEWAY_ROOT + '/api/v1/post/admin/',
 }
 
 /**
@@ -191,6 +192,37 @@ export const deletePostFetch = (token, id, { authorId } = {}) => {
   };
 
   return fetch(blogServiceUri.singleCommonUrl + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Update post state
+ * @param {String} token - Verification code
+ * @param {String} id - Post id
+ * @param {String} state - Post state
+ */
+export const updatePostStateFetch = (token, id, state) => {
+  const options = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify({
+      state,
+    }),
+  };
+
+  return fetch(blogServiceUri.adminCommonUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response;

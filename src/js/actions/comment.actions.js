@@ -6,7 +6,12 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import commentTypes from '../constants/comment.types';
-import { fetchCommentsList, updateCommentStatusFetch, addNewCommentFetch, voteCommentFetch } from '../api/comment.service';
+import { fetchCommentsList,
+  updateCommentStatusFetch,
+  addNewCommentFetch,
+  voteCommentFetch,
+  deleteCommentFetch,
+} from '../api/comment.service';
 
 /**
  * Clear comment reducer
@@ -124,6 +129,58 @@ export const addNewComment = ({ content, userId, postId, parentId, replyToUser }
         return ;
       })
   }
+}
+
+/**
+ * Delete comment
+ * @param {String} id - Comment id
+ * @param {String} userId - User id
+ */
+export const deleteComment = (id, uid) => {
+  const _deleteCommentRequest = () => ({
+    "type": commentTypes.DELETE_COMMENT_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _deleteCommentSuccess = (response) => ({
+    "type": commentTypes.DELETE_COMMENT_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _deleteCommentFailure = (error) => ({
+    "type": commentTypes.DELETE_COMMENT_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isUndefined(id) || _.isUndefined(uid)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_deleteCommentRequest());
+    return getToken()
+      .then(token => {
+        return deleteCommentFetch(token, id, uid);
+      })
+      .then(response => {
+        dispatch(_deleteCommentSuccess(response));
+        dispatch(AlertActions.alertSuccess("Delete successfully!"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_deleteCommentFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
 }
 
 /**

@@ -30,7 +30,12 @@ import WriteReviewDialog from './utils/WriteReviewDialog';
 import ContactDialog from './utils/ContactDialog';
 import { favorOperation } from '../actions/user.actions';
 import { getSingleBusiness, reportBusiness } from '../actions/business.actions';
-import { getReviews, addNewReview, voteReview, clearReviewsList, getSingleReview } from '../actions/review.actions';
+import {
+  getReviews,
+  addNewReview,
+  voteReview,
+  clearReviewsList,
+  getSingleReview } from '../actions/review.actions';
 import { loadFromStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
 
@@ -78,7 +83,7 @@ class SingleBusinessPage extends Component {
       this.state.reviewId = props.location.state.reviewId;
     }
 
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.handleAddNewReviewDialogOpen = this.handleAddNewReviewDialogOpen.bind(this);
     this.handleAddNewReviewDialogClose = this.handleAddNewReviewDialogClose.bind(this);
@@ -94,19 +99,15 @@ class SingleBusinessPage extends Component {
   componentDidMount() {
     this.props.getSingleBusiness("enName", this.props.match.params.slug)
       .then(business => {
-        if (_.isEmpty(business)) {
+        if (_.isEmpty(business) || business.state !== 'published') {
           this.props.history.push('/404');
         } else {
-          if (business.state === 'published') {
-            const index = this.state.myFavors.indexOf(business._id);
-            this.setState({
-              business: business,
-              isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
-            });
-            return this.props.getReviews(0, this.state.limit, { 'bid': business._id });
-          } else {
-            this.props.history.push('/404');
-          }
+          const index = this.state.myFavors.indexOf(business._id);
+          this.setState({
+            business: business,
+            isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
+          });
+          return this.props.getReviews(0, this.state.limit, { 'bid': business._id });
         }
 
         return ;
@@ -195,6 +196,10 @@ class SingleBusinessPage extends Component {
   }
 
   handleAddtoFavor() {
+    if (!this.props.isLoggedIn) {
+      this.props.history.push('/signin');
+    }
+
     if (!_.isEmpty(this.props.user) && !_.isEmpty(this.state.business)) {
       this.props.favorOperation(this.props.user._id, this.state.business._id)
         .then(response => {
@@ -204,8 +209,6 @@ class SingleBusinessPage extends Component {
             });
           }
         });
-    } else {
-      this.props.history.push('/signin');
     }
   }
 
@@ -294,16 +297,6 @@ class SingleBusinessPage extends Component {
                       <Typography type="body1">{item.krName}</Typography>
                     </Link>)
                   )}
-                </Paper>
-              </Grid>
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography type="title" gutterBottom>More</Typography>
-                  <Typography type="body1" gutterBottom>가격: {business.priceRange}</Typography>
-                  <Typography type="body1" gutterBottom>배달: {business.delivery}</Typography>
-                  <Typography type="body1" gutterBottom>언어: {business.supportedLanguage}</Typography>
-                  <Typography type="body1" gutterBottom>Payments: {business.payment}</Typography>
-                  <Typography type="body1" gutterBottom>휴식일: {business.rest}</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={4}>
@@ -408,6 +401,7 @@ class SingleBusinessPage extends Component {
                             id={review._id}
                             owner={review.user}
                             user={this.props.user}
+                            isLoggedIn={this.props.isLoggedIn}
                             isOwn={review.user._id === this.props.user._id}
                             showUser
                             business={review.business}
@@ -475,6 +469,7 @@ SingleBusinessPage.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "reviews": state.reviewReducer.reviews,
     "totalCount": state.reviewReducer.totalCount,
     "isFetching": state.businessReducer.isFetching,

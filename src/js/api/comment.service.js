@@ -56,7 +56,7 @@ export const fetchCommentsList = ({ skip, limit, search, uid, pid, status, paren
   }
 
   if (status) {
-    url = url + '&url=' + url;
+    url = url + '&status=' + status;
   }
 
   if (parentId) {
@@ -106,6 +106,37 @@ export const addNewCommentFetch = (token, { content, userId, postId, parentId, r
   };
 
   return fetch(commentSerivceUri.commonUrl, options)
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Delete comment
+ * @param {String} token - Verification Token
+ * @param {String} id - Comment id
+ * @param {String} userId - User id
+ */
+export const deleteCommentFetch = (token, id, uid) => {
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify({
+      uid: uid
+    }),
+  };
+
+  return fetch(commentSerivceUri.commonUrl + '/' + id, options)
     .then(response => {
       if (response.ok) {
         return response;

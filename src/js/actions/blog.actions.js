@@ -6,7 +6,7 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import blogTypes from '../constants/blog.types';
-import { fetchPostsList, addNewPostFetch, updatePostFetch, fetchSinglePost, deletePostFetch } from '../api/blog.service';
+import { fetchPostsList, addNewPostFetch, updatePostFetch, fetchSinglePost, deletePostFetch, updatePostStateFetch } from '../api/blog.service';
 
 /**
  * Get posts list
@@ -261,4 +261,52 @@ export const deletePost = (id, params) => {
         return ;
       });
   };
+}
+
+export const updatePostState = (id, state) => {
+  const _updatePostStateRequest = () => ({
+    "type": blogTypes.UPDATE_POST_STATE_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _updatePostStateSuccess = () => ({
+    "type": blogTypes.UPDATE_POST_STATE_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _updatePostStateFailure = (error) => ({
+    "type": blogTypes.UPDATE_POST_STATE_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id) || _.isEmpty(state)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_updatePostStateRequest());
+
+    return getToken()
+      .then(token => {
+        return updatePostStateFetch(token, id, state);
+      })
+      .then(response => {
+        dispatch(_updatePostStateSuccess());
+        dispatch(AlertActions.alertSuccess("Updated successfully!"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_updatePostStateFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  }
 }

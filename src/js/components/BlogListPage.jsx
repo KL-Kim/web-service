@@ -83,14 +83,16 @@ class BlogListPage extends Component {
             {
               _.isEmpty(list) ? ''
                 : list.map((item, index) =>
-                  <Grid item xs={8} key={item._id}>
-                    <Paper className={classes.paper}>
-                      <PostPanel
-                        rtl={(index % 2) ? true : false}
-                        post={item}
-                      />
-                    </Paper>
-                  </Grid>
+                  item.state === 'NORMAL'
+                    ? (<Grid item xs={8} key={item._id}>
+                      <Paper className={classes.paper}>
+                        <PostPanel
+                          rtl={(index % 2) ? true : false}
+                          post={item}
+                        />
+                      </Paper>
+                    </Grid>)
+                    : ''
                 )
             }
             <Grid item xs={12}>

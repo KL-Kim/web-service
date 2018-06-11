@@ -24,10 +24,12 @@ import Dialog, {
   DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog';
+import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
+import Radio, { RadioGroup } from 'material-ui/Radio';
 
 import SettingContainer from '../setting/SettingContainer';
 import TablePaginationActions from '../utils/TablePaginationActions';
-import { getPostsList } from '../../actions/blog.actions';
+import { getPostsList, updatePostState } from '../../actions/blog.actions';
 import ElapsedTime from '../../helpers/ElapsedTime';
 
 const styles = (theme) => ({
@@ -45,12 +47,16 @@ class BlogList extends Component {
       "page": 0,
       "title": '',
       "content": '',
+      "state": '',
+      "postId": '',
     };
 
+    this.handleChange = this.handleChange.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
     this.hanldeDialogClose = this.hanldeDialogClose.bind(this);
     this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+    this.handleUpdatePostState = this.handleUpdatePostState.bind(this);
   }
 
   componentDidMount() {
@@ -59,11 +65,21 @@ class BlogList extends Component {
     });
   }
 
+  handleChange(e) {
+    const { name, value } = e.target;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
   handleRowClick = blog => e => {
     this.setState({
       dialogOpen: true,
       title: blog.title,
       content: blog.content,
+      state: blog.state,
+      postId: blog._id,
     });
   }
 
@@ -102,6 +118,25 @@ class BlogList extends Component {
     });
   }
 
+  handleUpdatePostState() {
+    if (this.state.postId) {
+      this.props.updatePostState(this.state.postId, this.state.state)
+        .then(response => {
+          if (response) {
+            this.setState({
+              dialogOpen: false
+            });
+          }
+        })
+        .then(() => {
+          return this.props.getPostsList({
+            limit: this.state.rowsPerPage,
+            skip: this.state.page * this.state.rowsPerPage,
+          });
+        });
+    }
+  }
+
   render() {
     const { classes, blogList } = this.props;
 
@@ -124,6 +159,7 @@ class BlogList extends Component {
                       <TableCell>Summary</TableCell>
                       <TableCell>Publish Date</TableCell>
                       <TableCell>Status</TableCell>
+                      <TableCell>State</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -140,6 +176,7 @@ class BlogList extends Component {
                               <TableCell>{item.summary}</TableCell>
                               <TableCell>{ElapsedTime(item.updatedAt)}</TableCell>
                               <TableCell>{item.status}</TableCell>
+                              <TableCell>{item.state}</TableCell>
                             </TableRow>
                         ))
                     }
@@ -176,12 +213,36 @@ class BlogList extends Component {
               </DialogTitle>
               <DialogContent>
                 <DialogContentText id="blog-dialog-description" >
-                  {this.state.content}
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <FormControl fullWidth >
+                        <FormLabel component="label">State</FormLabel>
+                        <RadioGroup
+                          row
+                          aria-label="State"
+                          name="state"
+                          value={this.state.state}
+                          onChange={this.handleChange}
+                        >
+                          <FormControlLabel value="NORMAL" control={<Radio />} label="Normal" />
+                          <FormControlLabel value="SUSPENDED" control={<Radio />} label="Suspended" />
+                        </RadioGroup>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                      {this.state.content}
+                    </Grid>
+                  </Grid>
+
+
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
-                <Button color="primary" raised onClick={this.hanldeDialogClose} className={classes.button}>
-                  Ok
+                <Button color="primary" raised onClick={this.handleUpdatePostState} className={classes.button}>
+                  Save
+                </Button>
+                <Button color="primary" onClick={this.hanldeDialogClose} className={classes.button}>
+                  Cancel
                 </Button>
               </DialogActions>
             </Dialog>
@@ -207,4 +268,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getPostsList })(withStyles(styles)(BlogList));
+export default connect(mapStateToProps, { getPostsList, updatePostState })(withStyles(styles)(BlogList));

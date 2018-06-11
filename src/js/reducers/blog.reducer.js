@@ -21,6 +21,7 @@ const blogReducer = (state = initialState, action) => {
     case blogTypes.GET_SINGLE_POST_REQUEST:
     case blogTypes.UPDATE_POST_REQUEST:
     case blogTypes.DELETE_POST_REQUEST:
+    case blogTypes.UPDATE_POST_STATE_REQUEST:
       return {
         ...state,
         isFetching: true,
@@ -32,6 +33,7 @@ const blogReducer = (state = initialState, action) => {
     case blogTypes.GET_SINGLE_POST_FAILURE:
     case blogTypes.UPDATE_POST_FAILURE:
     case blogTypes.DELETE_POST_FAILURE:
+    case blogTypes.UPDATE_POST_STATE_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -50,6 +52,7 @@ const blogReducer = (state = initialState, action) => {
     case blogTypes.GET_SINGLE_POST_SUCCESS:
     case blogTypes.UPDATE_POST_SUCCESS:
     case blogTypes.DELETE_POST_SUCCESS:
+    case blogTypes.UPDATE_POST_STATE_SUCCESS:
       return {
         ...state,
         isFetching: false,

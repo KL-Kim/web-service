@@ -11,6 +11,7 @@ import Restaurant from 'material-ui-icons/Restaurant';
 import Loyalty from 'material-ui-icons/Loyalty';
 import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import Book from 'material-ui-icons/Book';
+import RateReview from 'material-ui-icons/RateReview';
 
 import LinkContainer from './LinkContainer';
 
@@ -26,120 +27,117 @@ class AdminSidebarMenuList extends Component {
     const { classes, admin, match } = this.props;
     const role = _.isEmpty(admin) ? '' : admin.role;
 
-    if (_.isEmpty(role) || role === 'regular') {
-      return '';
-    }
-
     return (
-      <MenuList>
-        <Divider />
-        {
-          (role === 'admin' || role === 'god')
-            ? (
-                <LinkContainer to={{
-                    pathname: "/admin/users",
-                    state: {
-                      admin: admin
-                    },
-                  }}
-                >
-                  <MenuItem selected={match.path === "/admin/users"}>
-                    <ListItemIcon>
-                      <Group />
-                    </ListItemIcon>
-                    <ListItemText primary="Users" classes={match.path === "/admin/users" ? { primary: classes.selected } : {}} />
-                  </MenuItem>
-                </LinkContainer>
-              )
-            : ''
-        }
-        <LinkContainer to={{
-            pathname: "/admin/business",
-            state: {
-              admin: admin
-            },
-          }}
-        >
-          <MenuItem selected={match.path === "/admin/business"}>
-            <ListItemIcon>
-              <Business />
-            </ListItemIcon>
-            <ListItemText primary="Business" classes={match.path === "/admin/business" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
+        <MenuList>
+          <Divider />
+          {
+            (role === 'admin' || role === 'god')
+              ? (
+                  <LinkContainer to={{
+                      pathname: "/admin/users",
+                      state: {
+                        admin: admin
+                      },
+                    }}
+                  >
+                    <MenuItem selected={match.path === "/admin/users"}>
+                      <ListItemIcon>
+                        <Group />
+                      </ListItemIcon>
+                      <ListItemText primary="Users" classes={match.path === "/admin/users" ? { primary: classes.selected } : {}} />
+                    </MenuItem>
+                  </LinkContainer>
+                )
+              : ''
+          }
+          <LinkContainer to={{
+              pathname: "/admin/business",
+              state: {
+                admin: admin
+              },
+            }}
+          >
+            <MenuItem selected={match.path === "/admin/business"}>
+              <ListItemIcon>
+                <Business />
+              </ListItemIcon>
+              <ListItemText primary="Business" classes={match.path === "/admin/business" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
 
-        <LinkContainer to={{
-            pathname: "/admin/category",
-            state: {
-              admin: admin
-            },
-          }}
-        >
-          <MenuItem selected={match.path === "/admin/category"}>
-            <ListItemIcon>
-              <Restaurant />
-            </ListItemIcon>
-            <ListItemText primary="Category" classes={match.path === "/admin/category" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
+          <LinkContainer to={{
+              pathname: "/admin/category",
+              state: {
+                admin: admin
+              },
+            }}
+          >
+            <MenuItem selected={match.path === "/admin/category"}>
+              <ListItemIcon>
+                <Restaurant />
+              </ListItemIcon>
+              <ListItemText primary="Category" classes={match.path === "/admin/category" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
 
-        <LinkContainer to={{
-            pathname: "/admin/tag",
-            state: {
-              admin: admin
-            },
-          }}
-        >
-          <MenuItem selected={match.path === "/admin/tag"}>
-            <ListItemIcon>
-              <Loyalty />
-            </ListItemIcon>
-            <ListItemText primary="Tag" classes={match.path === "/admin/tag" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
+          <LinkContainer to={{
+              pathname: "/admin/tag",
+              state: {
+                admin: admin
+              },
+            }}
+          >
+            <MenuItem selected={match.path === "/admin/tag"}>
+              <ListItemIcon>
+                <Loyalty />
+              </ListItemIcon>
+              <ListItemText primary="Tag" classes={match.path === "/admin/tag" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
 
-        <LinkContainer to={{
-            pathname: "/admin/reviews",
-            state: {
-              admin: admin
-            },
-          }}>
-          <MenuItem selected={match.path === "/admin/reviews"}>
-            <ListItemIcon>
-              <QuestionAnswer />
-            </ListItemIcon>
-            <ListItemText primary="Reviews" classes={match.path === "/admin/reviews" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
+          <LinkContainer to={{
+              pathname: "/admin/reviews",
+              state: {
+                admin: admin
+              },
+            }}>
+            <MenuItem selected={match.path === "/admin/reviews"}>
+              <ListItemIcon>
+                <RateReview />
+              </ListItemIcon>
+              <ListItemText primary="Reviews" classes={match.path === "/admin/reviews" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
 
-        <LinkContainer to={{
-            pathname: "/admin/blog",
-            state: {
-              admin: admin
-            },
-          }}>
-          <MenuItem selected={match.path === "/admin/blog"}>
-            <ListItemIcon>
-              <Book />
-            </ListItemIcon>
-            <ListItemText primary="Blog" classes={match.path === "/admin/blog" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
+          <LinkContainer to={{
+              pathname: "/admin/blog",
+              state: {
+                admin: admin
+              },
+            }}>
+            <MenuItem selected={match.path === "/admin/blog"}>
+              <ListItemIcon>
+                <Book />
+              </ListItemIcon>
+              <ListItemText primary="Blog" classes={match.path === "/admin/blog" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
 
-        <LinkContainer to={{
-            pathname: "/admin/comments",
-            state: {
-              admin: admin
-            },
-          }}>
-          <MenuItem selected={match.path === "/admin/comments"}>
-            <ListItemIcon>
-              <QuestionAnswer />
-            </ListItemIcon>
-            <ListItemText primary="Comments" classes={match.path === "/admin/comments" ? { primary: classes.selected } : {}} />
-          </MenuItem>
-        </LinkContainer>
-      </MenuList>
+          <LinkContainer to={{
+              pathname: "/admin/comments",
+              state: {
+                admin: admin
+              },
+            }}>
+            <MenuItem selected={match.path === "/admin/comments"}>
+              <ListItemIcon>
+                <QuestionAnswer />
+              </ListItemIcon>
+              <ListItemText primary="Comments" classes={match.path === "/admin/comments" ? { primary: classes.selected } : {}} />
+            </MenuItem>
+          </LinkContainer>
+        </MenuList>
+
     );
   }
 }

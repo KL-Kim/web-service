@@ -47,6 +47,7 @@ npm manifest:
       "react-infinite-scroller": "^1.1.4",
       "react-masonry-component": "^6.2.0",
       "react-masonry-infinite": "^1.2.2",
+      "react-popper": "^0.10.4",
       "react-quill": "^1.2.7",
       "react-redux": "^5.0.6",
       "react-router-dom": "^4.2.2",
@@ -5617,6 +5618,10 @@ Lockfile:
     version "1.12.9"
     resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.12.9.tgz#0dfbc2dff96c451bb332edcfcfaaf566d331d5b3"
   
+  popper.js@^1.14.1:
+    version "1.14.3"
+    resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.3.tgz#1438f98d046acf7b4d78cd502bf418ac64d4f095"
+  
   portfinder@^1.0.9:
     version "1.0.13"
     resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.13.tgz#bb32ecd87c27104ae6ee44b5a3ccbf0ebb1aede9"
@@ -5979,7 +5984,7 @@ Lockfile:
       loose-envify "^1.3.1"
       object-assign "^4.1.1"
   
-  prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.6:
+  prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.6, prop-types@^15.6.1:
     version "15.6.1"
     resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
     dependencies:
@@ -6367,6 +6372,13 @@ Lockfile:
       bricks.js "^1.7.0"
       prop-types "^15.5.10"
       react-infinite-scroller "^1.0.12"
+  
+  react-popper@^0.10.4:
+    version "0.10.4"
+    resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-0.10.4.tgz#af2a415ea22291edd504678d7afda8a6ee3295aa"
+    dependencies:
+      popper.js "^1.14.1"
+      prop-types "^15.6.1"
   
   react-popper@^0.7.4:
     version "0.7.5"

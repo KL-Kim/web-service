@@ -20,6 +20,7 @@ import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Avatar from './Avatar';
 import ProperName from './ProperName';
 import ElapsedTime from '../../helpers/ElapsedTime';
+import ConfirmationDialog from './ConfirmationDialog';
 
 import image from '../../../css/ikt-icon.gif';
 
@@ -39,6 +40,7 @@ class CommentPanel extends Component {
 
     this.state = {
       "replyDialogOpen": false,
+      "deleteDialogOpen": false,
       "content": '',
       "upvoteNum": props.upvote,
       "downvoteNum": props.downvote,
@@ -47,7 +49,10 @@ class CommentPanel extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleOpenReplyDialog = this.handleOpenReplyDialog.bind(this);
     this.handleCloseReplyDialog = this.handleCloseReplyDialog.bind(this);
+    this.handleOpenDeleteDialog = this.handleOpenDeleteDialog.bind(this);
+    this.handleCloseDeleteDialog = this.handleCloseDeleteDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
+    this.handleDeleteComment = this.handleDeleteComment.bind(this);
   }
 
   handleChange(e) {
@@ -70,43 +75,86 @@ class CommentPanel extends Component {
     });
   }
 
-  handleSubmitComment() {
-    this.props.addNewComment({
-      userId: this.props.user._id,
-      replyToUser: this.props.owner._id,
-      postId: this.props.postId,
-      parentId: this.props.commentId,
-      content: this.state.content + ' || Reply to @' + this.props.owner.username + ': ' + this.props.content,
-    })
-    .then(response => {
-      if (response) {
-        return this.props.getNewComments();
-      }
-
-      return ;
-    })
-    .then(response => {
-      this.setState({
-        "replyDialogOpen": false,
-        "content": "",
-      })
+  handleOpenDeleteDialog() {
+    this.setState({
+      "deleteDialogOpen": true,
     });
   }
 
-  handleVoteComment = (vote) => e => {
-    this.props.voteComment(this.props.commentId, {
-      uid: this.props.user._id,
-      postTitle: this.props.postTitle,
-      vote: vote,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          upvoteNum: response.comment.upvote.length,
-          downvoteNum: response.comment.downvote.length,
-        })
-      }
+  handleCloseDeleteDialog() {
+    this.setState({
+      "deleteDialogOpen": false,
     });
+  }
+
+  handleSubmitComment() {
+    if (!this.props.isLoggedIn) {
+      this.props.history.push('/signin');
+    }
+
+    if (!_.isEmpty(this.props.user) && this.props.postId) {
+      this.props.addNewComment({
+        userId: this.props.user._id,
+        postId: this.props.postId,
+        parentId: this.props.commentId,
+        content: this.state.content,
+        replyToUser: this.props.owner._id,
+      })
+      .then(response => {
+        if (response) {
+          return this.props.getNewComments();
+        }
+
+        return ;
+      })
+      .then(response => {
+        this.setState({
+          "replyDialogOpen": false,
+          "content": "",
+        })
+      });
+    }
+  }
+
+  handleVoteComment = (vote) => e => {
+    if (!this.props.isLoggedIn) {
+      this.props.history.push('/signin');
+    }
+
+    if (!_.isEmpty(this.props.user) && this.props.commentId) {
+      this.props.voteComment(this.props.commentId, {
+        uid: this.props.user._id,
+        postTitle: this.props.postTitle,
+        vote: vote,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            upvoteNum: response.comment.upvote.length,
+            downvoteNum: response.comment.downvote.length,
+          })
+        }
+      });
+    }
+  }
+
+  handleDeleteComment() {
+    // if (!this.props.isLoggedIn) {
+    //   this.props.history.push('/signin');
+    // }
+
+    if (this.props.commentId && this.props.user) {
+      this.props.deleteComment(this.props.commentId, this.props.user._id)
+        .then(response => {
+          if (response) {
+            this.setState({
+              "deleteDialogOpen": false
+            });
+
+            this.props.getNewComments();
+          }
+        });
+    }
   }
 
   render() {
@@ -121,14 +169,31 @@ class CommentPanel extends Component {
             </Grid>
             <Grid item xs={10}>
               <Typography type="title" gutterBottom>
-
-                  <strong>
-                    <ProperName user={this.props.owner} />
-                  </strong>
-
-                <span> - {ElapsedTime(this.props.createdAt)}</span>
+                <strong>
+                  <ProperName user={this.props.owner} />
+                </strong>
+                <span> {ElapsedTime(this.props.createdAt)}</span>
               </Typography>
-              <Typography type="body1" gutterBottom>{this.props.status === 'NORMAL' ? this.props.content : 'This comment violated the policy of iKoreaTown'}</Typography>
+              <Typography type="body1" gutterBottom>
+                {
+                  this.props.status === 'NORMAL' ? this.props.content : 'This comment violated the policy of iKoreaTown'
+                }
+              </Typography>
+              {
+                this.props.parentComment ? (
+                  <Typography type="caption" gutterBottom>
+                    <strong>
+                    @
+                    {
+                      this.props.parentComment ? <ProperName user={this.props.replyToUser} /> : ''
+                    }
+                    :
+                    </strong>
+                    {' '}
+                    {this.props.parentComment.status === 'NORMAL' ? this.props.parentComment.content : 'This comment violated the policy of iKoreaTown'}
+                  </Typography>
+                ) : ''
+              }
               {
                 this.props.status === 'NORMAL'
                   ? (<Grid container alignItems="center">
@@ -148,9 +213,20 @@ class CommentPanel extends Component {
                       </Grid>
                       <Grid item xs={6}>
                         <div className={classes.buttonContainer}>
-                          <Button color="primary" disabled={this.props.isOwn} onClick={this.handleOpenReplyDialog}>
-                            reply
-                          </Button>
+                          {
+                            this.props.isOwn
+                              ? ''
+                              : (<Button color="primary" onClick={this.handleOpenReplyDialog}>
+                                  Reply
+                                </Button>)
+                          }
+                          {
+                            this.props.showDelete
+                              ? (<Button color="secondary" onClick={this.handleOpenDeleteDialog}>
+                                Delete
+                              </Button>)
+                              : ''
+                          }
                         </div>
                       </Grid>
                     </Grid>)
@@ -160,38 +236,50 @@ class CommentPanel extends Component {
           </Grid>
         </Paper>
         <div>
-          <Dialog fullWidth
-            open={this.state.replyDialogOpen}
-            onClose={this.handleCloseReplyDialog}
-            aria-labelledby="reply-dialog-title"
-            aria-describedby="reply-dialog-description"
-          >
-            <DialogTitle id="reply-dialog-title">
-              Reply to <ProperName user={this.props.owner} />
-            </DialogTitle>
-            <DialogContent id="reply-dialog-description">
-              <FormControl fullWidth required>
-                <InputLabel htmlFor="content">Content</InputLabel>
-                <Input
-                  type="text"
-                  id="content"
-                  multiline
-                  rows={10}
-                  name="content"
-                  value={this.state.content}
-                  onChange={this.handleChange}
-                />
-              </FormControl>
-            </DialogContent>
-            <DialogActions>
-              <Button raised color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                Save
-              </Button>
-              <Button color="primary" onClick={this.handleCloseReplyDialog}>
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
+          {
+            this.props.isOwn
+              ? (<div>
+                  <ConfirmationDialog
+                    open={this.state.deleteDialogOpen}
+                    title="Warning"
+                    content="Are you sure to delete the comment?"
+                    operation={this.handleDeleteComment}
+                    handleClose={this.handleCloseDeleteDialog}
+                  />
+                </div>)
+              : (<Dialog fullWidth
+                open={this.state.replyDialogOpen}
+                onClose={this.handleCloseReplyDialog}
+                aria-labelledby="reply-dialog-title"
+                aria-describedby="reply-dialog-description"
+              >
+                <DialogTitle id="reply-dialog-title">
+                  Reply to <ProperName user={this.props.owner} />
+                </DialogTitle>
+                <DialogContent id="reply-dialog-description">
+                  <FormControl fullWidth required>
+                    <InputLabel htmlFor="content">Content</InputLabel>
+                    <Input
+                      type="text"
+                      id="content"
+                      multiline
+                      rows={10}
+                      name="content"
+                      value={this.state.content}
+                      onChange={this.handleChange}
+                    />
+                  </FormControl>
+                </DialogContent>
+                <DialogActions>
+                  <Button raised color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                    Save
+                  </Button>
+                  <Button color="primary" onClick={this.handleCloseReplyDialog}>
+                    Cancel
+                  </Button>
+                </DialogActions>
+              </Dialog>)
+          }
         </div>
       </div>
     );
@@ -200,20 +288,23 @@ class CommentPanel extends Component {
 
 CommentPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "commentId": PropTypes.string.isRequired,
   "postId": PropTypes.string.isRequired,
   "postTitle": PropTypes.string,
-  "commentId": PropTypes.string.isRequired,
   "status": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
   "owner": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
   "isOwn": PropTypes.bool.isRequired,
+  "parentComment": PropTypes.object,
+  "replyToUser": PropTypes.object,
   "upvote": PropTypes.number.isRequired,
   "downvote": PropTypes.number.isRequired,
   "createdAt": PropTypes.string.isRequired,
   "addNewComment": PropTypes.func,
   "getNewComments": PropTypes.func,
   "voteComment": PropTypes.func,
+  "deleteCommment": PropTypes.func,
 };
 
 export default withStyles(styles)(CommentPanel);

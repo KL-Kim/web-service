@@ -39,6 +39,10 @@ class BusinessCard extends Component {
   }
 
   hanldeAddToFavor() {
+    if (!this.props.isLoggedIn) {
+      this.props.history.push('/signin');
+    }
+
     if (!_.isEmpty(this.props.user) && !_.isEmpty(this.props.bid)) {
       this.props.favorOperation(this.props.user._id, this.props.bid)
         .then(response => {
@@ -48,8 +52,6 @@ class BusinessCard extends Component {
             });
           }
         });
-    } else {
-      this.props.history.push('/signin');
     }
   }
 
@@ -104,6 +106,7 @@ BusinessCard.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
   };
 };
 

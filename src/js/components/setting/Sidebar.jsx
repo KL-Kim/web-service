@@ -6,6 +6,7 @@ import { MenuList, MenuItem } from 'material-ui/Menu';
 import { ListItemText, ListItemIcon } from 'material-ui/List';
 import Drawer from 'material-ui/Drawer';
 import AccountCircle from 'material-ui-icons/AccountCircle';
+import RateReview from 'material-ui-icons/RateReview';
 import Book from 'material-ui-icons/Book';
 import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import Favorite from 'material-ui-icons/Favorite';
@@ -48,11 +49,12 @@ class Sidebar extends Component {
               <LinkContainer to="/setting/review">
                 <MenuItem selected={match.path === "/setting/review"}>
                   <ListItemIcon>
-                    <QuestionAnswer />
+                    <RateReview />
                   </ListItemIcon>
                   <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
+
               <LinkContainer to="/setting/favor">
                 <MenuItem selected={match.path === "/setting/favor"}>
                   <ListItemIcon>
@@ -61,6 +63,7 @@ class Sidebar extends Component {
                   <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
+
               <LinkContainer to="/setting/notification">
                 <MenuItem selected={match.path === "/setting/notification"}>
                   <ListItemIcon>
@@ -69,16 +72,30 @@ class Sidebar extends Component {
                   <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
-              <LinkContainer to="/setting/post">
-                <MenuItem selected={match.path === "/setting/post"}>
+
+              <LinkContainer to="/setting/comment">
+                <MenuItem selected={match.path === "/setting/comment"}>
                   <ListItemIcon>
-                    <Book />
+                    <QuestionAnswer />
                   </ListItemIcon>
-                  <ListItemText primary="Posts" classes={match.path === "/setting/post" ? { primary: classes.selected } : {}} />
+                  <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
                 </MenuItem>
               </LinkContainer>
+
+              {
+                (role === 'writer' || role === 'manager' || role === 'admin')
+                  ? (<LinkContainer to="/setting/post">
+                      <MenuItem selected={match.path === "/setting/post"}>
+                        <ListItemIcon>
+                          <Book />
+                        </ListItemIcon>
+                        <ListItemText primary="Posts" classes={match.path === "/setting/post" ? { primary: classes.selected } : {}} />
+                      </MenuItem>
+                    </LinkContainer>)
+                  : ''
+              }
             </MenuList>
-            {_.isUndefined(role) ? '' : (<AdminSidebarMenuList admin={user} match={match} />)}
+            { (role === 'manager' || role === 'admin' || role === 'god') ? (<AdminSidebarMenuList admin={user} match={match} />) : ''}
           </Drawer>
       </div>
     );

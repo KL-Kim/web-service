@@ -79,7 +79,7 @@ class PostPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: this.state.count + this.state.limit < this.props.totalCount,
+            hasMore: this.state.count + this.state.limit < response.totalCount,
             count: this.state.count + this.state.limit
           });
         }

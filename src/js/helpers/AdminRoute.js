@@ -7,7 +7,7 @@ const AdminRoute = ({ component: Component, ...rest }) => {
   return (<Route
     {...rest}
     render={props =>
-      admin && (admin.role === 'admin' || admin.role === 'manager' || admin.role === 'god') ? (
+      admin && (admin.role === 'manager' || admin.role === 'admin' || admin.role === 'god') ? (
         <Component {...props} />
       ) : (
         <Redirect

@@ -23,7 +23,7 @@ import Radio, { RadioGroup } from 'material-ui/Radio';
 import SettingContainer from '../setting/SettingContainer';
 import ProperName from '../utils/ProperName';
 import TablePaginationActions from '../utils/TablePaginationActions';
-import { getComments, updateCommentStatus } from '../../actions/comment.actions';
+import { getComments, updateCommentStatus, clearCommentsList } from '../../actions/comment.actions';
 
 const styles = (theme) => ({});
 
@@ -38,11 +38,13 @@ class CommentsList extends Component {
       "commentId": '',
       "content": '',
       "status": '',
+      "listStatus": 'ALL',
       "userId": '',
       "username": '',
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeStatus = this.handleChangeStatus.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
     this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
@@ -53,7 +55,12 @@ class CommentsList extends Component {
   componentDidMount() {
     this.props.getComments({
       limit: this.state.rowsPerPage,
+      status: this.state.listStatus,
     });
+  }
+
+  componentWillUnmount() {
+    this.props.clearCommentsList();
   }
 
   handleChange(e) {
@@ -62,6 +69,22 @@ class CommentsList extends Component {
     this.setState({
       [name]: value
     });
+  }
+
+  handleChangeStatus(e) {
+    const { value } = e.target;
+
+    this.props.getComments({
+      limit: this.state.rowsPerPage,
+      status: value,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          listStatus: value
+        });
+      }
+    })
   }
 
   handleRowClick(e, item) {
@@ -120,6 +143,7 @@ class CommentsList extends Component {
           return this.props.getComments({
             skip: this.state.page * this.state.rowsPerPage,
             limit: this.state.rowsPerPage,
+            status: this.state.listStatus,
           });
         })
         .then(response => {
@@ -139,6 +163,27 @@ class CommentsList extends Component {
           <Grid container>
             <Grid item xs={12}>
               <Typography type="display1" gutterBottom>Comments List</Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Grid container>
+                <Grid item xs={6}>
+                  <FormControl fullWidth >
+                    <FormLabel component="label">Comment Status</FormLabel>
+                    <RadioGroup
+                      row
+                      aria-label="Status"
+                      name="listStatus"
+                      value={this.state.listStatus}
+                      onChange={this.handleChangeStatus}
+                    >
+                      <FormControlLabel value="ALL" control={<Radio />} label="All" />
+                      <FormControlLabel value="NORMAL" control={<Radio />} label="Normal" />
+                      <FormControlLabel value="SUSPENDED" control={<Radio />} label="Suspended" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              </Grid>
             </Grid>
 
             <Grid item xs={12}>
@@ -212,7 +257,7 @@ class CommentsList extends Component {
               <Grid container spacing={16}>
                 <Grid item xs={6}>
                   <FormControl fullWidth >
-                    <FormLabel component="label">Staus</FormLabel>
+                    <FormLabel component="label">Status</FormLabel>
                     <RadioGroup
                       row
                       aria-label="Status"
@@ -260,4 +305,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getComments, updateCommentStatus })(withStyles(styles)(CommentsList));
+export default connect(mapStateToProps, { getComments, updateCommentStatus, clearCommentsList })(withStyles(styles)(CommentsList));

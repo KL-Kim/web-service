@@ -33,6 +33,7 @@ import SettingFavor from './components/setting/FavorPage';
 import SettingNotification from './components/setting/NotificationPage';
 import SettingPost from './components/setting/PostPage';
 import SettingSinglePost from './components/setting/SinglePostPage';
+import SettingComment from './components/setting/CommentPage';
 
 // Admin Setting
 import Admin_UsersList from './components/admin/UsersList';
@@ -86,6 +87,7 @@ const App = () => {
           <Route path="/setting/notification" component={SettingNotification} />
           <Route exact path="/setting/post" component={SettingPost} />
           <Route path="/setting/post/s/:id" component={SettingSinglePost} />
+          <Route path="/setting/comment" component={SettingComment} />
 
           {/*  Admin Routes */}
           <AdminRoute exact path="/admin/users" component={Admin_UsersList} />
