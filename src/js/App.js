@@ -10,13 +10,13 @@ import PrivateRoute from './helpers/PrivateRoute';
 import AdminRoute from './helpers/AdminRoute';
 
 // React Compontens
+import NoMatchPage from './components/404';
 import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage';
 import SigninPage from './components/SigninPage';
 import AboutPage from './components/AboutPage';
 import TermsPolicyPage from './components/TermsPolicyPage';
 import LicensePage from './components/LicensePage';
-import NoMatchPage from './components/404';
 import ForgetPasswordPage from './components/ForgetPasswordPage';
 import AccountVerificationPage from './components/AccountVerificationPage';
 import ChangePasswordPage from './components/ChangePasswordPage';

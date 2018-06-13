@@ -14,33 +14,11 @@ import { getUsersListFetch, adminEditUserFetch, getUserByIdFetch } from '../api/
  * @param {Object} rawFilter - Filter users list
  * @param {String} search - Search String
  */
-export const getUsersList  = ( skip, limit, rawFilter = {}, search ) => {
+export const getUsersList  = ({ skip, limit, role, status, search } = {}) => {
   return (dispatch, getState) => {
     return getToken()
       .then(token => {
-        let filter = {};
-
-        if (rawFilter.role) {
-          let role = [];
-
-          _.map(rawFilter.role, (value, key) => {
-            if (value) role.push(key);
-          });
-
-          filter.role = role;
-        }
-
-        if (rawFilter.userStatus) {
-          let userStatus = [];
-
-          _.map(rawFilter.userStatus, (value, key) => {
-            if (value) userStatus.push(key);
-          });
-
-          filter.userStatus = userStatus;
-        }
-
-        return getUsersListFetch(token, skip, limit, filter, search);
+        return getUsersListFetch(token, { skip, limit, role, status, search });
       })
       .then(usersList => {
         return usersList;

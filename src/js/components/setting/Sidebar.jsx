@@ -22,6 +22,10 @@ const styles = theme => ({
     position: 'fixed',
     marginTop: theme.spacing.unit * 8,
   },
+  'selected': {
+    color: theme.palette.primary.main,
+    fontWeight: 600,
+  }
 });
 
 class Sidebar extends Component {

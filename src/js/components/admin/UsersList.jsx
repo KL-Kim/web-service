@@ -7,11 +7,12 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow, TableFooter, TablePagination } from 'material-ui/Table';
-import { FormControl, FormGroup, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import { FormControl, FormGroup, FormControlLabel, FormHelperText, FormLabel } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
 import Checkbox from 'material-ui/Checkbox';
+import Radio, { RadioGroup } from 'material-ui/Radio';
 
 import SettingContainer from '../setting/SettingContainer';
 import LinkContainer from '../utils/LinkContainer';
@@ -27,40 +28,33 @@ class UsersList extends Component {
     this.state = {
       "users": null,
       "totalCount": 0,
-      "rowsPerPage": 10,
+      "rowsPerPage": 20,
       "page": 0,
       "search": '',
-
-      // User role check states
-      "role": {
-        "regular": false,
-        "manager": false,
-        "admin": false,
-      },
-
-      // User status check states
-      "userStatus": {
-        "normal": false,
-        "suspended": false,
-      }
+      "role": '',
+      "status": ''
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handlePaginationChange = this.handlePaginationChange.bind(this);
     this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
-    this.handleFilter = this.handleFilter.bind(this);
+    this.handleFilterRole = this.handleFilterRole.bind(this);
+    this.handleFilterStatus = this.handleFilterStatus.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
   }
 
   componentDidMount() {
-    this.props.getUsersList(0, this.state.rowsPerPage).then(response => {
-        if (response.users) {
-          this.setState({
-            users: response.users,
-            totalCount: response.totalCount,
-          });
-        }
-      });
+    this.props.getUsersList({
+      limit: this.state.rowsPerPage,
+    })
+    .then(response => {
+      if (response.users) {
+        this.setState({
+          users: response.users,
+          totalCount: response.totalCount,
+        });
+      }
+    });
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -69,9 +63,19 @@ class UsersList extends Component {
     }
   }
 
+  handleChange(e) {
+    const { name, value } = e.target;
+
+    this.setState({
+      [name]: value
+    })
+  }
+
   handlePaginationChange(e, page) {
-    this.props.getUsersList(page * this.state.rowsPerPage, this.state.rowsPerPage)
-      .then(response => {
+    this.props.getUsersList({
+      skip: page * this.state.rowsPerPage,
+      limit: this.state.rowsPerPage
+    }).then(response => {
         if (response.users) {
           this.setState({
             page: page,
@@ -83,8 +87,10 @@ class UsersList extends Component {
   }
 
   handleChangeRowsPerPage(e) {
-    this.props.getUsersList(this.state.page * e.target.value, e.target.value)
-      .then(response => {
+    this.props.getUsersList({
+      skip: this.state.page * e.target.value,
+      limit: e.target.value
+    }).then(response => {
         if (response.users) {
           this.setState({
             rowsPerPage: e.target.value,
@@ -95,55 +101,41 @@ class UsersList extends Component {
       });
   }
 
-  handleChange(e) {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value
-    })
-  }
-
-  handleFilter(e) {
+  handleFilterRole(e) {
     const { value } = e.target;
-    const { role, userStatus } = this.state
 
-    switch (value) {
-      case "regular":
-        role.regular = !role.regular
-        break;
-
-      case "writer":
-        role.writer = !role.writer
-        break;
-
-      case "manager":
-        role.manager = !role.manager
-        break;
-
-      case "admin":
-        role.admin = !role.admin
-        break;
-
-      case "normal":
-        userStatus.normal = !userStatus.normal;
-        break;
-
-      case "suspended":
-        userStatus.suspended = !userStatus.suspended;
-        break;
-
-      default:
-        break;
-    }
-
-    this.props.getUsersList(this.state.page * this.state.rowsPerPage, this.state.rowsPerPage, {
-      role: role,
-      userStatus: userStatus,
-    }, this.state.search)
+    this.props.getUsersList({
+      skip: this.state.page * this.state.rowsPerPage,
+      limit: this.state.rowsPerPage,
+      role: value,
+      status: this.state.status,
+      search: this.state.search
+    })
     .then(response => {
       if (response.users) {
         this.setState({
-          role: role,
-          userStatus: userStatus,
+          role: value,
+          users: response.users,
+          totalCount: response.totalCount,
+        });
+      }
+    });
+  }
+
+  handleFilterStatus(e) {
+    const { value } = e.target;
+
+    this.props.getUsersList({
+      skip: this.state.page * this.state.rowsPerPage,
+      limit: this.state.rowsPerPage,
+      role: this.state.role,
+      status: value,
+      search: this.state.search
+    })
+    .then(response => {
+      if (response.users) {
+        this.setState({
+          status: value,
           users: response.users,
           totalCount: response.totalCount,
         });
@@ -154,10 +146,12 @@ class UsersList extends Component {
   handleSearch(e) {
     e.preventDefault();
 
-    this.props.getUsersList(this.state.page * this.state.rowsPerPage, this.state.rowsPerPage, {
+    this.props.getUsersList({
+      limit: this.state.rowsPerPage,
       role: this.state.role,
-      userStatus: this.state.userStatus,
-    }, this.state.search)
+      status: this.state.status,
+      search: this.state.search
+    })
     .then(response => {
       if (response.users) {
         this.setState({
@@ -167,7 +161,6 @@ class UsersList extends Component {
       }
     });
   }
-
 
   render() {
     const { classes } = this.props;
@@ -180,7 +173,7 @@ class UsersList extends Component {
           </Typography>
 
           <Grid container spacing={16}>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="adornment-password">Search</InputLabel>
@@ -206,70 +199,40 @@ class UsersList extends Component {
               </form>
             </Grid>
 
-            <Grid item xs={3}>
-              <Typography type="subheading">Role</Typography>
-              <FormGroup row>
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.role.regular}
-                      onChange={this.handleFilter}
-                      value="regular"
-                    />
-                  }
-                  label="Regular"
-                />
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.role.writer}
-                      onChange={this.handleFilter}
-                      value="writer"
-                    />
-                  }
-                  label="Writer"
-                />
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.role.manager}
-                      onChange={this.handleFilter}
-                      value="manager"
-                    />
-                  }
-                  label="Manager"
-                />
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.role.admin}
-                      onChange={this.handleFilter}
-                      value="admin"
-                    />
-                  }
-                  label="Admin"
-                />
-              </FormGroup>
+            <Grid item xs={4}>
+              <FormControl fullWidth >
+                <FormLabel component="label">Role</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="Role"
+                  name="role"
+                  value={this.state.role}
+                  onChange={this.handleFilterRole}
+                >
+                  <FormControlLabel value="" control={<Radio />} label="All" />
+                  <FormControlLabel value="regular" control={<Radio />} label="Regular" />
+                  <FormControlLabel value="writer" control={<Radio />} label="Writer" />
+                  <FormControlLabel value="manager" control={<Radio />} label="Manager" />
+                  <FormControlLabel value="admin" control={<Radio />} label="Admin" />
+                </RadioGroup>
+              </FormControl>
             </Grid>
 
-            <Grid item xs={3}>
-              <Typography type="subheading">Status</Typography>
-              <FormGroup row>
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.userStatus.normal}
-                      onChange={this.handleFilter}
-                      value="normal"
-                    />
-                  }
-                  label="Nornaml"
-                />
-                <FormControlLabel control={
-                    <Checkbox
-                      checked={this.state.userStatus.suspended}
-                      onChange={this.handleFilter}
-                      value="suspended"
-                    />
-                  }
-                  label="Suspended"
-                />
-              </FormGroup>
+            <Grid item xs={4}>
+              <FormControl fullWidth >
+                <FormLabel component="label">User Status</FormLabel>
+                <RadioGroup
+                  row
+                  aria-label="Status"
+                  name="status"
+                  value={this.state.status}
+                  onChange={this.handleFilterStatus}
+                >
+                  <FormControlLabel value="" control={<Radio />} label="All" />
+                  <FormControlLabel value="normal" control={<Radio />} label="Normal" />
+                  <FormControlLabel value="suspended" control={<Radio />} label="Suspended" />
+                </RadioGroup>
+              </FormControl>
             </Grid>
           </Grid>
 
@@ -324,10 +287,6 @@ class UsersList extends Component {
             </Table>
           </Paper>
         </div>
-
-
-
-
       </SettingContainer>
     );
   }

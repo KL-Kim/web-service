@@ -42,7 +42,7 @@ const userReducer = (state = initialState, action) => {
     case userTypes.UPDATE_USER_PROFILE_FAILURE:
     case userTypes.UPLOAD_PROFILE_PHOTO_FAILURE:
     case userTypes.UPDATE_MOBILE_PHONE_FAILURE:
-    case userTypes.UPDATE_USER_PROFILE_FAILURE:
+    case userTypes.FAVOR_OPERATION_FAILURE:
       return {
         ...state,
         "isFetching": false,

@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import { MenuList, MenuItem } from 'material-ui/Menu';
 import { ListItemText, ListItemIcon } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+
+// Material UI Icons
 import Group from 'material-ui-icons/Group';
 import Business from 'material-ui-icons/Business';
 import Restaurant from 'material-ui-icons/Restaurant';
@@ -13,6 +17,7 @@ import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import Book from 'material-ui-icons/Book';
 import RateReview from 'material-ui-icons/RateReview';
 
+// Custom components
 import LinkContainer from './LinkContainer';
 
 const styles = theme => ({

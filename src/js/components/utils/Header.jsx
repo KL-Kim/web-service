@@ -81,7 +81,7 @@ class Header extends Component {
     super(props);
 
     this.state = {
-      "open": false,
+      "drawerOpen": false,
       "search": '',
       "popoverOpen": false,
       "notificationsList": [],
@@ -210,17 +210,21 @@ class Header extends Component {
             <LinkContainer to="/blog">
               <Button color="inherit">Blog</Button>
             </LinkContainer>
-            <IconButton color="inherit"
-              onClick={this.handlePopoverOpen}
-              buttonRef={node => {
-                this.anchorEl = node;
-              }}
-            >
-              <Notifications />
-            </IconButton>
+            {
+              isLoggedIn
+                ? <IconButton color="inherit"
+                    onClick={this.handlePopoverOpen}
+                    buttonRef={node => {
+                      this.anchorEl = node;
+                    }}
+                  >
+                    <Notifications />
+                  </IconButton>
+                : ''
+            }
+
             {
               /**
-              <LinkContainer to="/story"><Button color="inherit">Story</Button></LinkContainer>
               <LinkContainer to="/verify/123"><Button color="inherit">Verify</Button></LinkContainer>
               <LinkContainer to="/change-password/123"><Button color="inherit">Change Password</Button></LinkContainer>
               **/

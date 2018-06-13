@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import queryString from 'query-string';
+import qs from 'qs';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
@@ -26,7 +26,7 @@ class SearchPage extends Component {
   constructor(props) {
     super(props);
 
-    const parsed = queryString.parse(props.location.search);
+    const parsed = qs.parse(props.location.search);
 
     this.state = {
       "limit": 24,
@@ -75,7 +75,7 @@ class SearchPage extends Component {
   }
 
   componentDidUpdate() {
-    const parsed = queryString.parse(this.props.location.search);
+    const parsed = qs.parse(this.props.location.search);
 
     if (parsed.s !== this.state.s) {
       this.setState({

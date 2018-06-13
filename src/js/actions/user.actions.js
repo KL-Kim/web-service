@@ -297,9 +297,6 @@ export const getMyself = (id) => {
  * Log out
  */
 export const logout = () => {
-  /**
-   * Request log out
-   */
   const _logoutRequest = () => ({
     "type": userTypes.LOGOUT_REQUEST,
     "meta": {},
@@ -307,9 +304,6 @@ export const logout = () => {
     "payload": {},
   });
 
-  /**
-   * Log out success
-   */
   const _logoutSuccess = () => ({
     "type": userTypes.LOGOUT_SUCCESS,
     "meta": {},
@@ -317,9 +311,6 @@ export const logout = () => {
     "payload": {},
   });
 
-  /**
-   * Log out failure
-   */
   const _logoutFailure = (error) => ({
     "type": userTypes.LOGOUT_FAILURE,
     "meta": {},

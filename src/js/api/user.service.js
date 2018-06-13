@@ -12,6 +12,7 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const userServiceUri = {
   commonUserUrl: config.API_GATEWAY_ROOT + '/api/v1/user',
+  singleUserUrl: config.API_GATEWAY_ROOT + '/api/v1/user/single/',
   registerUrl: config.API_GATEWAY_ROOT + '/api/v1/user/register',
   verifyAccountUrl: config.API_GATEWAY_ROOT + '/api/v1/user/verify',
   changePasswordUrl: config.API_GATEWAY_ROOT + '/api/v1/user/password',
@@ -20,8 +21,8 @@ const userServiceUri = {
   uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto',
   favorUrl: config.API_GATEWAY_ROOT + '/api/v1/user/favor/',
 
-  // Admin related URI
-  adminEditUserUrl: config.API_GATEWAY_ROOT + '/api/v1/user/admin',
+  // Admin common URI
+  adminCommenUrl: config.API_GATEWAY_ROOT + '/api/v1/user/admin',
 };
 
 /**
@@ -122,7 +123,7 @@ export const getUserByIdFetch = (token, id) => {
     },
   };
 
-  return fetch(userServiceUri.commonUserUrl + '/' + id, options)
+  return fetch(userServiceUri.singleUserUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -207,7 +208,7 @@ export const updateUserFetch = (type = "PROFILE", token, id, data) => {
       break;
 
     default:
-      url = userServiceUri.commonUserUrl + '/' + id;
+      url = userServiceUri.singleUserUrl + id;
   }
 
   return fetch(url, options)
@@ -346,24 +347,35 @@ export const faverOperationFetch = (token, id, bid) => {
  * @param {Object} filter - Filter users list
  * @param {String} search - Search String
  */
-export const getUsersListFetch = (token, skip, limit, filter, search) => {
+export const getUsersListFetch = (token, { skip, limit, role, status, search } = {}) => {
   const options = {
-    "method": 'POST',
+    "method": 'GET',
     "headers": {
       'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
-    "body": JSON.stringify({
-      "limit": limit,
-      "skip": skip,
-      "filter": filter
-    }),
   };
 
-  let url = userServiceUri.commonUserUrl;
+  let url = userServiceUri.adminCommenUrl + '?';
+
+  if (skip) {
+    url = url + '&skip=' + skip;
+  }
+
+  if (limit) {
+    url = url + '&limit=' + limit;
+  }
+
+  if (role) {
+    url = url + '&role=' + role;
+  }
+
+  if (status) {
+    url = url + '&status=' + status;
+  }
 
   if (search)
-    url = url + '?search=' + search;
+    url = url + '&search=' + search;
 
   return fetch(url, options)
     .then(response => {
@@ -397,7 +409,7 @@ export const adminEditUserFetch = (token, id, data) => {
     "body": JSON.stringify({ ...data }),
   };
 
-  return fetch(userServiceUri.adminEditUserUrl + '/' + id, options)
+  return fetch(userServiceUri.adminCommenUrl + '/' + id, options)
     .then(response => {
       if (response.ok) {
         return response;

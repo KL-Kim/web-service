@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Reboot from 'material-ui/Reboot'
+
 import registerServiceWorker from './registerServiceWorker';
 import './css/index.css';
 import App from './js/app';
-import Reboot from 'material-ui/Reboot'
 
 ReactDOM.render(
   <div>
