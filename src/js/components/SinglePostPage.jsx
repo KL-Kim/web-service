@@ -37,11 +37,12 @@ import ThumbDown from 'material-ui-icons/ThumbDown';
 // Custom Components
 import Container from './utils/Container';
 import CommentPanel from './utils/CommentPanel';
+import ContactDialog from './utils/ContactDialog';
 import ProperName from './utils/ProperName';
 import ElapsedTime from '../helpers/ElapsedTime';
 
 // Actions
-import { getSinglePost, votePost } from '../actions/blog.actions';
+import { getSinglePost, votePost, reportPost } from '../actions/blog.actions';
 import { getComments,
   addNewComment,
   voteComment,
@@ -78,6 +79,7 @@ class SinglePostPage extends Component {
 
     this.state = {
       sortPopperOpen: false,
+      reportDialogOpen: false,
       orderBy: 'useful',
       writeCommentDialogOpen: false,
       content: '',
@@ -99,6 +101,8 @@ class SinglePostPage extends Component {
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
     this.handleVote = this.handleVote.bind(this);
+    this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
+    this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
     this.hanldleSubmitReport = this.hanldleSubmitReport.bind(this);
     this.loadMore = this.loadMore.bind(this);
   }
@@ -251,9 +255,25 @@ class SinglePostPage extends Component {
     })
   }
 
+  handleReportDialogOpen() {
+    this.setState({
+      "reportDialogOpen": true
+    });
+  }
+
+  handleReportDialogClose() {
+    this.setState({
+      "reportDialogOpen": false
+    });
+  }
+
   hanldleSubmitReport(type, content, contact) {
     if (this.state.post) {
-
+      this.props.reportPost(this.state.post._id, {
+        type,
+        content,
+        contact,
+      });
     }
   }
 
@@ -316,7 +336,7 @@ class SinglePostPage extends Component {
                       </span>
 
                       <span>
-                        <IconButton color="default" onClick={this.hanldleReport}>
+                        <IconButton color="default" onClick={this.handleReportDialogOpen}>
                           <ErrorOutline />
                         </IconButton>
                       </span>
@@ -383,6 +403,7 @@ class SinglePostPage extends Component {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <InfiniteScroll
                   pageStart={0}
                   loadMore={this.loadMore}
@@ -452,6 +473,12 @@ class SinglePostPage extends Component {
                       </Button>
                     </DialogActions>
                   </Dialog>
+
+                  <ContactDialog
+                    open={this.state.reportDialogOpen}
+                    handleSubmit={this.handleSubmitReport}
+                    handleClose={this.handleReportDialogClose}
+                  />
                 </div>
               </div>
         }
@@ -476,6 +503,7 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, {
   getSinglePost,
   votePost,
+  reportPost,
   getComments,
   addNewComment,
   voteComment,

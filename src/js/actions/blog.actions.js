@@ -323,3 +323,55 @@ export const votePost = (id, { uid, vote } = {}) => {
       })
   };
 }
+
+/**
+ * Report post
+ * @param {String} id - Post id
+ * @property {String} type - Report type
+ * @property {String} content - Report content
+ * @property {String} contact - User contact
+ */
+export const reportPost = (id, { type, content, contact } = {}) => {
+  const _reportPostRequset = () => ({
+    "type": blogTypes.REPORT_POST_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _reportPostSuccess = () => ({
+    "type": blogTypes.REPORT_POST_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _reportPostFailure = (err) => ({
+    "type": blogTypes.REPORT_POST_FAILURE,
+    "meta": {},
+    "error": err,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    if (_.isEmpty(id)) {
+      return dispatch(AlertActions.alertFailure("Bad request"));
+    }
+
+    dispatch(_reportPostRequset());
+
+    return reportPostFetch(id, { type, content, contact })
+      .then(response => {
+        dispatch(_reportPostSuccess());
+        dispatch(AlertActions.alertSuccess("Thank you for you support!"));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_reportPostFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
+}

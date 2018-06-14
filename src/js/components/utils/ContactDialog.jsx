@@ -129,7 +129,6 @@ class ContactDialog extends Component {
 ContactDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
-  "param": PropTypes.string.isRequired,
   "handleSubmit": PropTypes.func.isRequired,
   "handleClose": PropTypes.func.isRequired,
 };

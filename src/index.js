@@ -4,7 +4,7 @@ import Reboot from 'material-ui/Reboot'
 
 import registerServiceWorker from './registerServiceWorker';
 import './css/index.css';
-import App from './js/app';
+import App from './js/App';
 
 ReactDOM.render(
   <div>

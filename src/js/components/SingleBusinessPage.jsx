@@ -184,11 +184,11 @@ class SingleBusinessPage extends Component {
         content,
         contact,
       })
-        .then(response => {
-          if (response) {
-            this.handleReportDialogClose();
-          }
-        })
+      .then(response => {
+        if (response) {
+          this.handleReportDialogClose();
+        }
+      })
     }
   }
 
@@ -458,7 +458,6 @@ class SingleBusinessPage extends Component {
 
               <ContactDialog
                 open={this.state.reportDialogOpen}
-                param={this.state.business._id}
                 handleSubmit={this.handleSubmitReport}
                 handleClose={this.handleReportDialogClose}
               />
