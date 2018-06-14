@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
 
+// Custom Components
 import SettingContainer from '../setting/SettingContainer';
-import ProperName from '../utils/ProperName';
 import CommentPanel from '../utils/CommentPanel';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
+
+// Actions
 import { getComments, deleteComment } from '../../actions/comment.actions';
 
 const styles = (theme) => ({});

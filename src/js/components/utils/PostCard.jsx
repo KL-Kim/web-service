@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Card, {CardContent, CardActions, CardMedia } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import IconButton from 'material-ui/IconButton';
 
+// Custom Components
 import ProperName from './ProperName';
-import ConfirmationDialog from './ConfirmationDialog';
 
 import image from '../../../css/ikt-icon.gif';
 
@@ -27,11 +27,6 @@ const styles = theme => ({
 });
 
 class PostCard extends Component {
-  constructor(props) {
-    super(props);
-
-  }
-
   render() {
     const { classes } = this.props;
 

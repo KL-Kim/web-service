@@ -5,7 +5,6 @@
 
 import Promise from 'bluebird';
 import fetch from 'cross-fetch';
-import _ from 'lodash';
 
 import config from '../config/config';
 import responseErrorHandler from '../helpers/error-handler.js';
@@ -13,7 +12,8 @@ import responseErrorHandler from '../helpers/error-handler.js';
 const blogServiceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/post',
   singleCommonUrl: config.API_GATEWAY_ROOT + '/api/v1/post/single/',
-  adminCommonUrl: config.API_GATEWAY_ROOT + '/api/v1/post/admin/',
+  voteUrl: config.API_GATEWAY_ROOT + '/api/v1/post/vote/',
+  reportUrl: config.API_GATEWAY_ROOT + '/api/v1/post/report/',
 }
 
 /**
@@ -205,24 +205,60 @@ export const deletePostFetch = (token, id, { authorId } = {}) => {
 }
 
 /**
- * Update post state
+ * Vote post
  * @param {String} token - Verification code
  * @param {String} id - Post id
- * @param {String} state - Post state
+ * @property {String} uid - User id
+ * @property {String} vote - Vote type
  */
-export const updatePostStateFetch = (token, id, state) => {
+export const votePostFetch = (token, id, { uid, vote } = {}) => {
   const options = {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
     body: JSON.stringify({
-      state,
+      uid,
+      vote,
     }),
   };
 
-  return fetch(blogServiceUri.adminCommonUrl + id, options)
+  return fetch(blogServiceUri.voteUrl + id, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+
+}
+
+/**
+ * Report post
+ * @param {String} id - Post id
+ * @property {String} type - Report type
+ * @property {String} content - Report content
+ * @property {String} contact - User contact
+ */
+export const reportPostFetch = (id, { type, content, contact } = {}) => {
+  const options = {
+    "method": 'POST',
+    "headers": {
+      'Content-Type': 'application/json',
+    },
+    "body": JSON.stringify({
+      type,
+      content,
+      contact,
+    }),
+  };
+
+  return fetch(blogServiceUri.reportUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response;

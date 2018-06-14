@@ -5,18 +5,21 @@ import _ from 'lodash';
 import Stars from 'react-stars';
 import Dropzone from 'react-dropzone';
 import Img from 'react-image';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
 import Tooltip from 'material-ui/Tooltip';
+
+// Material UI Icons
 import AddPhoto from 'material-ui-icons/AddAPhoto';
 
 const styles = theme => ({
@@ -215,24 +218,24 @@ class WriteReviewDialog extends Component {
             {
               this.props.readOnly ? ''
                 : <Grid item xs={3}>
-                  <Dropzone
-                    multiple={true}
-                    accept="image/*"
-                    onDrop={this.onDropImages}
-                    className={classes.dropZone}
-                  >
-                    <AddPhoto style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      width: 50,
-                      height: 50,
-                      transform: 'translate(-50%, -50%)',
-                      opacity: 0.5,
-                      }}
-                    />
-                  </Dropzone>
-                </Grid>
+                    <Dropzone
+                      multiple={true}
+                      accept="image/*"
+                      onDrop={this.onDropImages}
+                      className={classes.dropZone}
+                    >
+                      <AddPhoto style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        width: 50,
+                        height: 50,
+                        transform: 'translate(-50%, -50%)',
+                        opacity: 0.5,
+                        }}
+                      />
+                    </Dropzone>
+                  </Grid>
             }
 
           </Grid>

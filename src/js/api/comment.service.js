@@ -1,6 +1,5 @@
 import Promise from 'bluebird';
 import fetch from 'cross-fetch';
-import _ from 'lodash';
 
 import config from '../config/config';
 import responseErrorHandler from '../helpers/error-handler.js';
@@ -174,37 +173,6 @@ export const voteCommentFetch = (token, id, { uid, vote, postTitle } = {}) => {
     .then(response => {
       if (response.ok) {
         return response.json();
-      } else {
-        return Promise.reject(responseErrorHandler(response));
-      }
-    })
-    .catch(err => {
-      return Promise.reject(err);
-    });
-}
-
-/**
- * Update Comment Status by admin
- * @param {String} token - Verification token
- * @param {String} id - Comment id
- * @param {String} status - Comment status
- */
-export const updateCommentStatusFetch = (token, id, status) => {
-  const options = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      "Authorization": 'Bearer ' + token,
-    },
-    body: JSON.stringify({
-      status,
-    }),
-  };
-
-  return fetch(commentSerivceUri.adminCommonUrl + id, options)
-    .then(response => {
-      if (response.ok) {
-        return response;
       } else {
         return Promise.reject(responseErrorHandler(response));
       }

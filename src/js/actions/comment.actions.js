@@ -6,8 +6,8 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import commentTypes from '../constants/comment.types';
-import { fetchCommentsList,
-  updateCommentStatusFetch,
+import {
+  fetchCommentsList,
   addNewCommentFetch,
   voteCommentFetch,
   deleteCommentFetch,
@@ -185,6 +185,9 @@ export const deleteComment = (id, uid) => {
 
 /**
  * Vote comment
+ * @param {String} id - Comment id
+ * @property {String} uid - user id
+ * @property {String} postTitle - Post title
  */
 export const voteComment = (id, { uid, vote, postTitle } = {}) => {
   const _voteCommentRequest = () => ({
@@ -212,6 +215,7 @@ export const voteComment = (id, { uid, vote, postTitle } = {}) => {
     if (_.isUndefined(id) || _.isUndefined(uid) || _.isUndefined(vote) || _.isUndefined(postTitle))
       return dispatch(AlertActions.alertFailure("Bad request"));
 
+    dispatch(_voteCommentRequest());
     return getToken()
       .then(token => {
         return voteCommentFetch(token, id, { uid, vote, postTitle });
@@ -230,55 +234,3 @@ export const voteComment = (id, { uid, vote, postTitle } = {}) => {
       });
   };
 }
-
-/**
- * Update Comment Status by admin
- * @param {String} token - Verification token
- * @param {String} id - Comment id
- * @param {String} status - Comment status
- */
-export const updateCommentStatus = (id, status) => {
-  const _updateCommentStatusRequest = () => ({
-    "type": commentTypes.UPDATE_COMMENT_STATUS_REQUESET,
-    "meta": {},
-    "error": null,
-    "payload": {}
-  });
-
-  const _updateCommentStatusSuccess = () => ({
-    "type": commentTypes.UPDATE_COMMENT_STATUS_SUCCESS,
-    "meta": {},
-    "error": null,
-    "payload": {}
-  });
-
-  const _updateCommentStatusFailure = (error) => ({
-    "type": commentTypes.UPDATE_COMMENT_STATUS_FAILURE,
-    "meta": {},
-    "error": error,
-    "payload": {}
-  });
-
-  return (dispatch, getState) => {
-    if (_.isUndefined(id)) return dispatch(AlertActions.alertFailure("Bad request"));
-
-    dispatch(_updateCommentStatusRequest());
-
-    return getToken()
-      .then(token => {
-        return updateCommentStatusFetch(token, id, status);
-      })
-      .then(response => {
-        dispatch(_updateCommentStatusSuccess());
-        dispatch(AlertActions.alertSuccess("Updated comment successfully"));
-
-        return response;
-      })
-      .catch(err => {
-        dispatch(_updateCommentStatusFailure(err));
-        dispatch(AlertActions.alertFailure(err.message));
-
-        return ;
-      });
-  };
-};

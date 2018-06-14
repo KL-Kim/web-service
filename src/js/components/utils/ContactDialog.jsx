@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import TextField from 'material-ui/TextField';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
 
 const styles = theme => ({
   "button": {
@@ -25,6 +24,7 @@ class ContactDialog extends Component {
     super(props);
 
     this.state = {
+      type: '',
       content: '',
       contact: '',
     };
@@ -71,17 +71,18 @@ class ContactDialog extends Component {
           <Grid container>
             <Grid item xs={12}>
               <FormControl fullWidth >
-                <InputLabel htmlFor="contact">Contact</InputLabel>
+                <InputLabel htmlFor="contact">Problem</InputLabel>
                 <Input
                   type="text"
-                  id="contact"
-                  name="contact"
-                  value={this.state.contact}
+                  id="type"
+                  name="type"
+                  value={this.state.type}
                   onChange={this.handleChange}
                 />
               </FormControl>
-              <FormHelperText id="contact-helper-text">Please givs us your contact information, so we can contact you</FormHelperText>
+              <FormHelperText id="contact-helper-text">What's the problem</FormHelperText>
             </Grid>
+
             <Grid item xs={12}>
               <FormControl fullWidth required>
                 <InputLabel htmlFor="content">Content</InputLabel>
@@ -95,6 +96,20 @@ class ContactDialog extends Component {
                   onChange={this.handleChange}
                 />
               </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth >
+                <InputLabel htmlFor="contact">Contact</InputLabel>
+                <Input
+                  type="text"
+                  id="contact"
+                  name="contact"
+                  value={this.state.contact}
+                  onChange={this.handleChange}
+                />
+              </FormControl>
+              <FormHelperText id="contact-helper-text">Please givs us your contact information, so we can contact you</FormHelperText>
             </Grid>
           </Grid>
         </DialogContent>

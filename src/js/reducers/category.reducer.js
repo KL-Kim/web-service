@@ -15,9 +15,6 @@ const categoryReducer = (state = initialState, action) => {
 
     // Get business categories
     case categoryTypes.GET_CATEGORY_REQUEST:
-    case categoryTypes.ADD_CATEGORY_REQUEST:
-    case categoryTypes.UPDATE_CATEGORY_REQUEST:
-    case categoryTypes.DELETE_CATEGORY_REQUEST:
       return {
         ...state,
         isFetching: true,

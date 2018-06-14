@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
-import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
-import Switch from 'material-ui/Switch';
 
+// Custom Components
 import Container from './utils/Container';
 import PostPanel from './utils/PostPanel';
+
+// Actions
 import { getPostsList } from '../actions/blog.actions.js';
 
 const styles = theme => ({

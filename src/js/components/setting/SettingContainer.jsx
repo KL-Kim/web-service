@@ -4,12 +4,14 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { withStyles } from 'material-ui/styles';
 
+// Custom Components
 import Header from '../utils/Header';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
 import Alert from '../utils/Alert';
 import DevTools from '../utils/DevTools';
 
+// Actions
 import { logout } from '../../actions/user.actions';
 import { getNotification } from '../../actions/notification.actions';
 
@@ -47,7 +49,7 @@ class SettingContainer extends Component {
   }
 
   render() {
-    const { classes, isLoggedIn, user, logout, updatedAt, notificationList, newNotificationCount } = this.props;
+    const { classes, isLoggedIn, user, logout, updatedAt, newNotificationCount } = this.props;
 
     return (
       <div className={classes.root}>

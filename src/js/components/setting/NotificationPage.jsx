@@ -3,24 +3,35 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import List, { ListItem, ListItemSecondaryAction, ListItemText, ListItemIcon } from 'material-ui/List';
-import Checkbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
+
+// Material UI Icons
 import DeleteIcon from 'material-ui-icons/Delete';
 import FiberNew from 'material-ui-icons/FiberNew';
 
+// Custom Components
 import SettingContainer from './SettingContainer';
-import { getNotification, deleteNotification, clearReadNotifications } from '../../actions/notification.actions';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 import MessageContent from '../utils/MessageContent';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
 import getElapsedTime from '../../helpers/ElapsedTime';
+
+// Actions
+import {
+  getNotification,
+  deleteNotification,
+  clearReadNotifications
+} from '../../actions/notification.actions';
+
 
 const styles = (theme) => ({
   paper: {
@@ -118,6 +129,7 @@ class NotificationPage extends Component {
 
       case "COMMENT":
         this.props.history.push('/post/s/' + item.subjectUrl, {});
+        break;
 
       default:
         return;
@@ -145,7 +157,7 @@ class NotificationPage extends Component {
   }
 
   render() {
-    const { classes, notificationList } = this.props;
+    const { classes } = this.props;
 
     return (
       <SettingContainer>

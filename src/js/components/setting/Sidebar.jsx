@@ -13,7 +13,6 @@ import Favorite from 'material-ui-icons/Favorite';
 import Notifications from 'material-ui-icons/Notifications';
 
 import LinkContainer from '../utils/LinkContainer';
-import AdminSidebarMenuList from '../utils/AdminSidebarMenuList';
 
 const styles = theme => ({
   // drawerHeader: theme.mixins.toolbar,
@@ -87,7 +86,7 @@ class Sidebar extends Component {
               </LinkContainer>
 
               {
-                (role === 'writer' || role === 'manager' || role === 'admin')
+                (role === 'writer')
                   ? (<LinkContainer to="/setting/post">
                       <MenuItem selected={match.path === "/setting/post"}>
                         <ListItemIcon>
@@ -99,7 +98,6 @@ class Sidebar extends Component {
                   : ''
               }
             </MenuList>
-            { (role === 'manager' || role === 'admin' || role === 'god') ? (<AdminSidebarMenuList admin={user} match={match} />) : ''}
           </Drawer>
       </div>
     );

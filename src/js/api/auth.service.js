@@ -23,7 +23,7 @@ const authServiceUri = {
 /**
  * Fetch new token
  */
-const newTokenFetch = () => {
+const fetchNewToken = () => {
   const options = {
     "method": 'GET',
     "headers": {
@@ -61,7 +61,7 @@ export const getToken = () => {
     const now = _.now();
 
     if (_.isEmpty(decoded) || decoded.exp * 1000 < now) {
-      newTokenFetch()
+      fetchNewToken()
         .then(accessToken => {
           return resolve(accessToken);
         })

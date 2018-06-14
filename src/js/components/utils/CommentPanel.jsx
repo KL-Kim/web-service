@@ -1,28 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import ThumbDown from 'material-ui-icons/ThumbDown';
 import IconButton from 'material-ui/IconButton';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
 
+// Material UI Icons
+import ThumbUp from 'material-ui-icons/ThumbUp';
+import ThumbDown from 'material-ui-icons/ThumbDown';
+
+// Custom Components
 import Avatar from './Avatar';
 import ProperName from './ProperName';
 import ElapsedTime from '../../helpers/ElapsedTime';
 import ConfirmationDialog from './ConfirmationDialog';
-
-import image from '../../../css/ikt-icon.gif';
 
 const styles = theme => ({
   "paper": {

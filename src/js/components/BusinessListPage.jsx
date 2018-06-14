@@ -4,20 +4,25 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
+import { FormControl, FormLabel } from 'material-ui/Form';
 import Switch from 'material-ui/Switch';
 
+// Custom Components
 import Container from './utils/Container';
 import BusinessCard from './utils/BusinessCard';
-import { getBusinessList } from '../actions/business.actions.js';
-import { getCategoriesList } from '../actions/category.actions.js';
 import { loadFromStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
 import Areas from '../constants/nanjing.areas';
+
+// Actions
+import { getBusinessList } from '../actions/business.actions.js';
+import { getCategoriesList } from '../actions/category.actions.js';
 
 const styles = theme => ({});
 

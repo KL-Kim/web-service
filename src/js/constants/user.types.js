@@ -1,5 +1,7 @@
 const userTypes = {
   "CLEAR_USER_REDUCER":"CLEAR_USER_REDUCER",
+
+  // Update user username
   "UPDATE_USERNAME": "UPDATE_USERNAME",
 
   // Login

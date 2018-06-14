@@ -3,23 +3,29 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import Masonry from 'react-masonry-component';
+import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
+import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import IconButton from 'material-ui/IconButton';
+
+// Material UI Icons
 import Search from 'material-ui-icons/Search';
 
-import Masonry from 'react-masonry-component';
-import InfiniteScroll from 'react-infinite-scroller';
-
+// Custom Components
 import SettingContainer from './SettingContainer';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
-import { getPostsList } from '../../actions/blog.actions';
 import PostCard from '../utils/PostCard';
+
+// Actions
+import { getPostsList } from '../../actions/blog.actions';
 
 const styles = theme => ({
   "buttonContainer": {

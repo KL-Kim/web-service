@@ -7,7 +7,6 @@ import configureStore from './stores/store';
 
 // Private Route Components
 import PrivateRoute from './helpers/PrivateRoute';
-import AdminRoute from './helpers/AdminRoute';
 
 // React Compontens
 import NoMatchPage from './components/404';
@@ -34,17 +33,6 @@ import SettingNotification from './components/setting/NotificationPage';
 import SettingPost from './components/setting/PostPage';
 import SettingSinglePost from './components/setting/SinglePostPage';
 import SettingComment from './components/setting/CommentPage';
-
-// Admin Setting
-import Admin_UsersList from './components/admin/UsersList';
-import Admin_SingleUserPage from './components/admin/SingleUserInfoPage'
-import Admin_BusinessList from './components/admin/BusinessList';
-import Admin_SingleBusinessPage from './components/admin/SingleBusinessPage'
-import Admin_CategoriesList from './components/admin/CategoriesList';
-import Admin_TagsList from './components/admin/TagsList';
-import Admin_ReviewsList from './components/admin/ReviewsList';
-import Admin_BlogList from './components/admin/BlogList';
-import Admin_CommentsList from './components/admin/CommentsList';
 
 // Temp
 import SingleStoryPage from './components/SingleStoryPage';
@@ -82,26 +70,12 @@ const App = () => {
 
           {/*  Setting Routes */}
           <PrivateRoute path="/setting/account" component={SettingAccount} />
-          <Route path="/setting/review" component={SettingReview} />
-          <Route path="/setting/favor" component={SettingFavor} />
-          <Route path="/setting/notification" component={SettingNotification} />
-          <Route exact path="/setting/post" component={SettingPost} />
-          <Route path="/setting/post/s/:id" component={SettingSinglePost} />
-          <Route path="/setting/comment" component={SettingComment} />
-
-          {/*  Admin Routes */}
-          <AdminRoute exact path="/admin/users" component={Admin_UsersList} />
-          <AdminRoute path="/admin/user/:username" component={Admin_SingleUserPage} />
-
-          <AdminRoute exact path="/admin/business" component={Admin_BusinessList} />
-          <AdminRoute path="/admin/business/:business" component={Admin_SingleBusinessPage} />
-
-          <AdminRoute exact path="/admin/category" component={Admin_CategoriesList} />
-          <AdminRoute exact path="/admin/tag" component={Admin_TagsList} />
-
-          <AdminRoute path="/admin/reviews" component={Admin_ReviewsList} />
-          <AdminRoute exact path="/admin/blog" component={Admin_BlogList} />
-          <AdminRoute exact path="/admin/comments" component={Admin_CommentsList} />
+          <PrivateRoute path="/setting/review" component={SettingReview} />
+          <PrivateRoute path="/setting/favor" component={SettingFavor} />
+          <PrivateRoute path="/setting/notification" component={SettingNotification} />
+          <PrivateRoute exact path="/setting/post" component={SettingPost} />
+          <PrivateRoute path="/setting/post/s/:id" component={SettingSinglePost} />
+          <PrivateRoute path="/setting/comment" component={SettingComment} />
 
           { /** Temp **/}
           <Route path="/story" component={SingleStoryPage} />

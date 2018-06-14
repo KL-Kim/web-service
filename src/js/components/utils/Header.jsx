@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import _ from 'lodash';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import AppBar from 'material-ui/AppBar';
@@ -11,23 +13,24 @@ import Button from 'material-ui/Button';
 import Drawer from 'material-ui/Drawer';
 import { MenuList, MenuItem } from 'material-ui/Menu';
 import Popover from 'material-ui/Popover';
-import List, { ListItem, ListItemSecondaryAction, ListItemText, ListItemIcon } from 'material-ui/List';
+import List, { ListItem, ListItemText, ListItemIcon } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputAdornment } from 'material-ui/Input';
+import IconButton from 'material-ui/IconButton';
+
+// Material UI Icons
 import AccountCircle from 'material-ui-icons/AccountCircle';
 import ExitToApp from 'material-ui-icons/ExitToApp';
 import Notifications from 'material-ui-icons/Notifications';
-
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import IconButton from 'material-ui/IconButton';
 import Search from 'material-ui-icons/Search';
 import FiberNew from 'material-ui-icons/FiberNew';
 
+// Custom Components
 import LinkContainer from './LinkContainer';
 import Avatar from './Avatar';
 import ProperName from './ProperName';
 import MessageContent from './MessageContent';
-import AdminSidebarMenuList from './AdminSidebarMenuList';
 import getElapsedTime from '../../helpers/ElapsedTime';
 
 const styles = theme => ({
@@ -158,6 +161,7 @@ class Header extends Component {
 
       case "COMMENT":
         this.props.history.push('/post/s/' + item.subjectUrl, { commentId: item.commentId });
+        break;
 
       default:
         return ;
@@ -165,8 +169,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, user, isLoggedIn, updatedAt, position, match, notificationList, newNotificationCount } = this.props;
-    const role = _.isEmpty(user) ? '' : user.role;
+    const { classes, user, isLoggedIn, updatedAt, position, newNotificationCount } = this.props;
 
     return (
       <div>
@@ -334,7 +337,6 @@ class Header extends Component {
                     <ListItemText primary="logout" onClick={this.handleLogout}/>
                   </MenuItem>
                 </MenuList>
-                {_.isUndefined(role) ? '' : (<AdminSidebarMenuList admin={user} match={match} />)}
               </Drawer>)
             : ''
         }

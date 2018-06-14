@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Img from 'react-image';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import IconButton from 'material-ui/IconButton';
 
+// Custom Components
 import ProperName from './ProperName';
 import ElapsedTime from '../../helpers/ElapsedTime';
 
+// Mock image
 import image from '../../../css/ikt-icon.gif';
 
 const styles = theme => ({
@@ -24,10 +23,6 @@ const styles = theme => ({
 });
 
 class PostPanel extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { classes, post } = this.props;
 

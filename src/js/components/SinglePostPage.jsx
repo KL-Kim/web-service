@@ -1,42 +1,47 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import classNames from 'classnames';
 import Img from 'react-image';
+import Quill from 'react-quill';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Manager, Target, Popper } from 'react-popper';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
-import Divider from 'material-ui/Divider';
+import IconButton from 'material-ui/IconButton';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle,
 } from 'material-ui/Dialog';
-import Badge from 'material-ui/Badge';
-import IconButton from 'material-ui/IconButton';
-import Tooltip from 'material-ui/Tooltip';
-import Share from 'material-ui-icons/Share';
-import ErrorOutline from 'material-ui-icons/ErrorOutline';
-import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import { FormControl } from 'material-ui/Form';
+import Input, { InputLabel } from 'material-ui/Input';
 import Portal from 'material-ui/Portal';
 import { MenuList, MenuItem } from 'material-ui/Menu';
 import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
 import Collapse from 'material-ui/transitions/Collapse';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
 import { ListItemText } from 'material-ui/List';
 
+// Material UI Icons
+import ErrorOutline from 'material-ui-icons/ErrorOutline';
+import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import ThumbUp from 'material-ui-icons/ThumbUp';
+import ThumbDown from 'material-ui-icons/ThumbDown';
+
+// Custom Components
 import Container from './utils/Container';
 import CommentPanel from './utils/CommentPanel';
 import ProperName from './utils/ProperName';
 import ElapsedTime from '../helpers/ElapsedTime';
-import { getSinglePost } from '../actions/blog.actions';
+
+// Actions
+import { getSinglePost, votePost } from '../actions/blog.actions';
 import { getComments,
   addNewComment,
   voteComment,
@@ -44,7 +49,7 @@ import { getComments,
   clearCommentsList,
 } from '../actions/comment.actions';
 
-import config from '../config/config';
+// Mock image
 import image from '../../css/ikt-icon.gif';
 
 const styles = theme => ({
@@ -62,6 +67,9 @@ const styles = theme => ({
     "display": "flex",
     "justifyContent": "flex-end",
   },
+  "image": {
+    width: '100%',
+  },
 });
 
 class SinglePostPage extends Component {
@@ -76,7 +84,6 @@ class SinglePostPage extends Component {
       parentId: '',
       replyToComment: '',
       replyToUser: '',
-      hasMore: false,
       limit: 5,
       count: 0,
       hasMore: false,
@@ -91,6 +98,8 @@ class SinglePostPage extends Component {
     this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
+    this.handleVote = this.handleVote.bind(this);
+    this.hanldleSubmitReport = this.hanldleSubmitReport.bind(this);
     this.loadMore = this.loadMore.bind(this);
   }
 
@@ -119,8 +128,7 @@ class SinglePostPage extends Component {
             });
           }
         });
-      })
-
+      });
   }
 
   componentWillUnmount() {
@@ -229,6 +237,26 @@ class SinglePostPage extends Component {
     }
   }
 
+  handleVote = vote => e => {
+    this.props.votePost(this.state.id, {
+      uid: this.props.user._id,
+      vote: vote,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          post: response.post
+        });
+      }
+    })
+  }
+
+  hanldleSubmitReport(type, content, contact) {
+    if (this.state.post) {
+
+    }
+  }
+
   loadMore() {
     this.props.getComments({
       pid: this.state.id,
@@ -257,14 +285,41 @@ class SinglePostPage extends Component {
                 <Grid container justify="center">
                   <Grid item xs={12}>
                     <Typography type="display3" align="center" gutterBottom>{post.title}</Typography>
-                    <Typography type="title" align="center">By <strong><ProperName  user={post.authorId} /></strong></Typography>
+                    <Typography type="title" align="center">
+                      By <strong><ProperName  user={post.authorId} /></strong>
+                    </Typography>
                     <Typography type="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
                   </Grid>
                   <Grid item xs={8}>
+                    <Img src={image} className={classes.image} />
+                  </Grid>
+                  <Grid item xs={8}>
                     <Paper className={classes.paper}>
-                      <Typography type="body1">
-                        {post.content}
-                      </Typography>
+                      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    </Paper>
+                  </Grid>
+
+                  <Grid item xs={8}>
+                    <Paper className={classes.paper}>
+                      <span>
+                        <IconButton color="primary" onClick={this.handleVote("UPVOTE")}>
+                          <ThumbUp />
+                        </IconButton>
+                        {_.isEmpty(post.upvote) ? 0 :post.upvote.length}
+                      </span>
+
+                      <span>
+                        <IconButton color="default" onClick={this.handleVote("DOWNVOTE")}>
+                          <ThumbDown />
+                        </IconButton>
+                        {_.isEmpty(post.downvote) ? 0 :post.downvote.length}
+                      </span>
+
+                      <span>
+                        <IconButton color="default" onClick={this.hanldleReport}>
+                          <ErrorOutline />
+                        </IconButton>
+                      </span>
                     </Paper>
                   </Grid>
                 </Grid>
@@ -420,6 +475,7 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, {
   getSinglePost,
+  votePost,
   getComments,
   addNewComment,
   voteComment,

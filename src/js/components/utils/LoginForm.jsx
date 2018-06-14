@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import validator from 'validator';
 
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
-import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
-import { FormControl, FormControlLabel, FormLabel, FormHelperText } from 'material-ui/Form';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import { CircularProgress } from 'material-ui/Progress';
+
+// Material UI Icons
 import Error from 'material-ui-icons/Error';
 
 import config from '../../config/config';

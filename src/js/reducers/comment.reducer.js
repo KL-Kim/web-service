@@ -18,7 +18,6 @@ const commentReducer = (state = initialState, action) => {
 
     case commentTypes.GET_COMMENTS_REQUEST:
     case commentTypes.ADD_NEW_COMMENT_REQUEST:
-    case commentTypes.UPDATE_COMMENT_STATUS_REQUESET:
       return {
         ...state,
         isFetching: true,
@@ -27,7 +26,6 @@ const commentReducer = (state = initialState, action) => {
 
     case commentTypes.GET_COMMENTS_FAILURE:
     case commentTypes.ADD_NEW_COMMENT_FAILURE:
-    case commentTypes.UPDATE_COMMENT_STATUS_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -43,7 +41,6 @@ const commentReducer = (state = initialState, action) => {
       };
 
     case commentTypes.ADD_NEW_COMMENT_SUCCESS:
-    case commentTypes.UPDATE_COMMENT_STATUS_SUCCESS:
       return {
         ...state,
         isFetching: false,

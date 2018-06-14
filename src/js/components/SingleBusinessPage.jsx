@@ -7,6 +7,8 @@ import Img from 'react-image';
 import Stars from 'react-stars';
 import Masonry from 'react-masonry-component';
 import InfiniteScroll from 'react-infinite-scroller';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
@@ -17,17 +19,20 @@ import Table, { TableBody, TableCell, TableHead, TableRow, } from 'material-ui/T
 import Badge from 'material-ui/Badge';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
+
+// Material UI Icons
 import Whatshot from 'material-ui-icons/Whatshot';
-import Share from 'material-ui-icons/Share';
 import FavoriteBorder from 'material-ui-icons/FavoriteBorder';
 import ErrorOutline from 'material-ui-icons/ErrorOutline';
 import Favorite from 'material-ui-icons/Favorite';
 
+// Custom Components
 import Container from './utils/Container'
 import ReviewCard from './utils/ReviewCard';
-import StoryCard from './utils/StoryCard';
 import WriteReviewDialog from './utils/WriteReviewDialog';
 import ContactDialog from './utils/ContactDialog';
+
+// Actions
 import { favorOperation } from '../actions/user.actions';
 import { getSingleBusiness, reportBusiness } from '../actions/business.actions';
 import {
@@ -35,11 +40,14 @@ import {
   addNewReview,
   voteReview,
   clearReviewsList,
-  getSingleReview } from '../actions/review.actions';
+  getSingleReview
+} from '../actions/review.actions';
+
+import config from '../config/config';
 import { loadFromStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
 
-import config from '../config/config';
+// Mock image
 import image from '../../css/ikt-icon.gif';
 
 const styles = theme => ({
@@ -169,9 +177,13 @@ class SingleBusinessPage extends Component {
     });
   }
 
-  handleSubmitReport(content, contact) {
-    if (!_.isEmpty(this.state.business)) {
-      this.props.reportBusiness(this.state.business._id, content, contact)
+  handleSubmitReport(type, content, contact) {
+    if (this.state.business) {
+      this.props.reportBusiness(this.state.business._id, {
+        type,
+        content,
+        contact,
+      })
         .then(response => {
           if (response) {
             this.handleReportDialogClose();

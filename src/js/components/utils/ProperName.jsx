@@ -5,12 +5,15 @@ import _ from 'lodash';
 class ProperName extends Component {
   render() {
     const { user } = this.props;
+    let name;
 
-    const name = _.isEmpty(user) ? '' :((_.isEmpty(user.firstName) && _.isEmpty(user.lastName))
-      ? user.username
-      : ((_.isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (_.isEmpty(user.lastName) ? '' : user.lastName)));
+    if (user.firstName || user.lastName) {
+      name = user.firstName + ' ' + user.lastName;
+    } else {
+      name = user.username
+    }
 
-    return name;
+    return (<span>{name}</span>);
   }
 }
 

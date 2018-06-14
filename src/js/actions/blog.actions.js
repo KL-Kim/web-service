@@ -6,7 +6,15 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import blogTypes from '../constants/blog.types';
-import { fetchPostsList, addNewPostFetch, updatePostFetch, fetchSinglePost, deletePostFetch, updatePostStateFetch } from '../api/blog.service';
+import {
+  fetchPostsList,
+  addNewPostFetch,
+  updatePostFetch,
+  fetchSinglePost,
+  deletePostFetch,
+  votePostFetch,
+  reportPostFetch,
+} from '../api/blog.service';
 
 /**
  * Get posts list
@@ -213,7 +221,7 @@ export const updatePost = (id, params) => {
 /**
  * Delete post
  * @param {String} id - Post id
- * @param {Object} params - Post params
+ * @param {Object} params - Post paramsz
  */
 export const deletePost = (id, params) => {
   const _deletePostRequset = () => ({
@@ -263,50 +271,55 @@ export const deletePost = (id, params) => {
   };
 }
 
-export const updatePostState = (id, state) => {
-  const _updatePostStateRequest = () => ({
-    "type": blogTypes.UPDATE_POST_STATE_REQUEST,
+/**
+ * Vote post
+ * @param {String} id - Post id
+ * @property {String} uid - User id
+ * @property {String} vote - Vote type
+ */
+export const votePost = (id, { uid, vote } = {}) => {
+  const _votePostRequset = () => ({
+    "type": blogTypes.VOTE_POST_REQUEST,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  const _updatePostStateSuccess = () => ({
-    "type": blogTypes.UPDATE_POST_STATE_SUCCESS,
+  const _votePostSuccess = () => ({
+    "type": blogTypes.VOTE_POST_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {}
   });
 
-  const _updatePostStateFailure = (error) => ({
-    "type": blogTypes.UPDATE_POST_STATE_FAILURE,
+  const _votePostFailure = (err) => ({
+    "type": blogTypes.VOTE_POST_FAILURE,
     "meta": {},
-    "error": error,
+    "error": err,
     "payload": {}
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(state)) {
+    if (_.isEmpty(id) || _.isEmpty(uid) || _.isEmpty(vote)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
-    dispatch(_updatePostStateRequest());
+    dispatch(_votePostRequset());
 
     return getToken()
       .then(token => {
-        return updatePostStateFetch(token, id, state);
+        return votePostFetch(token, id, { uid, vote });
       })
       .then(response => {
-        dispatch(_updatePostStateSuccess());
-        dispatch(AlertActions.alertSuccess("Updated successfully!"));
+        dispatch(_votePostSuccess());
 
         return response;
       })
       .catch(err => {
-        dispatch(_updatePostStateFailure(err));
+        dispatch(_votePostFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;
-      });
-  }
+      })
+  };
 }

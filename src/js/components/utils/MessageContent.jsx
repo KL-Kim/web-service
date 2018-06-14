@@ -1,23 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { withStyles } from 'material-ui/styles';
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from 'material-ui/Dialog';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
 
-import WriteReviewDialog from './WriteReviewDialog';
+// Material UI Components
+import { withStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
+
+
+// Actions
 import { getSingleReview } from '../../actions/review.actions';
 
-const styles = theme => ({
-});
+const styles = theme => ({});
 
 class MessageContent extends Component {
   constructor(props) {
@@ -27,14 +21,13 @@ class MessageContent extends Component {
       "dialogOpen": false,
       "review": {},
       "message": '',
-      "commentId": '',
     }
 
     this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
-    const { type, event, subjectTitle, commentId, commentContent } = this.props;
+    const { type, event, subjectTitle } = this.props;
 
     switch (type) {
       case "BUSINESS":
@@ -82,9 +75,11 @@ class MessageContent extends Component {
               message: "replyed to your comment",
             });
 
+            break;
           default:
             return ;
         }
+        break;
 
       default:
         return ;

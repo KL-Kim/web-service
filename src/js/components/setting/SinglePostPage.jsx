@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 import Quill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
+import Input, { InputLabel } from 'material-ui/Input';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import Button from 'material-ui/Button';
 
+// Custom Components
 import SettingContainer from './SettingContainer';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
+
+// Actions
 import { addNewPost, getSinglePost, updatePost, deletePost } from '../../actions/blog.actions';
 
 const modules = {

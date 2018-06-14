@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+
+// Material UI Components
 import { withStyles } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 
+// Custom Components
 import SettingContainer from './SettingContainer';
 import UsernamePanel from './modules/UsernamePanel';
 import EmailPanel from './modules/EmailPanel';
@@ -17,6 +20,7 @@ import BirthdayPanel from './modules/BirthdayPanel';
 import ChangePasswordPanel from './modules/ChangePasswordPanel';
 import ChangeAvatarModule from './modules/ChangeAvatarModule';
 
+// Actions
 import { updateUserProfile, uploadProfilePhoto, updateMobilePhone } from '../../actions/user.actions';
 import { sendPhoneVerificationCode, sendEmail } from '../../actions/auth.actions'
 
