@@ -6,6 +6,9 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import userTypes from '../constants/user.types';
 import webStorageTypes from '../constants/webStorage.types.js';
+import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
+
+// API Methods
 import {
   registerFetch,
   verifyFetch,
@@ -17,7 +20,6 @@ import {
   faverOperationFetch,
 } from '../api/user.service';
 import { getToken, loginFetch, logoutFetch } from '../api/auth.service';
-import { removeFromStorage } from '../helpers/webStorage';
 
 /**
  * Login
@@ -60,16 +62,26 @@ export const login = (email, password) => {
     dispatch(AlertActions.alertClear());
     dispatch(_requestLogin());
     return loginFetch(email, password)
-      .then(user => {
-        dispatch(_loginSuccess(user));
-        dispatch(AlertActions.alertSuccess("Login successfully"));
+      .then(response => {
 
-        return ;
-      }).catch(err => {
-        if (err.message) {
-          dispatch(AlertActions.alertFailure(err.message));
-        }
+        // Cache to webStorage
+        saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, response.token);
+        saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, response.user._id);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, response.user.favors);
+
+        dispatch(_loginSuccess(response.user));
+        dispatch(AlertActions.alertSuccess("Welcome back"));
+
+        return response;
+      })
+      .catch(err => {
+        // Save login failed times
+        const loginFailedCount = loadFromStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED);
+        saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, loginFailedCount + 1);
+
         dispatch(_loginFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
 
         return ;
       });
@@ -117,20 +129,23 @@ export const register = (user) => {
         return Promise.reject(error);
     }
 
-    dispatch(AlertActions.alertClear());
     dispatch(_requestRegister());
+
     return registerFetch(user)
-      .then(res => {
-        dispatch(_registerSuccess(res.user));
+      .then(response => {
+        saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, response.token);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, response.user._id);
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, response.user.favors);
+
+        dispatch(_registerSuccess(response.user));
         dispatch(AlertActions.alertSuccess("Sign up successfully"));
 
-        return ;
+        return response;
 
       }).catch(err => {
         dispatch(_registerFailure(err));
-        if (err.message) {
-          dispatch(AlertActions.alertFailure(err.message));
-        }
+        dispatch(AlertActions.alertFailure(err.message));
+
         return ;
     });
   };
@@ -141,9 +156,6 @@ export const register = (user) => {
  * @param {String} token - Access Token
  */
 export const verifyAccount = (token) => {
-  /**
-   *  Request verify account
-   */
   const _requestVerify = () => ({
     "type": userTypes.VERIFY_REQUEST,
     "meta": {},
@@ -151,9 +163,6 @@ export const verifyAccount = (token) => {
     "payload": {}
   });
 
-  /**
-   *  Verify account success
-   */
   const _verifySuccess = user => ({
     "type": userTypes.VERIFY_SUCCESS,
     "meta": {},
@@ -163,9 +172,6 @@ export const verifyAccount = (token) => {
     }
   });
 
-  /**
-   *  Verify account failure
-   */
   const _verifyFailure = error => ({
     "type": userTypes.VERIFY_FAILURE,
     "meta": {},
@@ -565,6 +571,7 @@ export const favorOperation = (id, bid) => {
         return faverOperationFetch(token, id, bid);
       })
       .then(response => {
+        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, response.favors);
         dispatch(_favorOperationSuccess(response));
 
         return response;

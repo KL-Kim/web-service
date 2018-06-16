@@ -135,7 +135,7 @@ class ReviewCard extends Component {
             </div>
           </CardContent>
           {
-            this.props.isOwn ? (
+            (this.props.isOwn && !this.props.showUser) ? (
               <CardActions>
                 <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
               </CardActions>

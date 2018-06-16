@@ -10,11 +10,9 @@ import responseErrorHandler from '../helpers/error-handler.js';
  */
 const businessSerivceUri = {
   commonUrl: config.API_GATEWAY_ROOT + '/api/v1/business?',
-  getBusinessListByAdmin: config.API_GATEWAY_ROOT + '/api/v1/business/admin?',
   getSingleBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/single/',
   categoryUrl: config.API_GATEWAY_ROOT + '/api/v1/category',
   tagUrl: config.API_GATEWAY_ROOT + '/api/v1/tag',
-  businessImagesUrl: config.API_GATEWAY_ROOT + '/api/v1/business/images',
   reportBusinessUrl: config.API_GATEWAY_ROOT + '/api/v1/business/report/',
 };
 
@@ -70,7 +68,7 @@ export const fetchBusinessList = ({ skip, limit, filter, search, orderBy } = {})
  * @param {String} value - Type value
  * @param {String} by - User id
  */
-export const fetchSingleBusiness = (type, value, by) => {
+export const fetchSingleBusiness = (slug) => {
   const options = {
     method: 'GET',
     headers: {
@@ -78,11 +76,7 @@ export const fetchSingleBusiness = (type, value, by) => {
     },
   };
 
-  let url = businessSerivceUri.getSingleBusinessUrl + '?' + type + '=' + value;
-
-  if (by) url = url + '&by=' + by;
-
-  return fetch(url, options)
+  return fetch(businessSerivceUri.getSingleBusinessUrl + slug, options)
     .then(response => {
       if (response.ok) {
         return response.json();

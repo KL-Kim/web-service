@@ -30,7 +30,7 @@ import Favorite from 'material-ui-icons/Favorite';
 import Container from './utils/Container'
 import ReviewCard from './utils/ReviewCard';
 import WriteReviewDialog from './utils/WriteReviewDialog';
-import ContactDialog from './utils/ContactDialog';
+import ReportDialog from './utils/ReportDialog';
 
 // Actions
 import { favorOperation } from '../actions/user.actions';
@@ -105,9 +105,9 @@ class SingleBusinessPage extends Component {
   }
 
   componentDidMount() {
-    this.props.getSingleBusiness("enName", this.props.match.params.slug)
+    this.props.getSingleBusiness(this.props.match.params.slug)
       .then(business => {
-        if (_.isEmpty(business) || business.state !== 'published') {
+        if (_.isEmpty(business) || business.status !== 'PUBLISHED') {
           this.props.history.push('/404');
         } else {
           const index = this.state.myFavors.indexOf(business._id);
@@ -314,13 +314,13 @@ class SingleBusinessPage extends Component {
               <Grid item xs={4}>
                 <Paper className={classes.paper}>
                   <Typography type="title" gutterBottom>영업시간</Typography>
-                  <Typography type="body1" gutterBottom>월요일: {business.openningHoursSpec.mon}</Typography>
-                  <Typography type="body1" gutterBottom>화요일: {business.openningHoursSpec.tue}</Typography>
-                  <Typography type="body1" gutterBottom>수요일: {business.openningHoursSpec.wed}</Typography>
-                  <Typography type="body1" gutterBottom>목요일: {business.openningHoursSpec.thu}</Typography>
-                  <Typography type="body1" gutterBottom>금요일: {business.openningHoursSpec.fri}</Typography>
-                  <Typography type="body1" gutterBottom>토요일: {business.openningHoursSpec.sat}</Typography>
-                  <Typography type="body1" gutterBottom>일요일: {business.openningHoursSpec.sun}</Typography>
+                  <Typography type="body1" gutterBottom>월요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.mon}</Typography>
+                  <Typography type="body1" gutterBottom>화요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.tue}</Typography>
+                  <Typography type="body1" gutterBottom>수요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.wed}</Typography>
+                  <Typography type="body1" gutterBottom>목요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.thu}</Typography>
+                  <Typography type="body1" gutterBottom>금요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.fri}</Typography>
+                  <Typography type="body1" gutterBottom>토요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sat}</Typography>
+                  <Typography type="body1" gutterBottom>일요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sun}</Typography>
                 </Paper>
               </Grid>
               <Grid item xs={4}>
@@ -456,7 +456,7 @@ class SingleBusinessPage extends Component {
                 handleClose={this.handleReviewDialogClose}
               />
 
-              <ContactDialog
+              <ReportDialog
                 open={this.state.reportDialogOpen}
                 handleSubmit={this.handleSubmitReport}
                 handleClose={this.handleReportDialogClose}

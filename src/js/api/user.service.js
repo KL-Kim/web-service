@@ -2,9 +2,7 @@ import Promise from 'bluebird';
 import fetch from 'cross-fetch';
 
 import config from '../config/config';
-import { saveToStorage } from '../helpers/webStorage';
 import userTypes from '../constants/user.types';
-import webStorageTypes from '../constants/webStorage.types';
 import responseErrorHandler from '../helpers/error-handler.js';
 
 /**
@@ -16,13 +14,10 @@ const userServiceUri = {
   registerUrl: config.API_GATEWAY_ROOT + '/api/v1/user/register',
   verifyAccountUrl: config.API_GATEWAY_ROOT + '/api/v1/user/verify',
   changePasswordUrl: config.API_GATEWAY_ROOT + '/api/v1/user/password',
-  updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/username',
-  updatePhoneUrl: config.API_GATEWAY_ROOT + '/api/v1/user/phone',
-  uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto',
+  updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/username/',
+  updatePhoneUrl: config.API_GATEWAY_ROOT + '/api/v1/user/phone/',
+  uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto/',
   favorUrl: config.API_GATEWAY_ROOT + '/api/v1/user/favor/',
-
-  // Admin common URI
-  adminCommenUrl: config.API_GATEWAY_ROOT + '/api/v1/user/admin',
 };
 
 /**
@@ -61,20 +56,6 @@ export const registerFetch = (user) => {
         }
         return Promise.reject(error);
       }
-    })
-    .then(json => {
-      if (json.token) {
-        saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, json.token);
-      }
-
-      if (json.user) {
-        saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, json.user._id);
-        saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, json.user.favors);
-        return json;
-      } else {
-        const err = new Error("Bad response")
-        return Promise.reject(err);
-      }
     }).catch(err => {
       return Promise.reject(err);
   });
@@ -100,9 +81,6 @@ export const verifyFetch = (token) => {
       } else {
         return Promise.reject(responseErrorHandler(response));
       }
-    })
-    .then(user => {
-      return user;
     })
     .catch(err => {
       return Promise.reject(err);
@@ -139,14 +117,6 @@ export const getUserByIdFetch = (token, id) => {
           error.message = "Unknown Server Error";
         }
         return Promise.reject(error);
-      }
-    })
-    .then(user => {
-      if (user) {
-        return user;
-      } else {
-        const err = new Error("Bad response");
-        return Promise.reject(err);
       }
     }).catch(err => {
       return Promise.reject(err);
@@ -204,7 +174,7 @@ export const updateUserFetch = (type = "PROFILE", token, id, data) => {
 
   switch (type) {
     case userTypes.UPDATE_USERNAME:
-      url = userServiceUri.updateUsernameUrl + '/' + id;
+      url = userServiceUri.updateUsernameUrl + id;
       break;
 
     default:
@@ -219,9 +189,7 @@ export const updateUserFetch = (type = "PROFILE", token, id, data) => {
         return Promise.reject(responseErrorHandler(response));
       }
     })
-    .then(user => {
-      return user;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
     });
 };
@@ -241,7 +209,7 @@ export const uploadProfilePhotoFetch = (token, id, data) => {
     "body": data,
   };
 
-  return fetch(userServiceUri.uploadProfilePhotoUrl + '/' + id, options)
+  return fetch(userServiceUri.uploadProfilePhotoUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -276,7 +244,7 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
     }),
   };
 
-  return fetch(userServiceUri.updatePhoneUrl + '/' + id, options)
+  return fetch(userServiceUri.updatePhoneUrl + id, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -297,9 +265,7 @@ export const updateMobilePhoneFetch = (token, id, phoneNumber, code) => {
         return Promise.reject(error);
       }
     })
-    .then(user => {
-      return user;
-    }).catch(err => {
+    .catch(err => {
       return Promise.reject(err);
     });
 };
@@ -329,10 +295,6 @@ export const faverOperationFetch = (token, id, bid) => {
       } else {
         return Promise.reject(responseErrorHandler(response));
       }
-    })
-    .then(user => {
-      saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, user.favors);
-      return user;
     }).catch(err => {
       return Promise.reject(err);
     });

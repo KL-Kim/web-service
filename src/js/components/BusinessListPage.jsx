@@ -21,7 +21,7 @@ import webStorageTypes from '../constants/webStorage.types';
 import Areas from '../constants/nanjing.areas';
 
 // Actions
-import { getBusinessList } from '../actions/business.actions.js';
+import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
 import { getCategoriesList } from '../actions/category.actions.js';
 
 const styles = theme => ({});
@@ -69,6 +69,10 @@ class BusinessListPage extends Component {
         });
       }
     });
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -287,4 +291,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, getCategoriesList })(withStyles(styles)(BusinessListPage));
+export default connect(mapStateToProps, { getBusinessList, getCategoriesList, clearBusinessList })(withStyles(styles)(BusinessListPage));

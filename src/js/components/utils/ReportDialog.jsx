@@ -21,11 +21,12 @@ const styles = theme => ({
   }
 });
 
-class ContactDialog extends Component {
+class ReportDialog extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      type: '',
       content: '',
       contact: '',
     };
@@ -52,9 +53,7 @@ class ContactDialog extends Component {
   }
 
   hanldeSubmit() {
-    if (this.state.contact && this.state.content) {
-        this.props.handleSubmit(this.state.content, this.state.contact);
-    }
+    this.props.handleSubmit(this.state.content, this.state.contact);
   }
 
   render() {
@@ -64,31 +63,38 @@ class ContactDialog extends Component {
       <Dialog fullWidth
         open={this.props.open}
         onClose={this.handleClose}
-        aria-labelledby="contact-dialog-title"
-        aria-describedby="contact-dialog-description"
+        aria-labelledby="report-dialog-title"
+        aria-describedby="report-dialog-description"
       >
-        <DialogTitle id="contact-dialog-title">
-          Contact us
+        <DialogTitle id="report-dialog-title">
+          Report
         </DialogTitle>
         <DialogContent>
           <Grid container>
             <Grid item xs={12}>
               <FormControl fullWidth required>
-                <InputLabel htmlFor="contact">Contact (required)</InputLabel>
-                <Input
-                  type="text"
-                  id="contact"
-                  name="contact"
-                  value={this.state.contact}
+                <InputLabel htmlFor="contact">Problem (required)</InputLabel>
+                <Select
+                  value={this.state.type}
                   onChange={this.handleChange}
-                />
+                  inputProps={{
+                    name: 'type',
+                    id: 'type'
+                  }}
+                >
+                  <MenuItem value="SPAM">Spam</MenuItem>
+                  <MenuItem value="FALSE_INFORMATION">False information</MenuItem>
+                  <MenuItem value="SEXUALITY">Sexuality Explicit</MenuItem>
+                  <MenuItem value="VIOLENT">Violent</MenuItem>
+                  <MenuItem value="HARASSMENT">Harassment</MenuItem>
+                  <MenuItem value="OTHER">Other</MenuItem>
+                </Select>
               </FormControl>
-              <FormHelperText id="contact-helper-text">Please givs us your contact information, so we can contact you</FormHelperText>
             </Grid>
 
             <Grid item xs={12}>
               <FormControl fullWidth required>
-                <InputLabel htmlFor="content">Content (required)</InputLabel>
+                <InputLabel htmlFor="content">Detail</InputLabel>
                 <Input
                   type="text"
                   id="content"
@@ -99,17 +105,28 @@ class ContactDialog extends Component {
                   onChange={this.handleChange}
                 />
               </FormControl>
-              <FormHelperText id="contact-helper-text">
-                What's the problem are you facing?
-              </FormHelperText>
+              <FormHelperText id="contact-helper-text">Please provide specific details as possible as you can</FormHelperText>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth >
+                <InputLabel htmlFor="contact">Contact</InputLabel>
+                <Input
+                  type="text"
+                  id="contact"
+                  name="contact"
+                  value={this.state.contact}
+                  onChange={this.handleChange}
+                />
+              </FormControl>
+              <FormHelperText id="contact-helper-text">Please givs us your contact information, so we can contact you</FormHelperText>
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button
-            raised
+          <Button raised
             color="primary"
-            disabled={!(this.state.contact && this.state.content)}
+            disabled={!this.state.type}
             onClick={this.hanldeSubmit}>
             Send
           </Button>
@@ -122,11 +139,11 @@ class ContactDialog extends Component {
   }
 }
 
-ContactDialog.propTypes = {
+ReportDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
   "handleSubmit": PropTypes.func.isRequired,
   "handleClose": PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(ContactDialog);
+export default withStyles(styles)(ReportDialog);

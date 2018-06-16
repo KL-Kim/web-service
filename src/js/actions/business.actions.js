@@ -76,7 +76,7 @@ export const getBusinessList = (params) => {
  * @param {String} value - Type value
  * @param {String} by - User id
  */
-export const getSingleBusiness = (type, value, by) => {
+export const getSingleBusiness = (slug) => {
   const _getSingleBusinessRequest = () => ({
     "type": businessTypes.GET_SINGLE_BUSINESS_REQUEST,
     "meta": {},
@@ -99,12 +99,12 @@ export const getSingleBusiness = (type, value, by) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(type) || _.isEmpty(value)) {
+    if (_.isEmpty(slug)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
     dispatch(_getSingleBusinessRequest());
-    return fetchSingleBusiness(type, value, by)
+    return fetchSingleBusiness(slug)
       .then(business => {
         dispatch(_getSignleBusinessSuccess());
 

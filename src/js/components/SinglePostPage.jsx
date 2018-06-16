@@ -27,6 +27,7 @@ import { MenuList, MenuItem } from 'material-ui/Menu';
 import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
 import Collapse from 'material-ui/transitions/Collapse';
 import { ListItemText } from 'material-ui/List';
+import Tooltip from 'material-ui/Tooltip';
 
 // Material UI Icons
 import ErrorOutline from 'material-ui-icons/ErrorOutline';
@@ -37,7 +38,7 @@ import ThumbDown from 'material-ui-icons/ThumbDown';
 // Custom Components
 import Container from './utils/Container';
 import CommentPanel from './utils/CommentPanel';
-import ContactDialog from './utils/ContactDialog';
+import ReportDialog from './utils/ReportDialog';
 import ProperName from './utils/ProperName';
 import ElapsedTime from '../helpers/ElapsedTime';
 
@@ -103,7 +104,7 @@ class SinglePostPage extends Component {
     this.handleVote = this.handleVote.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
     this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
-    this.hanldleSubmitReport = this.hanldleSubmitReport.bind(this);
+    this.handleSubmitReport = this.handleSubmitReport.bind(this);
     this.loadMore = this.loadMore.bind(this);
   }
 
@@ -267,13 +268,18 @@ class SinglePostPage extends Component {
     });
   }
 
-  hanldleSubmitReport(type, content, contact) {
+  handleSubmitReport(type, content, contact) {
     if (this.state.post) {
       this.props.reportPost(this.state.post._id, {
         type,
         content,
         contact,
-      });
+      })
+      .then(response => {
+        this.setState({
+          "reportDialogOpen": false
+        });
+      })
     }
   }
 
@@ -337,7 +343,9 @@ class SinglePostPage extends Component {
 
                       <span>
                         <IconButton color="default" onClick={this.handleReportDialogOpen}>
-                          <ErrorOutline />
+                          <Tooltip title="Report" id="tooltip-report">
+                            <ErrorOutline />
+                          </Tooltip>
                         </IconButton>
                       </span>
                     </Paper>
@@ -377,7 +385,10 @@ class SinglePostPage extends Component {
                             >
                               <ClickAwayListener onClickAway={this.handleSortPopperClose}>
                                 <Collapse in={this.state.sortPopperOpen} id="menu-list-collapse" style={{ transformOrigin: '0 0 0' }}>
-                                  <Paper style={{ margin: 3 }}>
+                                  <Paper style={{
+                                      width: 150,
+                                    }}
+                                  >
                                     <MenuList role="menu">
                                       <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSelectSort('useful')}>
                                         <ListItemText primary="Useful" />
@@ -474,7 +485,7 @@ class SinglePostPage extends Component {
                     </DialogActions>
                   </Dialog>
 
-                  <ContactDialog
+                  <ReportDialog
                     open={this.state.reportDialogOpen}
                     handleSubmit={this.handleSubmitReport}
                     handleClose={this.handleReportDialogClose}

@@ -116,10 +116,6 @@ export const reviewOperationFetch = (type, token, data) => {
       options.method = 'POST';
       break;
 
-    case "UPDATE":
-      options.method = 'PUT';
-      break;
-
     case "DELETE":
       options.method = 'DELETE';
       break;

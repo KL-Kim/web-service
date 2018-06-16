@@ -121,6 +121,7 @@ class ReviewPage extends Component {
                             business={review.business}
                             showBusinessName={true}
                             isOwn={review.userId === this.props.user._id}
+                            isLoggedIn={this.props.isLoggedIn}
                             content={review.content}
                             rating={review.rating}
                             upvoteNum={review.upvote.length}
