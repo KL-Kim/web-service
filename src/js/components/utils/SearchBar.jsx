@@ -15,26 +15,51 @@ const styles = theme => ({
 });
 
 class SearchBar extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      "search": '',
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+  }
+
+  handleChange(e) {
+    const { name, value } = e.target;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSearch(e) {
+    e.preventDefault();
+
+    this.props.history.push("/search?s=" + this.state.search);
+  }
+
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        <form noValidate autoComplete="off" >
-          <Grid container spacing={8} justify="center" alignItems="center">
-            <Grid item xs={6}>
+        <Grid container spacing={8} justify="center" alignItems="center">
+          <Grid item xs={6}>
+            <form onSubmit={this.handleSearch}>
               <FormControl fullWidth>
-                <InputLabel htmlFor="adornment-password">Search</InputLabel>
+                <InputLabel htmlFor="search">Search</InputLabel>
                 <Input
-                  id="search"
                   type="text"
+                  id="search"
+                  name="search"
                   onChange={this.handleChange}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label="Toggle password visibility"
+                        aria-label="Searching"
                         onClick={this.handleSearch}
-
                       >
                         <Search />
                       </IconButton>
@@ -42,9 +67,11 @@ class SearchBar extends Component {
                   }
                 />
               </FormControl>
-            </Grid>
+            </form>
           </Grid>
-          <Grid container spacing={0} justify="center" alignItems="center">
+        </Grid>
+
+        <Grid container spacing={0} justify="center" alignItems="center">
             <Grid item xs={8}>
               <Grid container spacing={0} justify="center" alignItems="center">
                 <Grid item xs={3}>
@@ -62,7 +89,7 @@ class SearchBar extends Component {
               </Grid>
             </Grid>
           </Grid>
-        </form>
+
       </div>
     );
   }

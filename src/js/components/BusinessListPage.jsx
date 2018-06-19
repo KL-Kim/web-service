@@ -206,7 +206,6 @@ class BusinessListPage extends Component {
     return (
       <Container>
         <div>
-
           <Grid container spacing={8}>
             <Grid item xs={12}>
               <Typography type="title" gutterBottom>Category</Typography>
@@ -244,14 +243,15 @@ class BusinessListPage extends Component {
           >
             <Grid container spacing={16}>
               {
-                _.isEmpty(businessList) ? <Grid item xs={12}><Typography type="headline" align="center">None</Typography></Grid> :
-                  businessList.map((item, i) => {
+                _.isEmpty(businessList)
+                ? <Grid item xs={12}><Typography type="headline" align="center">None</Typography></Grid>
+                : businessList.map(item => {
                     if (!_.isEmpty(this.state.myFavors)) {
                       index = this.state.myFavors.indexOf(item._id);
                     }
 
                     return (
-                      <Grid item xs={3} key={i}>
+                      <Grid item xs={3} key={item._id}>
                         <BusinessCard
                           history={this.props.history}
                           key={item._id}

@@ -115,7 +115,10 @@ class SingleBusinessPage extends Component {
             business: business,
             isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
           });
-          return this.props.getReviews(0, this.state.limit, { 'bid': business._id });
+          return this.props.getReviews({
+            limit: this.state.limit,
+            bid: business._id,
+          });
         }
 
         return ;
@@ -188,14 +191,15 @@ class SingleBusinessPage extends Component {
         if (response) {
           this.handleReportDialogClose();
         }
-      })
+      });
     }
   }
 
   handleOrderBy = (item) => e => {
-    this.props.getReviews(0, this.state.limit, {
-      'bid': this.state.business._id,
-      'orderBy': item,
+    this.props.getReviews({
+      limit: this.state.limit,
+      bid: this.state.business._id,
+      orderBy: item,
     }).then((response => {
       if (response) {
         this.setState({
@@ -226,7 +230,8 @@ class SingleBusinessPage extends Component {
 
   loadMoreReviews() {
     if (this.state.hasMore) {
-      this.props.getReviews(0, this.state.count + this.state.limit, {
+      this.props.getReviews({
+        limit: this.state.count + this.state.limit,
         'bid': this.state.business._id,
         'orderBy': this.state.orderBy,
       }).then((response => {
@@ -407,9 +412,9 @@ class SingleBusinessPage extends Component {
                   <Masonry>
                     {
                       _.isEmpty(reviews) ? (<p>None</p>)
-                        : reviews.map((review, index) => (
+                        : reviews.map(review => (
                           <ReviewCard
-                            key={index}
+                            key={review._id}
                             id={review._id}
                             owner={review.user}
                             user={this.props.user}

@@ -8,19 +8,19 @@ import { fetchCategoriesOrTags } from '../api/business.service';
 
 /**
  * Get business categories list
- * @param {String} search - Search term
+ * @param {Object} params - Parameter object
  */
-export const getCategoriesList = (search) => {
+export const getCategoriesList = (params) => {
   const _getCategoriesRequest = () => ({
     "type": categoryTypes.GET_CATEGORY_REQUEST,
   });
 
-  const _getCategoriesSuccess = (reponse) => ({
+  const _getCategoriesSuccess = (response) => ({
     "type": categoryTypes.GET_CATEGORY_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {
-      list: reponse
+      list: response
     }
   });
 
@@ -34,7 +34,7 @@ export const getCategoriesList = (search) => {
   return (dispatch, getState) => {
     dispatch(_getCategoriesRequest());
 
-    return fetchCategoriesOrTags("CATAGORY", search)
+    return fetchCategoriesOrTags("CATAGORY", params)
       .then(response => {
         return dispatch(_getCategoriesSuccess(response));
       })

@@ -76,41 +76,41 @@ class SearchPage extends Component {
     }
   }
 
-  componentDidUpdate() {
-    const parsed = qs.parse(this.props.location.search);
-
-    if (parsed.s !== this.state.s) {
-      this.setState({
-        s: parsed.s
-      });
-
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        search: parsed.s,
-      })
-      .then(response => {
-        if (response) {
-          const categories = [];
-          const areas = [];
-
-          response.list.map(business => {
-            categories.push(business.category);
-            areas.push(business.address.area);
-
-            return '';
-          });
-
-          this.setState({
-            s: parsed.s,
-            categories: categories.slice(),
-            areas: areas.slice(),
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
-          });
-        }
-      });
-    }
-  }
+  // componentDidUpdate() {
+  //   const parsed = qs.parse(this.props.location.search);
+  //
+  //   if (parsed.s !== this.state.s) {
+  //     this.setState({
+  //       s: parsed.s
+  //     });
+  //
+  //     this.props.getBusinessList({
+  //       limit: this.state.limit,
+  //       search: parsed.s,
+  //     })
+  //     .then(response => {
+  //       if (response) {
+  //         const categories = [];
+  //         const areas = [];
+  //
+  //         response.list.map(business => {
+  //           categories.push(business.category);
+  //           areas.push(business.address.area);
+  //
+  //           return '';
+  //         });
+  //
+  //         this.setState({
+  //           s: parsed.s,
+  //           categories: categories.slice(),
+  //           areas: areas.slice(),
+  //           count: this.state.limit,
+  //           hasMore: this.state.limit < this.props.totalCount
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 
   handleClickCategory = slug => e => {
     if (this.state.categorySlug !== slug) {

@@ -24,7 +24,7 @@ export const clearReviewsList = () => {
  * @param {Object} filter - Reviews list filter
  * @param {search} search - Search reviews
  */
-export const getReviews = (skip, limit, filter, search) => {
+export const getReviews = ({ skip, limit, search, bid, uid, orderBy } = {}) => {
   const _getReviewsRequest = () => ({
     "type": reviewTypes.GET_REVIEWS_REQUEST,
     "meta": {},
@@ -52,7 +52,7 @@ export const getReviews = (skip, limit, filter, search) => {
   return (dispatch, getState) => {
     dispatch(_getReviewsRequest());
 
-    return fetchReviews(skip, limit, filter, search)
+    return fetchReviews({ skip, limit, search, bid, uid, orderBy })
       .then(response => {
         dispatch(_getReviewsSuccess(response));
 
@@ -139,7 +139,6 @@ export const addNewReview = (data) => {
       });
   }
 }
-
 
 /**
  * Update review

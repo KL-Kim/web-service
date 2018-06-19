@@ -21,7 +21,7 @@ const reviewSerivceUri = {
  * @param {Object} filter - Reviews list filter
  * @param {search} search - Search reviews
  */
-export const fetchReviews = (skip, limit, filter = {}, search) => {
+export const fetchReviews = ({ skip, limit, search, bid, uid, orderBy } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -43,19 +43,19 @@ export const fetchReviews = (skip, limit, filter = {}, search) => {
     url = url + '&search=' + search;
   }
 
-  if (!_.isEmpty(filter)) {
-    if (filter.bid) {
-      url = url + '&bid=' + filter.bid;
-    }
 
-    if (filter.uid) {
-      url = url + '&uid=' + filter.uid;
-    }
-
-    if (filter.orderBy) {
-      url = url + '&orderBy=' + filter.orderBy;
-    }
+  if (bid) {
+    url = url + '&bid=' + bid;
   }
+
+  if (uid) {
+    url = url + '&uid=' + uid;
+  }
+
+  if (orderBy) {
+    url = url + '&orderBy=' + orderBy;
+  }
+
 
   return fetch(url, options)
     .then(response => {

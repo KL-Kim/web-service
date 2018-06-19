@@ -16,9 +16,7 @@ import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 import { getReviews, deleteReview } from '../../actions/review.actions';
 
-const styles = theme => ({
-
-});
+const styles = theme => ({});
 
 class ReviewPage extends Component {
   constructor(props) {
@@ -35,11 +33,13 @@ class ReviewPage extends Component {
 
     this.handleOrderBy = this.handleOrderBy.bind(this);
     this.loadMoreReviews = this.loadMoreReviews.bind(this);
+    this.getNewReviews = this.getNewReviews.bind(this);
   }
 
   componentDidMount() {
     if (this.state.userId) {
-      this.props.getReviews(0, this.state.count, {
+      this.props.getReviews({
+        limit: this.state.count,
         'uid': this.state.userId,
         'orderBy': this.state.orderBy,
       }).then(response => {
@@ -55,7 +55,8 @@ class ReviewPage extends Component {
 
   handleOrderBy = (item) => e => {
     if (this.state.userId) {
-      this.props.getReviews(0, this.state.limit, {
+      this.props.getReviews({
+        limit: this.state.limit,
         'uid': this.state.userId,
         'orderBy': item,
       }).then(response => {
@@ -72,7 +73,8 @@ class ReviewPage extends Component {
 
   loadMoreReviews() {
     if (this.state.hasMore) {
-      this.props.getReviews(0, this.state.count + this.state.limit, {
+      this.props.getReviews({
+        limit: this.state.count + this.state.limit,
         'uid': this.state.userId,
         'orderBy': this.state.orderBy,
       }).then(response => {
@@ -84,6 +86,15 @@ class ReviewPage extends Component {
     }
   }
 
+  getNewReviews() {
+    if (this.state.userId) {
+      this.props.getReviews({
+        limit: this.state.count,
+        'uid': this.state.userId,
+        'orderBy': this.state.orderBy,
+      });
+    }
+  }
 
   render() {
     const { classes, reviews } = this.props;
@@ -112,9 +123,9 @@ class ReviewPage extends Component {
                 <Masonry>
                   {
                     _.isEmpty(reviews) ? (<p>None</p>)
-                      : reviews.map((review, index) => (
+                      : reviews.map(review => (
                           <ReviewCard
-                            key={index}
+                            key={review._id}
                             className={classes.card}
                             id={review._id}
                             owner={review.user}
@@ -129,6 +140,7 @@ class ReviewPage extends Component {
                             envGood={review.envGood}
                             comeback={review.comeback}
                             handleDelete={this.props.deleteReview}
+                            getNewReviews={this.getNewReviews}
                           />
                       ))
                   }

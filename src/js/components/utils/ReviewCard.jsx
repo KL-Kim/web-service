@@ -39,15 +39,7 @@ class ReviewCard extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
-    this.handleClickUpVote = this.handleClickUpVote.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      this.setState({
-        "upvoteNum": nextProps.upvoteNum,
-      });
-    }
+    this.hanldeUpvote = this.hanldeUpvote.bind(this);
   }
 
   handleDeleteDialogOpen() {
@@ -71,7 +63,13 @@ class ReviewCard extends Component {
       this.props.handleDelete({
         _id: this.props.id,
         uid: this.props.owner._id,
-      }).then(response => {
+      })
+      .then(response => {
+        if (response) {
+          return this.props.getNewReviews();
+        }
+      })
+      .then(() => {
         this.setState({
           deleteDialogOpen: false,
         });
@@ -79,7 +77,7 @@ class ReviewCard extends Component {
     }
   }
 
-  handleClickUpVote() {
+  hanldeUpvote() {
     if (!_.isUndefined(this.props.handleVote) && !_.isEmpty(this.props.user) && this.props.owner._id !== this.props.user._id) {
       this.props.handleVote(this.props.id, {
         uid: this.props.user._id,
@@ -127,7 +125,7 @@ class ReviewCard extends Component {
 
             <div>
               <span>
-                <IconButton onClick={this.handleClickUpVote} disabled={this.props.isOwn}>
+                <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
                   <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
                 </IconButton>
                 {this.state.upvoteNum}
@@ -177,6 +175,7 @@ ReviewCard.propTypes = {
   "comeback": PropTypes.bool,
   "upvoteNum": PropTypes.number,
   "handleDelete": PropTypes.func,
+  "getNewReviews": PropTypes.func,
 };
 
 export default withStyles(styles)(ReviewCard);

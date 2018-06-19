@@ -124,9 +124,12 @@ export const reportBusinessFetch = (id, { type, content, contact } = {}) => {
 /**
  * Fetch business categories or tags list
  * @param {String} type - category or tag
+ * @param {Number} skip - Number to skip
+ * @param {Number} limit - Number to limit
  * @param {String} search - Search term
+ * @param {String} orderBy - List order
  */
-export const fetchCategoriesOrTags = (type, search) => {
+export const fetchCategoriesOrTags = (type, { skip, limit, search, orderBy } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -137,19 +140,25 @@ export const fetchCategoriesOrTags = (type, search) => {
 
   switch (type) {
     case "CATAGORY":
-      url = businessSerivceUri.categoryUrl;
+      url = businessSerivceUri.categoryUrl + '?';
       break;
 
     case "TAG":
-      url = businessSerivceUri.tagUrl;
+      url = businessSerivceUri.tagUrl + '?';
       break;
 
     default:
       return Promise.reject(new Error("Type is missing"));
   }
 
+  if (_.isNumber(skip)) url = url + '&skip=' + skip;
+  if (_.isNumber(limit)) url = url + '&limit=' + limit;
+
   if (search)
-    url = url + '?search=' + search;
+    url = url + '&search=' + search;
+
+  if (orderBy)
+    url = url + '&orderBy=' + orderBy;
 
   return fetch(url, options)
     .then(response => {
