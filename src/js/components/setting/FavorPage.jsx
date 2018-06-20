@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
 
-import SettingContainer from './SettingContainer';
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+
+import SettingContainer from '../layout/SettingContainer';
 import BusinessCard from '../utils/BusinessCard';
 import { getBusinessList, clearBusinessList } from '../../actions/business.actions';
 import { loadFromStorage } from '../../helpers/webStorage';

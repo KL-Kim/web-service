@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Button from 'material-ui/Button';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import IconButton from 'material-ui/IconButton';
-import Search from 'material-ui-icons/Search';
+
+// Material UI Componets
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
+
+// Material UI Icons
+import Search from '@material-ui/icons/Search';
 
 const styles = theme => ({
   root: {

@@ -1,23 +1,33 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import validator from 'validator';
-import _ from 'lodash';
 import { connect } from 'react-redux';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import { CircularProgress } from 'material-ui/Progress';
+import { Link } from 'react-router-dom';
+import _ from 'lodash';
+import validator from 'validator';
 
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+// Material UI Icons
+import Error from '@material-ui/icons/Error';
+
+// Custom Components
 import config from '../config/config';
+import Container from './layout/Container';
+
+// Actions
 import { register } from '../actions/user.actions';
-import Container from './utils/Container';
+import { closeLoginDialog } from '../actions/app.actions';
 
 const styles = theme => ({
   "root": {
-    "marginTop": theme.spacing.unit * 10,
+    "marginTop": theme.spacing.unit * 20,
   },
   "paper": {
     "paddingTop": theme.spacing.unit * 5,
@@ -66,6 +76,10 @@ class UserSignup extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.closeLoginDialog();
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -220,11 +234,12 @@ class UserSignup extends Component {
         <Grid container spacing={16} justify="center" alignItems="center" className={classes.root}>
           <Grid item sm={5}>
             <Paper className={classes.paper}>
-              <Typography type="display1" align="center">
+              <Typography variant="display1" align="center">
                 Sign up
               </Typography>
               <form noValidate onSubmit={this.handleSubmit}>
                 <TextField
+                  type="text"
                   name="email"
                   error={this.state.email.showError}
                   helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
@@ -234,10 +249,13 @@ class UserSignup extends Component {
                   margin="normal"
                   label="Email"
                   id="email"
-                  type="text" />
+
+                />
                 <br />
 
                 <TextField
+                  type="password"
+                  id="password"
                   name="password"
                   error={this.state.password.showError}
                   helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
@@ -246,10 +264,12 @@ class UserSignup extends Component {
                   fullWidth
                   margin="normal"
                   label="Password"
-                  id="password"
-                  type="password" />
+                />
                 <br />
+
                 <TextField
+                  type="password"
+                  id="passwordConfirmation"
                   name="passwordConfirmation"
                   error={this.state.passwordConfirmation.showError}
                   helperText={this.state.passwordConfirmation.showError
@@ -259,10 +279,11 @@ class UserSignup extends Component {
                   fullWidth
                   margin="normal"
                   label="Confirm password"
-                  id="passwordConfirmation"
-                  type="password" />
+                />
                 <br />
+
                 <Button
+                  type="submit"
                   disabled = {
                     this.state.email.showError
                     || this.state.password.showError
@@ -270,10 +291,10 @@ class UserSignup extends Component {
                     || this.props.isFetching
                   }
                   className={classes.button}
-                  raised
+                  variant="raised"
                   color="primary"
                   fullWidth
-                  type="submit"
+
                 >
                   {signupButton}
                 </Button>
@@ -281,8 +302,11 @@ class UserSignup extends Component {
             </Paper>
             <Grid container align="center">
               <Grid item xs align="center">
-                <Typography type="body2" align="center">
-                  If you sign up, you agree to follow the TERMS and POLICY.
+                <Typography variant="body2" align="center">
+                  If you sign up, you agree to follow the
+                  <Link to="/terms-policy">
+                    TERMS and POLICY.
+                  </Link>
                 </Typography>
               </Grid>
             </Grid>
@@ -312,4 +336,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { register })(withStyles(styles)(UserSignup));
+export default connect(mapStateToProps, { register, closeLoginDialog })(withStyles(styles)(UserSignup));

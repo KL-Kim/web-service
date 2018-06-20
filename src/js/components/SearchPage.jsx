@@ -6,15 +6,17 @@ import _ from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import { FormControl, FormLabel } from 'material-ui/Form';
-import Switch from 'material-ui/Switch';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Switch from '@material-ui/core/Switch';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 
 // Custom Components
-import Container from './utils/Container';
+import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
 
 // Actions
@@ -56,11 +58,26 @@ class SearchPage extends Component {
       .then(response => {
         if (response) {
           const categories = [];
+          const categoryIds = [];
           const areas = [];
+          const areaIds = [];
+          let cIndex, aIndex;
 
           response.list.map(business => {
-            categories.push(business.category);
-            areas.push(business.address.area);
+            cIndex = categoryIds.indexOf(business.category._id);
+
+            if (cIndex < 0) {
+              categories.push(business.category);
+              categoryIds.push(business.category._id);
+            }
+
+            aIndex = areaIds.indexOf(business.address.area.code)
+
+            if (aIndex < 0) {
+              areaIds.push(business.address.area.code);
+              areas.push(business.address.area);
+            }
+
 
             return '';
           });
@@ -76,41 +93,55 @@ class SearchPage extends Component {
     }
   }
 
-  // componentDidUpdate() {
-  //   const parsed = qs.parse(this.props.location.search);
-  //
-  //   if (parsed.s !== this.state.s) {
-  //     this.setState({
-  //       s: parsed.s
-  //     });
-  //
-  //     this.props.getBusinessList({
-  //       limit: this.state.limit,
-  //       search: parsed.s,
-  //     })
-  //     .then(response => {
-  //       if (response) {
-  //         const categories = [];
-  //         const areas = [];
-  //
-  //         response.list.map(business => {
-  //           categories.push(business.category);
-  //           areas.push(business.address.area);
-  //
-  //           return '';
-  //         });
-  //
-  //         this.setState({
-  //           s: parsed.s,
-  //           categories: categories.slice(),
-  //           areas: areas.slice(),
-  //           count: this.state.limit,
-  //           hasMore: this.state.limit < this.props.totalCount
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
+  componentDidUpdate() {
+    const parsed = qs.parse(this.props.location.search.slice(1));
+
+    if (parsed.s !== this.state.s) {
+      this.setState({
+        s: parsed.s
+      });
+
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        search: parsed.s,
+      })
+      .then(response => {
+        if (response) {
+          const categories = [];
+          const categoryIds = [];
+          const areas = [];
+          const areaIds = [];
+          let cIndex, aIndex;
+
+          response.list.map(business => {
+            cIndex = categoryIds.indexOf(business.category._id);
+
+            if (cIndex < 0) {
+              categories.push(business.category);
+              categoryIds.push(business.category._id);
+            }
+
+            aIndex = areaIds.indexOf(business.address.area.code)
+
+            if (aIndex < 0) {
+              areaIds.push(business.address.area.code);
+              areas.push(business.address.area);
+            }
+
+            return '';
+          });
+
+          this.setState({
+            s: parsed.s,
+            categories: categories.slice(),
+            areas: areas.slice(),
+            count: this.state.limit,
+            hasMore: this.state.limit < this.props.totalCount
+          });
+        }
+      });
+    }
+  }
 
   handleClickCategory = slug => e => {
     if (this.state.categorySlug !== slug) {
@@ -236,17 +267,17 @@ class SearchPage extends Component {
         <div>
           <Grid container spacing={8}>
             <Grid item xs={12}>
-              <Typography type="display1" gutterBottom>Search: {this.state.s}</Typography>
+              <Typography variant="display1" gutterBottom>Search: {this.state.s}</Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>Category</Typography>
-              <Button color="primary" raised={!this.state.categorySlug} onClick={this.handleClickCategory('')}>All</Button>
+              <Typography variant="title" gutterBottom>Category</Typography>
+              <Button color="primary" variant={this.state.categorySlug ? 'text' : 'raised'} onClick={this.handleClickCategory('')}>All</Button>
               {
                 _.isEmpty(this.state.categories) ? ''
                   : this.state.categories.map((item, index) =>
                     <Button key={index}
                       color="primary"
-                      raised={this.state.categorySlug === item.enName}
+                      variant={this.state.categorySlug === item.enName ? 'raised' : 'text'}
                       onClick={this.handleClickCategory(item.enName)}
                     >
                       {item.krName}
@@ -255,14 +286,14 @@ class SearchPage extends Component {
               }
             </Grid>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>District</Typography>
-              <Button color="primary" raised={!this.state.areaCode} onClick={this.handleClickArea('')}>All</Button>
+              <Typography variant="title" gutterBottom>District</Typography>
+              <Button color="primary" variant={!this.state.areaCode ? 'raised' : 'text'} onClick={this.handleClickArea('')}>All</Button>
               {
                 _.isEmpty(this.state.areas) ? ''
                   : this.state.areas.map((item, index) =>
                     <Button key={index}
                       color="primary"
-                      raised={this.state.areaCode === item.code}
+                      variant={this.state.areaCode === item.code ? 'raised' : 'text'}
                       onClick={this.handleClickArea(item.code)}
                     >
                       {item.name}
@@ -271,10 +302,10 @@ class SearchPage extends Component {
               }
             </Grid>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>Order by</Typography>
-              <Button color="primary" raised={_.isEmpty(this.state.orderBy)} onClick={this.handleClickOrderBy('')}>Recommend</Button>
-              <Button color="primary" raised={this.state.orderBy === 'rating'} onClick={this.handleClickOrderBy('rating')}>Rating</Button>
-              <Button color="primary" raised={this.state.orderBy === 'new'} onClick={this.handleClickOrderBy('new')}>New</Button>
+              <Typography variant="title" gutterBottom>Order by</Typography>
+              <Button color="primary" variant={_.isEmpty(this.state.orderBy) ? 'raised' : 'text'} onClick={this.handleClickOrderBy('')}>Recommend</Button>
+              <Button color="primary" variant={this.state.orderBy === 'rating' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('rating')}>Rating</Button>
+              <Button color="primary" variant={this.state.orderBy === 'new' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('new')}>New</Button>
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth >
@@ -297,7 +328,7 @@ class SearchPage extends Component {
           >
             <Grid container spacing={16}>
               {
-                _.isEmpty(businessList) ? <Grid item xs={12}><Typography type="headline" align="center">None</Typography></Grid> :
+                _.isEmpty(businessList) ? <Grid item xs={12}><Typography variant="headline" align="center">None</Typography></Grid> :
                   businessList.map((item, i) => {
                     if (!_.isEmpty(this.state.myFavors)) {
                       index = this.state.myFavors.indexOf(item._id);

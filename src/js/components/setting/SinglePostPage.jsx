@@ -5,17 +5,22 @@ import Quill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import { FormControl, FormControlLabel, FormLabel } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import Button from 'material-ui/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+
 
 // Custom Components
-import SettingContainer from './SettingContainer';
+import SettingContainer from '../layout/SettingContainer';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
 
 // Actions

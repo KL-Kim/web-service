@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Button from 'material-ui/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 
 // Actions
 import { getCategoriesList } from '../../actions/category.actions.js';

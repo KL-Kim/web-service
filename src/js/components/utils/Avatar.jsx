@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { withStyles } from 'material-ui/styles';
-import Avatar from 'material-ui/Avatar';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
 
 import config from '../../config/config';
 

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import Grid from 'material-ui/Grid';
-import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 const styles = (theme) => ({
   footer: {
@@ -38,7 +40,7 @@ class Footer extends Component{
             </Grid>
           </Grid>
           <Grid item xs={4}>
-            <Typography type="caption" align="right">
+            <Typography variant="caption" align="right">
               Copyright 2018 iKoreaTown
             </Typography>
           </Grid>

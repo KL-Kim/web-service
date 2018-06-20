@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import Grid from 'material-ui/Grid';
-import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   footer: {

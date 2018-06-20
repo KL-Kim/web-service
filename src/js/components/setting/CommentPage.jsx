@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 // Custom Components
-import SettingContainer from '../setting/SettingContainer';
+import SettingContainer from '../layout/SettingContainer';
 import CommentPanel from '../utils/CommentPanel';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';

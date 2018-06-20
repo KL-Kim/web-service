@@ -1,19 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import FormData from 'form-data';
-import { withStyles } from 'material-ui/styles';
+import _ from 'lodash';
 import Dropzone from 'react-dropzone';
 import AvatarEditor from 'react-avatar-editor';
-import _ from 'lodash';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import Divider from 'material-ui/Divider';
-import { CircularProgress } from 'material-ui/Progress';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import AddPhoto from 'material-ui-icons/AddAPhoto';
 
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+// Material UI Icons
+import AddPhoto from '@material-ui/icons/AddAPhoto';
+
+// Custom Components
 import Avatar from '../../utils/Avatar';
 
 const styles = (theme) => ({
@@ -130,7 +135,7 @@ class ChangeAvatarModule extends Component {
               </Grid>
             </Grid>
           </Grid>
-            
+
           <Grid item xs={6}>
             <Grid container justify="center">
               <Grid item>

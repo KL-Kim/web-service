@@ -4,10 +4,13 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Card, {CardContent, CardActions, CardMedia } from 'material-ui/Card';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 // Custom Components
 import ProperName from './ProperName';

@@ -9,34 +9,36 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { Manager, Target, Popper } from 'react-popper';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from 'material-ui/Dialog';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
-import Portal from 'material-ui/Portal';
-import { MenuList, MenuItem } from 'material-ui/Menu';
-import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
-import Collapse from 'material-ui/transitions/Collapse';
-import { ListItemText } from 'material-ui/List';
-import Tooltip from 'material-ui/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import FormControl from '@material-ui/core/FormControl';
+
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Portal from '@material-ui/core/Portal';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Collapse from '@material-ui/core/Collapse';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // Material UI Icons
-import ErrorOutline from 'material-ui-icons/ErrorOutline';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import ThumbDown from 'material-ui-icons/ThumbDown';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ThumbUp from '@material-ui/icons/ThumbUp';
+import ThumbDown from '@material-ui/icons/ThumbDown';
 
 // Custom Components
-import Container from './utils/Container';
+import Container from './layout/Container';
 import CommentPanel from './utils/CommentPanel';
 import ReportDialog from './utils/ReportDialog';
 import ProperName from './utils/ProperName';
@@ -310,11 +312,11 @@ class SinglePostPage extends Component {
             : <div>
                 <Grid container justify="center">
                   <Grid item xs={12}>
-                    <Typography type="display3" align="center" gutterBottom>{post.title}</Typography>
-                    <Typography type="title" align="center">
+                    <Typography variant="display3" align="center" gutterBottom>{post.title}</Typography>
+                    <Typography variant="title" align="center">
                       By <strong><ProperName  user={post.authorId} /></strong>
                     </Typography>
-                    <Typography type="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
+                    <Typography variant="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
                   </Grid>
                   <Grid item xs={8}>
                     <Img src={image} className={classes.image} />
@@ -354,7 +356,7 @@ class SinglePostPage extends Component {
 
                 <Grid container justify="center">
                   <Grid item xs={8}>
-                    <Typography type="display1" align="center" gutterBottom>Comments</Typography>
+                    <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
                   </Grid>
                   <Grid item xs={8}>
                     <Grid container>
@@ -406,7 +408,7 @@ class SinglePostPage extends Component {
                       </Grid>
                       <Grid item xs={6}>
                         <div className={classes.buttonContainer}>
-                          <Button raised color="primary" onClick={this.handleOpenWriteCommentDialog}>
+                          <Button variant="raised" color="primary" onClick={this.handleOpenWriteCommentDialog}>
                             Write comment
                           </Button>
                         </div>
@@ -476,7 +478,7 @@ class SinglePostPage extends Component {
                       </FormControl>
                     </DialogContent>
                     <DialogActions>
-                      <Button raised color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                      <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
                         Save
                       </Button>
                       <Button color="primary" onClick={this.handleCloseWriteCommentDialog}>

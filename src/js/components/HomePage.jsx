@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 
 // Custom Components
-import Container from './utils/Container';
+import Container from './layout/Container';
 import SearchBar from './utils/SearchBar';
 import CategoryBar from './utils/CategoryBar';
 import BusinessCard from './utils/BusinessCard';
@@ -70,7 +70,7 @@ class HomePage extends Component {
 
           <Grid container spacing={16} justify="center" alignItems="center">
             <Grid item xs={12}>
-              <Typography type="display3" gutterBottom align="center">
+              <Typography variant="display1" gutterBottom align="center">
                 Hot & New Bussiness
               </Typography>
             </Grid>

@@ -6,15 +6,17 @@ import _ from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import { FormControl, FormLabel } from 'material-ui/Form';
-import Switch from 'material-ui/Switch';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Switch from '@material-ui/core/Switch';
 
 // Custom Components
-import Container from './utils/Container';
+import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
 import { loadFromStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
@@ -195,12 +197,12 @@ class BusinessListPage extends Component {
         }}
         key={i}
       >
-        <Button color="primary" raised={this.state.category === item.enName}>{item.krName}</Button>
+        <Button color="primary" variant={this.state.category === item.enName ? 'raised' : 'text'}>{item.krName}</Button>
       </Link>
     ));
 
     const areasList = Areas.map((item, i) =>
-      <Button color="primary" raised={this.state.area === item.code} key={i} onClick={this.handleClickArea(item.code)}>{item.cnName + '-' + item.pinyin}</Button>
+      <Button color="primary" variant={this.state.area === item.code ? 'raised' : 'text'} key={i} onClick={this.handleClickArea(item.code)}>{item.cnName + '-' + item.pinyin}</Button>
     );
 
     return (
@@ -208,19 +210,19 @@ class BusinessListPage extends Component {
         <div>
           <Grid container spacing={8}>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>Category</Typography>
+              <Typography variant="title" gutterBottom>Category</Typography>
               {categoryList}
             </Grid>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>District</Typography>
-              <Button color="primary" raised={!this.state.area} onClick={this.handleClickArea('')}>All</Button>
+              <Typography variant="title" gutterBottom>District</Typography>
+              <Button color="primary" variant={!this.state.area ? 'raised' : 'text'} onClick={this.handleClickArea('')}>All</Button>
               {areasList}
             </Grid>
             <Grid item xs={12}>
-              <Typography type="title" gutterBottom>Order by</Typography>
-              <Button color="primary" raised={_.isEmpty(this.state.orderBy)} onClick={this.handleClickOrderBy('')}>Recommend</Button>
-              <Button color="primary" raised={this.state.orderBy === 'rating'} onClick={this.handleClickOrderBy('rating')}>Rating</Button>
-              <Button color="primary" raised={this.state.orderBy === 'new'} onClick={this.handleClickOrderBy('new')}>New</Button>
+              <Typography variant="title" gutterBottom>Order by</Typography>
+              <Button color="primary" variant={_.isEmpty(this.state.orderBy) ? 'raised' : 'text'} onClick={this.handleClickOrderBy('')}>Recommend</Button>
+              <Button color="primary" variant={this.state.orderBy === 'rating' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('rating')}>Rating</Button>
+              <Button color="primary" variant={this.state.orderBy === 'new' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('new')}>New</Button>
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth >
@@ -244,7 +246,7 @@ class BusinessListPage extends Component {
             <Grid container spacing={16}>
               {
                 _.isEmpty(businessList)
-                ? <Grid item xs={12}><Typography type="headline" align="center">None</Typography></Grid>
+                ? <Grid item xs={12}><Typography variant="headline" align="center">None</Typography></Grid>
                 : businessList.map(item => {
                     if (!_.isEmpty(this.state.myFavors)) {
                       index = this.state.myFavors.indexOf(item._id);

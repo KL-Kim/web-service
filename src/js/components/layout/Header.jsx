@@ -1,37 +1,53 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import Drawer from 'material-ui/Drawer';
-import { MenuList, MenuItem } from 'material-ui/Menu';
-import Popover from 'material-ui/Popover';
-import List, { ListItem, ListItemText, ListItemIcon } from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputAdornment } from 'material-ui/Input';
-import IconButton from 'material-ui/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@material-ui/core/Drawer';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import Popover from '@material-ui/core/Popover';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+
 
 // Material UI Icons
-import AccountCircle from 'material-ui-icons/AccountCircle';
-import ExitToApp from 'material-ui-icons/ExitToApp';
-import Notifications from 'material-ui-icons/Notifications';
-import Search from 'material-ui-icons/Search';
-import FiberNew from 'material-ui-icons/FiberNew';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import ExitToApp from '@material-ui/icons/ExitToApp';
+import Notifications from '@material-ui/icons/Notifications';
+import Search from '@material-ui/icons/Search';
+import FiberNew from '@material-ui/icons/FiberNew';
 
 // Custom Components
-import LinkContainer from './LinkContainer';
-import Avatar from './Avatar';
-import ProperName from './ProperName';
-import MessageContent from './MessageContent';
+import LinkContainer from '../utils/LinkContainer';
+import Avatar from '../utils/Avatar';
+import LoginDialog from '../utils/LoginDialog';
+import MessageContent from '../utils/MessageContent';
+import ProperName from '../utils/ProperName';
 import getElapsedTime from '../../helpers/ElapsedTime';
+
+// Actions
+import { logout } from '../../actions/user.actions';
+import { openLoginDialog } from '../../actions/app.actions';
+import { getNotification } from '../../actions/notification.actions';
 
 const styles = theme => ({
   "appBar": {
@@ -175,9 +191,10 @@ class Header extends Component {
       <div>
         <AppBar position={position} className={classes.appBar}>
           <Toolbar>
-            <Typography type="title" color="inherit" align="left" className={classes.flex}>
+            <Typography variant="title" color="inherit" align="left" className={classes.flex}>
               <LinkContainer to="/"><Button color="inherit">iKoreaTown</Button></LinkContainer>
             </Typography>
+
             <div>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth >
@@ -186,7 +203,7 @@ class Header extends Component {
                       root: classes.bootstrapRoot,
                       input: classes.bootstrapInput,
                     }}
-                    id="search"
+                    id="search-bar"
                     type="text"
                     name="search"
                     placeholder="Search"
@@ -207,9 +224,11 @@ class Header extends Component {
                 </FormControl>
               </form>
             </div>
+
             <LinkContainer to="/business/category/restaurant">
               <Button color="inherit">Business</Button>
             </LinkContainer>
+
             <LinkContainer to="/blog">
               <Button color="inherit">Blog</Button>
             </LinkContainer>
@@ -232,14 +251,54 @@ class Header extends Component {
               <LinkContainer to="/change-password/123"><Button color="inherit">Change Password</Button></LinkContainer>
               **/
             }
+
             {
               isLoggedIn
                 ? <Button color="inherit" onClick={this.toggleDrawer}>
                     <Avatar user={user} updatedAt={updatedAt} />
                   </Button>
-                : <LinkContainer to="/signin"><Button color="inherit">Sign In</Button></LinkContainer>
+                : <Button color="inherit" onClick={this.props.openLoginDialog}>Sign in</Button>
             }
           </Toolbar>
+        </AppBar>
+
+        <div>
+          {
+            isLoggedIn
+             ? (<Drawer
+                  anchor="right"
+                  open={this.state.drawerOpen}
+                  onClose={this.toggleDrawer}
+                  variant="temporary"
+                  classes={{paper: classes.drawerPaper}}
+                >
+                  <div className={classes.account}>
+                    <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
+                    <Typography variant="body1" className={classes.name}><ProperName user={user} /></Typography>
+                  </div>
+
+                  <Divider />
+
+                  <MenuList>
+                    <LinkContainer to="/setting/account">
+                      <MenuItem>
+                        <ListItemIcon>
+                          <AccountCircle />
+                        </ListItemIcon>
+                        <ListItemText primary="account" />
+                      </MenuItem>
+                    </LinkContainer>
+                    <MenuItem>
+                      <ListItemIcon>
+                        <ExitToApp />
+                      </ListItemIcon>
+                      <ListItemText primary="logout" onClick={this.handleLogout}/>
+                    </MenuItem>
+                  </MenuList>
+                </Drawer>)
+              : <LoginDialog />
+          }
+
           <Popover
             open={this.state.popoverOpen}
             anchorEl={this.anchorEl}
@@ -256,11 +315,11 @@ class Header extends Component {
             <div className={classes.popoverContainer}>
               <Grid container>
                 <Grid item xs={6}>
-                  <Typography type="body1">{newNotificationCount} new notifications</Typography>
+                  <Typography variant="body1">{newNotificationCount} new notifications</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Link to="/setting/notification">
-                    <Typography type="button" align="right">View all</Typography>
+                    <Typography variant="button" align="right">View all</Typography>
                   </Link>
                 </Grid>
               </Grid>
@@ -268,7 +327,7 @@ class Header extends Component {
               <List>
                 {
                   _.isEmpty(this.state.notificationsList)
-                    ? <Typography type="body1" align="center">No more new notifications</Typography>
+                    ? <Typography variant="body1" align="center">No more new notifications</Typography>
                     : this.state.notificationsList.map((item, index) => (
                       <ListItem key={index} divider button onClick={this.handleClickListItem(item)}>
                         <ListItemIcon>
@@ -304,42 +363,7 @@ class Header extends Component {
               </List>
             </div>
           </Popover>
-        </AppBar>
-        {
-          isLoggedIn
-           ? (<Drawer
-                anchor="right"
-                open={this.state.drawerOpen}
-                onClose={this.toggleDrawer}
-                variant="temporary"
-                classes={{paper: classes.drawerPaper}}
-              >
-                <div className={classes.account}>
-                  <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
-                  <Typography type="body1" className={classes.name}><ProperName user={user} /></Typography>
-                </div>
-
-                <Divider />
-
-                <MenuList>
-                  <LinkContainer to="/setting/account">
-                    <MenuItem>
-                      <ListItemIcon>
-                        <AccountCircle />
-                      </ListItemIcon>
-                      <ListItemText primary="account" />
-                    </MenuItem>
-                  </LinkContainer>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <ExitToApp />
-                    </ListItemIcon>
-                    <ListItemText primary="logout" onClick={this.handleLogout}/>
-                  </MenuItem>
-                </MenuList>
-              </Drawer>)
-            : ''
-        }
+        </div>
       </div>
     );
   }
@@ -354,6 +378,20 @@ Header.propTypes = {
   newNotificationCount: PropTypes.number.isRequired,
   logout: PropTypes.func.isRequired,
   getNotification: PropTypes.func.isRequired,
+  openLoginDialog: PropTypes.func.isRequired,
 };
 
-export default withRouter(withStyles(styles)(Header));
+const mapStateToProps = (state, ownProps) => {
+  return {
+    "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
+    "updatedAt": state.userReducer.updatedAt,
+    "newNotificationCount": state.notificationReducer.unreadCount,
+  };
+};
+
+export default withRouter(connect(mapStateToProps, {
+  logout,
+  getNotification,
+  openLoginDialog
+})(withStyles(styles)(Header)));

@@ -2,21 +2,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
-import { CircularProgress } from 'material-ui/Progress';
 
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+// Custom Components
 import config from '../config/config';
-import Container from './utils/Container';
+import Container from './layout/Container';
+
+// Actions
 import { changePassword } from '../actions/user.actions';
 
 const styles = theme => ({
   root: {
-    marginTop: theme.spacing.unit * 10,
+    marginTop: theme.spacing.unit * 20,
   },
   paper: {
     paddingTop: theme.spacing.unit * 5,
@@ -146,18 +151,19 @@ class ChangePasswordPage extends Component {
 
   render() {
     const { classes } = this.props;
-    let changePasswordButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Change Password';
 
     return (
       <Container>
         <Grid container spacing={16} justify="center" className={classes.root}>
           <Grid item xs={5}>
             <Paper className={classes.paper}>
-              <Typography type="display1" align="center">
+              <Typography variant="display1" align="center">
                 Change Password
               </Typography>
               <form onSubmit={this.handleSubmit}>
                 <TextField
+                  type="password"
+                  id="password"
                   name="password"
                   error={this.state.password.showError}
                   helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
@@ -165,11 +171,14 @@ class ChangePasswordPage extends Component {
                   onBlur={this.isValidPassword}
                   fullWidth
                   margin="normal"
-                  type="password"
+
                   label="Password"
-                  id="password" />
+                />
                 <br />
+
                 <TextField
+                  type="password"
+                  id="passwordConfirmation"
                   name="passwordConfirmation"
                   error={this.state.passwordConfirmation.showError}
                   helperText={this.state.passwordConfirmation.showError
@@ -179,22 +188,28 @@ class ChangePasswordPage extends Component {
                   fullWidth
                   margin="normal"
                   label="Confirm password"
-                  id="passwordConfirmation"
-                  type="password" />
-                <Button
-                  name="signin"
-                  disabled={this.state.password.showError || this.state.passwordConfirmation.showError || this.props.isFetching}
-                  className={classes.button}
-                  raised
-                  color="primary"
-                  type="submit"
-                  fullWidth
-                >
-                  {changePasswordButton}
-                </Button>
+                />
+                <br />
+                <div>
+                  <Button fullWidth
+                    type="submit"
+                    name="signin"
+                    variant="raised"
+                    color="primary"
+                    className={classes.button}
+                    disabled={this.state.password.showError || this.state.passwordConfirmation.showError || this.props.isFetching}
+                    onClick={this.handleSubmit}
+                  >
+                    {this.props.isFetching ? (<CircularProgress size={20} />) : 'Change Password'}
+                  </Button>
+                </div>
               </form>
             </Paper>
-            <Typography type="body" align="center" color={this.props.changePasswordError ? "error" : "inherit"}>
+            <Typography
+              variant="body"
+              align="center"
+              color={this.props.changePasswordError ? "error" : "inherit"}
+            >
               {this.props.message}
             </Typography>
           </Grid>

@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 // Custom Components
-import SettingContainer from './SettingContainer';
+import SettingContainer from '../layout/SettingContainer';
 import UsernamePanel from './modules/UsernamePanel';
 import EmailPanel from './modules/EmailPanel';
 import NamePanel from './modules/NamePanel';

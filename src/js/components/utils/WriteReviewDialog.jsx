@@ -7,20 +7,20 @@ import Dropzone from 'react-dropzone';
 import Img from 'react-image';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Button from 'material-ui/Button';
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from 'material-ui/Dialog';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
-import Tooltip from 'material-ui/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Tooltip from '@material-ui/core/Tooltip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
 
 // Material UI Icons
-import AddPhoto from 'material-ui-icons/AddAPhoto';
+import AddPhoto from '@material-ui/icons/AddAPhoto';
 
 const styles = theme => ({
   "button": {
@@ -159,9 +159,8 @@ class WriteReviewDialog extends Component {
                   color="primary"
                   disabled={this.props.readOnly}
                   className={classes.button}
-                  raised={this.state.serviceGood}
+                  variant={this.state.serviceGood ? 'raised' : 'text'}
                   onClick={this.handleClick("serviceGood")}
-
                 >
                   서비스 {this.state.serviceGood ? '+1' : ''}
                 </Button>
@@ -171,7 +170,7 @@ class WriteReviewDialog extends Component {
                   disabled={this.props.readOnly}
                   color="primary"
                   className={classes.button}
-                  raised={this.state.envGood}
+                  variant={this.state.envGood ? 'raised' : 'text'}
                   onClick={this.handleClick("envGood")}
                 >
                   환경 {this.state.envGood ? '+1' : ''}
@@ -182,7 +181,7 @@ class WriteReviewDialog extends Component {
                   disabled={this.props.readOnly}
                   color="primary"
                   className={classes.button}
-                  raised={this.state.comeback}
+                  variant={this.state.comeback ? 'raised' : 'text'}
                   onClick={this.handleClick("comeback")}
                 >
                   다시 오고 싶다 {this.state.comeback ? '+1' : ''}
@@ -244,7 +243,7 @@ class WriteReviewDialog extends Component {
         <DialogActions>
           {
             this.props.readOnly ? ''
-              : <Button raised autoFocus color="primary" disabled={!this.state.rating} onClick={this.handleSubmit}>
+              : <Button variant="raised" autoFocus color="primary" disabled={!this.state.rating} onClick={this.handleSubmit}>
                 Save
               </Button>
           }

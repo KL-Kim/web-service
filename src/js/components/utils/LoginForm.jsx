@@ -228,7 +228,11 @@ class LoginForm extends Component {
           type="submit"
           fullWidth
         >
-          {this.props.isFetching ? (<CircularProgress size={20} />) : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')}
+          {
+            this.props.isFetching
+            ? (<CircularProgress size={20} />)
+            : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')
+          }
         </Button>
       </form>
     );

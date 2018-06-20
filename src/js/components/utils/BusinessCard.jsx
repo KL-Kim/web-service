@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
-import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
-import Card, { CardMedia, CardContent, CardActions } from 'material-ui/Card';
-import Typography from 'material-ui/Typography';
-import Tooltip from 'material-ui/Tooltip';
-import IconButton from 'material-ui/IconButton';
-import Share from 'material-ui-icons/Share';
-import FavoriteBorder from 'material-ui-icons/FavoriteBorder';
-import Favorite from 'material-ui-icons/Favorite';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+
+// Material UI Icons
+import Share from '@material-ui/icons/Share';
+import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+import Favorite from '@material-ui/icons/Favorite';
 
 import { favorOperation } from '../../actions/user.actions';
 
@@ -70,7 +77,7 @@ class BusinessCard extends Component {
               title={this.props.title}
             />
             <CardContent>
-              <Typography type="title">{this.props.title}</Typography>
+              <Typography variant="title">{this.props.title}</Typography>
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
             </CardContent>
           </Link>

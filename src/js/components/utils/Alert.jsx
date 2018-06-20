@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import Snackbar from 'material-ui/Snackbar';
-import IconButton from 'material-ui/IconButton';
-import Fade from 'material-ui/transitions/Fade';
-import CloseIcon from 'material-ui-icons/Close';
-import ErrorIcon from 'material-ui-icons/Error';
-import CheckCircle from 'material-ui-icons/CheckCircle';
-
 import { connect } from 'react-redux';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import Fade from '@material-ui/core/Fade';
+
+// Material UI Icons
+import CloseIcon from '@material-ui/icons/Close';
+import ErrorIcon from '@material-ui/icons/Error';
+import CheckCircle from '@material-ui/icons/CheckCircle';
+
+// Actions
 import { alertClear } from '../../actions/alert.actions'
 
 const styles = theme => ({

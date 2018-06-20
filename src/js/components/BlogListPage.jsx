@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 // Custom Components
-import Container from './utils/Container';
+import Container from './layout/Container';
 import PostPanel from './utils/PostPanel';
 
 // Actions
@@ -79,7 +79,7 @@ class BlogListPage extends Component {
     return (
       <Container>
         <div>
-          <Typography type="display1" gutterBottom align="center">Blog list</Typography>
+          <Typography variant="display1" gutterBottom align="center">Blog list</Typography>
           <Grid container alignContent="center" alignItems="center" justify="center">
             {
               _.isEmpty(list) ? ''
@@ -100,11 +100,11 @@ class BlogListPage extends Component {
             {
               this.state.hasMore
                 ? <div className={classes.buttonContainer}>
-                    <Button raised color="primary" onClick={this.loadMore}>Read more</Button>
+                    <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
                   </div>
 
 
-                : <Typography type="body1" align="center" gutterBottom>No more posts</Typography>
+                : <Typography variant="body1" align="center" gutterBottom>No more posts</Typography>
             }
             </Grid>
           </Grid>

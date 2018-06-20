@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 // Custom Components
-import Header from '../utils/Header';
+import Header from './Header';
 import SettingFooter from './SettingFooter';
 import Sidebar from './Sidebar';
 import Alert from '../utils/Alert';
-import DevTools from '../utils/DevTools';
+import DevTools from './DevTools';
 
 // Actions
 import { logout } from '../../actions/user.actions';

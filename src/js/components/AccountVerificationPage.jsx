@@ -3,14 +3,19 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import { CircularProgress } from 'material-ui/Progress';
 
-import Container from './utils/Container';
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+// Custom Components
+import Container from './layout/Container';
+
+// Actions
 import { verifyAccount } from '../actions/user.actions.js';
 
 const styles = theme => ({
@@ -71,14 +76,14 @@ class AccountVerificationPage extends Component {
         <Grid container spacing={16} justify="center" className={classes.root}>
           <Grid item xs={8}>
             <Paper className={classes.paper}>
-              <Typography type="display1" align="center">
+              <Typography variant="display1" align="center">
                 Account Verification
               </Typography>
-              <Typography type="body1" align="center" className={classes.paragraph}>
+              <Typography variant="body1" align="center" className={classes.paragraph}>
                 {this.props.isFetching ? (<CircularProgress size={40} />) : this.state.message}
               </Typography>
               <Link to="/signin">
-                <Button raised className={classes.button} color="primary" type="submit">Redirect to Sign in Page</Button>
+                <Button variant="raised" className={classes.button} color="primary" type="submit">Redirect to Sign in Page</Button>
               </Link>
             </Paper>
           </Grid>

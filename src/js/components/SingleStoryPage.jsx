@@ -4,7 +4,7 @@ import Grid from 'material-ui/Grid';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
-import Container from './utils/Container'
+import Container from './layout/Container'
 import ReviewCard from './utils/ReviewCard';
 import BusinessCard from './utils/BusinessCard';
 

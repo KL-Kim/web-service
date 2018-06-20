@@ -5,20 +5,20 @@ import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import List, { ListItem, ListItemSecondaryAction, ListItemText, ListItemIcon } from 'material-ui/List';
-import IconButton from 'material-ui/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import List, { ListItem, ListItemSecondaryAction, ListItemText, ListItemIcon } from '@material-ui/core/List';
+import IconButton from '@material-ui/core/IconButton';
 
 // Material UI Icons
-import DeleteIcon from 'material-ui-icons/Delete';
-import FiberNew from 'material-ui-icons/FiberNew';
+import DeleteIcon from '@material-ui/icons/Delete';
+import FiberNew from '@material-ui/icons/FiberNew';
 
 // Custom Components
-import SettingContainer from './SettingContainer';
+import SettingContainer from '../layout/SettingContainer';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 import MessageContent from '../utils/MessageContent';

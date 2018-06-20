@@ -1,15 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Reboot from 'material-ui/Reboot'
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import registerServiceWorker from './registerServiceWorker';
-import './css/index.css';
 import App from './js/App';
+import './css/index.css';
 
 ReactDOM.render(
-  <div>
-    <Reboot />
+  <React.Fragment>
+    <CssBaseline />
     <App />
-  </div>, document.getElementById('root'));
+  </React.Fragment>, document.getElementById('root')
+);
 
 registerServiceWorker();

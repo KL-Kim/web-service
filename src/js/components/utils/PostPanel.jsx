@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import Img from 'react-image';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 // Custom Components
 import ProperName from './ProperName';

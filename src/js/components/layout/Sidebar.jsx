@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { withStyles } from 'material-ui/styles';
-import { MenuList, MenuItem } from 'material-ui/Menu';
-import { ListItemText, ListItemIcon } from 'material-ui/List';
-import Drawer from 'material-ui/Drawer';
-import AccountCircle from 'material-ui-icons/AccountCircle';
-import RateReview from 'material-ui-icons/RateReview';
-import Book from 'material-ui-icons/Book';
-import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
-import Favorite from 'material-ui-icons/Favorite';
-import Notifications from 'material-ui-icons/Notifications';
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import { MenuList, MenuItem } from '@material-ui/core/Menu';
+import { ListItemText, ListItemIcon } from '@material-ui/core/List';
+import Drawer from '@material-ui/core/Drawer';
+
+// Material UI Icons
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import RateReview from '@material-ui/icons/RateReview';
+import Book from '@material-ui/icons/Book';
+import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
+import Favorite from '@material-ui/icons/Favorite';
+import Notifications from '@material-ui/icons/Notifications';
 
 import LinkContainer from '../utils/LinkContainer';
 

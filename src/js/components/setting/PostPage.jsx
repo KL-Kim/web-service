@@ -7,19 +7,21 @@ import Masonry from 'react-masonry-component';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
-import IconButton from 'material-ui/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
 
 // Material UI Icons
-import Search from 'material-ui-icons/Search';
+import Search from '@material-ui/icons/Search';
 
 // Custom Components
-import SettingContainer from './SettingContainer';
+import SettingContainer from '../layout/SettingContainer';
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 import PostCard from '../utils/PostCard';

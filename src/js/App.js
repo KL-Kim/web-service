@@ -12,7 +12,6 @@ import PrivateRoute from './helpers/PrivateRoute';
 import NoMatchPage from './components/404';
 import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage';
-import SigninPage from './components/SigninPage';
 import AboutPage from './components/AboutPage';
 import TermsPolicyPage from './components/TermsPolicyPage';
 import LicensePage from './components/LicensePage';
@@ -35,7 +34,7 @@ import SettingSinglePost from './components/setting/SinglePostPage';
 import SettingComment from './components/setting/CommentPage';
 
 // Temp
-import SingleStoryPage from './components/SingleStoryPage';
+// import SingleStoryPage from './components/SingleStoryPage';
 
 import { getMyself } from './actions/user.actions';
 import { loadFromStorage } from './helpers/webStorage';
@@ -56,7 +55,6 @@ const App = () => {
           <Route exact path="/" component={HomePage} />
           <Route path="/search" component={SearchPage} />
           <Route path="/signup" component={SignupPage} />
-          <Route path="/signin" component={SigninPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />
           <Route path="/license" component={LicensePage} />
@@ -76,9 +74,6 @@ const App = () => {
           <PrivateRoute exact path="/setting/post" component={SettingPost} />
           <PrivateRoute path="/setting/post/s/:id" component={SettingSinglePost} />
           <PrivateRoute path="/setting/comment" component={SettingComment} />
-
-          { /** Temp **/}
-          <Route path="/story" component={SingleStoryPage} />
 
           {/*  Error Routes */}
           <Route component={NoMatchPage} />
