@@ -18,7 +18,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
-
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
@@ -191,7 +190,7 @@ class SinglePostPage extends Component {
     return (
       <SettingContainer>
         <div>
-          <Typography type="display1" gutterBottom className={classes.title}>New Post</Typography>
+          <Typography variant="display1" gutterBottom className={classes.title}>New Post</Typography>
           <Grid container>
             <Grid item xs={4}>
               <Paper className={classes.paper}>
@@ -279,7 +278,7 @@ class SinglePostPage extends Component {
 
             <Grid item xs={6}>
               <div className={classes.buttonContainer}>
-                <Button raised color="primary" className={classes.button} onClick={this.handleSubmit}>Save</Button>
+                <Button variant="raised" color="primary" className={classes.button} onClick={this.handleSubmit}>Save</Button>
                 <Button className={classes.button} onClick={this.handleOpenConfirmationDialog}>Cancel</Button>
               </div>
             </Grid>

@@ -83,8 +83,8 @@ class BirthdayPanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Birthday</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
+          <Typography variant="body1" className={classes.heading}>Birthday</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
@@ -100,7 +100,7 @@ class BirthdayPanel extends Component {
           />
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised color="primary" disabled={_.isEmpty(this.state.date)} className={classes.button} onClick={this.handleSubmit}>
+          <Button variant="raised" color="primary" disabled={_.isEmpty(this.state.date)} className={classes.button} onClick={this.handleSubmit}>
             {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>

@@ -92,8 +92,8 @@ class NamePanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Name</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>{(_.isEmpty(user.firstName) ? '' : user.firstName) + ' '+ (_.isEmpty(user.lastName) ? '' : user.lastName)}</Typography>
+          <Typography variant="body1" className={classes.heading}>Name</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{(_.isEmpty(user.firstName) ? '' : user.firstName) + ' '+ (_.isEmpty(user.lastName) ? '' : user.lastName)}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
@@ -121,7 +121,7 @@ class NamePanel extends Component {
           </Grid>
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised
+          <Button variant="raised"
             color="primary"
             disabled={
               _.isEmpty(this.state.firstName)

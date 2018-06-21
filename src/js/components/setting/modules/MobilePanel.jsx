@@ -249,8 +249,8 @@ class MobilePanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Mobile Phone</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
+          <Typography variant="body1" className={classes.heading}>Mobile Phone</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
@@ -269,7 +269,7 @@ class MobilePanel extends Component {
 
               {this.state.activeStep === steps.length ? (
                 <Grid item xs={12}>
-                  <Typography type="body1" align="center">
+                  <Typography variant="body1" align="center">
                     Congratulations, Your mobile phone has been updated!
                   </Typography>
                 </Grid>
@@ -278,7 +278,7 @@ class MobilePanel extends Component {
                   {this.getStepContent(activeStep, this.props)}
                   <Grid container justify="center" alignItems="center">
                     <Grid item>
-                      <Button raised
+                      <Button variant="raised"
                         color="primary"
                         disabled={this.state.phoneNumber.showError || this.state.verificationCode.showError || isFetching}
                         onClick={this.handleNext}

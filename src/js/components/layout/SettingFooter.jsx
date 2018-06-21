@@ -25,7 +25,7 @@ class Footer extends Component{
       <footer className={classes.footer}>
         <Grid container spacing={16} justify="center" alignItems="center" >
           <Grid item xs={12}>
-            <Typography type="caption" align="center">
+            <Typography variant="caption" align="center">
                Copyright 2018 iKoreaTown
             </Typography>
           </Grid>

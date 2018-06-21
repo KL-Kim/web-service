@@ -22,9 +22,11 @@ import Search from '@material-ui/icons/Search';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
+import PostCard from '../utils/PostCard';
+
+// Webstorage
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
-import PostCard from '../utils/PostCard';
 
 // Actions
 import { getPostsList } from '../../actions/blog.actions';
@@ -121,7 +123,7 @@ class PostPage extends Component {
         <div>
           <Grid container spacing={16}>
             <Grid item xs={12}>
-              <Typography type="display1" gutterBottom>
+              <Typography variant="display1" gutterBottom>
                 My Posts
               </Typography>
             </Grid>
@@ -153,7 +155,7 @@ class PostPage extends Component {
             <Grid item xs={9}>
               <div className={classes.buttonContainer}>
                 <Link to="/setting/post/s/new">
-                  <Button raised color="primary">Add new</Button>
+                  <Button variant="raised" color="primary">Add new</Button>
                 </Link>
               </div>
             </Grid>
@@ -186,7 +188,7 @@ class PostPage extends Component {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography type="caption" align="center">
+              <Typography variant="caption" align="center">
                 --- No more posts, You have total {this.props.totalCount} posts ---
               </Typography>
             </Grid>

@@ -97,7 +97,9 @@ class MessageContent extends Component {
 
     return (
       <div>
-        <strong>{_.isEmpty(this.props.sender) ? '' : this.props.sender.username}</strong>
+        <strong>
+          {_.isEmpty(this.props.sender) ? '' : this.props.sender.username}
+        </strong>
         {' ' + this.state.message}
         <Typography>{this.props.commentContent}</Typography>
       </div>

@@ -40,7 +40,7 @@ class AccountPage extends Component {
         <div>
           <Grid container justify="center" className={classes.container}>
             <Grid item xs={8}>
-              <Typography type="display2">
+              <Typography variant="display1" gutterBottom>
                 Profile
               </Typography>
             </Grid>
@@ -75,7 +75,7 @@ class AccountPage extends Component {
 
           <Grid container justify="center" className={classes.container}>
             <Grid item xs={8}>
-              <Typography type="display2" align="left">
+              <Typography variant="display1" gutterBottom>
                 Photo
               </Typography>
             </Grid>

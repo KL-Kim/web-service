@@ -265,7 +265,7 @@ class Header extends Component {
         <div>
           {
             isLoggedIn
-             ? (<Drawer
+              ? (<Drawer
                   anchor="right"
                   open={this.state.drawerOpen}
                   onClose={this.toggleDrawer}

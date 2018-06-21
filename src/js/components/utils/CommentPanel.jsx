@@ -171,20 +171,20 @@ class CommentPanel extends Component {
               <Avatar user={this.props.owner} type="SMALL" />
             </Grid>
             <Grid item xs={10}>
-              <Typography type="title" gutterBottom>
+              <Typography variant="title" gutterBottom>
                 <strong>
                   <ProperName user={this.props.owner} />
                 </strong>
                 <span> {ElapsedTime(this.props.createdAt)}</span>
               </Typography>
-              <Typography type="body1" gutterBottom>
+              <Typography variant="body1" gutterBottom>
                 {
                   this.props.status === 'NORMAL' ? this.props.content : 'This comment violated the policy of iKoreaTown'
                 }
               </Typography>
               {
                 this.props.parentComment ? (
-                  <Typography type="caption" gutterBottom>
+                  <Typography variant="caption" gutterBottom>
                     <strong>
                     @
                     {
@@ -274,7 +274,7 @@ class CommentPanel extends Component {
                   </FormControl>
                 </DialogContent>
                 <DialogActions>
-                  <Button raised color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                  <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
                     Save
                   </Button>
                   <Button color="primary" onClick={this.handleCloseReplyDialog}>

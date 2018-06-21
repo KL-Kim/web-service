@@ -34,12 +34,12 @@ class PostPanel extends Component {
 
     const content = (
       <Grid item xs={8}>
-        <Typography type="display1" gutterBottom>{post.title}</Typography>
-        <Typography type="body1" gutterBottom>{post.summary}</Typography>
-        <Typography type="body1" gutterBottom>
+        <Typography variant="display1" gutterBottom>{post.title}</Typography>
+        <Typography variant="body1" gutterBottom>{post.summary}</Typography>
+        <Typography variant="body1" gutterBottom>
           By <strong><ProperName  user={post.authorId} /></strong>
         </Typography>
-        <Typography type="body1" gutterBottom>Creadted at: {ElapsedTime(post.createdAt)}</Typography>
+        <Typography variant="body1" gutterBottom>Creadted at: {ElapsedTime(post.createdAt)}</Typography>
       </Grid>
     );
 

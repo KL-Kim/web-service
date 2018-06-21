@@ -4,8 +4,10 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import { MenuList, MenuItem } from '@material-ui/core/Menu';
-import { ListItemText, ListItemIcon } from '@material-ui/core/List';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Drawer from '@material-ui/core/Drawer';
 
 // Material UI Icons
@@ -38,7 +40,7 @@ class Sidebar extends Component {
 
     return (
       <div>
-          <Drawer type="permanent"
+          <Drawer variant="permanent"
             open
             classes={{
               paper: classes.drawerPaper

@@ -114,7 +114,7 @@ class ReviewCard extends Component {
             {
               this.props.showBusinessName
                 ? <Link to={"/business/s/" + this.props.business.enName}>
-                    <Typography type="title" gutterBottom>
+                    <Typography variant="title" gutterBottom>
                       {this.props.business.krName}
                     </Typography>
                   </Link>
@@ -123,12 +123,12 @@ class ReviewCard extends Component {
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
             {
               this.props.showUser
-                ? <Typography type="body1" gutterBottom>
+                ? <Typography variant="body1" gutterBottom>
                     <ProperName user={this.props.owner} />
                   </Typography>
                 : ''
             }
-            <Typography type="body1" gutterBottom>{this.props.content}</Typography>
+            <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
 
             <div>
               <span>

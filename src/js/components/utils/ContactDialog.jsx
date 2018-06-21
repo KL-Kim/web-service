@@ -107,7 +107,7 @@ class ContactDialog extends Component {
         </DialogContent>
         <DialogActions>
           <Button
-            raised
+            variant="raised"
             color="primary"
             disabled={!(this.state.contact && this.state.content)}
             onClick={this.hanldeSubmit}>

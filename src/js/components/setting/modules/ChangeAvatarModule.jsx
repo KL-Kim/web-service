@@ -155,7 +155,7 @@ class ChangeAvatarModule extends Component {
             <Divider className={classes.bigDivider}/>
             <Grid container justify="center">
               <Grid item>
-                <Button raised color="primary" className={classes.button}
+                <Button variant="raised" color="primary" className={classes.button}
                   onClick={this.handleUpload}
                   disabled={_.isEmpty(this.state.image) || isFetching}
                 >

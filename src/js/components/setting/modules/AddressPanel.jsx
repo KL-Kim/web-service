@@ -141,8 +141,8 @@ class AddressPanel extends Component {
     return _.isEmpty(user) ? '' : (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Address</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>
+          <Typography variant="body1" className={classes.heading}>Address</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>
             {province + ' ' + city + ' ' + area + ' ' + street}
           </Typography>
         </ExpansionPanelSummary>
@@ -216,7 +216,7 @@ class AddressPanel extends Component {
           </Grid>
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised
+          <Button variant="raised"
             disabled={_.isEmpty(this.state.provinceCode)
               || _.isEmpty(this.state.cityCode)
               || _.isEmpty(this.state.areaCode)

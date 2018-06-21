@@ -65,14 +65,14 @@ class ChangePasswordPanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Password</Typography>
+          <Typography variant="body1" className={classes.heading}>Password</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
           To change password, send email.
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
+          <Button variant="raised" disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
             {isFetching ? (<CircularProgress size={20} />) : 'Send Email'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>Cancel</Button>

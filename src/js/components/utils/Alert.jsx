@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Fade from '@material-ui/core/Fade';
+import green from '@material-ui/core/colors/green';
 
 // Material UI Icons
 import CloseIcon from '@material-ui/icons/Close';
@@ -17,6 +19,9 @@ import CheckCircle from '@material-ui/icons/CheckCircle';
 import { alertClear } from '../../actions/alert.actions'
 
 const styles = theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
   icon: {
     verticalAlign: 'middle',
     marginRight: 15,
@@ -27,17 +32,6 @@ const styles = theme => ({
     height: theme.spacing.unit * 4,
   },
 });
-
-const anchorOrigin = {
-  vertical: 'bottom',
-  horizontal: 'right',
-}
-
-const SnackbarContentProps = {
-  'aria-describedby': 'message-id',
-};
-
-const hideDuration = 3000;
 
 class Alert extends Component {
   constructor(props) {
@@ -74,19 +68,34 @@ class Alert extends Component {
 
   render() {
     const { classes, message, error } = this.props;
+    let style, messageContent;
 
-    const messageContent = error ?
-      (<div id="message-id"><ErrorIcon className={classes.icon} color="error" /><span>{message}</span></div>)
-      : (<div id="message-id"><CheckCircle className={classes.icon} />{message}</div>)
+    if (error) {
+      style = classes.error;
+      messageContent =  (<div id="message-id">
+                          <ErrorIcon className={classes.icon} />
+                          <span>{message}</span>
+                        </div>);
+    } else {
+      messageContent =  (<div id="message-id">
+                          <CheckCircle className={classes.icon} />
+                          <span>{message}</span>
+                        </div>);
+    }
 
     return (
-        <Snackbar
-          anchorOrigin={anchorOrigin}
-          open={this.state.open}
-          transition={Fade}
-          autoHideDuration={hideDuration}
-          onClose={this.handleClose}
-          SnackbarContentProps={SnackbarContentProps}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        open={this.state.open}
+        autoHideDuration={3000}
+        onClose={this.handleClose}
+      >
+        <SnackbarContent
+          className={style}
+          aria-describedby='message-id'
           message={messageContent}
           action={
             <IconButton
@@ -100,6 +109,7 @@ class Alert extends Component {
             </IconButton>
           }
         />
+      </Snackbar>
     );
   }
 }

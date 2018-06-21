@@ -40,15 +40,15 @@ class PostCard extends Component {
             image={image}
           />
           <CardContent>
-            <Typography type="title" gutterBottom>
+            <Typography variant="title" gutterBottom>
               {this.props.title + ' '}
 
               {this.props.status === 'PUBLISHED' ? '' : '(' + _.toLower(this.props.status) + ')'}
             </Typography>
-            <Typography type="body1" gutterBottom>
+            <Typography variant="body1" gutterBottom>
               <ProperName user={this.props.author} />
             </Typography>
-            <Typography type="body1" gutterBottom>{this.props.summary}</Typography>
+            <Typography variant="body1" gutterBottom>{this.props.summary}</Typography>
           </CardContent>
           {
             this.props.isOwn ? (
@@ -68,7 +68,7 @@ class PostCard extends Component {
 PostCard.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "author": PropTypes.string.isRequired,
+  "author": PropTypes.object.isRequired,
   "isOwn": PropTypes.bool.isRequired,
   "title": PropTypes.string.isRequired,
   "status": PropTypes.string.isRequired,

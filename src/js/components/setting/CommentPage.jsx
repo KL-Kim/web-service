@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import CommentPanel from '../utils/CommentPanel';
+
+// Webstorage
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 
@@ -94,7 +96,7 @@ class CommentsPage extends Component {
         <div>
           <Grid container justify="center">
             <Grid item xs={12}>
-              <Typography type="display1">Comments</Typography>
+              <Typography variant="display1">Comments</Typography>
             </Grid>
           </Grid>
 

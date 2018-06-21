@@ -118,7 +118,6 @@ class ForgetPasswordPage extends Component {
               <form onSubmit={this.handleSubmit}>
                 <TextField fullWidth
                   type="email"
-                  id="email"
                   name="email"
                   label="Email"
                   margin="normal"
@@ -152,7 +151,7 @@ class ForgetPasswordPage extends Component {
 ForgetPasswordPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
-  "sendChangePasswordEmail": PropTypes.func.isRequired,
+  "sendEmail": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {

@@ -65,9 +65,9 @@ class EmailPanel extends Component {
     let { expanded } = this.state;
 
     const button = user.isVerified
-      ? (<Button raised color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>OK</Button>)
+      ? (<Button variant="raised" color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>OK</Button>)
       : (<div>
-          <Button raised disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
+          <Button variant="raised" disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
             {isFetching ? (<CircularProgress size={20} />) : 'Verify Email'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>Cancel</Button>
@@ -76,8 +76,8 @@ class EmailPanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Email</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
+          <Typography variant="body1" className={classes.heading}>Email</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>

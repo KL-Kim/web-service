@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import validator from 'validator';
+import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -144,7 +144,7 @@ class UserSignup extends Component {
   }
 
   isValidEmail() {
-    if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
+    if(!this.state.email.value || !isEmail(this.state.email.value)) {
       this.setState({
         "email": {
           "value": this.state.email.value,
@@ -248,14 +248,11 @@ class UserSignup extends Component {
                   fullWidth
                   margin="normal"
                   label="Email"
-                  id="email"
-
                 />
                 <br />
 
                 <TextField
                   type="password"
-                  id="password"
                   name="password"
                   error={this.state.password.showError}
                   helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
@@ -269,7 +266,6 @@ class UserSignup extends Component {
 
                 <TextField
                   type="password"
-                  id="passwordConfirmation"
                   name="passwordConfirmation"
                   error={this.state.passwordConfirmation.showError}
                   helperText={this.state.passwordConfirmation.showError

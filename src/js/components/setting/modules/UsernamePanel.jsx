@@ -146,8 +146,8 @@ class UsernamePanel extends Component {
     return (
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography type="body1" className={classes.heading}>Username</Typography>
-          <Typography type="body1" className={classes.secondaryHeading}>{_.isEmpty(user.username) ? '' : user.username}</Typography>
+          <Typography variant="body1" className={classes.heading}>Username</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.username) ? '' : user.username}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
@@ -165,7 +165,7 @@ class UsernamePanel extends Component {
           />
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button raised disabled={this.state.username.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
+          <Button variant="raised" disabled={this.state.username.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
             {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>

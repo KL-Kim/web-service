@@ -26,7 +26,7 @@ class StoryCard extends Component {
             title={this.props.title}
           />
           <CardContent>
-            <Typography type="headline" component="h2">{this.props.title}</Typography>
+            <Typography variant="headline" component="h2">{this.props.title}</Typography>
             <Typography component="p">
               {this.props.content}
             </Typography>
@@ -36,7 +36,7 @@ class StoryCard extends Component {
           </CardContent>
           <CardActions>
             <Button color="primary">Edit</Button>
-            <Button raised color="primary">Share</Button>
+            <Button variant="raised" color="primary">Share</Button>
           </CardActions>
         </Card>
       </div>

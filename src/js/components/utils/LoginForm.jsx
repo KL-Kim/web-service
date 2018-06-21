@@ -180,7 +180,7 @@ class LoginForm extends Component {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        <Typography type="display1" align="center">Sign In</Typography>
+        <Typography variant="display1" align="center">Sign In</Typography>
         <FormControl fullWidth>
           <InputLabel htmlFor="email">Email</InputLabel>
           <Input
@@ -223,7 +223,7 @@ class LoginForm extends Component {
           name="signin"
           disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching || !this.state.goodToGo}
           className={classes.button}
-          raised
+          variant="raised"
           color="primary"
           type="submit"
           fullWidth

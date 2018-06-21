@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import validator from 'validator';
+import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -82,7 +82,7 @@ class LoginDialog extends Component {
   }
 
   isValidEmail() {
-    if (!this.state.email.value || !validator.isEmail(this.state.email.value)) {
+    if (!this.state.email.value || !isEmail(this.state.email.value)) {
       this.setState({
         email: {
           value: this.state.email.value,
@@ -109,7 +109,7 @@ class LoginDialog extends Component {
         password: {
           value: this.state.password.value,
           showError: true,
-          errorMessage: 'Should not be shorter than ' + passwordMinLength,
+          errorMessage: 'Error: Should not be shorter than ' + passwordMinLength,
         },
       });
       return false;
@@ -174,91 +174,95 @@ class LoginDialog extends Component {
     if (this.state.password.showError) {
       errorMessage = this.state.password.errorMessage;
     } else if (this.props.loginError) {
-      errorMessage = this.props.errorMessage;
+      errorMessage = 'Error: ' + this.props.errorMessage;
     }
 
     return (
-      <Dialog fullWidth
-        open={this.props.dialogOpen}
-        onClose={this.props.closeLoginDialog}
-        aria-labelledby="login-dialog-title"
-        aria-describedby="login-dialog-description"
-      >
-        <DialogContent>
-          <div className={classes.container}>
-            <Typography variant="display1" align="center">Sign In</Typography>
-            <form onSubmit={this.handleSubmit}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="email">Email</InputLabel>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  error={this.state.email.showError}
-                  onBlur={this.isValidEmail}
-                  onChange={this.handleChange}
-                  endAdornment={
-                    this.state.email.showError
-                      ? (<InputAdornment position="end">
-                          <Error color="secondary"/>
-                        </InputAdornment>)
-                      : ''
-                  }
-                />
-                <FormHelperText id="email-helper-text" error>{this.state.email.showError ? this.state.email.errorMessage : ' '}</FormHelperText>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  type="password"
-                  id="password"
-                  name="password"
-                  error={this.state.password.showError || this.props.loginError}
-                  onBlur={this.isValidPassword}
-                  onChange={this.handleChange}
-                  endAdornment={
-                    this.state.password.showError || this.props.loginError
-                      ? (<InputAdornment position="end">
-                          <Error color="secondary" />
-                        </InputAdornment>)
-                      : ''
-                  }
-                />
-                <FormHelperText id="password-helper-text" error>{errorMessage}</FormHelperText>
-              </FormControl>
-              <Button
-                type="submit"
-                name="signin"
-                disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching || !this.state.goodToGo}
-                className={classes.button}
-                variant="raised"
-                color="primary"
-                fullWidth
-              >
-                {
-                  this.props.isFetching
-                  ? (<CircularProgress size={20} />)
-                  : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')
-                }
-              </Button>
-            </form>
+      this.props.dialogOpen
+        ? (
+          <Dialog fullWidth
+            open={this.props.dialogOpen}
+            onClose={this.props.closeLoginDialog}
+            aria-labelledby="login-dialog-title"
+            aria-describedby="login-dialog-description"
+          >
+            <DialogContent>
+              <div className={classes.container}>
+                <Typography variant="display1" align="center">Sign In</Typography>
+                <form onSubmit={this.handleSubmit}>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="email">Email</InputLabel>
+                    <Input
+                      type="email"
+                      id="email"
+                      name="email"
+                      error={this.state.email.showError}
+                      onBlur={this.isValidEmail}
+                      onChange={this.handleChange}
+                      endAdornment={
+                        this.state.email.showError
+                          ? (<InputAdornment position="end">
+                              <Error color="secondary"/>
+                            </InputAdornment>)
+                          : ''
+                      }
+                    />
+                    <FormHelperText id="email-helper-text" error>{this.state.email.showError ? this.state.email.errorMessage : ' '}</FormHelperText>
+                  </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input
+                      type="password"
+                      id="password"
+                      name="password"
+                      error={this.state.password.showError || this.props.loginError}
+                      onBlur={this.isValidPassword}
+                      onChange={this.handleChange}
+                      endAdornment={
+                        this.state.password.showError || this.props.loginError
+                          ? (<InputAdornment position="end">
+                              <Error color="secondary" />
+                            </InputAdornment>)
+                          : ''
+                      }
+                    />
+                    <FormHelperText id="password-helper-text" error>{errorMessage}</FormHelperText>
+                  </FormControl>
+                  <Button
+                    type="submit"
+                    name="signin"
+                    disabled={this.state.email.showError || this.state.password.showError || this.props.isFetching || !this.state.goodToGo}
+                    className={classes.button}
+                    variant="raised"
+                    color="primary"
+                    fullWidth
+                  >
+                    {
+                      this.props.isFetching
+                      ? (<CircularProgress size={20} />)
+                      : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')
+                    }
+                  </Button>
+                </form>
 
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <Link to="/forget-password">
-                  <Button color="primary">Forget your password?</Button>
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link to="/signup">
-                  <Button color="primary">Sign up</Button>
-                </Link>
-              </Grid>
-            </Grid>
+                <Grid container justify="space-between" alignItems="center">
+                  <Grid item>
+                    <Link to="/forget-password">
+                      <Button color="primary">Forget your password?</Button>
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link to="/signup">
+                      <Button color="primary">Sign up</Button>
+                    </Link>
+                  </Grid>
+                </Grid>
 
-          </div>
-        </DialogContent>
-      </Dialog>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )
+        : <div></div>
     );
   }
 }

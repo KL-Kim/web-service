@@ -126,7 +126,8 @@ class ReportDialog extends Component {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button raised
+          <Button
+            variant="raised"
             color="primary"
             disabled={!this.state.type}
             onClick={this.hanldeSubmit}>

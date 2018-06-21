@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import Stepper, {Step, StepLabel} from 'material-ui/Stepper';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button'
+
+// Material UI Components
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
 
 const styles = theme => ({
   button: {
@@ -100,7 +104,7 @@ class ChangeModule extends Component {
 
           {this.state.activeStep === steps.length ? (
             <Grid item xs={12}>
-              <Typography type="body1" align="center">
+              <Typography variant="body1" align="center">
                 Your email has been changed
               </Typography>
             </Grid>
@@ -109,7 +113,7 @@ class ChangeModule extends Component {
               {getStepContent(activeStep, this.props)}
               <Grid container justify="center" alignItems="center">
                 <Grid item>
-                  <Button raised color="primary" onClick={this.handleNext} className={classes.button}>
+                  <Button varaint="raised" color="primary" onClick={this.handleNext} className={classes.button}>
                     {activeStep === steps.length - 1 ? 'Update' : 'Next'}
                   </Button>
                   <Button

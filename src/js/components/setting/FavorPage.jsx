@@ -9,9 +9,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+// Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import BusinessCard from '../utils/BusinessCard';
+
+// Actions
 import { getBusinessList, clearBusinessList } from '../../actions/business.actions';
+
+// Webstorage
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 
@@ -92,46 +97,50 @@ class FavorPage extends Component {
 
     return (
       <SettingContainer>
-        <Typography type="display1" gutterBottom>
-          Favorite Business
-        </Typography>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={this.loadMore}
-          hasMore={this.state.hasMore}
-          loader={<div className="loader" key={0}>Loading ...</div>}
-        >
-          <Grid container spacing={16}>
-            {
-              _.isEmpty(businessList)
-                ? <Grid item xs={12}><Typography type="body1" align="center">None</Typography></Grid>
-                : businessList.map((item, i) => {
-                  if (!_.isEmpty(this.state.favors)) {
-                    index = this.state.favors.indexOf(item._id);
-                  }
-
-                  return (
-                    <Grid item xs={3} key={i}>
-                      <BusinessCard
-                        bid={item._id}
-                        key={item._id}
-                        title={item.krName}
-                        enName={item.enName}
-                        rating={item.ratingAverage}
-                        thumbnailUri={item.thumbnailUri}
-                        isFavor={index > -1 ? true : false}
-                      />
+        <div>
+          <Typography variant="display1" gutterBottom>
+            Favorite Business
+          </Typography>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.state.hasMore}
+            loader={<div className="loader" key={0}>Loading ...</div>}
+          >
+            <Grid container spacing={16}>
+              {
+                _.isEmpty(businessList)
+                  ? <Grid item xs={12}>
+                      <Typography variant="body1" align="center">None</Typography>
                     </Grid>
-                  );
-                })
-            }
-            <Grid item xs={12}>
-              <Typography type="caption" align="center">
-                --- No more favors. You have total {this.props.totalCount} favors ---
-              </Typography>
+                  : businessList.map((item, i) => {
+                    if (!_.isEmpty(this.state.favors)) {
+                      index = this.state.favors.indexOf(item._id);
+                    }
+
+                    return (
+                      <Grid item xs={3} key={i}>
+                        <BusinessCard
+                          bid={item._id}
+                          key={item._id}
+                          title={item.krName}
+                          enName={item.enName}
+                          rating={item.ratingAverage}
+                          thumbnailUri={item.thumbnailUri}
+                          isFavor={index > -1 ? true : false}
+                        />
+                      </Grid>
+                    );
+                  })
+              }
+              <Grid item xs={12}>
+                <Typography variant="caption" align="center">
+                  --- No more favors. You have total {this.props.totalCount} favors ---
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
-        </InfiniteScroll>
+          </InfiniteScroll>
+        </div>
       </SettingContainer>
     );
   }

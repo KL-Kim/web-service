@@ -14,8 +14,12 @@ import Button from '@material-ui/core/Button';
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import ReviewCard from '../utils/ReviewCard';
+
+// Webstorage
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
+
+// Actions
 import { getReviews, deleteReview } from '../../actions/review.actions';
 
 const styles = theme => ({});
@@ -106,7 +110,7 @@ class ReviewPage extends Component {
         <div>
           <Grid container spacing={16}>
             <Grid item xs={12}>
-              <Typography type="display1" gutterBottom>
+              <Typography variant="display1" gutterBottom>
                 My Reviews
               </Typography>
             </Grid>
@@ -133,6 +137,7 @@ class ReviewPage extends Component {
                             owner={review.user}
                             business={review.business}
                             showBusinessName={true}
+                            user={this.props.user}
                             isOwn={review.userId === this.props.user._id}
                             isLoggedIn={this.props.isLoggedIn}
                             content={review.content}
@@ -151,7 +156,7 @@ class ReviewPage extends Component {
             </Grid>
 
             <Grid item xs={12}>
-              <Typography type="caption" align="center">
+              <Typography variant="caption" align="center">
                 --- No more reviews, You have total {this.props.totalCount} reviews ---
               </Typography>
             </Grid>
