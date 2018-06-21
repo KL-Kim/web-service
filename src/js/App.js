@@ -33,12 +33,13 @@ import SettingPost from './components/setting/PostPage';
 import SettingSinglePost from './components/setting/SinglePostPage';
 import SettingComment from './components/setting/CommentPage';
 
-// Temp
-// import SingleStoryPage from './components/SingleStoryPage';
-
-import { getMyself } from './actions/user.actions';
+// WebStorage
 import { loadFromStorage } from './helpers/webStorage';
 import webStorageTypes from './constants/webStorage.types';
+
+// Actions
+import { getMyself } from './actions/user.actions';
+import { getCategoriesList } from './actions/category.actions.js';
 
 const App = () => {
   const store = configureStore();
@@ -47,6 +48,8 @@ const App = () => {
   if (uid) {
     store.dispatch(getMyself(uid));
   }
+
+  store.dispatch(getCategoriesList());
 
   return (
     <Provider store={store}>

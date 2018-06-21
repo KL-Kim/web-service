@@ -30,7 +30,6 @@ const styles = theme => ({
     paddingRight: theme.spacing.unit * 10,
     marginBottom: theme.spacing.unit,
     textAlign: 'center',
-    color: theme.palette.text.secondary,
   },
   paragraph: {
     marginTop: theme.spacing.unit * 5,
@@ -43,51 +42,56 @@ class AccountVerificationPage extends Component {
     super(props);
 
     this.state = {
-      "isVerified": false,
-      "message": "Verification failed, Please sign in and verify your account.",
+      "message": "",
     };
   }
 
-  componentWillMount() {
-    this.props.verifyAccount(this.props.match.params.token);
+  componentDidMount() {
+    this.props.verifyAccount(this.props.match.params.token)
+      .then(response => {
+        if (response) {
+          this.setState({
+            "message": "Your account has been verified successfully."
+          });
+        } else {
+          this.setState({
+            "message": "Verification failed, Please sign in and verify your account."
+          });
+        }
+      });
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if (!_.isEmpty(nextProps.user) && nextProps.user.isVerified) {
-      this.setState({
-        "isVerified": true,
-        "message": "Your account has been verified successfully."
-      });
-    }
-
-    if (nextProps.verifyError) {
-      this.setState({
-        "message": "Verification failed, Please sign in and verify your account."
-      });
-    }
-
-  }
 
   render() {
     const { classes } = this.props;
 
     return (
       <Container>
-        <Grid container spacing={16} justify="center" className={classes.root}>
-          <Grid item xs={8}>
-            <Paper className={classes.paper}>
-              <Typography variant="display1" align="center">
-                Account Verification
+        <div>
+          <Paper className={classes.paper}>
+            <Typography variant="display1" align="center" gutterBottom>
+              Account Verification
+            </Typography>
+
+            <div className={classes.paragraph}>
+            {
+              this.props.isFetching
+              ? <CircularProgress size={40} />
+              : <Typography variant="body1" align="center" className={classes.paragraph}>
+                {this.state.message}
               </Typography>
-              <Typography variant="body1" align="center" className={classes.paragraph}>
-                {this.props.isFetching ? (<CircularProgress size={40} />) : this.state.message}
-              </Typography>
-              <Link to="/signin">
-                <Button variant="raised" className={classes.button} color="primary" type="submit">Redirect to Sign in Page</Button>
+            }
+            </div>
+
+            <div>
+              <Link to="/">
+                <Button variant="raised" color="primary">
+                  Redirect to Home Page
+                </Button>
               </Link>
-            </Paper>
-          </Grid>
-        </Grid>
+            </div>
+          </Paper>
+        </div>
       </Container>
     );
   }

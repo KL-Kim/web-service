@@ -3,6 +3,7 @@
  */
 import _ from 'lodash';
 import Promise from 'bluebird';
+import * as AlertActions from './alert.actions';
 import pcaTypes from '../constants/pca.types';
 import { getPcaFetch } from '../api/pca.service';
 
@@ -44,9 +45,14 @@ export const getCities = (code) => {
 
     return getPcaFetch('city', code)
       .then(res => {
-        return dispatch(_getCitiesSuccess(res));
+        dispatch(_getCitiesSuccess(res));
+
+        return res;
       }).catch(err => {
-        return dispatch(_getCitiesFailure(err));
+        dispatch(_getCitiesFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
       });
   };
 }
@@ -89,9 +95,14 @@ export const getAreas = (code) => {
 
     return getPcaFetch('area', code)
       .then(res => {
-        return dispatch(_getAreasSuccess(res));
+        dispatch(_getAreasSuccess(res));
+
+        return res;
       }).catch(err => {
-        return dispatch(_getAreasFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+        dispatch(_getAreasFailure(err));
+
+        return ;
       });
   };
 }

@@ -5,6 +5,8 @@
 import categoryTypes from '../constants/category.types';
 import * as AlertActions from './alert.actions';
 import { fetchCategoriesOrTags } from '../api/business.service';
+import webStorageTypes from '../constants/webStorage.types.js';
+import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
 
 /**
  * Get business categories list
@@ -34,11 +36,29 @@ export const getCategoriesList = (params) => {
   return (dispatch, getState) => {
     dispatch(_getCategoriesRequest());
 
+    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
+    const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
+
+    if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+      dispatch(_getCategoriesSuccess(categories));
+
+      return categories;
+    }
+
     return fetchCategoriesOrTags("CATAGORY", params)
       .then(response => {
-        return dispatch(_getCategoriesSuccess(response));
+        saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST, response);
+        saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT, Date.now());
+
+        dispatch(AlertActions.alertSuccess("Categories updated!"));
+        dispatch(_getCategoriesSuccess(response));
+
+        return response;
       })
       .catch(err => {
+        removeFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
+        removeFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
+
         dispatch(_getCategoriesFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 

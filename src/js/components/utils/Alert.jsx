@@ -7,8 +7,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
-import Fade from '@material-ui/core/Fade';
-import green from '@material-ui/core/colors/green';
 
 // Material UI Icons
 import CloseIcon from '@material-ui/icons/Close';
@@ -25,7 +23,6 @@ const styles = theme => ({
   icon: {
     verticalAlign: 'middle',
     marginRight: 15,
-    // color: theme.palette.error.main
   },
   close: {
     width: theme.spacing.unit * 4,
@@ -48,8 +45,8 @@ class Alert extends Component {
     this.props.alertClear();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.message || nextProps.error) {
+  componentDidUpdate(prevProps) {
+    if (this.props.message && prevProps.id !== this.props.id) {
       this.setState({
         open: true,
       });
@@ -72,12 +69,12 @@ class Alert extends Component {
 
     if (error) {
       style = classes.error;
-      messageContent =  (<div id="message-id">
+      messageContent =  (<div id={"message-" + this.props.id}>
                           <ErrorIcon className={classes.icon} />
                           <span>{message}</span>
                         </div>);
     } else {
-      messageContent =  (<div id="message-id">
+      messageContent =  (<div id={"message-" + this.props.id}>
                           <CheckCircle className={classes.icon} />
                           <span>{message}</span>
                         </div>);

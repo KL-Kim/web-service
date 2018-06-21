@@ -46,7 +46,7 @@ class PostPanel extends Component {
     return (
       <div>
         <Link to={"/post/s/" + this.props.post._id}>
-          <Grid container>
+          <Grid container spacing={32}>
             {this.props.rtl ? content : thumbnail}
             {this.props.rtl ? thumbnail : content}
           </Grid>

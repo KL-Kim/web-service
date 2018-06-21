@@ -76,26 +76,6 @@ class SearchBar extends Component {
             </form>
           </Grid>
         </Grid>
-
-        <Grid container spacing={0} justify="center" alignItems="center">
-            <Grid item xs={8}>
-              <Grid container spacing={0} justify="center" alignItems="center">
-                <Grid item xs={3}>
-                  <Button color="primary">#Tag1</Button>
-                </Grid>
-                <Grid item xs={3}>
-                  <Button color="primary">#Tag2</Button>
-                </Grid>
-                <Grid item xs={3}>
-                  <Button color="primary">#Tag3</Button>
-                </Grid>
-                <Grid item xs={3}>
-                  <Button color="primary">#Tag4</Button>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-
       </div>
     );
   }

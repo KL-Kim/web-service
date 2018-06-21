@@ -53,10 +53,9 @@ export const login = (email, password) => {
 
   return (dispatch, getState) => {
     if (_.isEmpty(email) || _.isEmpty(password)) {
-      const error = new Error("Email or password is empty")
-      dispatch(_loginSuccess(error));
       dispatch(AlertActions.alertFailure("Email and passwords should not be empty"));
-      return Promise.reject(error);
+
+      return ;
     }
 
     dispatch(AlertActions.alertClear());
@@ -66,12 +65,12 @@ export const login = (email, password) => {
 
         // Cache to webStorage
         saveToStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY, response.token);
-        saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
         saveToStorage(webStorageTypes.WEB_STORAGE_USER_KEY, response.user._id);
         saveToStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR, response.user.favors);
+        saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
 
         dispatch(_loginSuccess(response.user));
-        dispatch(AlertActions.alertSuccess("Welcome back"));
+        dispatch(AlertActions.alertSuccess("Welcome back!"));
 
         return response;
       })
@@ -189,9 +188,13 @@ export const verifyAccount = (token) => {
     dispatch(_requestVerify());
     return verifyFetch(token)
       .then(user => {
-        return dispatch(_verifySuccess(user))
+        dispatch(_verifySuccess(user));
+
+        return user;
       }).catch(err => {
-        return dispatch(_verifyFailure(err));
+        dispatch(_verifyFailure(err));
+
+        return ;
       });
   };
 };
@@ -245,7 +248,7 @@ export const changePassword = (token, password, passwordConfirmation) => {
         dispatch(_changePasswordSuccess());
         dispatch(AlertActions.alertSuccess("Your password has been changed successfully"));
 
-        return ;
+        return res;
       }).catch(err => {
         dispatch(_changePasswordFailure(err));
         dispatch(AlertActions.alertFailure("Permission denied"));
@@ -294,7 +297,9 @@ export const getMyself = (id) => {
 
         return user;
       }).catch(err => {
-        return dispatch(_getMeFailure(err));
+        dispatch(_getMeFailure(err));
+
+        return ;
       });
   };
 }
@@ -330,19 +335,18 @@ export const logout = () => {
     removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
     removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
 
-    return logoutFetch().then(json => {
-      dispatch(_logoutSuccess());
-      dispatch(AlertActions.alertSuccess("Log out successfully"));
+    return logoutFetch()
+      .then(response => {
+        dispatch(_logoutSuccess());
+        dispatch(AlertActions.alertSuccess("Goodbye!"));
 
-      return ;
-    }).catch(err => {
-      dispatch(_logoutFailure(err));
-      if (err.message) {
+        return response;
+      }).catch(err => {
+        dispatch(_logoutFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
-      }
 
-      return ;
-    });
+        return ;
+      });
   };
 };
 
@@ -406,11 +410,10 @@ export const updateUserProfile = (id, data) => {
           dispatch(_updateUserProfileSuccess(user));
           dispatch(AlertActions.alertSuccess("Updated successfully"));
 
-          return ;
-      }).catch(err => {
-        if (err.message) {
-          dispatch(AlertActions.alertFailure(err.message));
-        }
+          return user;
+      })
+      .catch(err => {
+        dispatch(AlertActions.alertFailure(err.message));
         dispatch(_updateUserProfileFailure(err));
 
         return ;
@@ -458,16 +461,15 @@ export const uploadProfilePhoto = (id, formData) => {
     return getToken()
       .then(token => {
         return uploadProfilePhotoFetch(token, id, formData);
-      }).then(user => {
+      })
+      .then(user => {
         dispatch(_uploadProfilePhotoSuccess(user));
         dispatch(AlertActions.alertSuccess("Updated successfully"));
 
-        return ;
+        return user;
       }).catch(err => {
         dispatch(_uploadProfilePhotoFailure(err));
-        if (err.message) {
-          dispatch(AlertActions.alertFailure(err.message));
-        }
+        dispatch(AlertActions.alertFailure(err.message));
 
         return ;
       });
@@ -518,14 +520,13 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
         dispatch(_updateMobilePhoneSuccess(user));
         dispatch(AlertActions.alertSuccess("Updated successfully"));
 
-        return true;
+        return user;
       }).catch(err => {
         dispatch(_updateMobilePhoneFailure(err));
-        if (err.message) {
-          dispatch(AlertActions.alertFailure(err.message));
-        }
+        dispatch(AlertActions.alertFailure(err.message));
 
-        return false;
+
+        return ;
       });
   };
 }

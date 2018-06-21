@@ -5,7 +5,8 @@ import alertTypes from '../constants/alert.types';
 
 const initialState = {
   message: '',
-  error: false
+  id: '',
+  error: false,
 };
 
 const alertReducer = (state = initialState, action) => {

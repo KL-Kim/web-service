@@ -9,9 +9,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
-// Actions
-import { getCategoriesList } from '../../actions/category.actions.js';
-
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -20,13 +17,6 @@ const styles = theme => ({
 });
 
 class CategoryBar extends Component {
-  componentDidMount() {
-    this.props.getCategoriesList({
-      limit: 8,
-      orderBy: 'priority',
-    });
-  }
-
   render() {
     const { classes, categories } = this.props;
 
@@ -36,15 +26,19 @@ class CategoryBar extends Component {
           {
             _.isEmpty(categories)
               ? ''
-              : categories.map(item => (
-                <Grid item xs={3} key={item._id}>
-                  <Link to={"/business/category/" + item.enName}>
-                    <Button color="primary">
-                      {item.krName}
-                    </Button>
-                  </Link>
-                </Grid>
-              ))
+              : categories.map(item => {
+                if (item.priority > 4) {
+                  return (
+                    <Grid item xs={3} key={item._id}>
+                      <Link to={"/business/category/" + item.enName}>
+                        <Button color="primary">
+                          {item.krName}
+                        </Button>
+                      </Link>
+                    </Grid>
+                  );
+                }
+              })
           }
         </Grid>
       </div>
@@ -65,4 +59,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getCategoriesList })(withStyles(styles)(CategoryBar));
+export default connect(mapStateToProps, {})(withStyles(styles)(CategoryBar));

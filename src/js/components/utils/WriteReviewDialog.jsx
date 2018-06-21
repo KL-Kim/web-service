@@ -61,14 +61,14 @@ class WriteReviewDialog extends Component {
     this.handleClose = this.handleClose.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.rating !== this.props.rating || prevProps.content !== this.props.content) {
       this.setState({
-        rating: nextProps.rating || null,
-        content: nextProps.content || '',
-        "serviceGood": nextProps.serviceGood || false,
-        "envGood": nextProps.envGood || false,
-        "comeback": nextProps.comeback || false,
+        rating: this.props.rating || null,
+        content: this.props.content || '',
+        "serviceGood": this.props.serviceGood || false,
+        "envGood": this.props.envGood || false,
+        "comeback": this.props.comeback || false,
       });
     }
   }

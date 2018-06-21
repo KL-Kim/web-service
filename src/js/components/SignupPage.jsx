@@ -79,28 +79,26 @@ class UserSignup extends Component {
   }
 
   componentDidMount() {
-    this.props.closeLoginDialog();
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
-    if (nextProps.isLoggedIn) {
+    if (this.props.isLoggedIn) {
       this.props.history.push('/');
     }
 
-    if (nextProps.registerError) {
+    this.props.closeLoginDialog();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.isLoggedIn) {
+      this.props.history.push('/');
+    }
+
+    if (this.props.registerError && this.props.registerError !== prevProps.registerError) {
       this.setState({
         "email": {
           "value": this.state.email.value,
           "showError": true,
-          "errorMessage": nextProps.errorMessage
+          "errorMessage": this.props.errorMessage
         }
       });
-    }
-  }
-
-  componentWillMount() {
-    if (this.props.isLoggedIn) {
-      this.props.history.push('/');
     }
   }
 
@@ -229,7 +227,7 @@ class UserSignup extends Component {
     const { classes } = this.props;
     let signupButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up';
 
-    return this.props.isLoggedIn ? null : (
+    return (
       <Container>
         <Grid container spacing={16} justify="center" alignItems="center" className={classes.root}>
           <Grid item sm={5}>

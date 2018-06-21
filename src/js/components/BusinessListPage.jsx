@@ -77,12 +77,12 @@ class BusinessListPage extends Component {
     this.props.clearBusinessList();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.match.params.slug !== nextProps.match.params.slug) {
+  componentDidUpdate(prevProps) {
+    if (this.props.match.params.slug !== prevProps.match.params.slug) {
       this.props.getBusinessList({
         limit: this.state.limit,
         filter: {
-          category: nextProps.match.params.slug,
+          category: this.props.match.params.slug,
           area: this.state.area,
           event: this.state.event,
         },
@@ -91,7 +91,7 @@ class BusinessListPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            category: nextProps.match.params.slug,
+            category: this.props.match.params.slug,
             count: this.state.limit,
             hasMore: this.state.limit < this.props.totalCount
           });
@@ -220,7 +220,13 @@ class BusinessListPage extends Component {
             </Grid>
             <Grid item xs={12}>
               <Typography variant="title" gutterBottom>Order by</Typography>
-              <Button color="primary" variant={_.isEmpty(this.state.orderBy) ? 'raised' : 'text'} onClick={this.handleClickOrderBy('')}>Recommend</Button>
+              <Button
+                color="primary"
+                variant={_.isEmpty(this.state.orderBy) ? 'raised' : 'text'}
+                onClick={this.handleClickOrderBy('')}
+              >
+                Recommend
+              </Button>
               <Button color="primary" variant={this.state.orderBy === 'rating' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('rating')}>Rating</Button>
               <Button color="primary" variant={this.state.orderBy === 'new' ? 'raised' : 'text'} onClick={this.handleClickOrderBy('new')}>New</Button>
             </Grid>

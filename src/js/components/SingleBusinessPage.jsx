@@ -119,6 +119,7 @@ class SingleBusinessPage extends Component {
             business: business,
             isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
           });
+
           return this.props.getReviews({
             limit: this.state.limit,
             bid: business._id,
@@ -127,7 +128,7 @@ class SingleBusinessPage extends Component {
 
         return ;
       })
-      .then((response => {
+      .then(response => {
         if (response) {
           this.setState({
             hasMore: this.state.limit < response.totalCount,
@@ -147,7 +148,7 @@ class SingleBusinessPage extends Component {
             });
         }
 
-      }));
+      });
   }
 
   componentWillUnmount() {

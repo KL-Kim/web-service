@@ -102,8 +102,6 @@ class BlogListPage extends Component {
                 ? <div className={classes.buttonContainer}>
                     <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
                   </div>
-
-
                 : <Typography variant="body1" align="center" gutterBottom>No more posts</Typography>
             }
             </Grid>

@@ -40,11 +40,17 @@ const styles = (theme) => ({
 });
 
 class SettingContainer extends Component {
-  componentWillReceiveProps(nextProps, nextState) {
-    if (process.env.REACT_APP_ENV !== 'DEVELOPMENT') {
-      if (!nextProps.isLoggedIn) {
-        this.props.history.push('/404');
-      }
+  // componentWillReceiveProps(nextProps, nextState) {
+  //   if (process.env.REACT_APP_ENV !== 'DEVELOPMENT') {
+  //     if (!nextProps.isLoggedIn) {
+  //       this.props.history.push('/404');
+  //     }
+  //   }
+  // }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isLoggedIn !== this.props.isLoggedIn && !this.prosp.isLoggedIn) {
+      this.props.history.push('/404');
     }
   }
 
