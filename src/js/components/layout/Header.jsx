@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import Img from 'react-image';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -54,12 +55,30 @@ import { logout } from '../../actions/user.actions';
 import { openLoginDialog } from '../../actions/app.actions';
 import { getNotification } from '../../actions/notification.actions';
 
+import Logo from '../../../img/logo.png';
+
 const styles = theme => ({
+  "root": {
+    flexGrow: 1
+  },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
+    "backgroundColor": 'gold'
   },
   "flex": {
     "flex": 1,
+
+  },
+  "logo": {
+    "width": 150,
+    "height": '100%',
+  },
+  "float": {
+    float: 'left',
+  },
+  "button": {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
   },
   "drawerPaper": {
     "width": 300,
@@ -96,11 +115,12 @@ const styles = theme => ({
   },
   "menuContainer": {
     width: 150,
-    // paddingTop: theme.spacing.unit,
-    // paddingBottom: theme.spacing.unit,
   },
   "rightIcon": {
     marginLeft: theme.spacing.unit,
+  },
+  "login": {
+
   },
 });
 
@@ -214,50 +234,66 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, user, isLoggedIn, updatedAt, position, newNotificationCount, categories } = this.props;
+    const { classes, user, isLoggedIn, updatedAt, newNotificationCount, categories } = this.props;
 
     return (
-      <div>
-        <AppBar position={position} className={classes.appBar}>
+      <div className={classes.root}>
+        <AppBar position={this.props.position} className={classes.appBar}>
           <Toolbar>
-            <Typography variant="title" color="inherit" align="left" className={classes.flex}>
-              <LinkContainer to="/">
-                <Button color="inherit">iKoreaTown</Button>
-              </LinkContainer>
-            </Typography>
-
-            <div>
-              <form onSubmit={this.handleSearch}>
-                <FormControl fullWidth >
-                  <Input
-                    classes={{
-                      root: classes.bootstrapRoot,
-                      input: classes.bootstrapInput,
+            <div className={classes.flex}>
+              <Grid container alignItems="center">
+                <Grid item>
+                  <div style={{
+                      marginRight: 40,
                     }}
-                    id="search-bar"
-                    type="text"
-                    name="search"
-                    placeholder="Search"
-                    disableUnderline
-                    onChange={this.handleChange}
-                    onKeyPress={this.handleKeyPress}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="Toggle password visibility"
-                          onClick={this.handleSearch}
-                        >
-                          <Search />
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </form>
+                  >
+                    <Link to="/">
+                      <Img src={Logo} className={classes.logo} />
+                    </Link>
+                  </div>
+
+                </Grid>
+                <Grid item>
+                  <div style={{
+                      width: 400,
+                    }}
+                  >
+                  <form onSubmit={this.handleSearch} >
+                    <FormControl fullWidth>
+                      <Input
+                        classes={{
+                          root: classes.bootstrapRoot,
+                          input: classes.bootstrapInput,
+                        }}
+                        id="search-bar"
+                        type="text"
+                        name="search"
+                        placeholder="Search"
+                        disableUnderline
+                        onChange={this.handleChange}
+                        onKeyPress={this.handleKeyPress}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              disableRipple
+                              aria-label="Toggle password visibility"
+                              onClick={this.handleSearch}
+                            >
+                              <Search />
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                  </form>
+                  </div>
+                </Grid>
+              </Grid>
             </div>
 
-
-            <Button color="inherit"
+            <Button
+              size="small"
+              className={classes.button}
               onClick={this.handleCategoriesMenuOpen}
               buttonRef={node => {
                 this.categoriesAnchorEl = node;
@@ -271,36 +307,46 @@ class Header extends Component {
               }
             </Button>
 
-
             <LinkContainer to="/blog">
-              <Button color="inherit">Articles</Button>
+              <Button
+                size="small"
+                className={classes.button}
+              >
+                Articles
+              </Button>
             </LinkContainer>
-            {
-              isLoggedIn
-                ? <IconButton color="inherit"
-                    onClick={this.handleNotificationPopoverOpen}
-                    buttonRef={node => {
-                      this.notificationAnchorEl = node;
-                    }}
-                  >
-                    <Notifications />
-                  </IconButton>
-                : ''
-            }
-            {
-              isLoggedIn
-                ? <Button color="inherit" onClick={this.handleDrawerToggle}>
-                    <Avatar user={user} updatedAt={updatedAt} />
-                  </Button>
-                : <Button color="inherit" onClick={this.props.openLoginDialog}>Sign in</Button>
-            }
 
-            {
-              /**
-              <LinkContainer to="/verify/123"><Button color="inherit">Verify</Button></LinkContainer>
-              <LinkContainer to="/change-password/123"><Button color="inherit">Change Password</Button></LinkContainer>
-              **/
-            }
+            <div className={classes.login}>
+              {
+                isLoggedIn
+                  ? <IconButton
+                      className={classes.button}
+                      onClick={this.handleNotificationPopoverOpen}
+                      buttonRef={node => {
+                        this.notificationAnchorEl = node;
+                      }}
+                    >
+                      <Notifications />
+                    </IconButton>
+                  : ''
+              }
+              {
+                isLoggedIn
+                  ? <Button
+                      className={classes.button}
+                      onClick={this.handleDrawerToggle}
+                    >
+                      <Avatar user={user} updatedAt={updatedAt} />
+                    </Button>
+                  : <Button
+                      size="small"
+                      className={classes.button}
+                      onClick={this.props.openLoginDialog}
+                      >
+                        Sign in
+                      </Button>
+              }
+            </div>
           </Toolbar>
         </AppBar>
 
@@ -332,7 +378,7 @@ class Header extends Component {
                         <ListItemText primary="account" />
                       </MenuItem>
                     </LinkContainer>
-                    <MenuItem>
+                    <MenuItem onClick={this.handleLogout}>
                       <ListItemIcon>
                         <ExitToApp />
                       </ListItemIcon>
@@ -423,7 +469,7 @@ class Header extends Component {
           >
             <div className={classes.menuContainer}>
               <MenuList role="menu">
-                <Link to={"/business/category/restaraunt"}>
+                <Link to={"/business/category/restaurant"}>
                   <MenuItem>
                     <ListItemIcon>
                       <Restaurant />

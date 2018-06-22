@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import validator from 'validator';
+import isAlphanumeric from 'validator/lib/isAlphanumeric';
+import isLength from 'validator/lib/isLength';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -55,17 +56,6 @@ class UsernamePanel extends Component {
     this.isValidUsername = this.isValidUsername.bind(this);
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if (nextProps.error) {
-      this.setState({
-        "username": {
-          "showError": true,
-          "errorMessage": nextProps.errorMessage,
-        }
-      });
-    }
-  }
-
   handlePanelChange = panel => (event, expanded) => {
     this.setState({
       "expanded": expanded ? panel : undefined
@@ -75,7 +65,7 @@ class UsernamePanel extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('username', name)) {
+    if (name === 'username') {
       this.setState({
         "username": {
           "value": value,
@@ -98,7 +88,7 @@ class UsernamePanel extends Component {
         }
       });
       return false;
-    } else if (!validator.isAlphanumeric(username)) {
+    } else if (!isAlphanumeric(username)) {
       this.setState({
         "username": {
           "value": username,
@@ -106,7 +96,7 @@ class UsernamePanel extends Component {
           "errorMessage": 'Error: Only contains a-z, A-Z, 0-9'
         }
       });
-    } else if (!validator.isLength(username, {min: 4, max: 30})) {
+    } else if (!isLength(username, {min: 4, max: 30})) {
       this.setState({
         "username": {
           "value": username,
@@ -133,9 +123,17 @@ class UsernamePanel extends Component {
     const id = this.props.user._id;
 
     if (id && this.isValidUsername()) {
-      this.props.updateUserProfile(id, {
-        "username": this.state.username.value
-      });
+      this.props.updateUserProfile(id, { "username": this.state.username.value })
+        .then(response => {
+          if (!_.isEmpty(response) && this.props.error) {
+            this.setState({
+              "username": {
+                "showError": true,
+                "errorMessage": this.props.errorMessage,
+              }
+            });
+          }
+        })
     }
   }
 

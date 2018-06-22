@@ -82,23 +82,11 @@ class UserSignup extends Component {
     if (this.props.isLoggedIn) {
       this.props.history.push('/');
     }
-
-    this.props.closeLoginDialog();
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.isLoggedIn) {
       this.props.history.push('/');
-    }
-
-    if (this.props.registerError && this.props.registerError !== prevProps.registerError) {
-      this.setState({
-        "email": {
-          "value": this.state.email.value,
-          "showError": true,
-          "errorMessage": this.props.errorMessage
-        }
-      });
     }
   }
 
@@ -219,7 +207,18 @@ class UserSignup extends Component {
         "passwordConfirmation": passwordConfirmation.value
       };
 
-      this.props.register(user);
+      this.props.register(user)
+        .then(response => {
+          if (_.isEmpty(response) && this.props.error) {
+            this.setState({
+              "email": {
+                "value": this.state.email.value,
+                "showError": true,
+                "errorMessage": this.props.errorMessage
+              }
+            });
+          }
+        });
     }
   }
 
@@ -325,6 +324,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     "isFetching": state.userReducer.isFetching,
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "error": state.userReducer.error,
     "registerError": state.alertReducer.error,
     "errorMessage": state.alertReducer.message,
   };

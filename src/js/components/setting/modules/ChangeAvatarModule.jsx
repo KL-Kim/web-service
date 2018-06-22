@@ -56,14 +56,6 @@ class ChangeAvatarModule extends Component {
     this.handleClear = this.handleClear.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.user) {
-      this.setState({
-        image: null
-      });
-    }
-  }
-
   onSliderChange = (value) => {
     this.setState({
       "slider": value,
@@ -93,7 +85,14 @@ class ChangeAvatarModule extends Component {
 
         formData.append("avatar", blob, id);
 
-        this.props.uploadProfilePhoto(id, formData);
+        this.props.uploadProfilePhoto(id, formData)
+          .then(response => {
+            if (response) {
+              this.setState({
+                image: null
+              });
+            }
+          });
       }, 'image/jpeg', 1);
     }
   }

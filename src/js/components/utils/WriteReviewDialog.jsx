@@ -62,7 +62,7 @@ class WriteReviewDialog extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.rating !== this.props.rating || prevProps.content !== this.props.content) {
+    if ((prevProps.rating !== this.props.rating) || (prevProps.content !== this.props.content)) {
       this.setState({
         rating: this.props.rating || null,
         content: this.props.content || '',

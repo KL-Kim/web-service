@@ -93,13 +93,9 @@ class SearchPage extends Component {
     }
   }
 
-  componentDidUpdate() {
-    const parsed = qs.parse(this.props.location.search.slice(1));
-
-    if (parsed.s !== this.state.s) {
-      this.setState({
-        s: parsed.s
-      });
+  componentDidUpdate(prevProps) {
+    if (prevProps.location.search !== this.props.location.search) {
+      const parsed = qs.parse(this.props.location.search.slice(1));
 
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -140,6 +136,7 @@ class SearchPage extends Component {
           });
         }
       });
+
     }
   }
 

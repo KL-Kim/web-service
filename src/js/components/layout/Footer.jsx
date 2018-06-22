@@ -37,6 +37,14 @@ class Footer extends Component{
               <Grid item xs={2}>
                 <Link to="/terms-policy">Terms & Policy</Link>
               </Grid>
+
+              <Grid item xs={2}>
+                <Link to="/verify/123">Verify</Link>
+              </Grid>
+
+              <Grid item xs={2}>
+                <Link to="/change-password/123">Change Password</Link>
+              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={4}>

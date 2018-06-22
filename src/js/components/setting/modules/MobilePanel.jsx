@@ -72,28 +72,6 @@ class MobilePanel extends Component {
     this.isValidCode = this.isValidCode.bind(this);
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if (nextProps.error) {
-      if (this.state.activeStep === 0) {
-        this.setState({
-          "phoneNumber": {
-            "value": '',
-            "showError": true,
-            "errorMessage": nextProps.errorMessage,
-          }
-        });
-      } else if (this.state.activeStep === 1) {
-        this.setState({
-          "verificationCode": {
-            "value": '',
-            "showError": true,
-            "errorMessage": nextProps.errorMessage,
-          }
-        });
-      }
-    }
-  }
-
   handlePanelChange = panel => (event, expanded) => {
     this.setState({
       "expanded": expanded ? panel : undefined
@@ -141,6 +119,7 @@ class MobilePanel extends Component {
 
   handleBack() {
     const { activeStep } = this.state;
+
     this.setState({
       "activeStep": activeStep - 1,
       "verificationCode": {
@@ -156,26 +135,43 @@ class MobilePanel extends Component {
 
     if (activeStep === 0) {
       if (phoneNumber.value && this.isValidPhoneNumber()) {
-        this.props.sendPhoneVerificationCode(phoneNumber.value).then(response => {
-          if (response) {
-            this.setState({
-              activeStep: activeStep + 1
-            });
-          }
-        });
+        this.props.sendPhoneVerificationCode(phoneNumber.value)
+          .then(response => {
+            if (response) {
+              this.setState({
+                activeStep: activeStep + 1
+              });
+            } else {
+              this.setState({
+                "phoneNumber": {
+                  "value": '',
+                  "showError": true,
+                  "errorMessage": this.props.errorMessage,
+                }
+              });
+            }
+          });
       }
     } else if (activeStep === 1) {
       if (verificationCode.value && this.isValidCode()) {
-        console.log("Your code is " + verificationCode.value);
-
         const id = this.props.user._id;
-        this.props.updateMobilePhone(id, phoneNumber.value, verificationCode.value).then(response => {
-          if (response) {
-            this.setState({
-              activeStep: activeStep + 1
-            });
-          }
-        });
+
+        this.props.updateMobilePhone(id, phoneNumber.value, verificationCode.value)
+          .then(response => {
+            if (response) {
+              this.setState({
+                activeStep: activeStep + 1
+              });
+            } else {
+              this.setState({
+                "verificationCode": {
+                  "value": '',
+                  "showError": true,
+                  "errorMessage": this.props.errorMessage,
+                }
+              });
+            }
+          });
       }
     }
   }
@@ -267,36 +263,36 @@ class MobilePanel extends Component {
               </Stepper>
             </Grid>
 
-              {this.state.activeStep === steps.length ? (
-                <Grid item xs={12}>
-                  <Typography variant="body1" align="center">
-                    Congratulations, Your mobile phone has been updated!
-                  </Typography>
-                </Grid>
-              ) : (
-                <Grid item xs={8}>
-                  {this.getStepContent(activeStep, this.props)}
-                  <Grid container justify="center" alignItems="center">
-                    <Grid item>
-                      <Button variant="raised"
-                        color="primary"
-                        disabled={this.state.phoneNumber.showError || this.state.verificationCode.showError || isFetching}
-                        onClick={this.handleNext}
-                        className={classes.button}
-                      >
-                        {isFetching ? (<CircularProgress size={20} />) : (activeStep === steps.length - 1 ? 'Update' : 'Next')}
-                      </Button>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={this.handleBack}
-                        className={classes.button}
-                      >
-                        Back
-                      </Button>
+              {this.state.activeStep === steps.length
+                ? <Grid item xs={12}>
+                    <Typography variant="body1" align="center">
+                      Congratulations, Your mobile phone has been updated!
+                    </Typography>
+                  </Grid>
+
+                : <Grid item xs={8}>
+                    {this.getStepContent(activeStep, this.props)}
+                    <Grid container justify="center" alignItems="center">
+                      <Grid item>
+                        <Button variant="raised"
+                          color="primary"
+                          disabled={this.state.phoneNumber.showError || this.state.verificationCode.showError || isFetching}
+                          onClick={this.handleNext}
+                          className={classes.button}
+                        >
+                          {isFetching ? (<CircularProgress size={20} />) : (activeStep === steps.length - 1 ? 'Update' : 'Next')}
+                        </Button>
+                        <Button
+                          disabled={activeStep === 0}
+                          onClick={this.handleBack}
+                          className={classes.button}
+                        >
+                          Back
+                        </Button>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              )}
+              }
           </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
