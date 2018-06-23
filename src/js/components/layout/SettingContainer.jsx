@@ -41,7 +41,7 @@ const styles = (theme) => ({
 
 class SettingContainer extends Component {
   componentDidUpdate(prevProps) {
-    if (prevProps.isLoggedIn !== this.props.isLoggedIn && !this.prosp.isLoggedIn) {
+    if (prevProps.isLoggedIn !== this.props.isLoggedIn && !this.props.isLoggedIn) {
       this.props.history.push('/404');
     }
   }

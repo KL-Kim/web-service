@@ -18,6 +18,10 @@ import Popover from '@material-ui/core/Popover';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Divider from '@material-ui/core/Divider';
+import Toolbar from '@material-ui/core/Toolbar';
 
 // Custom Components
 import Container from './layout/Container';
@@ -31,6 +35,13 @@ import { getBusinessList, clearBusinessList } from '../actions/business.actions.
 import { getCategoriesList } from '../actions/category.actions.js';
 
 const styles = theme => ({
+  "header": {
+    flexGrow: 1,
+    marginBottom: theme.spacing.unit * 4,
+  },
+  "flex": {
+    "flex": 1,
+  },
   "button": {
     marginRight: theme.spacing.unit * 2,
     marginTop: theme.spacing.unit,
@@ -59,7 +70,7 @@ class BusinessListPage extends Component {
       "sortPopoverOpen": false,
     };
 
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.loadMore = this.loadMore.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
@@ -74,6 +85,7 @@ class BusinessListPage extends Component {
   }
 
   componentDidMount() {
+
     this.props.getBusinessList({
       limit: this.state.limit,
       filter: {
@@ -83,8 +95,8 @@ class BusinessListPage extends Component {
     .then(response => {
       if (response) {
         this.setState({
-          count: this.state.limit,
-          hasMore: this.state.limit < response.totalCount,
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
         });
       }
     });
@@ -113,8 +125,8 @@ class BusinessListPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            count: this.state.limit,
-            hasMore: this.state.limit < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
             categoryPopoverOpen: false,
           });
         }
@@ -184,8 +196,8 @@ class BusinessListPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            count: this.state.limit,
-            hasMore: this.state.limit < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
@@ -212,8 +224,8 @@ class BusinessListPage extends Component {
         if (response) {
           this.setState({
             orderBy: item,
-            count: this.state.limit,
-            hasMore: this.state.limit < response.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
           });
         }
       });
@@ -241,8 +253,8 @@ class BusinessListPage extends Component {
     .then(response => {
       if (response) {
         this.setState({
-          count: this.state.limit,
-          hasMore: this.state.limit < response.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount
         });
       }
     });
@@ -262,8 +274,8 @@ class BusinessListPage extends Component {
       })
       .then((response => {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < response.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount
         });
       }));
     }
@@ -271,13 +283,18 @@ class BusinessListPage extends Component {
 
   render() {
     const { classes, businessList, categories } = this.props;
-    let index;
 
     return (
       <Container>
         <div>
-          <Grid container spacing={8}>
-            <Grid item xs={12}>
+
+          <div className={classes.header}>
+            <Toolbar disableGutters>
+              <Typography variant="display1" className={classes.flex}>
+                {
+                  _.isEmpty(this.state.category) ? '' : this.state.category.krName
+                }
+              </Typography>
               <Button
                 color="primary"
                 variant="outlined"
@@ -330,39 +347,47 @@ class BusinessListPage extends Component {
                 }
                 label="이벤트"
               />
-            </Grid>
-          </Grid>
+            </Toolbar>
+
+            {
+              this.props.isFetching
+                ? <LinearProgress style={{ height: 1 }} />
+                : <Divider />
+            }
+          </div>
 
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}
             hasMore={this.state.hasMore}
-            loader={<div className="loader" key={0}>Loading ...</div>}
+            loader={<div style={{ textAlign: 'center' }} key={0}>
+                      <CircularProgress size={30} />
+                    </div>}
           >
-            <Grid container spacing={16}>
+            <Grid container spacing={24}>
               {
                 _.isEmpty(businessList)
-                ? <Grid item xs={12}><Typography variant="headline" align="center">None</Typography></Grid>
-                : businessList.map(item => {
-                    if (!_.isEmpty(this.state.myFavors)) {
-                      index = this.state.myFavors.indexOf(item._id);
-                    }
-
-                    return (
-                      <Grid item xs={3} key={item._id}>
+                  ? (this.props.isFetching
+                      ? ''
+                      :
+                        <Grid item xs={12}>
+                          <Typography variant="body1" align="center">--- None ---</Typography>
+                        </Grid>)
+                  : businessList.map(item => (
+                      <Grid item xs={4} key={item._id}>
                         <BusinessCard
-                          history={this.props.history}
                           key={item._id}
                           bid={item._id}
                           title={item.krName}
                           enName={item.enName}
                           rating={item.ratingAverage}
                           thumbnailUri={item.thumbnailUri}
-                          isFavor={(!_.isUndefined(index) && index > -1) ? true : false}
+                          category={item.category}
+                          tags={item.tags}
+                          myFavors={this.state.myFavors}
                         />
                       </Grid>
-                    );
-                  })
+                    ))
               }
             </Grid>
           </InfiniteScroll>

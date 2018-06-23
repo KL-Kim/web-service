@@ -32,14 +32,14 @@ class HomePage extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
-
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+    this.state = {
+      myFavors: loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [],
+    };
   }
 
   componentDidMount() {
     this.props.getBusinessList({
-      limit: 3,
+      limit: 6,
       orderBy: "useful"
     });
   }
@@ -68,7 +68,7 @@ class HomePage extends Component {
             </Grid>
           </Grid>
 
-          <Grid container spacing={16} justify="center" alignItems="center">
+          <Grid container spacing={24} justify="center">
             <Grid item xs={12}>
               <Typography variant="display1" gutterBottom align="center">
                 Hot & New Bussiness
@@ -85,12 +85,13 @@ class HomePage extends Component {
                   return (
                     <Grid item xs={4} key={item._id}>
                       <BusinessCard
-                        history={this.props.history}
                         bid={item._id}
                         title={item.krName}
                         enName={item.enName}
                         rating={item.ratingAverage}
                         thumbnailUri={item.thumbnailUri}
+                        category={item.category}
+                        tags={item.tags}
                         isFavor={(!_.isUndefined(index) && index > -1) ? true : false}
                       />
                     </Grid>

@@ -64,8 +64,8 @@ class PostPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: this.state.limit < this.props.totalCount,
-            count: this.state.count + this.state.limit
+            hasMore: response.list.length < this.props.totalCount,
+            count: response.list.length,
           });
         }
       });
@@ -89,8 +89,8 @@ class PostPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: this.state.count + this.state.limit < response.totalCount,
-            count: this.state.count + this.state.limit
+            hasMore: response.list.length < response.totalCount,
+            count: response.list.length,
           });
         }
       });
@@ -107,8 +107,8 @@ class PostPage extends Component {
     }).then(response => {
       if (response) {
         this.setState({
-          hasMore: this.state.limit < this.props.totalCount,
-          count: this.state.count + this.state.limit
+          hasMore: response.list.length < this.props.totalCount,
+          count: response.list.length,
         });
       }
     });

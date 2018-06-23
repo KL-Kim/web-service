@@ -17,11 +17,10 @@ const styles = theme => ({
     overflow: 'hidden',
   },
   appFrame: {
-    width: 'auto',
+    maxWidth: 960,
     height: '100%',
+    margin: 'auto',
     marginTop: theme.spacing.unit * 12,
-    marginLeft: theme.spacing.unit * 16,
-    marginRight: theme.spacing.unit * 16,
     paddingBottom: theme.spacing.unit * 10,
   },
 });

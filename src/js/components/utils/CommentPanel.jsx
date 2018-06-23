@@ -67,6 +67,12 @@ class CommentPanel extends Component {
   }
 
   handleOpenReplyDialog() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
     this.setState({
       "replyDialogOpen": true,
     });
@@ -79,6 +85,12 @@ class CommentPanel extends Component {
   }
 
   handleOpenDeleteDialog() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
     this.setState({
       "deleteDialogOpen": true,
     });
@@ -92,7 +104,9 @@ class CommentPanel extends Component {
 
   handleSubmitComment() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+      this.props.openLoginDialog();
+
+      return;
     }
 
     if (!_.isEmpty(this.props.user) && this.props.postId) {
@@ -121,7 +135,9 @@ class CommentPanel extends Component {
 
   handleVoteComment = (vote) => e => {
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+      this.props.openLoginDialog();
+
+      return;
     }
 
     if (!_.isEmpty(this.props.user) && this.props.commentId) {
@@ -142,9 +158,11 @@ class CommentPanel extends Component {
   }
 
   handleDeleteComment() {
-    // if (!this.props.isLoggedIn) {
-    //   this.props.history.push('/signin');
-    // }
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
 
     if (this.props.commentId && this.props.user) {
       this.props.deleteComment(this.props.commentId, this.props.user._id)

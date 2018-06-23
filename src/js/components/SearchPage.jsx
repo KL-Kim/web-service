@@ -31,7 +31,7 @@ class SearchPage extends Component {
     const parsed = qs.parse(props.location.search.slice(1));
 
     this.state = {
-      "limit": 24,
+      "limit": 12,
       "count": 0,
       "categories": [],
       "categorySlug": '',
@@ -85,8 +85,8 @@ class SearchPage extends Component {
           this.setState({
             categories: categories.slice(),
             areas: areas.slice(),
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < this.props.totalCount
           });
         }
       });
@@ -131,8 +131,8 @@ class SearchPage extends Component {
             s: parsed.s,
             categories: categories.slice(),
             areas: areas.slice(),
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < this.props.totalCount
           });
         }
       });
@@ -156,8 +156,8 @@ class SearchPage extends Component {
         if (response) {
           this.setState({
             categorySlug: slug,
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < this.props.totalCount
           });
         }
       });
@@ -180,8 +180,8 @@ class SearchPage extends Component {
         if (response) {
           this.setState({
             areaCode: code,
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < this.props.totalCount
           });
         }
       });
@@ -204,8 +204,8 @@ class SearchPage extends Component {
         if (response) {
           this.setState({
             orderBy: item,
-            count: this.state.limit,
-            hasMore: this.state.limit < this.props.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < this.props.totalCount
           });
         }
       });
@@ -226,12 +226,15 @@ class SearchPage extends Component {
     .then(response => {
       if (response) {
         this.setState({
-          event: !this.state.event,
-          count: this.state.limit,
-          hasMore: this.state.limit < this.props.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < this.props.totalCount
         });
       }
     });
+
+    this.setState({
+      event: !this.state.event,
+    })
   }
 
   loadMore() {
@@ -248,8 +251,8 @@ class SearchPage extends Component {
     })
     .then((response => {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < this.props.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < this.props.totalCount
         });
       }));
     }

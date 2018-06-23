@@ -48,8 +48,8 @@ class BlogListPage extends Component {
     }).then(response => {
       if (response) {
         this.setState({
-          count: this.state.limit,
-          hasMore: this.state.limit < response.totalCount,
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
         });
       }
     });
@@ -65,8 +65,8 @@ class BlogListPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            count: newCount,
-            hasMore: newCount < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
@@ -102,7 +102,7 @@ class BlogListPage extends Component {
                 ? <div className={classes.buttonContainer}>
                     <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
                   </div>
-                : <Typography variant="body1" align="center" gutterBottom>No more posts</Typography>
+                : <Typography variant="body1" align="center" gutterBottom>--- No more posts ---</Typography>
             }
             </Grid>
           </Grid>

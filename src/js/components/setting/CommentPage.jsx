@@ -47,8 +47,8 @@ class CommentsPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            count: this.state.limit,
-            hasMore: this.state.limit < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
@@ -64,8 +64,8 @@ class CommentsPage extends Component {
     .then(response => {
       if (response) {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < response.totalCount,
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
         })
       }
     })
@@ -80,8 +80,8 @@ class CommentsPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            count: this.state.count,
-            hasMore: this.state.count < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });

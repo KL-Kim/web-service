@@ -7,6 +7,7 @@ import Img from 'react-image';
 import Stars from 'react-stars';
 import Masonry from 'react-masonry-component';
 import InfiniteScroll from 'react-infinite-scroller';
+import { Map, Marker, Circle } from 'react-amap';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -23,12 +24,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import Popover from '@material-ui/core/Popover';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 // Material UI Icons
 import Whatshot from '@material-ui/icons/Whatshot';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import Favorite from '@material-ui/icons/Favorite';
+import LocalPhone from '@material-ui/icons/LocalPhone';
+import Place from '@material-ui/icons/Place';
 
 // Custom Components
 import Container from './layout/Container'
@@ -38,6 +45,7 @@ import ReportDialog from './utils/ReportDialog';
 
 // Actions
 import { favorOperation } from '../actions/user.actions';
+import { openLoginDialog } from '../actions/app.actions';
 import { getSingleBusiness, reportBusiness } from '../actions/business.actions';
 import {
   getReviews,
@@ -59,8 +67,7 @@ const styles = theme => ({
     width: '100%',
   },
   "paper": {
-    padding: theme.spacing.unit * 5,
-    color: theme.palette.text.secondary
+    padding: theme.spacing.unit * 4,
   },
   "button": {
     margin: theme.spacing.unit,
@@ -72,6 +79,10 @@ const styles = theme => ({
     "display": "flex",
     "justifyContent": "flex-end",
   },
+  "map": {
+    width: '100%',
+    height: 400,
+  }
 });
 
 class SingleBusinessPage extends Component {
@@ -89,6 +100,7 @@ class SingleBusinessPage extends Component {
       "reviewDialogOpen": false,
       "reportDialogOpen": false,
       "isMyFavor": false,
+      "sortMenuPopoverOpen": false,
     };
 
     if (props.location.state && !_.isEmpty(props.location.state.reviewId)) {
@@ -99,13 +111,15 @@ class SingleBusinessPage extends Component {
 
     this.handleAddNewReviewDialogOpen = this.handleAddNewReviewDialogOpen.bind(this);
     this.handleAddNewReviewDialogClose = this.handleAddNewReviewDialogClose.bind(this);
-    this.handleOrderBy = this.handleOrderBy.bind(this);
-    this.loadMoreReviews = this.loadMoreReviews.bind(this);
+    this.hanldeReviewSortBy = this.hanldeReviewSortBy.bind(this);
+    this.loadMore = this.loadMore.bind(this);
     this.handleReviewDialogClose = this.handleReviewDialogClose.bind(this);
     this.handleAddtoFavor = this.handleAddtoFavor.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
     this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
     this.handleSubmitReport = this.handleSubmitReport.bind(this);
+    this.handleSortMenuPopoverOpen = this.handleSortMenuPopoverOpen.bind(this);
+    this.handleSortMenuPopoverClose = this.handleSortMenuPopoverClose.bind(this);
   }
 
   componentDidMount() {
@@ -116,7 +130,7 @@ class SingleBusinessPage extends Component {
         } else {
           const index = this.state.myFavors.indexOf(business._id);
           this.setState({
-            business: business,
+            business: Object.assign({}, business),
             isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
           });
 
@@ -131,8 +145,8 @@ class SingleBusinessPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            hasMore: this.state.limit < response.totalCount,
-            count: this.state.count + this.state.limit,
+            hasMore: response.list.length < response.totalCount,
+            count: response.list.length,
           });
         }
 
@@ -151,11 +165,62 @@ class SingleBusinessPage extends Component {
       });
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.slug !== this.props.match.params.slug) {
+      this.props.getSingleBusiness(this.props.match.params.slug)
+        .then(business => {
+          if (_.isEmpty(business) || business.status !== 'PUBLISHED') {
+            this.props.history.push('/404');
+
+            return ;
+          }
+
+          const index = this.state.myFavors.indexOf(business._id);
+
+          this.setState({
+            business: Object.assign({}, business),
+            isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
+          });
+
+          return this.props.getReviews({
+            limit: this.state.limit,
+            bid: business._id,
+          });
+        })
+        .then(response => {
+          if (response) {
+            this.setState({
+              hasMore: response.list.length < response.totalCount,
+              count: response.list.length,
+            });
+          }
+        });
+    }
+  }
+
   componentWillUnmount() {
     this.props.clearReviewsList();
   }
 
+  handleSortMenuPopoverOpen() {
+    this.setState({
+      "sortMenuPopoverOpen": true,
+    });
+  }
+
+  handleSortMenuPopoverClose() {
+    this.setState({
+      "sortMenuPopoverOpen": false,
+    });
+  }
+
   handleAddNewReviewDialogOpen() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
     this.setState({
       "addNewDialogOpen": true,
     });
@@ -200,7 +265,7 @@ class SingleBusinessPage extends Component {
     }
   }
 
-  handleOrderBy = (item) => e => {
+  hanldeReviewSortBy = (item) => e => {
     this.props.getReviews({
       limit: this.state.limit,
       bid: this.state.business._id,
@@ -209,16 +274,22 @@ class SingleBusinessPage extends Component {
       if (response) {
         this.setState({
           'orderBy': item,
-          hasMore: this.state.limit < this.props.totalCount,
-          count: this.state.limit,
+          hasMore: response.list.length < this.props.totalCount,
+          count: response.list.length,
         });
       }
     }));
+
+    this.setState({
+      sortMenuPopoverOpen: false
+    });
   }
 
   handleAddtoFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+      this.props.openLoginDialog();
+
+      return;
     }
 
     if (!_.isEmpty(this.props.user) && !_.isEmpty(this.state.business)) {
@@ -233,7 +304,7 @@ class SingleBusinessPage extends Component {
     }
   }
 
-  loadMoreReviews() {
+  loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
         limit: this.state.count + this.state.limit,
@@ -241,8 +312,8 @@ class SingleBusinessPage extends Component {
         'orderBy': this.state.orderBy,
       }).then((response => {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < this.props.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < this.props.totalCount
         });
       }));
     }
@@ -251,7 +322,15 @@ class SingleBusinessPage extends Component {
   render() {
     const { classes, reviews } = this.props;
     const { business, review } = this.state;
-    const thumbnail = _.isEmpty(business) || _.isEmpty(business.thumbnailUri) ? image : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
+    const thumbnail = (_.isEmpty(business) || _.isEmpty(business.thumbnailUri))
+                        ? image
+                        : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
+
+    const mapPlugins = [
+      'Overview',
+      'ControlBar',
+
+    ];
 
     return (
       <Container>
@@ -259,19 +338,23 @@ class SingleBusinessPage extends Component {
           _.isEmpty(business) ? <div></div> :
           <div>
             <Grid container spacing={16}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <Img src={thumbnail} className={classes.thumbnail} />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <Paper className={classes.paper}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <Typography variant="display1" color="primary">{business.krName}</Typography>
+                      <Typography variant="display2" >{business.krName}</Typography>
+                      <Typography variant="body2" >{business.cnName}</Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <div className={classes.buttonContainer}>
                         <Tooltip id="favor-icon" title="Add to Favor">
-                          <IconButton color={this.state.isMyFavor ? "secondary" : 'default'} onClick={this.handleAddtoFavor}>
+                          <IconButton
+                            color={this.state.isMyFavor ? "secondary" : 'default'}
+                            onClick={this.handleAddtoFavor}
+                          >
                             {
                               this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
                             }
@@ -285,29 +368,89 @@ class SingleBusinessPage extends Component {
                       </div>
                     </Grid>
                   </Grid>
-                  <Typography variant="body1" gutterBottom>{business.cnName}</Typography>
-                  <Stars count={5} size={24} value={business.ratingAverage} edit={false} />
-                  <Typography variant="body2">{business.category.krName}</Typography>
-                  <Typography variant="body1">Tel: {business.tel}</Typography>
-                  <Typography variant="body1">{business.address.area.name + ' ' + business.address.street}</Typography>
+
+                  <br />
+
+                  <Stars count={5} size={32} value={business.ratingAverage} edit={false} />
+
+                  <br />
+
+                  <Grid container justify="flex-end" alignItems="center">
+
+                    <Grid item>
+                      <Link to={"/business/category/" + business.category.enName}>
+                        <Typography variant="body2" color="primary" gutterBottom>{business.category.krName}</Typography>
+                      </Link>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item>
+                      <LocalPhone style={{ fontSize: 30 }} />
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body2">
+                        {business.tel}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item>
+                      <Place style={{ fontSize: 30 }} />
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body2">
+                        {business.address.area.name + ' ' + business.address.street}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+
+                </Paper>
+              </Grid>
+
+              {
+                business.event
+                  ? <Grid item xs={4}>
+                      <Paper className={classes.paper}>
+                        <Typography variant="title" gutterBottom>Event</Typography>
+                        <div dangerouslySetInnerHTML={{ __html: business.event }} />
+                      </Paper>
+                    </Grid>
+                  : ''
+              }
+
+              <Grid item xs={6}>
+                <Paper className={classes.map}>
+                  <Map
+                    amapkey={config.AMAP_KEY}
+                    zoom={16}
+                    center={{
+                      longitude: business.geo.coordinates[0],
+                      latitude: business.geo.coordinates[1],
+                    }}
+                    plugins={mapPlugins}
+                  >
+                    <Marker position={{
+                        longitude: business.geo.coordinates[0],
+                        latitude: business.geo.coordinates[1],
+                      }}
+                    />
+                  </Map>
                 </Paper>
               </Grid>
 
               <Grid item xs={4}>
                 <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>지도</Typography>
-
-                </Paper>
-              </Grid>
-
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="display1" gutterBottom>More</Typography>
-                  <Typography variant="body1" gutterBottom>가격: {business.priceRange}</Typography>
-                  <Typography variant="body1" gutterBottom>배달: {business.delivery}</Typography>
-                  <Typography variant="body1" gutterBottom>언어: {business.supportedLanguage}</Typography>
-                  <Typography variant="body1" gutterBottom>Payments: {business.payment}</Typography>
-                  <Typography variant="body1" gutterBottom>휴식일: {business.rest}</Typography>
+                  <Typography variant="title" gutterBottom>More</Typography>
+                  <div>
+                    <Typography variant="body1" gutterBottom><strong>가격:</strong> {business.priceRange}</Typography>
+                    <Typography variant="body1" gutterBottom>배달: {business.delivery}</Typography>
+                    <Typography variant="body1" gutterBottom>언어: {business.supportedLanguage.toString()}</Typography>
+                    <Typography variant="body1" gutterBottom>Payments: {business.payment.toString()}</Typography>
+                    <Typography variant="body1" gutterBottom>휴식일: {business.rest}</Typography>
+                  </div>
                 </Paper>
               </Grid>
 
@@ -338,15 +481,10 @@ class SingleBusinessPage extends Component {
               <Grid item xs={4}>
                 <Paper className={classes.paper}>
                   <Typography variant="title" gutterBottom>Description</Typography>
-                  <Typography variant="body1" gutterBottom>{business.description}</Typography>
+                  <div dangerouslySetInnerHTML={{ __html: business.description }} />
                 </Paper>
               </Grid>
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>Event</Typography>
-                  <Typography variant="body1" gutterBottom>{business.event}</Typography>
-                </Paper>
-              </Grid>
+
               <Grid item xs={4}>
                 <Paper className={classes.paper}>
                   <Typography variant="title" gutterBottom>Menu</Typography>
@@ -391,8 +529,6 @@ class SingleBusinessPage extends Component {
               </Grid>
             </Grid>
 
-            <Divider />
-
             <Grid container spacing={16} justify="space-between" alignItems="flex-start">
               <Grid item xs={12}>
                 <Typography variant="display3" align="center" id="reviews">
@@ -400,19 +536,32 @@ class SingleBusinessPage extends Component {
                 </Typography>
               </Grid>
               <Grid item xs={4}>
-                  <Button color="primary" onClick={this.handleOrderBy('recommended')}>Recommend</Button>
-                  <Button color="primary" onClick={this.handleOrderBy('new')}>Newest</Button>
-                  <Button color="primary" onClick={this.handleOrderBy('useful')}>Most Useful</Button>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    buttonRef={node => {
+                      this.sortMenuAnchorEl = node;
+                    }}
+                    onClick={this.handleSortMenuPopoverOpen}
+                  >
+                    Sort By
+                  </Button>
               </Grid>
               <Grid item xs={4}>
                 <div className={classes.buttonContainer}>
-                  <Button variant="raised" color="primary" onClick={this.handleAddNewReviewDialogOpen}>Write a review</Button>
+                  <Button
+                    variant="raised"
+                    color="primary"
+                    onClick={this.handleAddNewReviewDialogOpen}
+                  >
+                    Write a review
+                  </Button>
                 </div>
               </Grid>
               <Grid item xs={12}>
                 <InfiniteScroll
                   pageStart={0}
-                  loadMore={this.loadMoreReviews}
+                  loadMore={this.loadMore}
                   hasMore={this.state.hasMore}
                   loader={<div className="loader" key={0}>Loading ...</div>}
                 >
@@ -433,6 +582,7 @@ class SingleBusinessPage extends Component {
                             rating={review.rating}
                             upvoteNum={review.upvote.length}
                             handleVote={this.props.voteReview}
+                            openLoginDialog={this.props.openLoginDialog}
                           />
                         ))
                     }
@@ -473,6 +623,34 @@ class SingleBusinessPage extends Component {
                 handleSubmit={this.handleSubmitReport}
                 handleClose={this.handleReportDialogClose}
               />
+
+              <Popover
+                open={this.state.sortMenuPopoverOpen}
+                anchorEl={this.sortMenuAnchorEl}
+                onClose={this.handleSortMenuPopoverClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <div className={classes.popoverContainer}>
+                  <MenuList role="menu">
+                    <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
+                      <ListItemText primary="Recommend" />
+                    </MenuItem>
+                    <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
+                      <ListItemText primary="Useful" />
+                    </MenuItem>
+                    <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
+                      <ListItemText primary="New" />
+                    </MenuItem>
+                  </MenuList>
+                </div>
+              </Popover>
             </div>
           </div>
         }
@@ -507,5 +685,6 @@ export default connect(mapStateToProps, {
   voteReview,
   clearReviewsList,
   getSingleReview,
-  favorOperation
+  favorOperation,
+  openLoginDialog,
 })(withStyles(styles)(SingleBusinessPage));

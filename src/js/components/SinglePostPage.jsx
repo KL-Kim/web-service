@@ -52,6 +52,7 @@ import { getComments,
   deleteComment,
   clearCommentsList,
 } from '../actions/comment.actions';
+import { openLoginDialog } from '../actions/app.actions';
 
 // Mock image
 import image from '../../css/ikt-icon.gif';
@@ -130,8 +131,8 @@ class SinglePostPage extends Component {
         }).then(response => {
           if (response) {
             this.setState({
-              count: this.state.limit,
-              hasMore: this.state.limit < response.totalCount,
+              count: response.list.length,
+              hasMore: response.list.length < response.totalCount,
             });
           }
         });
@@ -183,6 +184,12 @@ class SinglePostPage extends Component {
   }
 
   handleOpenWriteCommentDialog() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
     this.setState({
       writeCommentDialogOpen: true,
     });
@@ -197,7 +204,9 @@ class SinglePostPage extends Component {
 
   handleSubmitComment() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+      this.props.openLoginDialog();
+
+      return;
     }
 
     if (!_.isEmpty(this.props.user) && this.state.id && this.state.content) {
@@ -236,8 +245,8 @@ class SinglePostPage extends Component {
         if (response) {
           this.setState({
             orderBy: 'new',
-            count: this.state.count,
-            hasMore: this.state.count < response.totalCount,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
@@ -245,17 +254,25 @@ class SinglePostPage extends Component {
   }
 
   handleVote = vote => e => {
-    this.props.votePost(this.state.id, {
-      uid: this.props.user._id,
-      vote: vote,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          post: response.post
-        });
-      }
-    })
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
+    if (this.state.id) {
+      this.props.votePost(this.state.id, {
+        uid: this.props.user._id,
+        vote: vote,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            post: response.post
+          });
+        }
+      });
+    }
   }
 
   handleReportDialogOpen() {
@@ -294,8 +311,8 @@ class SinglePostPage extends Component {
     .then(response => {
       if (response) {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < response.totalCount,
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
         })
       }
     })
@@ -446,6 +463,7 @@ class SinglePostPage extends Component {
                               getNewComments={this.getNewComments}
                               voteComment={this.props.voteComment}
                               deleteComment={this.props.deleteComment}
+                              openLoginDialog={this.props.openLoginDialog}
                             />
                           </Grid>
                       ))
@@ -522,4 +540,5 @@ export default connect(mapStateToProps, {
   voteComment,
   deleteComment,
   clearCommentsList,
+  openLoginDialog,
 })(withStyles(styles)(SinglePostPage));

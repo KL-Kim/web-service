@@ -85,6 +85,12 @@ class ReviewCard extends Component {
   }
 
   hanldeUpvote() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
     if (!_.isUndefined(this.props.handleVote) && !_.isEmpty(this.props.user) && this.props.owner._id !== this.props.user._id) {
       this.props.handleVote(this.props.id, {
         uid: this.props.user._id,

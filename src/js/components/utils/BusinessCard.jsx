@@ -14,6 +14,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
 import Share from '@material-ui/icons/Share';
@@ -21,33 +22,46 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
 import { favorOperation } from '../../actions/user.actions';
+import { openLoginDialog } from '../../actions/app.actions';
 
 import config from '../../config/config';
 import image from '../../../css/ikt-icon.gif';
 
-const styles = {
-  // card: {
-  //   maxWidth: 345,
-  // },
+const styles = (theme) => ({
+  card: {
+    marginBottom: theme.spacing.unit * 3,
+  },
   media: {
     height: 200,
   },
-};
+  chip: {
+    marginRight: theme.spacing.unit,
+  }
+});
 
 class BusinessCard extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isFavor: props.isFavor,
+      isFavor: false,
     };
+
+    if (props.myFavors) {
+      const index = props.myFavors.indexOf(props._id);
+      if (index > -1) {
+        this.state.isFavor = true;
+      }
+    }
 
     this.hanldeAddToFavor = this.hanldeAddToFavor.bind(this);
   }
 
   hanldeAddToFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+      this.props.openLoginDialog();
+
+      return ;
     }
 
     if (!_.isEmpty(this.props.user) && !_.isEmpty(this.props.bid)) {
@@ -77,8 +91,20 @@ class BusinessCard extends Component {
               title={this.props.title}
             />
             <CardContent>
-              <Typography variant="title">{this.props.title}</Typography>
+              <Typography variant="title" gutterBottom>{this.props.title}</Typography>
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
+              <Typography variant="subheading" gutterBottom>{this.props.category.krName}</Typography>
+              {
+                _.isEmpty(this.props.tags)
+                  ? ''
+                  : this.props.tags.map(item => (
+                    <Chip
+                      key={item._id}
+                      className={classes.chip}
+                      label={item.krName}
+                      />
+                  ))
+              }
             </CardContent>
           </Link>
           <CardActions>
@@ -87,11 +113,6 @@ class BusinessCard extends Component {
                 {
                   this.state.isFavor ? <Favorite /> : <FavoriteBorder />
                 }
-              </IconButton>
-            </Tooltip>
-            <Tooltip id="share-icon" title="Share">
-              <IconButton aria-label="Share">
-                <Share />
               </IconButton>
             </Tooltip>
           </CardActions>
@@ -107,7 +128,9 @@ BusinessCard.propTypes = {
   "enName": PropTypes.string.isRequired,
   "rating": PropTypes.number,
   "thumbnail": PropTypes.object,
-  "isFavor": PropTypes.bool.isRequired,
+  "myFavors": PropTypes.bool,
+  "category": PropTypes.object.isRequired,
+  "tags": PropTypes.array,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -117,4 +140,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { favorOperation })(withStyles(styles)(BusinessCard));
+export default connect(mapStateToProps, { favorOperation, openLoginDialog })(withStyles(styles)(BusinessCard));

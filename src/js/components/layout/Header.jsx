@@ -67,7 +67,6 @@ const styles = theme => ({
   },
   "flex": {
     "flex": 1,
-
   },
   "logo": {
     "width": 150,
@@ -382,7 +381,7 @@ class Header extends Component {
                       <ListItemIcon>
                         <ExitToApp />
                       </ListItemIcon>
-                      <ListItemText primary="logout" onClick={this.handleLogout}/>
+                      <ListItemText primary="logout" />
                     </MenuItem>
                   </MenuList>
                 </Drawer>)

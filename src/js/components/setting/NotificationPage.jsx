@@ -78,8 +78,8 @@ class NotificationPage extends Component {
         if (response) {
           this.setState({
             list: response.list.slice(),
-            count: this.state.limit,
-            hasMore: this.state.limit < response.totalCount
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
           });
         }
       });
@@ -152,8 +152,8 @@ class NotificationPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            count: this.state.count + this.state.limit,
-            hasMore: this.state.count + this.state.limit < this.props.totalCount,
+            count: this.state.count + response.list.length,
+            hasMore: (this.state.count + response.list.length) < this.props.totalCount,
             list: this.state.list.concat(response.list),
           });
         }

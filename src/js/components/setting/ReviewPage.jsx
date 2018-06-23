@@ -38,7 +38,7 @@ class ReviewPage extends Component {
     this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
 
     this.handleOrderBy = this.handleOrderBy.bind(this);
-    this.loadMoreReviews = this.loadMoreReviews.bind(this);
+    this.loadMore = this.loadMore.bind(this);
     this.getNewReviews = this.getNewReviews.bind(this);
   }
 
@@ -51,8 +51,8 @@ class ReviewPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: this.state.limit < this.props.totalCount,
-            count: this.state.count + this.state.limit
+            hasMore: response.list.length < this.props.totalCount,
+            count: response.list.length,
           });
         }
       });
@@ -69,7 +69,7 @@ class ReviewPage extends Component {
         if (response) {
           this.setState({
             'orderBy': item,
-            hasMore: this.state.limit < this.props.totalCount,
+            hasMore: response.list.length < this.props.totalCount,
             count: this.state.limit,
           });
         }
@@ -77,7 +77,7 @@ class ReviewPage extends Component {
     }
   }
 
-  loadMoreReviews() {
+  loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
         limit: this.state.count + this.state.limit,
@@ -85,8 +85,8 @@ class ReviewPage extends Component {
         'orderBy': this.state.orderBy,
       }).then(response => {
         this.setState({
-          count: this.state.count + this.state.limit,
-          hasMore: this.state.count + this.state.limit < this.props.totalCount
+          count: response.list.length,
+          hasMore: response.list.length < this.props.totalCount
         });
       });
     }
@@ -122,7 +122,7 @@ class ReviewPage extends Component {
             <Grid item xs={12}>
               <InfiniteScroll
                 pageStart={0}
-                loadMore={this.loadMoreReviews}
+                loadMore={this.loadMore}
                 hasMore={this.state.hasMore}
                 loader={<div className="loader" key={0}>Loading ...</div>}
               >
