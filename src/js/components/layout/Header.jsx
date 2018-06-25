@@ -229,7 +229,7 @@ class Header extends Component {
   handleCategoriesMenuClose() {
     this.setState({
       "categoriesPopoverOpen": false
-    })
+    });
   }
 
   render() {
@@ -270,7 +270,6 @@ class Header extends Component {
                         placeholder="Search"
                         disableUnderline
                         onChange={this.handleChange}
-                        onKeyPress={this.handleKeyPress}
                         endAdornment={
                           <InputAdornment position="end">
                             <IconButton

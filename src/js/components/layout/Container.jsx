@@ -20,8 +20,8 @@ const styles = theme => ({
     maxWidth: 960,
     height: '100%',
     margin: 'auto',
-    marginTop: theme.spacing.unit * 12,
-    paddingBottom: theme.spacing.unit * 10,
+    marginTop: theme.spacing.unit * 15,
+    marginBottom: theme.spacing.unit * 12,
   },
 });
 

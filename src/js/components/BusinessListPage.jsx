@@ -384,6 +384,7 @@ class BusinessListPage extends Component {
                           thumbnailUri={item.thumbnailUri}
                           category={item.category}
                           tags={item.tags}
+                          event={item.event}
                           myFavors={this.state.myFavors}
                         />
                       </Grid>

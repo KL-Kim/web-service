@@ -13,6 +13,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
@@ -23,14 +24,12 @@ import ProperName from './ProperName';
 import image from '../../../css/ikt-icon.gif';
 
 const styles = theme => ({
-  container: {
-    width: '33.3%',
-  },
-  card: {
-    margin: theme.spacing.unit * 2,
-  },
-  media: {
+  "media": {
     height: 200,
+  },
+  "chip":{
+    marginRight: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
   },
 });
 
@@ -127,31 +126,49 @@ class ReviewCard extends Component {
                 : ''
             }
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
+
+            <br />
             {
               this.props.showUser
-                ? <Typography variant="body1" gutterBottom>
-                    <ProperName user={this.props.owner} />
+                ? <Typography variant="body2" gutterBottom>
+                    <strong>
+                      <ProperName user={this.props.owner} />
+                    </strong>
                   </Typography>
                 : ''
             }
             <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
 
+            <br />
             <div>
-              <span>
-                <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
-                  <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
-                </IconButton>
-                {this.state.upvoteNum}
-              </span>
+              {
+                this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : ''
+              }
+              {
+                this.props.envGood ? <Chip className={classes.chip} label="환경 + 1" /> : ''
+              }
+              {
+                this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : ''
+              }
             </div>
+
+
           </CardContent>
-          {
-            (this.props.isOwn && !this.props.showUser) ? (
-              <CardActions>
-                <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
-              </CardActions>
-            ) : ''
-          }
+          <CardActions>
+
+            <div>
+              <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
+                <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
+              </IconButton>
+              {this.state.upvoteNum}
+            </div>
+
+            {
+              (this.props.isOwn && !this.props.showUser)
+                ? <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
+                : ''
+            }
+          </CardActions>
         </Card>
         {
           this.props.isOwn

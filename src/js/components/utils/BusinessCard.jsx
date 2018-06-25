@@ -21,22 +21,25 @@ import Share from '@material-ui/icons/Share';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
+// Actions
 import { favorOperation } from '../../actions/user.actions';
 import { openLoginDialog } from '../../actions/app.actions';
 
 import config from '../../config/config';
+
+// Default Image
 import image from '../../../css/ikt-icon.gif';
 
 const styles = (theme) => ({
-  card: {
+  "card": {
     marginBottom: theme.spacing.unit * 3,
   },
-  media: {
+  "media": {
     height: 200,
   },
-  chip: {
+  "chip": {
     marginRight: theme.spacing.unit,
-  }
+  },
 });
 
 class BusinessCard extends Component {
@@ -78,7 +81,6 @@ class BusinessCard extends Component {
 
   render() {
     const { classes, thumbnailUri } = this.props;
-    const thumbnail = _.isEmpty(thumbnailUri) ? image : config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd;
 
     return (
       <div>
@@ -87,13 +89,21 @@ class BusinessCard extends Component {
             "pathname": "/business/s/" + this.props.enName,
           }}>
             <CardMedia className={classes.media}
-              image={thumbnail}
+              image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
               title={this.props.title}
             />
             <CardContent>
               <Typography variant="title" gutterBottom>{this.props.title}</Typography>
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
-              <Typography variant="subheading" gutterBottom>{this.props.category.krName}</Typography>
+              <Typography variant="subheading" gutterBottom>{_.isEmpty(this.props.category) ? '' : this.props.category.krName}</Typography>
+              {
+                _.isEmpty(this.props.event)
+                  ? ''
+                  : <Chip
+                      className={classes.chip}
+                      label="Event"
+                    />
+              }
               {
                 _.isEmpty(this.props.tags)
                   ? ''
@@ -128,7 +138,7 @@ BusinessCard.propTypes = {
   "enName": PropTypes.string.isRequired,
   "rating": PropTypes.number,
   "thumbnail": PropTypes.object,
-  "myFavors": PropTypes.bool,
+  "myFavors": PropTypes.array,
   "category": PropTypes.object.isRequired,
   "tags": PropTypes.array,
 };

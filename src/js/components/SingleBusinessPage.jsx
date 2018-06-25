@@ -28,6 +28,12 @@ import Popover from '@material-ui/core/Popover';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Chip from '@material-ui/core/Chip';
+
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+
 
 // Material UI Icons
 import Whatshot from '@material-ui/icons/Whatshot';
@@ -36,12 +42,14 @@ import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import Favorite from '@material-ui/icons/Favorite';
 import LocalPhone from '@material-ui/icons/LocalPhone';
 import Place from '@material-ui/icons/Place';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 // Custom Components
 import Container from './layout/Container'
 import ReviewCard from './utils/ReviewCard';
 import WriteReviewDialog from './utils/WriteReviewDialog';
 import ReportDialog from './utils/ReportDialog';
+import Thumbnail from './utils/Thumbnail';
 
 // Actions
 import { favorOperation } from '../actions/user.actions';
@@ -63,11 +71,16 @@ import webStorageTypes from '../constants/webStorage.types';
 import image from '../../css/ikt-icon.gif';
 
 const styles = theme => ({
-  "thumbnail": {
-    width: '100%',
+  "container": {
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+  },
+  "wrapper": {
+    marginBottom: theme.spacing.unit * 2,
   },
   "paper": {
     padding: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 2,
   },
   "button": {
     margin: theme.spacing.unit,
@@ -79,10 +92,23 @@ const styles = theme => ({
     "display": "flex",
     "justifyContent": "flex-end",
   },
-  "map": {
+  "mapWrapper": {
     width: '100%',
     height: 400,
-  }
+  },
+  "chip": {
+    marginRight: theme.spacing.unit,
+  },
+  "heading": {
+   fontSize: theme.typography.pxToRem(15),
+   fontWeight: theme.typography.fontWeightRegular,
+ },
+  "card": {
+    width: "33.3%",
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    marginBottom: theme.spacing.unit * 2,
+  },
 });
 
 class SingleBusinessPage extends Component {
@@ -326,333 +352,516 @@ class SingleBusinessPage extends Component {
                         ? image
                         : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
 
-    const mapPlugins = [
-      'Overview',
-      'ControlBar',
-
-    ];
-
     return (
       <Container>
         {
           _.isEmpty(business) ? <div></div> :
-          <div>
-            <Grid container spacing={16}>
-              <Grid item xs={6}>
-                <Img src={thumbnail} className={classes.thumbnail} />
-              </Grid>
-              <Grid item xs={6}>
-                <Paper className={classes.paper}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <Typography variant="display2" >{business.krName}</Typography>
-                      <Typography variant="body2" >{business.cnName}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <div className={classes.buttonContainer}>
-                        <Tooltip id="favor-icon" title="Add to Favor">
-                          <IconButton
-                            color={this.state.isMyFavor ? "secondary" : 'default'}
-                            onClick={this.handleAddtoFavor}
-                          >
-                            {
-                              this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
-                            }
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip id="report-icon" title="Report">
-                          <IconButton onClick={this.handleReportDialogOpen}>
-                            <ErrorOutline />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    </Grid>
-                  </Grid>
-
-                  <br />
-
-                  <Stars count={5} size={32} value={business.ratingAverage} edit={false} />
-
-                  <br />
-
-                  <Grid container justify="flex-end" alignItems="center">
-
-                    <Grid item>
-                      <Link to={"/business/category/" + business.category.enName}>
-                        <Typography variant="body2" color="primary" gutterBottom>{business.category.krName}</Typography>
-                      </Link>
-                    </Grid>
-                  </Grid>
-
-                  <Grid container justify="space-between" alignItems="center">
-                    <Grid item>
-                      <LocalPhone style={{ fontSize: 30 }} />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body2">
-                        {business.tel}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-                  <Grid container justify="space-between" alignItems="center">
-                    <Grid item>
-                      <Place style={{ fontSize: 30 }} />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body2">
-                        {business.address.area.name + ' ' + business.address.street}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-
-                </Paper>
-              </Grid>
-
-              {
-                business.event
-                  ? <Grid item xs={4}>
-                      <Paper className={classes.paper}>
-                        <Typography variant="title" gutterBottom>Event</Typography>
-                        <div dangerouslySetInnerHTML={{ __html: business.event }} />
-                      </Paper>
-                    </Grid>
-                  : ''
-              }
-
-              <Grid item xs={6}>
-                <Paper className={classes.map}>
-                  <Map
-                    amapkey={config.AMAP_KEY}
-                    zoom={16}
-                    center={{
-                      longitude: business.geo.coordinates[0],
-                      latitude: business.geo.coordinates[1],
-                    }}
-                    plugins={mapPlugins}
-                  >
-                    <Marker position={{
-                        longitude: business.geo.coordinates[0],
-                        latitude: business.geo.coordinates[1],
-                      }}
-                    />
-                  </Map>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>More</Typography>
-                  <div>
-                    <Typography variant="body1" gutterBottom><strong>가격:</strong> {business.priceRange}</Typography>
-                    <Typography variant="body1" gutterBottom>배달: {business.delivery}</Typography>
-                    <Typography variant="body1" gutterBottom>언어: {business.supportedLanguage.toString()}</Typography>
-                    <Typography variant="body1" gutterBottom>Payments: {business.payment.toString()}</Typography>
-                    <Typography variant="body1" gutterBottom>휴식일: {business.rest}</Typography>
-                  </div>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>분점</Typography>
-                  {
-                    business.chains.map(item => (
-                      <Link to={item.enName} key={item.enName}>
-                        <Typography variant="body1">{item.krName}</Typography>
-                      </Link>
-                    ))
-                  }
-                </Paper>
-              </Grid>
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>영업시간</Typography>
-                  <Typography variant="body1" gutterBottom>월요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.mon}</Typography>
-                  <Typography variant="body1" gutterBottom>화요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.tue}</Typography>
-                  <Typography variant="body1" gutterBottom>수요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.wed}</Typography>
-                  <Typography variant="body1" gutterBottom>목요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.thu}</Typography>
-                  <Typography variant="body1" gutterBottom>금요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.fri}</Typography>
-                  <Typography variant="body1" gutterBottom>토요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sat}</Typography>
-                  <Typography variant="body1" gutterBottom>일요일: {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sun}</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>Description</Typography>
-                  <div dangerouslySetInnerHTML={{ __html: business.description }} />
-                </Paper>
-              </Grid>
-
-              <Grid item xs={4}>
-                <Paper className={classes.paper}>
-                  <Typography variant="title" gutterBottom>Menu</Typography>
-                  {
-                    <Table className={classes.table}>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Name</TableCell>
-                          <TableCell>Price</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {
-                          _.isEmpty(business.menu) ? (<TableRow></TableRow>)
-                          : business.menu.map((item, index) => {
-                              let name;
-
-                              if (item.hot) {
-                                name = <Badge color="secondary" badgeContent={<Whatshot />}>
-                                    <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                                  </Badge>
-                              } else if (item.new) {
-                                name = <Badge color="primary" badgeContent="New">
-                                    <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                                  </Badge>
-                              } else {
-                                name = <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                              }
-
-                            return (<TableRow hover key={index}>
-                              <TableCell>
-                                {name}
-                              </TableCell>
-                              <TableCell>{item.price}</TableCell>
-                            </TableRow>
-                          )})
-                        }
-                      </TableBody>
-                    </Table>
-                  }
-                </Paper>
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={16} justify="space-between" alignItems="flex-start">
-              <Grid item xs={12}>
-                <Typography variant="display3" align="center" id="reviews">
-                  Reviews
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    buttonRef={node => {
-                      this.sortMenuAnchorEl = node;
-                    }}
-                    onClick={this.handleSortMenuPopoverOpen}
-                  >
-                    Sort By
-                  </Button>
-              </Grid>
-              <Grid item xs={4}>
-                <div className={classes.buttonContainer}>
-                  <Button
-                    variant="raised"
-                    color="primary"
-                    onClick={this.handleAddNewReviewDialogOpen}
-                  >
-                    Write a review
-                  </Button>
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMore}
-                  hasMore={this.state.hasMore}
-                  loader={<div className="loader" key={0}>Loading ...</div>}
-                >
-                  <Masonry>
-                    {
-                      _.isEmpty(reviews) ? (<p>None</p>)
-                        : reviews.map(review => (
-                          <ReviewCard
-                            key={review._id}
-                            id={review._id}
-                            owner={review.user}
-                            user={this.props.user}
-                            isLoggedIn={this.props.isLoggedIn}
-                            isOwn={review.user._id === this.props.user._id}
-                            showUser
-                            business={review.business}
-                            content={review.content}
-                            rating={review.rating}
-                            upvoteNum={review.upvote.length}
-                            handleVote={this.props.voteReview}
-                            openLoginDialog={this.props.openLoginDialog}
-                          />
-                        ))
-                    }
-                  </Masonry>
-                </InfiniteScroll>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="caption" align="center">
-                  --- No more reviews ---
-                </Typography>
-              </Grid>
-            </Grid>
-
             <div>
-              <WriteReviewDialog
-                user={this.props.user}
-                business={business}
-                open={this.state.addNewDialogOpen}
-                addNewReview={this.props.addNewReview}
-                handleClose={this.handleAddNewReviewDialogClose}
-              />
+              <div>
+                <Grid container spacing={16} style={{ marginBottom: 96 }}>
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Paper className={classes.paper}>
+                          <Grid container alignItems="center">
+                            <Grid item xs={6}>
+                              <Typography variant="display2" >{business.krName}</Typography>
+                              <Typography variant="body2" >{business.cnName}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <div className={classes.buttonContainer}>
+                                <Tooltip id="favor-icon" title="Add to Favor">
+                                  <IconButton
+                                    color={this.state.isMyFavor ? "secondary" : 'default'}
+                                    onClick={this.handleAddtoFavor}
+                                  >
+                                    {
+                                      this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
+                                    }
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip id="report-icon" title="Report">
+                                  <IconButton onClick={this.handleReportDialogOpen}>
+                                    <ErrorOutline />
+                                  </IconButton>
+                                </Tooltip>
+                              </div>
+                            </Grid>
+                          </Grid>
 
-              <WriteReviewDialog
-                readOnly
-                user={this.props.user}
-                rating={review.rating}
-                content={review.content}
-                serviceGood={review.serviceGood}
-                envGood={review.envGood}
-                comeback={review.comeback}
-                business={business}
-                open={this.state.reviewDialogOpen}
-                handleClose={this.handleReviewDialogClose}
-              />
+                          <Stars count={5} size={32} value={business.ratingAverage} edit={false} />
 
-              <ReportDialog
-                open={this.state.reportDialogOpen}
-                handleSubmit={this.handleSubmitReport}
-                handleClose={this.handleReportDialogClose}
-              />
+                          <br />
 
-              <Popover
-                open={this.state.sortMenuPopoverOpen}
-                anchorEl={this.sortMenuAnchorEl}
-                onClose={this.handleSortMenuPopoverClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-              >
-                <div className={classes.popoverContainer}>
-                  <MenuList role="menu">
-                    <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
-                      <ListItemText primary="Recommend" />
-                    </MenuItem>
-                    <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
-                      <ListItemText primary="Useful" />
-                    </MenuItem>
-                    <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
-                      <ListItemText primary="New" />
-                    </MenuItem>
-                  </MenuList>
-                </div>
-              </Popover>
+                          <Grid container justify="flex-end" alignItems="center">
+
+                            <Grid item>
+                              <Link to={"/business/category/" + business.category.enName}>
+                                <Typography variant="body2" color="primary" gutterBottom>{business.category.krName}</Typography>
+                              </Link>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <LocalPhone style={{ fontSize: 30 }} />
+                            </Grid>
+                            <Grid item>
+                              <Typography variant="body2">
+                                {business.tel}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Place style={{ fontSize: 30 }} />
+                            </Grid>
+                            <Grid item>
+                              <Typography variant="body2">
+                                {business.address.area.name + ' ' + business.address.street}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <br />
+
+                          <div>
+                          {
+                            _.isEmpty(business.tags)
+                              ? ''
+                              : business.tags.map(item => (
+                                <Chip
+                                  key={item._id}
+                                  className={classes.chip}
+                                  label={item.krName}
+                                  />
+                              ))
+                          }
+                          </div>
+
+                        </Paper>
+                      </Grid>
+
+                      {
+                        business.event
+                          ? <Grid item xs={12}>
+                              <Paper className={classes.paper}>
+                                <Typography variant="title" gutterBottom>행사 & 할인</Typography>
+                                <div dangerouslySetInnerHTML={{ __html: business.event }} />
+                              </Paper>
+                            </Grid>
+                          : ''
+                      }
+
+                      <Grid item xs={12}>
+                        <Paper className={classes.paper}>
+                          <div>
+                            <Grid container justify="space-between" alignItems="center">
+                              <Grid item>
+                                <Typography variant="body2" gutterBottom><strong>가격:</strong></Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <Typography variant="body1" gutterBottom>{business.priceRange}</Typography>
+                              </Grid>
+                            </Grid>
+
+                            <Grid container justify="space-between" alignItems="center">
+                              <Grid item>
+                                <Typography variant="body2" gutterBottom><strong>배달:</strong></Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <Typography variant="body1" gutterBottom>{business.delivery}</Typography>
+                              </Grid>
+                            </Grid>
+
+                            <Grid container justify="space-between" alignItems="center">
+                              <Grid item>
+                                <Typography variant="body2" gutterBottom><strong>언어:</strong></Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <Typography variant="body1" gutterBottom>{business.supportedLanguage.toString()}</Typography>
+                              </Grid>
+                            </Grid>
+
+                            <Grid container justify="space-between" alignItems="center">
+                              <Grid item>
+                                <Typography variant="body2" gutterBottom><strong>Payments:</strong></Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <Typography variant="body1" gutterBottom>{business.payment.toString()}</Typography>
+                              </Grid>
+                            </Grid>
+
+                            <Grid container justify="space-between" alignItems="center">
+                              <Grid item>
+                                <Typography variant="body2" gutterBottom><strong>휴식일:</strong></Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <Typography variant="body1" gutterBottom>{business.rest}</Typography>
+                              </Grid>
+                            </Grid>
+                          </div>
+                        </Paper>
+                      </Grid>
+
+                      <Grid item xs={12} key={business._id}>
+                        <ExpansionPanel disabled={_.isEmpty(business.chains)}>
+                          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography className={classes.heading}>체인점</Typography>
+                          </ExpansionPanelSummary>
+                          <ExpansionPanelDetails>
+                            {
+                              _.isEmpty(business.chains)
+                                ? ''
+                                : business.chains.map(item => (
+                                  <Link to={item.enName} key={item.enName}>
+                                    <Button color="primary" variant="outlined">{item.krName}</Button>
+                                  </Link>
+                                ))
+                            }
+                          </ExpansionPanelDetails>
+                        </ExpansionPanel>
+
+                        <ExpansionPanel disabled={_.isEmpty(business.openningHoursSpec)}>
+                          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography className={classes.heading}>영업시간</Typography>
+                          </ExpansionPanelSummary>
+                          <ExpansionPanelDetails>
+                            <div style={{
+                                width: '100%'
+                              }}
+                            >
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom><strong>월요일:</strong></Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.mon}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>화요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.tue}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>수요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.wed}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>목요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.thu}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>금요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.fri}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>토요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sat}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+
+                              <Grid container justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body2" gutterBottom>
+                                    <strong>일요일:</strong>
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <Typography variant="body1" gutterBottom>
+                                    {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sun}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </div>
+                          </ExpansionPanelDetails>
+                        </ExpansionPanel>
+
+                        <ExpansionPanel disabled={_.isEmpty(business.description)}>
+                          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography className={classes.heading}>소개</Typography>
+                          </ExpansionPanelSummary>
+                          <ExpansionPanelDetails>
+                            <div dangerouslySetInnerHTML={{ __html: business.description }} />
+                          </ExpansionPanelDetails>
+                        </ExpansionPanel>
+
+                        <ExpansionPanel disabled={_.isEmpty(business.menu)}>
+                          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography className={classes.heading}>메뉴</Typography>
+                          </ExpansionPanelSummary>
+                          <ExpansionPanelDetails>
+                            <Table className={classes.table}>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell>Name</TableCell>
+                                  <TableCell>Price</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {
+                                  _.isEmpty(business.menu) ? (<TableRow></TableRow>)
+                                  : business.menu.map((item, index) => {
+                                      let name;
+
+                                      if (item.hot) {
+                                        name = <Badge color="secondary" badgeContent={<Whatshot />}>
+                                            <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
+                                          </Badge>
+                                      } else if (item.new) {
+                                        name = <Badge color="primary" badgeContent="New">
+                                            <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
+                                          </Badge>
+                                      } else {
+                                        name = <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
+                                      }
+
+                                    return (<TableRow hover key={index}>
+                                      <TableCell>
+                                        {name}
+                                      </TableCell>
+                                      <TableCell>{item.price}</TableCell>
+                                    </TableRow>
+                                  )})
+                                }
+                              </TableBody>
+                            </Table>
+                          </ExpansionPanelDetails>
+                        </ExpansionPanel>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <div className={classes.wrapper}>
+                      <Thumbnail image={business.thumbnail} />
+                    </div>
+
+                    <div className={classes.mapWrapper}>
+                      <Map
+                        amapkey={config.AMAP_KEY}
+                        zoom={16}
+                        center={{
+                          longitude: business.geo.coordinates[0],
+                          latitude: business.geo.coordinates[1],
+                        }}
+                        plugins={[
+                          'ToolBar',
+                        ]}
+                      >
+                        <Marker position={{
+                            longitude: business.geo.coordinates[0],
+                            latitude: business.geo.coordinates[1],
+                          }}
+                        />
+                      </Map>
+                    </div>
+                  </Grid>
+                </Grid>
+              </div>
+
+              <div>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <div>
+                      <Typography variant="display2" align="center" id="reviews" gutterBottom>
+                        Reviews
+                      </Typography>
+                    </div>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <div>
+                      <Grid container spacing={16} justify="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                        <Grid item>
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            disableRipple
+                            buttonRef={node => {
+                              this.sortMenuAnchorEl = node;
+                            }}
+                            onClick={this.handleSortMenuPopoverOpen}
+                          >
+                            Sort By
+                          </Button>
+                        </Grid>
+
+                        <Grid item>
+                          <Button
+                            variant="raised"
+                            color="primary"
+                            onClick={this.handleAddNewReviewDialogOpen}
+                          >
+                            new review
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <InfiniteScroll
+                      pageStart={0}
+                      loadMore={this.loadMore}
+                      hasMore={this.state.hasMore}
+                      loader={<div className="loader" key={0}>Loading ...</div>}
+                    >
+
+                      <Masonry elementType={'div'}>
+                        {
+                          _.isEmpty(reviews)
+                            ? ''
+                            : reviews.map(review => (
+                              <div key={review._id} className={classes.card}>
+                                <ReviewCard
+                                  showUser
+                                  id={review._id}
+                                  owner={review.user}
+                                  user={this.props.user}
+                                  isLoggedIn={this.props.isLoggedIn}
+                                  isOwn={review.user._id === this.props.user._id}
+                                  business={review.business}
+                                  content={review.content}
+                                  rating={review.rating}
+                                  serviceGood={review.serviceGood}
+                                  envGood={review.envGood}
+                                  comeback={review.comeback}
+                                  upvoteNum={review.upvote.length}
+                                  handleVote={this.props.voteReview}
+                                  openLoginDialog={this.props.openLoginDialog}
+                                />
+                            </div>
+                            ))
+                        }
+                      </Masonry>
+                    </InfiniteScroll>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Typography variant="caption" align="center">
+                      --- No more reviews ---
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </div>
+
+              <div>
+                <WriteReviewDialog
+                  user={this.props.user}
+                  business={business}
+                  open={this.state.addNewDialogOpen}
+                  addNewReview={this.props.addNewReview}
+                  handleClose={this.handleAddNewReviewDialogClose}
+                />
+
+                <WriteReviewDialog
+                  readOnly
+                  user={this.props.user}
+                  rating={review.rating}
+                  content={review.content}
+                  serviceGood={review.serviceGood}
+                  envGood={review.envGood}
+                  comeback={review.comeback}
+                  business={business}
+                  open={this.state.reviewDialogOpen}
+                  handleClose={this.handleReviewDialogClose}
+                />
+
+                <ReportDialog
+                  open={this.state.reportDialogOpen}
+                  handleSubmit={this.handleSubmitReport}
+                  handleClose={this.handleReportDialogClose}
+                />
+
+                <Popover
+                  open={this.state.sortMenuPopoverOpen}
+                  anchorEl={this.sortMenuAnchorEl}
+                  onClose={this.handleSortMenuPopoverClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                >
+                  <div className={classes.popoverContainer}>
+                    <MenuList role="menu">
+                      <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
+                        <ListItemText primary="Recommend" />
+                      </MenuItem>
+                      <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
+                        <ListItemText primary="Useful" />
+                      </MenuItem>
+                      <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
+                        <ListItemText primary="New" />
+                      </MenuItem>
+                    </MenuList>
+                  </div>
+                </Popover>
+              </div>
             </div>
-          </div>
         }
       </Container>
     );
