@@ -97,10 +97,10 @@ export const loginFetch = (email, password) => {
         let error = new Error(response.statusText);
         error.status = response.status;
 
-        if (response.status === 401) {
-          error.message = "Invalid email or password";
+        if (response.status === 401 || response.status === 403) {
+          error.message = "Error: Invalid email or password";
         } else {
-          error.message = "Unknown Server Error";
+          error.message = "Server Error: Unknown Server Error";
         }
 
         return Promise.reject(error);

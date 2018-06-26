@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import classNames from 'classnames';
 import Img from 'react-image';
-import Quill from 'react-quill';
 import InfiniteScroll from 'react-infinite-scroller';
-import { Manager, Target, Popper } from 'react-popper';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -20,15 +17,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import FormControl from '@material-ui/core/FormControl';
-
+import Popover from '@material-ui/core/Popover';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import Portal from '@material-ui/core/Portal';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Collapse from '@material-ui/core/Collapse';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 
 // Material UI Icons
@@ -58,22 +53,22 @@ import { openLoginDialog } from '../actions/app.actions';
 import image from '../../css/ikt-icon.gif';
 
 const styles = theme => ({
+  "root": {
+    width: 760,
+    margin: 'auto',
+  },
   "paper": {
     padding: theme.spacing.unit * 5,
-    color: theme.palette.text.secondary
-  },
-  "popperClose": {
-    pointerEvents: 'none',
   },
   "rightIcon": {
     marginLeft: theme.spacing.unit,
   },
-  "buttonContainer": {
-    "display": "flex",
-    "justifyContent": "flex-end",
-  },
   "image": {
     width: '100%',
+    height: 400,
+  },
+  "iconButton": {
+    marginRight: theme.spacing.unit,
   },
 });
 
@@ -82,7 +77,7 @@ class SinglePostPage extends Component {
     super(props);
 
     this.state = {
-      sortPopperOpen: false,
+      sortPopoverOpen: false,
       reportDialogOpen: false,
       orderBy: 'useful',
       writeCommentDialogOpen: false,
@@ -98,8 +93,8 @@ class SinglePostPage extends Component {
     this.state.id = props.match.params.id;
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleToggleSortPopper = this.handleToggleSortPopper.bind(this);
-    this.handleSortPopperClose = this.handleSortPopperClose.bind(this);
+    this.handleToggleSortPopover = this.handleToggleSortPopover.bind(this);
+    this.handleSortPopoverClose = this.handleSortPopoverClose.bind(this);
     this.handleOpenWriteCommentDialog = this.handleOpenWriteCommentDialog.bind(this);
     this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
@@ -151,21 +146,15 @@ class SinglePostPage extends Component {
     });
   }
 
-  handleToggleSortPopper() {
-    console.log(this.state.sortPopperOpen);
-
+  handleToggleSortPopover() {
     this.setState({
-      sortPopperOpen: !this.state.sortPopperOpen
+      sortPopoverOpen: !this.state.sortPopoverOpen
     });
   }
 
-  handleSortPopperClose(e) {
-    if (this.target.contains(e.target)) {
-      return;
-    }
-
+  handleSortPopoverClose(e) {
     this.setState({
-      sortPopperOpen: false
+      sortPopoverOpen: false
     });
   }
 
@@ -177,7 +166,7 @@ class SinglePostPage extends Component {
       if (response) {
         this.setState({
           orderBy: sort,
-          sortPopperOpen: false,
+          sortPopoverOpen: false,
         });
       }
     });
@@ -322,197 +311,202 @@ class SinglePostPage extends Component {
     const { classes, comments } = this.props;
     const { post } = this.state;
 
+    if (_.isEmpty(post)) {
+      return (
+        <Container>
+          <div style={{ textAlign: 'center' }}>
+            <CircularProgress size={30} />
+          </div>
+        </Container>);
+    }
+
     return (
       <Container>
-        {
-          _.isEmpty(post) ? <div></div>
-            : <div>
-                <Grid container justify="center">
-                  <Grid item xs={12}>
-                    <Typography variant="display3" align="center" gutterBottom>{post.title}</Typography>
-                    <Typography variant="title" align="center">
-                      By <strong><ProperName  user={post.authorId} /></strong>
-                    </Typography>
-                    <Typography variant="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Img src={image} className={classes.image} />
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Paper className={classes.paper}>
-                      <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                    </Paper>
-                  </Grid>
-
-                  <Grid item xs={8}>
-                    <Paper className={classes.paper}>
-                      <span>
-                        <IconButton color="primary" onClick={this.handleVote("UPVOTE")}>
-                          <ThumbUp />
-                        </IconButton>
-                        {_.isEmpty(post.upvote) ? 0 :post.upvote.length}
-                      </span>
-
-                      <span>
-                        <IconButton color="default" onClick={this.handleVote("DOWNVOTE")}>
-                          <ThumbDown />
-                        </IconButton>
-                        {_.isEmpty(post.downvote) ? 0 :post.downvote.length}
-                      </span>
-
-                      <span>
-                        <IconButton color="default" onClick={this.handleReportDialogOpen}>
-                          <Tooltip title="Report" id="tooltip-report">
-                            <ErrorOutline />
-                          </Tooltip>
-                        </IconButton>
-                      </span>
-                    </Paper>
-                  </Grid>
-                </Grid>
-
-                <Grid container justify="center">
-                  <Grid item xs={8}>
-                    <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <Manager>
-                          <Target>
-                            <div ref={node => {
-                                this.target = node;
-                              }}
-                            >
-                              <Button
-                                aria-owns={this.state.sortPopperOpen ? 'menu-list-collapse' : null}
-                                aria-haspopup="true"
-                                onClick={this.handleToggleSortPopper}
-                              >
-                                {
-                                  this.state.orderBy ? this.state.orderBy : "Sort By"
-                                }
-                                <ExpandMoreIcon className={classes.rightIcon} />
-                              </Button>
-                            </div>
-                          </Target>
-                          <Portal>
-                            <Popper
-                              placement="bottom-start"
-                              eventsEnabled={this.state.sortPopperOpen}
-                              className={classNames({ [classes.popperClose]: !this.state.sortPopperOpen })}
-                            >
-                              <ClickAwayListener onClickAway={this.handleSortPopperClose}>
-                                <Collapse in={this.state.sortPopperOpen} id="menu-list-collapse" style={{ transformOrigin: '0 0 0' }}>
-                                  <Paper style={{
-                                      width: 150,
-                                    }}
-                                  >
-                                    <MenuList role="menu">
-                                      <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSelectSort('useful')}>
-                                        <ListItemText primary="Useful" />
-                                      </MenuItem>
-                                      <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleSelectSort('new')}>
-                                        <ListItemText primary="New" />
-                                      </MenuItem>
-                                    </MenuList>
-                                  </Paper>
-                                </Collapse>
-                              </ClickAwayListener>
-                            </Popper>
-                          </Portal>
-                        </Manager>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <div className={classes.buttonContainer}>
-                          <Button variant="raised" color="primary" onClick={this.handleOpenWriteCommentDialog}>
-                            Write comment
-                          </Button>
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMore}
-                  hasMore={this.state.hasMore}
-                  loader={<div className="loader" key={0}>Loading ...</div>}
-                >
-                  <Grid container justify="center">
-                    {
-                      _.isEmpty(comments) ? ''
-                        : comments.map((comment, index) => (
-                          <Grid item xs={8} key={index}>
-                            <CommentPanel
-                              commentId={comment._id}
-                              postId={this.state.id}
-                              postTitle={this.state.post.title}
-                              parentComment={comment.parentId}
-                              replyToUser={comment.replyToUser}
-                              status={comment.status}
-                              content={comment.content}
-                              owner={comment.userId}
-                              user={this.props.user}
-                              isOwn={comment.userId._id === this.props.user._id}
-                              upvote={comment.upvote.length}
-                              downvote={comment.downvote.length}
-                              createdAt={comment.createdAt}
-                              addNewComment={this.props.addNewComment}
-                              getNewComments={this.getNewComments}
-                              voteComment={this.props.voteComment}
-                              deleteComment={this.props.deleteComment}
-                              openLoginDialog={this.props.openLoginDialog}
-                            />
-                          </Grid>
-                      ))
-                    }
-                  </Grid>
-                </InfiniteScroll>
-
+        <div className={classes.root}>
+          <Grid container justify="center" style={{ marginBottom: 80 }}>
+            <Grid item xs={12}>
+              <Typography variant="display3" align="center" gutterBottom>{post.title}</Typography>
+              <Typography variant="title" align="center">
+                By <strong><ProperName  user={post.authorId} /></strong>
+              </Typography>
+              <Typography variant="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Img src={image} className={classes.image} />
+            </Grid>
+            <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
-                  <Dialog fullWidth
-                    open={this.state.writeCommentDialogOpen}
-                    onClose={this.handleCloseWriteCommentDialog}
-                    aria-labelledby="comment-dialog-title"
-                    aria-describedby="comment-dialog-description"
-                  >
-                    <DialogTitle id="comment-dialog-title">
-                      Write Comment
-                    </DialogTitle>
-                    <DialogContent id="comment-dialog-description">
-                      <FormControl fullWidth required>
-                        <InputLabel htmlFor="content">Content</InputLabel>
-                        <Input
-                          type="text"
-                          id="content"
-                          multiline
-                          rows={10}
-                          name="content"
-                          value={this.state.content}
-                          onChange={this.handleChange}
-                        />
-                      </FormControl>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                        Save
-                      </Button>
-                      <Button color="primary" onClick={this.handleCloseWriteCommentDialog}>
-                        Cancel
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                  <span className={classes.iconButton}>
+                    <IconButton
+                      color="primary"
+                      onClick={this.handleVote("UPVOTE")}>
+                      <ThumbUp />
+                    </IconButton>
+                    {_.isEmpty(post.upvote) ? 0 :post.upvote.length}
+                  </span>
 
-                  <ReportDialog
-                    open={this.state.reportDialogOpen}
-                    handleSubmit={this.handleSubmitReport}
-                    handleClose={this.handleReportDialogClose}
-                  />
+                  <span className={classes.iconButton}>
+                    <IconButton
+                      color="default"
+                      onClick={this.handleVote("DOWNVOTE")}>
+                      <ThumbDown />
+                    </IconButton>
+                    {_.isEmpty(post.downvote) ? 0 :post.downvote.length}
+                  </span>
+
+                  <span>
+                    <IconButton
+                      className={classes.iconButton}
+                      color="default"
+                      onClick={this.handleReportDialogOpen}>
+                      <Tooltip title="Report" id="tooltip-report">
+                        <ErrorOutline />
+                      </Tooltip>
+                    </IconButton>
+                  </span>
                 </div>
+              </Paper>
+
+            </Grid>
+          </Grid>
+
+          <Grid container justify="center" style={{ marginBottom: 8 }}>
+            <Grid item xs={12}>
+              <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container justify="space-between" alignItems="center">
+                <Grid item>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={this.handleToggleSortPopover}
+                    buttonRef={node => {
+                      this.sortAnchorEl = node;
+                    }}
+                  >
+                    {
+                      this.state.orderBy ? this.state.orderBy : "Sort By"
+                    }
+                    <ExpandMoreIcon className={classes.rightIcon} />
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button variant="raised" color="primary" onClick={this.handleOpenWriteCommentDialog}>
+                    Write comment
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.state.hasMore}
+            loader={<div style={{ textAlign: 'center' }} key={0}>
+                      <CircularProgress size={30} />
+                    </div>}
+          >
+            <Grid container justify="center">
+              {
+                _.isEmpty(comments) ? ''
+                  : comments.map(comment => (
+                    <Grid item xs={12} key={comment._id}>
+                      <CommentPanel
+                        commentId={comment._id}
+                        postId={this.state.id}
+                        postTitle={this.state.post.title}
+                        parentComment={comment.parentId}
+                        replyToUser={comment.replyToUser}
+                        status={comment.status}
+                        content={comment.content}
+                        owner={comment.userId}
+                        user={this.props.user}
+                        isOwn={comment.userId._id === this.props.user._id}
+                        upvote={comment.upvote.length}
+                        downvote={comment.downvote.length}
+                        createdAt={comment.createdAt}
+                        addNewComment={this.props.addNewComment}
+                        getNewComments={this.getNewComments}
+                        voteComment={this.props.voteComment}
+                        deleteComment={this.props.deleteComment}
+                        openLoginDialog={this.props.openLoginDialog}
+                      />
+                    </Grid>
+                ))
+              }
+            </Grid>
+          </InfiniteScroll>
+
+          <div>
+            <Popover
+              open={this.state.sortPopoverOpen}
+              anchorEl={this.sortAnchorEl}
+              onClose={this.handleSortPopoverClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <div>
+                <MenuList role="menu">
+                  <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSelectSort('useful')}>
+                    <ListItemText primary="Useful" />
+                  </MenuItem>
+                  <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleSelectSort('new')}>
+                    <ListItemText primary="New" />
+                  </MenuItem>
+                </MenuList>
               </div>
-        }
+            </Popover>
+
+            <Dialog fullWidth
+              open={this.state.writeCommentDialogOpen}
+              onClose={this.handleCloseWriteCommentDialog}
+              aria-labelledby="comment-dialog-title"
+              aria-describedby="comment-dialog-description"
+            >
+              <DialogTitle id="comment-dialog-title">
+                Write Comment
+              </DialogTitle>
+              <DialogContent id="comment-dialog-description">
+                <FormControl fullWidth required>
+                  <InputLabel htmlFor="content">Content</InputLabel>
+                  <Input
+                    type="text"
+                    id="content"
+                    multiline
+                    rows={10}
+                    name="content"
+                    value={this.state.content}
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                  Save
+                </Button>
+                <Button color="primary" onClick={this.handleCloseWriteCommentDialog}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <ReportDialog
+              open={this.state.reportDialogOpen}
+              handleSubmit={this.handleSubmitReport}
+              handleClose={this.handleReportDialogClose}
+            />
+          </div>
+        </div>
       </Container>
     );
   }

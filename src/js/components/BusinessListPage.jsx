@@ -26,13 +26,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 // Custom Components
 import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
-import { loadFromStorage } from '../helpers/webStorage';
-import webStorageTypes from '../constants/webStorage.types';
-import Areas from '../constants/nanjing.areas';
 
 // Actions
 import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
 import { getCategoriesList } from '../actions/category.actions.js';
+
+// WebStorage
+import { loadFromStorage } from '../helpers/webStorage';
+import webStorageTypes from '../constants/webStorage.types';
+
+import Areas from '../constants/nanjing.areas';
 
 const styles = theme => ({
   "header": {
@@ -88,9 +91,7 @@ class BusinessListPage extends Component {
 
     this.props.getBusinessList({
       limit: this.state.limit,
-      filter: {
-        category: this.props.match.params.slug,
-      }
+      category: this.props.match.params.slug,
     })
     .then(response => {
       if (response) {
@@ -115,11 +116,9 @@ class BusinessListPage extends Component {
     if (this.props.match.params.slug !== prevProps.match.params.slug) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: this.props.match.params.slug,
-          area: this.state.area.code,
-          event: this.state.event,
-        },
+        category: this.props.match.params.slug,
+        area: this.state.area.code,
+        event: this.state.event,
         orderBy: this.state.orderBy,
       })
       .then(response => {
@@ -186,11 +185,9 @@ class BusinessListPage extends Component {
     if (this.state.area.code !== item.code) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: this.state.category.enName,
-          area: item.code,
-          event: this.state.event,
-        },
+        category: this.state.category.enName,
+        area: item.code,
+        event: this.state.event,
         orderBy: this.state.orderBy
       })
       .then(response => {
@@ -213,11 +210,9 @@ class BusinessListPage extends Component {
     if (this.state.orderBy !== item) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: this.state.category.enName,
-          area: this.state.area.code,
-          event: this.state.event,
-        },
+        category: this.state.category.enName,
+        area: this.state.area.code,
+        event: this.state.event,
         orderBy: item
       })
       .then(response => {
@@ -243,11 +238,9 @@ class BusinessListPage extends Component {
 
     this.props.getBusinessList({
       limit: this.state.limit,
-      filter: {
-        category: this.state.category.enName,
-        area: this.state.area.code,
-        event: !this.state.event,
-      },
+      category: this.state.category.enName,
+      area: this.state.area.code,
+      event: !this.state.event,
       orderBy: this.state.orderBy
     })
     .then(response => {
@@ -264,12 +257,9 @@ class BusinessListPage extends Component {
     if (this.state.count < this.props.totalCount) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
-        filter: {
-          category: this.state.category.enName,
-          area: this.state.area.code,
-          event: this.state.event,
-        },
-        search: this.state.search,
+        category: this.state.category.enName,
+        area: this.state.area.code,
+        event: this.state.event,
         orderBy: this.state.orderBy,
       })
       .then((response => {
@@ -287,7 +277,6 @@ class BusinessListPage extends Component {
     return (
       <Container>
         <div>
-
           <div className={classes.header}>
             <Toolbar disableGutters>
               <Typography variant="display1" className={classes.flex}>

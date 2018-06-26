@@ -24,21 +24,12 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 20,
   },
   paper: {
-    paddingTop: theme.spacing.unit * 5,
-    paddingBottom: theme.spacing.unit * 5,
-    paddingLeft: theme.spacing.unit * 10,
-    paddingRight: theme.spacing.unit * 10,
-    marginBottom: theme.spacing.unit,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
+    padding: theme.spacing.unit * 10,
   },
   button: {
-    marginTop: theme.spacing.unit * 4,
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
   },
-  input: {
-    width: 270,
-    margin: theme.spacing.unit * 2
-  }
 });
 
 const passwordMinLength = config.passwordMinLength;
@@ -48,6 +39,7 @@ class ChangePasswordPage extends Component {
     super(props);
 
     this.state = {
+      message: '',
       password: {
         value: '1',
         showError: false,
@@ -57,7 +49,7 @@ class ChangePasswordPage extends Component {
         value: '1',
         showError: false,
         errorMessage: ''
-      }
+      },
     };
 
     this.isValidPassword = this.isValidPassword.bind(this);
@@ -142,10 +134,18 @@ class ChangePasswordPage extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {password, passwordConfirmation} = this.state;
-
     if (this.isValidPassword() && this.isValidPasswordConfirmation()) {
-      this.props.changePassword(this.props.match.params.token, password.value, passwordConfirmation.value);
+      this.props.changePassword(
+        this.props.match.params.token,
+        this.state.password.value,
+        this.state.passwordConfirmation.value
+      ).then(response => {
+        if (response) {
+          this.setState({
+            "message": response,
+          });
+        }
+      });
     }
   }
 
@@ -154,66 +154,71 @@ class ChangePasswordPage extends Component {
 
     return (
       <Container>
-        <Grid container spacing={16} justify="center" className={classes.root}>
-          <Grid item xs={5}>
-            <Paper className={classes.paper}>
-              <Typography variant="display1" align="center">
-                Change Password
-              </Typography>
-              <form onSubmit={this.handleSubmit}>
-                <TextField
-                  type="password"
-                  id="password"
-                  name="password"
-                  error={this.state.password.showError}
-                  helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidPassword}
-                  fullWidth
-                  margin="normal"
+        <div className={classes.root}>
+          <Grid container justify="center" >
+            <Grid item xs={8}>
+              <Paper className={classes.paper}>
+                <Typography variant="display1" align="center">Reset Password</Typography>
+                <form onSubmit={this.handleSubmit}>
+                  <TextField
+                    type="password"
+                    id="password"
+                    name="password"
+                    error={this.state.password.showError}
+                    helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
+                    onChange={this.handleChange}
+                    onBlur={this.isValidPassword}
+                    fullWidth
+                    margin="normal"
+                    label="Password"
+                  />
 
-                  label="Password"
-                />
-                <br />
+                  <br />
 
-                <TextField
-                  type="password"
-                  id="passwordConfirmation"
-                  name="passwordConfirmation"
-                  error={this.state.passwordConfirmation.showError}
-                  helperText={this.state.passwordConfirmation.showError
-                    ? this.state.passwordConfirmation.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidPasswordConfirmation}
-                  fullWidth
-                  margin="normal"
-                  label="Confirm password"
-                />
-                <br />
-                <div>
-                  <Button fullWidth
-                    type="submit"
-                    name="signin"
-                    variant="raised"
-                    color="primary"
-                    className={classes.button}
-                    disabled={this.state.password.showError || this.state.passwordConfirmation.showError || this.props.isFetching}
-                    onClick={this.handleSubmit}
-                  >
-                    {this.props.isFetching ? (<CircularProgress size={20} />) : 'Change Password'}
-                  </Button>
-                </div>
-              </form>
-            </Paper>
-            <Typography
-              variant="body"
-              align="center"
-              color={this.props.changePasswordError ? "error" : "inherit"}
-            >
-              {this.props.message}
-            </Typography>
+                  <TextField
+                    type="password"
+                    id="passwordConfirmation"
+                    name="passwordConfirmation"
+                    error={this.state.passwordConfirmation.showError}
+                    helperText={this.state.passwordConfirmation.showError
+                      ? this.state.passwordConfirmation.errorMessage : ' '}
+                    onChange={this.handleChange}
+                    onBlur={this.isValidPasswordConfirmation}
+                    fullWidth
+                    margin="normal"
+                    label="Confirm password"
+                  />
+
+                  <br />
+
+                  <div>
+                    <Button fullWidth
+                      type="submit"
+                      name="signin"
+                      variant="raised"
+                      color="primary"
+                      className={classes.button}
+                      disabled={this.state.password.showError || this.state.passwordConfirmation.showError || this.props.isFetching}
+                      onClick={this.handleSubmit}
+                    >
+                      {this.props.isFetching ? (<CircularProgress size={20} />) : 'Reset'}
+                    </Button>
+
+                    <Typography
+                      variant="body1"
+                      align="center"
+                      color={this.props.changePasswordError ? "error" : "primary"}
+                    >
+                      {
+                        this.state.message
+                      }
+                    </Typography>
+                  </div>
+                </form>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
       </Container>
     );
   }
@@ -232,7 +237,6 @@ const mapStateToProps = (state, ownProps) => {
   return {
     "isFetching": state.userReducer.isFetching,
     "changePasswordError": state.userReducer.error,
-    "message": state.alertReducer.message,
   };
 };
 

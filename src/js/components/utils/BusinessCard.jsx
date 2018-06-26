@@ -51,7 +51,7 @@ class BusinessCard extends Component {
     };
 
     if (props.myFavors) {
-      const index = props.myFavors.indexOf(props._id);
+      const index = props.myFavors.indexOf(props.bid);
       if (index > -1) {
         this.state.isFavor = true;
       }

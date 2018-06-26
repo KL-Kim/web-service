@@ -22,7 +22,7 @@ import { sendEmail } from '../actions/auth.actions';
 
 const styles = theme => ({
   "root": {
-    "marginTop": theme.spacing.unit * 25,
+    "marginTop": theme.spacing.unit * 20,
   },
   "paper": {
     "paddingTop": theme.spacing.unit * 5,
@@ -109,40 +109,42 @@ class ForgetPasswordPage extends Component {
 
     return (
       <Container>
-        <Grid container spacing={16} justify="center" className={classes.root}>
-          <Grid item xs={5}>
-            <Paper className={classes.paper}>
-              <Typography variant="display1" align="center">
-                Forget Password
-              </Typography>
-              <form onSubmit={this.handleSubmit}>
-                <TextField fullWidth
-                  type="email"
-                  name="email"
-                  label="Email"
-                  margin="normal"
-                  error={this.state.email.showError}
-                  helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidEmail}
+        <div className={classes.root}>
+          <Grid container justify="center">
+            <Grid item xs={8}>
+              <Paper className={classes.paper}>
+                <Typography variant="display1" align="center">
+                  Forget Password
+                </Typography>
+                <form onSubmit={this.handleSubmit}>
+                  <TextField fullWidth
+                    type="email"
+                    name="email"
+                    label="Email"
+                    margin="normal"
+                    error={this.state.email.showError}
+                    helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
+                    onChange={this.handleChange}
+                    onBlur={this.isValidEmail}
 
-                   />
-                <br />
+                     />
+                  <br />
 
-                <Button fullWidth
-                  type="submit"
-                  name="signin"
-                  variant="raised"
-                  color="primary"
-                  className={classes.button}
-                  disabled={this.state.email.showError || isFetching}
-                >
-                  {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
-                </Button>
-              </form>
-            </Paper>
+                  <Button fullWidth
+                    type="submit"
+                    name="signin"
+                    variant="raised"
+                    color="primary"
+                    className={classes.button}
+                    disabled={this.state.email.showError || isFetching}
+                  >
+                    {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
+                  </Button>
+                </form>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
       </Container>
     );
   }

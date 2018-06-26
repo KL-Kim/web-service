@@ -22,6 +22,10 @@ import BusinessCard from './utils/BusinessCard';
 // Actions
 import { getBusinessList } from '../actions/business.actions.js';
 
+// WebStorage
+import { loadFromStorage } from '../helpers/webStorage';
+import webStorageTypes from '../constants/webStorage.types';
+
 const styles = theme => ({});
 
 class SearchPage extends Component {
@@ -42,6 +46,8 @@ class SearchPage extends Component {
       "hasMore": false,
       ...parsed
     };
+
+    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.handleClickArea = this.handleClickArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
@@ -144,11 +150,9 @@ class SearchPage extends Component {
     if (this.state.categorySlug !== slug) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: slug,
-          area: this.state.areaCode,
-          event: this.state.event,
-        },
+        category: slug,
+        area: this.state.areaCode,
+        event: this.state.event,
         orderBy: this.state.orderBy,
         search: this.state.s,
       })
@@ -168,11 +172,9 @@ class SearchPage extends Component {
     if (this.state.areaCode !== code) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: this.state.categorySlug,
-          area: code,
-          event: this.state.event,
-        },
+        category: this.state.categorySlug,
+        area: code,
+        event: this.state.event,
         orderBy: this.state.orderBy,
         search: this.state.s,
       })
@@ -192,11 +194,9 @@ class SearchPage extends Component {
     if (this.state.orderBy !== item) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          category: this.state.categorySlug,
-          area: this.state.area,
-          event: this.state.event,
-        },
+        category: this.state.categorySlug,
+        area: this.state.area,
+        event: this.state.event,
         orderBy: item,
         search: this.state.s,
       })
@@ -215,11 +215,9 @@ class SearchPage extends Component {
   handleEventSwitch() {
     this.props.getBusinessList({
       limit: this.state.limit,
-      filter: {
-        category: this.state.categorySlug,
-        area: this.state.area,
-        event: !this.state.event,
-      },
+      category: this.state.categorySlug,
+      area: this.state.area,
+      event: !this.state.event,
       orderBy: this.state.orderBy,
       search: this.state.s,
     })
@@ -241,11 +239,9 @@ class SearchPage extends Component {
     if (this.state.count < this.props.totalCount) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
-        filter: {
-          category: this.state.categorySlug,
-          area: this.state.areaCode,
-          event: this.state.event,
-        },
+        category: this.state.categorySlug,
+        area: this.state.areaCode,
+        event: this.state.event,
         search: this.state.s,
         orderBy: this.state.orderBy,
     })
@@ -260,7 +256,6 @@ class SearchPage extends Component {
 
   render() {
     const { classes, businessList } = this.props;
-    let index;
 
     return (
       <Container>
@@ -274,8 +269,8 @@ class SearchPage extends Component {
               <Button color="primary" variant={this.state.categorySlug ? 'text' : 'raised'} onClick={this.handleClickCategory('')}>All</Button>
               {
                 _.isEmpty(this.state.categories) ? ''
-                  : this.state.categories.map((item, index) =>
-                    <Button key={index}
+                  : this.state.categories.map((item) =>
+                    <Button key={item._id}
                       color="primary"
                       variant={this.state.categorySlug === item.enName ? 'raised' : 'text'}
                       onClick={this.handleClickCategory(item.enName)}
@@ -290,8 +285,8 @@ class SearchPage extends Component {
               <Button color="primary" variant={!this.state.areaCode ? 'raised' : 'text'} onClick={this.handleClickArea('')}>All</Button>
               {
                 _.isEmpty(this.state.areas) ? ''
-                  : this.state.areas.map((item, index) =>
-                    <Button key={index}
+                  : this.state.areas.map((item) =>
+                    <Button key={item._id}
                       color="primary"
                       variant={this.state.areaCode === item.code ? 'raised' : 'text'}
                       onClick={this.handleClickArea(item.code)}
@@ -329,13 +324,8 @@ class SearchPage extends Component {
             <Grid container spacing={16}>
               {
                 _.isEmpty(businessList) ? <Grid item xs={12}><Typography variant="headline" align="center">None</Typography></Grid> :
-                  businessList.map((item, i) => {
-                    if (!_.isEmpty(this.state.myFavors)) {
-                      index = this.state.myFavors.indexOf(item._id);
-                    }
-
-                    return (
-                      <Grid item xs={3} key={i}>
+                  businessList.map(item => (
+                      <Grid item xs={3} key={item._id}>
                         <BusinessCard
                           key={item._id}
                           bid={item._id}
@@ -343,11 +333,10 @@ class SearchPage extends Component {
                           enName={item.enName}
                           rating={item.ratingAverage}
                           thumbnailUri={item.thumbnailUri}
-                          isFavor={!_.isUndefined(index) && index > -1 ? true : false}
+                          myFavors={this.state.myFavors}
                         />
                       </Grid>
-                    );
-                  })
+                    ))
               }
             </Grid>
           </InfiniteScroll>

@@ -41,9 +41,6 @@ const styles = theme => ({
   "button": {
     "marginTop": theme.spacing.unit * 4,
   },
-  "input": {
-    "margin": theme.spacing.unit * 2
-  }
 });
 
 const passwordMinLength = config.passwordMinLength;
@@ -53,21 +50,15 @@ class UserSignup extends Component {
     super(props);
 
     this.state = {
-      "email": {
-        "value": '',
-        "showError": false,
-        "errorMessage": '',
-      },
-      "password": {
-        "value": '',
-        "showError": false,
-        "errorMessage": ''
-      },
-      "passwordConfirmation": {
-        "value": '',
-        "showError": false,
-        "errorMessage": ''
-      }
+      "email": '',
+      "emailError": false,
+      "emailErrorMessage": '',
+      "password": '',
+      "passwordError": false,
+      "passwordErrorMessage": '',
+      "passwordConfirmation": '',
+      "passwordConfirmationError": false,
+      "passwordConfirmationErrorMessage": '',
     };
 
     this.isValidEmail = this.isValidEmail.bind(this);
@@ -75,7 +66,7 @@ class UserSignup extends Component {
     this.isValidPasswordConfirmation = this.isValidPasswordConfirmation.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleRegister = this.handleRegister.bind(this);
   }
 
   componentDidMount() {
@@ -93,216 +84,177 @@ class UserSignup extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (_.isEqual('email', name)) {
+    if (name === 'email') {
       this.setState({
-        "email": {
-          "value": value,
-          "showError": false,
-          "errorMessage": ''
-        },
+        email: value,
+        emailError: false,
       });
     }
-
-    if (_.isEqual('password', name)) {
+    else if (name === 'password') {
       this.setState({
-        "password": {
-          "value": value,
-          "showError": false,
-          "errorMessage": ''
-        },
-        passwordConfirmation: {
-          "value": this.state.passwordConfirmation.value,
-          "showError": false,
-          "errorMessage": ''
-        },
+        password: value,
+        emailError: false,
+        passwordError: false,
+        passwordConfirmation: '',
+        passwordConfirmationError: false,
       });
     }
-
-    if (_.isEqual('passwordConfirmation', name)) {
+    else if (name === "passwordConfirmation") {
       this.setState({
-        "passwordConfirmation": {
-          "value": value,
-          "showError": false,
-          "errorMessage": ''
-        },
+        passwordConfirmation: value,
+        emailError: false,
+        passwordConfirmationError: false,
       });
     }
   }
 
   isValidEmail() {
-    if(!this.state.email.value || !isEmail(this.state.email.value)) {
+    if(!isEmail(this.state.email)) {
       this.setState({
-        "email": {
-          "value": this.state.email.value,
-          "showError": true,
-          "errorMessage": 'Error: Input a valid Email'
-        }
+        emailError: true,
+        emailErrorMessage: 'Error: Input a valid Email',
       });
+
       return false;
     } else {
       this.setState({
-        "email": {
-          "value": this.state.email.value,
-          "showError": false,
-          "errorMessage": ''
-        }
+        emailError: false,
       });
+
       return true;
     }
   }
 
   isValidPassword() {
-    if (this.state.password.value.length <= 7) {
+    if (this.state.password.length < passwordMinLength) {
       this.setState({
-        "password": {
-          "value": this.state.password.value,
-          "showError": true,
-          "errorMessage": 'Password should not be shorter than ' + passwordMinLength
-        }
+        passwordError: true,
+        passwordErrorMessage: 'Password should not be shorter than ' + passwordMinLength,
       });
+
       return false;
     } else {
       this.setState({
-        "password": {
-          "value": this.state.password.value,
-          "showError": false,
-          "errorMessage": ''
-        }
+        passwordError: false,
       });
+
       return true;
     }
   }
 
   isValidPasswordConfirmation() {
-    if (!_.isEqual(this.state.password.value, this.state.passwordConfirmation.value)) {
+    if (this.state.password !== this.state.passwordConfirmation) {
       this.setState({
-        "passwordConfirmation": {
-          "value": this.state.passwordConfirmation.value,
-          "showError": true,
-          "errorMessage": 'Confirm password is not match with password'
-        }
+        passwordConfirmationError: true,
+        passwordConfirmationErrorMessage: 'Passwords do not match',
       });
+
       return false;
     } else {
       this.setState({
-        "passwordConfirmation": {
-          "value": this.state.passwordConfirmation.value,
-          "showError": false,
-          "errorMessage": ''
-        }
+        passwordConfirmationError: false,
       });
-      return true
+
+      return true;
     }
   }
 
-  handleSubmit(e) {
+  handleRegister(e) {
     e.preventDefault();
 
-    const { email, password, passwordConfirmation } = this.state;
-
     if (this.isValidEmail() && this.isValidPassword() && this.isValidPasswordConfirmation()) {
-      const user = {
-        "email": email.value,
-        "password": password.value,
-        "passwordConfirmation": passwordConfirmation.value
-      };
-
-      this.props.register(user)
-        .then(response => {
-          if (_.isEmpty(response) && this.props.error) {
-            this.setState({
-              "email": {
-                "value": this.state.email.value,
-                "showError": true,
-                "errorMessage": this.props.errorMessage
-              }
-            });
-          }
-        });
+      this.props.register({
+        "email": this.state.email,
+        "password": this.state.password,
+        "passwordConfirmation": this.state.passwordConfirmation,
+      })
+      .then(response => {
+        if (_.isEmpty(response) && this.props.error) {
+          this.setState({
+            emailError: true,
+            emailErrorMessage: this.props.errorMessage,
+          });
+        }
+      });
     }
   }
 
   render() {
     const { classes } = this.props;
-    let signupButton = this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up';
 
     return (
       <Container>
-        <Grid container spacing={16} justify="center" alignItems="center" className={classes.root}>
-          <Grid item sm={5}>
+        <Grid container justify="center" alignItems="center" className={classes.root}>
+          <Grid item xs={8}>
             <Paper className={classes.paper}>
-              <Typography variant="display1" align="center">
-                Sign up
-              </Typography>
-              <form noValidate onSubmit={this.handleSubmit}>
+              <Typography variant="display1" align="center">Sign up</Typography>
+
+              <form noValidate onSubmit={this.handleRegister}>
                 <TextField
-                  type="text"
-                  name="email"
-                  error={this.state.email.showError}
-                  helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidEmail}
                   fullWidth
                   margin="normal"
                   label="Email"
+                  type="text"
+                  name="email"
+                  error={this.state.emailError}
+                  helperText={this.state.emailError ? this.state.emailErrorMessage : ' '}
+                  onBlur={this.isValidEmail}
+                  onChange={this.handleChange}
                 />
                 <br />
 
                 <TextField
-                  type="password"
-                  name="password"
-                  error={this.state.password.showError}
-                  helperText={this.state.password.showError ? this.state.password.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidPassword}
                   fullWidth
+                  type="password"
                   margin="normal"
                   label="Password"
+                  name="password"
+                  error={this.state.passwordError}
+                  helperText={this.state.passwordError ? this.state.passwordErrorMessage : ' '}
+                  onBlur={this.isValidPassword}
+                  onChange={this.handleChange}
                 />
                 <br />
 
                 <TextField
-                  type="password"
-                  name="passwordConfirmation"
-                  error={this.state.passwordConfirmation.showError}
-                  helperText={this.state.passwordConfirmation.showError
-                    ? this.state.passwordConfirmation.errorMessage : ' '}
-                  onChange={this.handleChange}
-                  onBlur={this.isValidPasswordConfirmation}
                   fullWidth
+                  type="password"
                   margin="normal"
-                  label="Confirm password"
+                  label="Confirm your password"
+                  name="passwordConfirmation"
+                  error={this.state.passwordConfirmationError}
+                  helperText={this.state.passwordConfirmationError ? this.state.passwordConfirmationErrorMessage : ' '}
+                  onBlur={this.isValidPasswordConfirmation}
+                  onChange={this.handleChange}
                 />
                 <br />
 
                 <Button
+                  fullWidth
                   type="submit"
-                  disabled = {
-                    this.state.email.showError
-                    || this.state.password.showError
-                    || this.state.passwordConfirmation.showError
-                    || this.props.isFetching
-                  }
-                  className={classes.button}
                   variant="raised"
                   color="primary"
-                  fullWidth
-
+                  className={classes.button}
+                  disabled={this.state.emailError
+                            || this.state.passwordError
+                            || this.state.passwordConfirmationError
+                            || this.props.isFetching
+                  }
                 >
-                  {signupButton}
+                  {
+                    this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up'
+                  }
                 </Button>
               </form>
             </Paper>
-            <Grid container align="center">
-              <Grid item xs align="center">
-                <Typography variant="body2" align="center">
-                  If you sign up, you agree to follow the
-                  <Link to="/terms-policy">
-                    TERMS and POLICY.
-                  </Link>
-                </Typography>
-              </Grid>
-            </Grid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Link to="/terms-policy">
+              <Typography variant="body2" align="center">
+                If you sign up, it means you agree to follow the TERMS and POLICY.
+              </Typography>
+            </Link>
           </Grid>
         </Grid>
       </Container>
@@ -311,13 +263,12 @@ class UserSignup extends Component {
 }
 
 UserSignup.propTypes = {
-  "history": PropTypes.object.isRequired,
   "classes": PropTypes.object.isRequired,
+  "history": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
   "isLoggedIn": PropTypes.bool.isRequired,
-  "register": PropTypes.func.isRequired,
-  "requestError": PropTypes.bool,
   "errorMessage": PropTypes.string,
+  "register": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -325,7 +276,6 @@ const mapStateToProps = (state, ownProps) => {
     "isFetching": state.userReducer.isFetching,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "error": state.userReducer.error,
-    "registerError": state.alertReducer.error,
     "errorMessage": state.alertReducer.message,
   };
 };

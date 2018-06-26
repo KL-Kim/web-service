@@ -228,32 +228,28 @@ export const changePassword = (token, password, passwordConfirmation) => {
   });
 
   return (dispatch, getState) => {
-    let err;
-
     if (_.isEmpty(token)) {
-      err = new Error("Token missing");
-      dispatch(AlertActions.alertFailure(err.message));
-      return Promise.reject(err);
+      dispatch(AlertActions.alertFailure("Token missing"));
+      return ;
     }
 
     if(_.isEmpty(password) || _.isEmpty(passwordConfirmation)) {
-      err = new Error("Passwords missing");
-      dispatch(AlertActions.alertFailure(err.message));
-      return Promise.reject(err);
+      dispatch(AlertActions.alertFailure("Passwords missing"));
+      return ;
     }
 
     dispatch(_requestChangePassword());
     return changePasswordFetch(token, password, passwordConfirmation)
       .then(res => {
         dispatch(_changePasswordSuccess());
-        dispatch(AlertActions.alertSuccess("Your password has been changed successfully"));
+        dispatch(AlertActions.alertSuccess("Reseted password!"));
 
-        return res;
+        return "Reseted password!";
       }).catch(err => {
         dispatch(_changePasswordFailure(err));
-        dispatch(AlertActions.alertFailure("Permission denied"));
+        dispatch(AlertActions.alertFailure("Reset password failed"));
 
-        return ;
+        return "Reset password failed!";
       });
   };
 };

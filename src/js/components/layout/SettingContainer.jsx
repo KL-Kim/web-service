@@ -16,27 +16,31 @@ import { logout } from '../../actions/user.actions';
 import { getNotification } from '../../actions/notification.actions';
 
 const styles = (theme) => ({
-  root: {
+  "root": {
     width: '100%',
     height: '100%',
     zIndex: 1,
     overflow: 'hidden',
   },
-  appFrame: {
+  "appFrame": {
     position: 'relative',
     display: 'flex',
     width: '100%',
     height: '100%',
   },
-  content: {
+  "main": {
     width: '100%',
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
     minHeight: `calc(100vh - 112px)`,
     marginTop: 64,
     marginLeft: 260,
     marginBottom: 48
   },
+  "content": {
+    width: 960,
+    margin: 'auto',
+    paddingTop: theme.spacing.unit * 5,
+  }
 });
 
 class SettingContainer extends Component {
@@ -62,8 +66,10 @@ class SettingContainer extends Component {
         />
         <Sidebar user={user} match={this.props.match}/>
         <div className={classes.appFrame}>
-          <main className={classes.content}>
-            {this.props.children}
+          <main className={classes.main}>
+            <div className={classes.content}>
+              {this.props.children}
+            </div>
             <SettingFooter />
           </main>
         </div>

@@ -50,7 +50,6 @@ class HomePage extends Component {
 
   render() {
     const { classes, businessList } = this.props;
-    let index;
 
     return (
       <Container>
@@ -77,12 +76,7 @@ class HomePage extends Component {
             {
               _.isEmpty(businessList)
                 ? ''
-                : businessList.map(item => {
-                  if (!_.isEmpty(this.state.myFavors)) {
-                    index = this.state.myFavors.indexOf(item._id);
-                  }
-
-                  return (
+                : businessList.map(item => (
                     <Grid item xs={4} key={item._id}>
                       <BusinessCard
                         bid={item._id}
@@ -92,11 +86,10 @@ class HomePage extends Component {
                         thumbnailUri={item.thumbnailUri}
                         category={item.category}
                         tags={item.tags}
-                        isFavor={(!_.isUndefined(index) && index > -1) ? true : false}
+                        myFavors={this.state.myFavors}
                       />
                     </Grid>
-                  );
-                })
+                  ))
 
             }
 

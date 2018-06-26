@@ -27,38 +27,21 @@ class FavorPage extends Component {
     super(props);
 
     this.state = {
-      limit: 4,
+      limit: 20,
       count: 0,
       hasMore: false,
     };
 
-    this.state.favors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.loadMore = this.loadMore.bind(this);
   }
 
   componentDidMount() {
-    if (!_.isEmpty(this.props.user.favors)) {
+    if (this.state.myFavors) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        filter: {
-          list: this.props.user.favors
-        }
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount,
-          });
-        }
-      });
-    } else if (!_.isEmpty(this.state.favors)) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        filter: {
-          list: this.state.favors
-        }
+        list: this.state.myFavors,
       })
       .then(response => {
         if (response) {
@@ -77,7 +60,8 @@ class FavorPage extends Component {
 
   loadMore() {
     if (this.state.hasMore) {
-      this.props.getBusinessList(0, this.state.count + this.state.limit, {
+      this.props.getBusinessList({
+        limit: this.state.count + this.state.limit,
         list: this.props.user.favors
       })
       .then(response => {
@@ -93,7 +77,6 @@ class FavorPage extends Component {
 
   render() {
     const { classes, businessList } = this.props;
-    let index;
 
     return (
       <SettingContainer>
@@ -113,13 +96,8 @@ class FavorPage extends Component {
                   ? <Grid item xs={12}>
                       <Typography variant="body1" align="center">None</Typography>
                     </Grid>
-                  : businessList.map((item, i) => {
-                    if (!_.isEmpty(this.state.favors)) {
-                      index = this.state.favors.indexOf(item._id);
-                    }
-
-                    return (
-                      <Grid item xs={3} key={i}>
+                  : businessList.map(item => (
+                      <Grid item xs={4} key={item._id}>
                         <BusinessCard
                           bid={item._id}
                           key={item._id}
@@ -127,11 +105,12 @@ class FavorPage extends Component {
                           enName={item.enName}
                           rating={item.ratingAverage}
                           thumbnailUri={item.thumbnailUri}
-                          isFavor={index > -1 ? true : false}
+                          category={item.category}
+                          tags={item.tags}
+                          myFavors={this.state.myFavors}
                         />
                       </Grid>
-                    );
-                  })
+                    ))
               }
               <Grid item xs={12}>
                 <Typography variant="caption" align="center">

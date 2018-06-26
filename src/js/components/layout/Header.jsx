@@ -298,16 +298,12 @@ class Header extends Component {
               }}
             >
               Business
-              {
-                this.state.categoriesPopoverOpen
-                  ? <ExpandLess className={classes.rightIcon} />
-                  : <ExpandMore className={classes.rightIcon} />
-              }
             </Button>
 
             <LinkContainer to="/blog">
               <Button
                 size="small"
+                disableRipple
                 className={classes.button}
               >
                 Articles
@@ -317,25 +313,23 @@ class Header extends Component {
             <div className={classes.login}>
               {
                 isLoggedIn
-                  ? <IconButton
-                      className={classes.button}
-                      onClick={this.handleNotificationPopoverOpen}
-                      buttonRef={node => {
-                        this.notificationAnchorEl = node;
-                      }}
-                    >
-                      <Notifications />
-                    </IconButton>
-                  : ''
-              }
-              {
-                isLoggedIn
-                  ? <Button
-                      className={classes.button}
-                      onClick={this.handleDrawerToggle}
-                    >
-                      <Avatar user={user} updatedAt={updatedAt} />
-                    </Button>
+                  ? <div>
+                      <IconButton
+                        className={classes.button}
+                        onClick={this.handleNotificationPopoverOpen}
+                        buttonRef={node => {
+                          this.notificationAnchorEl = node;
+                        }}
+                      >
+                        <Notifications />
+                      </IconButton>
+                      <Button
+                        className={classes.button}
+                        onClick={this.handleDrawerToggle}
+                      >
+                        <Avatar user={user} updatedAt={updatedAt} />
+                      </Button>
+                    </div>
                   : <Button
                       size="small"
                       className={classes.button}
@@ -527,7 +521,8 @@ class Header extends Component {
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
   position: PropTypes.string.isRequired,
-  user: PropTypes.object,
+  isFetching: PropTypes.bool.isRequired,
+  user: PropTypes.object.isRequired,
   updatedAt: PropTypes.number,
   isLoggedIn: PropTypes.bool.isRequired,
   newNotificationCount: PropTypes.number.isRequired,
@@ -538,6 +533,7 @@ Header.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "isFetching": state.userReducer.isFetching,
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "updatedAt": state.userReducer.updatedAt,

@@ -18,14 +18,10 @@ import PostPanel from './utils/PostPanel';
 import { getPostsList } from '../actions/blog.actions.js';
 
 const styles = theme => ({
-  "paper": {
-    padding: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 2,
+  "root": {
+    width: 760,
+    margin: 'auto',
   },
-  "buttonContainer": {
-    "display": "flex",
-    "justifyContent": "center",
-  }
 });
 
 class BlogListPage extends Component {
@@ -78,30 +74,26 @@ class BlogListPage extends Component {
 
     return (
       <Container>
-        <div>
-          <Typography variant="display1" gutterBottom align="center">Blog list</Typography>
+        <div className={classes.root}>
+          <Typography variant="display1" gutterBottom align="center">Articles</Typography>
           <Grid container alignContent="center" alignItems="center" justify="center">
             {
               _.isEmpty(list) ? ''
                 : list.map((item, index) =>
                   item.state === 'NORMAL'
-                    ? (<Grid item xs={8} key={item._id}>
-                      <Paper className={classes.paper}>
+                    ? (<Grid item xs={12} key={item._id}>
                         <PostPanel
                           rtl={(index % 2) ? true : false}
                           post={item}
                         />
-                      </Paper>
                     </Grid>)
                     : ''
                 )
             }
-            <Grid item xs={12}>
+            <Grid item>
             {
               this.state.hasMore
-                ? <div className={classes.buttonContainer}>
-                    <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
-                  </div>
+                ? <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
                 : <Typography variant="body1" align="center" gutterBottom>--- No more posts ---</Typography>
             }
             </Grid>

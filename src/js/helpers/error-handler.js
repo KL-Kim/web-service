@@ -12,23 +12,23 @@ const handleErrorResponse = (response, message) => {
       break;
 
     case 401:
-      error.message = "Server: Unauthorized";
+      error.message = "Server Error: Unauthorized";
       break;
 
     case 403:
-      error.message = "Server: Forbidden";
+      error.message = "Server Error: Forbidden";
       break;
 
     case 404:
-      error.message = "Server: Not found";
+      error.message = "Server Error: Not found";
       break;
 
     case 409:
-      error.message = "Server: Already exists";
+      error.message = "Server Error: Already exists";
       break;
 
     default:
-      error.message = "Server: Unknown Server Error";
+      error.message = "Server Error: Unknown Server Error";
   }
 
   return error;

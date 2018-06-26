@@ -24,7 +24,7 @@ const businessSerivceUri = {
  * @property {String} search - Search business
  * @property {String} orderBy - List order
  */
-export const fetchBusinessList = ({ skip, limit, filter, search, orderBy } = {}) => {
+export const fetchBusinessList = ({ skip, limit, filter, search, orderBy, category, area, event, list } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -36,12 +36,11 @@ export const fetchBusinessList = ({ skip, limit, filter, search, orderBy } = {})
 
   if (_.isNumber(skip)) url = url + '&skip=' + skip;
   if (_.isNumber(limit)) url = url + '&limit=' + limit;
-  if (!_.isEmpty(filter)) {
-    if (!!filter.category) url = url + '&category=' + filter.category;
-    if (!!filter.area) url = url + '&area=' + filter.area;
-    if (!!filter.event) url = url + '&event=1';
-    if (!!filter.list) url = url + '&list=' + filter.list;
-  }
+
+  if (category) url = url + '&category=' + category;
+  if (area) url = url + '&area=' + area;
+  if (event) url = url + '&event=1';
+  if (list) url = url + '&list=' + list;
 
   if (orderBy) {
     url = url + '&orderBy=' + orderBy;

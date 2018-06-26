@@ -6,48 +6,69 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 const styles = (theme) => ({
   footer: {
-    padding: theme.spacing.unit * 2,
+    width: 960,
+    margin: 'auto',
+
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    background: theme.palette.background.appBar,
-    paddingLeft: theme.spacing.unit * 16,
-    paddingRight: theme.spacing.unit * 16,
   }
 });
 
 class Footer extends Component{
   render() {
     const { classes } = this.props;
+
     return (
       <footer className={classes.footer}>
-        <Grid container spacing={16} justify="space-between" alignItems="center" >
-          <Grid item xs={8}>
+        <Grid container justify="space-between" alignItems="center" >
+          <Grid item>
             <Grid container spacing={16}>
-              <Grid item xs={2}>
-                <Link to="/about">About us</Link>
+              <Grid item>
+                <Link to="/about">
+                  <Button>
+                    About us
+                  </Button>
+                </Link>
               </Grid>
-              <Grid item xs={2}>
-                <Link to="/license">Licenses</Link>
+              <Grid item>
+                <Link to="/license">
+                  <Button>
+                    Licenses
+                  </Button>
+                </Link>
               </Grid>
-              <Grid item xs={2}>
-                <Link to="/terms-policy">Terms & Policy</Link>
+              <Grid item>
+                <Link to="/terms-policy">
+                  <Button>
+                    Terms & Policy
+                  </Button>
+                </Link>
               </Grid>
 
-              <Grid item xs={2}>
-                <Link to="/verify/123">Verify</Link>
+              <Grid item>
+                <Link to="/verify/123">
+                  <Button>
+                    Verify
+                  </Button>
+                </Link>
               </Grid>
 
-              <Grid item xs={2}>
-                <Link to="/change-password/123">Change Password</Link>
+              <Grid item>
+                <Link to="/change-password/123">
+                  <Button>
+                    Change Password
+                  </Button>
+                </Link>
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item>
             <Typography variant="caption" align="right">
               Copyright 2018 iKoreaTown
             </Typography>
