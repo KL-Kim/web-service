@@ -7,6 +7,7 @@ import Stars from 'react-stars';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
@@ -21,21 +22,25 @@ import Share from '@material-ui/icons/Share';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
-// Actions
-import { favorOperation } from '../../actions/user.actions';
-import { openLoginDialog } from '../../actions/app.actions';
+// Custom Components
+import Badge from './Badge';
 
-import config from '../../config/config';
+// Actions
+import { favorOperation } from 'js/actions/user.actions';
+import { openLoginDialog } from 'js/actions/app.actions';
+
+import config from 'js/config/config';
 
 // Default Image
-import image from '../../../css/ikt-icon.gif';
+import image from 'css/ikt-icon.gif';
 
 const styles = (theme) => ({
   "card": {
+    fontFamily: 'sans-serif',
     marginBottom: theme.spacing.unit * 3,
   },
   "media": {
-    height: 200,
+    height: 180,
   },
   "chip": {
     marginRight: theme.spacing.unit,
@@ -93,27 +98,40 @@ class BusinessCard extends Component {
               title={this.props.title}
             />
             <CardContent>
-              <Typography variant="title" gutterBottom>{this.props.title}</Typography>
+              <Grid container justify="space-between" alignItems="center">
+                <Grid item>
+                  <Typography variant="title">{this.props.title}</Typography>
+
+                </Grid>
+
+                <Grid item>
+                  <Typography variant="subheading">{this.props.category.krName}</Typography>
+                </Grid>
+              </Grid>
+
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
-              <Typography variant="subheading" gutterBottom>{_.isEmpty(this.props.category) ? '' : this.props.category.krName}</Typography>
+
+              <br />
               {
-                _.isEmpty(this.props.event)
-                  ? ''
-                  : <Chip
+                this.props.event
+                  ? <Badge
+                      color="rose"
                       className={classes.chip}
-                      label="Event"
-                    />
+                    >
+                    이벤트
+                  </Badge>
+                  : ''
               }
               {
-                _.isEmpty(this.props.tags)
-                  ? ''
-                  : this.props.tags.map(item => (
-                    <Chip
-                      key={item._id}
-                      className={classes.chip}
-                      label={item.krName}
-                      />
-                  ))
+                this.props.tags.map(item => (
+                  <Badge
+                    color="info"
+                    key={item._id}
+                    className={classes.chip}
+                  >
+                    {item.krName}
+                  </Badge>
+                ))
               }
             </CardContent>
           </Link>
@@ -131,6 +149,13 @@ class BusinessCard extends Component {
     );
   }
 }
+
+BusinessCard.defaultProps = {
+  thumbnail: {},
+  category: {},
+  tags: [],
+  myFavors: [],
+};
 
 BusinessCard.propTypes = {
   "classes": PropTypes.object.isRequired,

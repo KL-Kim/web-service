@@ -18,14 +18,16 @@ import Chip from '@material-ui/core/Chip';
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
 
+// Custom Components
 import ConfirmationDialog from './ConfirmationDialog';
 import ProperName from './ProperName';
 
-import image from '../../../css/ikt-icon.gif';
+// Mock Image
+import image from 'css/ikt-icon.gif';
 
 const styles = theme => ({
   "media": {
-    height: 200,
+    height: 180,
   },
   "chip":{
     marginRight: theme.spacing.unit,

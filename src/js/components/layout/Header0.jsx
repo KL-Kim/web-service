@@ -96,20 +96,19 @@ const styles = theme => ({
   },
   "bootstrapRoot": {
     padding: 0,
-    backgroundColor: 'gold',
+    backgroundColor: theme.palette.common.white,
     borderRadius: 4,
-    border: '2px solid #fff',
+    border: '1px solid #ced4da',
+    '&:focus': {
+      borderColor: '#80bdff',
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+    },
   },
   "bootstrapInput": {
-    fontSize: 20,
-    paddingLeft: theme.spacing.unit * 2,
-    '&:focus': {
-      backgroundColor: theme.palette.common.white,
-    }
-  },
-  "adornmentRoot":{
-    maxHeight: '3em',
-    margin: 0,
+    fontSize: 16,
+    padding: '10px 12px',
+    width: 'calc(100% - 24px)',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
   },
   "popoverContainer": {
     width: 500,
@@ -267,11 +266,11 @@ class Header extends Component {
                         id="search-bar"
                         type="text"
                         name="search"
-                        placeholder="Search..."
+                        placeholder="Search"
                         disableUnderline
                         onChange={this.handleChange}
                         endAdornment={
-                          <InputAdornment position="end" classes={{root: classes.adornmentRoot}}>
+                          <InputAdornment position="end">
                             <IconButton
                               disableRipple
                               aria-label="Toggle password visibility"

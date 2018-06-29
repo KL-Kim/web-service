@@ -104,12 +104,7 @@ const userReducer = (state = initialState, action) => {
 
     // Log out
     case userTypes.LOGOUT_SUCCESS:
-      return {
-        ...state,
-        "isFetching": false,
-        "user": null,
-        "isLoggedIn": false,
-      };
+      return initialState;
 
     // Update user profile
     case userTypes.UPDATE_USER_PROFILE_SUCCESS:

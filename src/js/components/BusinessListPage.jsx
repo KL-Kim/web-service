@@ -23,37 +23,51 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
 import Toolbar from '@material-ui/core/Toolbar';
 
+// Material UI Icons
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+
 // Custom Components
 import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
+import CustomButton from './utils/Button';
 
 // Actions
-import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
-import { getCategoriesList } from '../actions/category.actions.js';
+import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
+import { getCategoriesList } from 'js/actions/category.actions.js';
 
 // WebStorage
-import { loadFromStorage } from '../helpers/webStorage';
-import webStorageTypes from '../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
-import Areas from '../constants/nanjing.areas';
+import Areas from 'js/constants/nanjing.areas';
 
 const styles = theme => ({
-  "header": {
-    flexGrow: 1,
-    marginBottom: theme.spacing.unit * 4,
+  "popoverContainer": {
+    width: 500,
+    padding: theme.spacing.unit * 3,
   },
-  "flex": {
-    "flex": 1,
-  },
-  "button": {
-    marginRight: theme.spacing.unit * 2,
+  "menuSection": {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
+    paddingTop: theme.spacing. unit * 2,
+    paddingBottom: theme.spacing. unit * 2,
   },
-  "areasPopover": {
-    width: 450,
-    padding: theme.spacing.unit * 2,
-  }
+  "menuItem": {
+    marginBottom: theme.spacing.unit / 2,
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+  },
+  "categoryButton": {
+    marginRight: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit,
+    paddingTop: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 3,
+    paddingRight: theme.spacing.unit * 3,
+    fontSize: '1rem',
+    minWidth: 100,
+  },
 });
 
 class BusinessListPage extends Component {
@@ -71,6 +85,8 @@ class BusinessListPage extends Component {
       "categoryPopoverOpen": false,
       "areaPopoverOpen": false,
       "sortPopoverOpen": false,
+      "filterPopoverOpen": false,
+      "areaCount": 5,
     };
 
     this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
@@ -78,17 +94,13 @@ class BusinessListPage extends Component {
     this.loadMore = this.loadMore.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
-    this.handleEventSwitch = this.handleEventSwitch.bind(this);
-    this.handleOpenAreaPopover = this.handleOpenAreaPopover.bind(this);
-    this.handleCloseAreaPopover = this.handleCloseAreaPopover.bind(this);
-    this.handleOpenCategoryPopover = this.handleOpenCategoryPopover.bind(this);
-    this.handleCloseCategoryPopover = this.handleCloseCategoryPopover.bind(this);
-    this.handleOpenSortPopover = this.handleOpenSortPopover.bind(this);
-    this.handleCloseSortPopover = this.handleCloseSortPopover.bind(this);
+    this.handleSwithEvent = this.handleSwithEvent.bind(this);
+    this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
+    this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
+    this.hanldeShowAllAreas = this.hanldeShowAllAreas.bind(this);
   }
 
   componentDidMount() {
-
     this.props.getBusinessList({
       limit: this.state.limit,
       category: this.props.match.params.slug,
@@ -145,42 +157,6 @@ class BusinessListPage extends Component {
     this.props.clearBusinessList();
   }
 
-  handleOpenCategoryPopover() {
-    this.setState({
-      categoryPopoverOpen: true,
-    });
-  }
-
-  handleCloseCategoryPopover() {
-    this.setState({
-      categoryPopoverOpen: false,
-    });
-  }
-
-  handleOpenAreaPopover() {
-    this.setState({
-      areaPopoverOpen: true
-    });
-  }
-
-  handleCloseAreaPopover() {
-    this.setState({
-      areaPopoverOpen: false
-    });
-  }
-
-  handleOpenSortPopover() {
-    this.setState({
-      sortPopoverOpen: true
-    });
-  }
-
-  handleCloseSortPopover() {
-    this.setState({
-      sortPopoverOpen: false
-    });
-  }
-
   handleClickArea = item => e => {
     if (this.state.area.code !== item.code) {
       this.props.getBusinessList({
@@ -231,7 +207,7 @@ class BusinessListPage extends Component {
     });
   }
 
-  handleEventSwitch() {
+  handleSwithEvent() {
     this.setState({
       event: !this.state.event,
     });
@@ -250,6 +226,25 @@ class BusinessListPage extends Component {
           hasMore: response.list.length < response.totalCount
         });
       }
+    });
+  }
+
+  handleOpenFilterPopover() {
+    this.setState({
+      filterPopoverOpen: true,
+    });
+  }
+
+  handleCloseFilterPopover() {
+    this.setState({
+      filterPopoverOpen: false,
+      areaCount: 5,
+    });
+  }
+
+  hanldeShowAllAreas() {
+    this.setState({
+      areaCount: Number.MAX_VALUE
     });
   }
 
@@ -277,73 +272,58 @@ class BusinessListPage extends Component {
     return (
       <Container>
         <div>
-          <div className={classes.header}>
-            <Toolbar disableGutters>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
               <Typography variant="display1" className={classes.flex}>
                 {
                   _.isEmpty(this.state.category) ? '' : this.state.category.krName
                 }
               </Typography>
+            </Grid>
+            <Grid item>
               <Button
-                color="primary"
-                variant="outlined"
-                size="large"
-                className={classes.button}
-                onClick={this.handleOpenCategoryPopover}
+                onClick={this.handleOpenFilterPopover}
                 buttonRef={node => {
-                  this.categoryAnchorEl = node;
+                  this.filterAnchorEl = node;
                 }}
               >
-                {_.isEmpty(this.state.category) ? 'All' : this.state.category.krName}
-              </Button>
-
-              <Button
-                color="primary"
-                variant="outlined"
-                size="large"
-                className={classes.button}
-                onClick={this.handleOpenAreaPopover}
-                buttonRef={node => {
-                  this.areasAnchorEl = node;
-                }}
-              >
+                Filter
                 {
-                  _.isEmpty(this.state.area) ? 'Area' : (this.state.area.cnName)
+                  this.state.filterPopoverOpen
+                    ? <ArrowDropUp />
+                    : <ArrowDropDown />
                 }
               </Button>
+            </Grid>
+          </Grid>
 
-              <Button
-                variant="outlined"
-                color="primary"
-                size="large"
-                onClick={this.handleOpenSortPopover}
-                className={classes.button}
-                buttonRef={node => {
-                  this.sortAnchorEl = node;
-                }}
-              >
-                Sort by
-              </Button>
+          {
+            this.props.isFetching
+              ? <LinearProgress style={{ height: 1 }} />
+              : <Divider />
+          }
+          <br />
 
-              <FormControlLabel
-                control={
-                  <Switch
-                    color="primary"
-                    checked={this.state.event}
-                    onChange={this.handleEventSwitch}
-                    value="event"
-                  />
-                }
-                label="이벤트"
-              />
-            </Toolbar>
-
+          <div >
             {
-              this.props.isFetching
-                ? <LinearProgress style={{ height: 1 }} />
-                : <Divider />
+              this.props.categories.map(item => (item.parent === this.state.category.code)
+                ? (
+                    <Link to={"/business/category/" + item.enName} key={item._id}>
+                      <CustomButton
+                        round
+                        color="primary"
+                        className={classes.categoryButton}
+                      >
+                        {item.krName}
+                      </CustomButton>
+                    </Link>
+                  )
+                : ''
+              )
             }
           </div>
+          <br />
+
 
           <InfiniteScroll
             pageStart={0}
@@ -384,107 +364,169 @@ class BusinessListPage extends Component {
 
           <div>
             <Popover
-              open={this.state.categoryPopoverOpen}
-              anchorEl={this.categoryAnchorEl}
-              onClose={this.handleCloseCategoryPopover}
+              open={this.state.filterPopoverOpen}
+              anchorEl={this.filterAnchorEl}
+              onClose={this.handleCloseFilterPopover}
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
             >
-              <div>
-                <Grid container className={classes.areasPopover}>
-                  {
-                    categories.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <Link to={'/business/category/' + item.enName}>
-                          <Button
-                            color="primary"
-                            variant={this.state.category.enName === item.enName ? 'raised' : 'text'}
-                          >
-                            {item.krName}
-                          </Button>
-                        </Link>
-                      </Grid>
-
-                    ))
-
-                  }
-                </Grid>
-              </div>
-            </Popover>
-
-            <Popover
-              open={this.state.areaPopoverOpen}
-              anchorEl={this.areasAnchorEl}
-              onClose={this.handleCloseAreaPopover}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-            >
-              <div>
-                <Grid container className={classes.areasPopover}>
-                  <Grid item xs={6}>
-                    <Button
-                      color="primary"
-                      className={classes.button}
-                      variant={_.isEmpty(this.state.area) ? 'raised' : 'text'}
-                      onClick={this.handleClickArea('')}
-                    >
-                    All
-                    </Button>
+              <div className={classes.popoverContainer}>
+                <Grid container className={classes.menuSection}>
+                  <Grid item xs={3}>
+                    <Typography variant="title">Category</Typography>
                   </Grid>
-                  {
-                    Areas.map(item =>
-                      <Grid item xs={6} key={item.code}>
+
+                  <Grid item xs={9}>
+                    <Grid container>
+                    {
+                      categories.map(item => item.parent ? '' : (
+                        <Grid item xs={4} key={item._id} className={classes.menuItem}>
+                          <Link to={'/business/category/' + item.enName}>
+                            <Button
+                              fullWidth
+                              size="small"
+                              color={this.state.category.code === item.code ? 'primary' : 'default'}
+                              variant={this.state.category.code === item.code ? 'outlined' : 'text'}
+                            >
+                              {item.krName}
+                            </Button>
+                          </Link>
+                        </Grid>
+                      ))
+                    }
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider />
+
+                <Grid container className={classes.menuSection}>
+                  <Grid item xs={3}>
+                    <Typography variant="title">District</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Grid container justify="center">
+                      <Grid item xs={4} className={classes.menuItem}>
                         <Button
-                          color="primary"
-                          variant={this.state.area.code === item.code ? 'raised' : 'text'}
-                          className={classes.button}
-                          onClick={this.handleClickArea(item)}>
-                          {item.cnName + '-' + item.pinyin}
+                          fullWidth
+                          size="small"
+                          color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
+                          variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                          onClick={this.handleClickArea('')}
+                        >
+                          All
                         </Button>
                       </Grid>
-                    )
-                  }
-                </Grid>
-              </div>
-            </Popover>
+                      {
+                        Areas.map((item, index) =>
+                          index < this.state.areaCount
+                          ? <Grid item xs={4} key={item.code} className={classes.menuItem}>
+                              <Button
+                                fullWidth
+                                size="small"
+                                color={this.state.area.code === item.code ? 'primary' : 'default'}
+                                variant={this.state.area.code === item.code ? 'outlined' : 'text'}
+                                onClick={this.handleClickArea(item)}
+                              >
+                                {item.cnName}
+                              </Button>
+                            </Grid>
+                          : ''
+                        )
+                      }
+                      {
+                        this.state.areaCount < Number.MAX_VALUE
+                          ? <Grid item xs={4} className={classes.menuItem} onClick={this.hanldeShowAllAreas}>
+                              <Button
+                                fullWidth
+                                size="small"
+                                color="primary"
+                                variant="raised"
+                              >
+                                More
+                              </Button>
+                            </Grid>
+                          : ''
 
-            <Popover
-              open={this.state.sortPopoverOpen}
-              anchorEl={this.sortAnchorEl}
-              onClose={this.handleCloseSortPopover}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-            >
-              <div>
-                <MenuList role="menu">
-                  <MenuItem selected={_.isEmpty(this.state.orderBy)} onClick={this.handleClickOrderBy('')}>
-                    <ListItemText primary="Recommend" />
-                  </MenuItem>
-                  <MenuItem selected={this.state.orderBy === 'rating'} onClick={this.handleClickOrderBy('rating')}>
-                    <ListItemText primary="Rating" />
-                  </MenuItem>
-                  <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleClickOrderBy('new')}>
-                    <ListItemText primary="New" />
-                  </MenuItem>
-                </MenuList>
+                      }
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider />
+
+                <Grid container className={classes.menuSection} alignItems="center">
+                  <Grid item xs={3}>
+                    <Typography variant="title">Order by</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Grid container justify="space-around">
+                      <Grid item xs={4} className={classes.menuItem}>
+                        <Button
+                          fullWidth
+                          size="small"
+                          color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                          variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                          onClick={this.handleClickOrderBy('')}
+                        >
+                          Recommend
+                        </Button>
+                      </Grid>
+                      <Grid item xs={4} className={classes.menuItem}>
+                        <Button
+                          fullWidth
+                          size="small"
+                          color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
+                          variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
+                          onClick={this.handleClickOrderBy('rating')}
+                        >
+                          Rating
+                        </Button>
+                      </Grid>
+                      <Grid item xs={4} className={classes.menuItem}>
+                        <Button
+                          fullWidth
+                          size="small"
+                          color={this.state.orderBy === 'new' ? 'primary' : 'default'}
+                          variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
+                          onClick={this.handleClickOrderBy('new')}
+                        >
+                          New
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Divider />
+
+                <Grid container className={classes.menuSection} alignItems="center">
+                  <Grid item xs={3}>
+                    <Typography variant="title">Event</Typography>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <FormControl>
+                      <Switch
+                        color="primary"
+                        checked={this.state.event}
+                        onChange={this.handleSwithEvent}
+                        value="event"
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+
+                <Grid container justify="flex-end" alignItems="center">
+                  <Grid item>
+                    <Button variant="raised" color="primary" onClick={this.handleCloseFilterPopover}>
+                      Ok
+                    </Button>
+                  </Grid>
+                </Grid>
+
               </div>
             </Popover>
           </div>

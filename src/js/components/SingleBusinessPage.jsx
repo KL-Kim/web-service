@@ -787,7 +787,7 @@ class SingleBusinessPage extends Component {
                               owner={review.user}
                               user={this.props.user}
                               isLoggedIn={this.props.isLoggedIn}
-                              isOwn={_.isEmpty(this.props.user) ? review.user._id === this.props.user._id : false}
+                              isOwn={_.isEmpty(this.props.user) ? false : review.user._id === this.props.user._id}
                               business={review.business}
                               content={review.content}
                               rating={review.rating}
