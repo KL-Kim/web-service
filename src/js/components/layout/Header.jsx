@@ -4,6 +4,7 @@ import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import Img from 'react-image';
+import qs from 'querystring';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -96,7 +97,6 @@ const styles = theme => ({
   },
   "bootstrapRoot": {
     padding: 0,
-    backgroundColor: 'gold',
     borderRadius: 4,
     border: '2px solid #fff',
   },
@@ -127,13 +127,17 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
+    const parsed = qs.parse(props.location.search.slice(1));
+
     this.state = {
       "drawerOpen": false,
-      "search": '',
+      "search": parsed.s || '',
       "notificationPopoverOpen": false,
       "notificationsList": [],
       "categoriesPopoverOpen": false,
     };
+
+
 
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -268,6 +272,8 @@ class Header extends Component {
                         type="text"
                         name="search"
                         placeholder="Search..."
+                        autoComplete="off"
+                        defaultValue={this.state.search}
                         disableUnderline
                         onChange={this.handleChange}
                         endAdornment={
@@ -276,6 +282,10 @@ class Header extends Component {
                               disableRipple
                               aria-label="Toggle password visibility"
                               onClick={this.handleSearch}
+                              style={{
+                                paddingLeft: 4,
+                                paddingRight: 4,
+                              }}
                             >
                               <Search />
                             </IconButton>

@@ -30,7 +30,7 @@
     "react-images": "^0.5.17",
     "react-infinite-scroller": "^1.1.4",
     "react-masonry-component": "^6.2.0",
-    "react-popper": "^0.10.4",
+    "react-popper": "^1.0.0",
     "react-quill": "^1.2.7",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

@@ -41,7 +41,7 @@ class FavorPage extends Component {
     if (this.state.myFavors) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        list: this.state.myFavors,
+        ids: this.state.myFavors,
       })
       .then(response => {
         if (response) {
@@ -62,7 +62,7 @@ class FavorPage extends Component {
     if (this.state.hasMore) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
-        list: this.props.user.favors
+        ids: this.props.user.favors
       })
       .then(response => {
         if (response) {

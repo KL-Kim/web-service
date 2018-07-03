@@ -27,6 +27,11 @@ export const clearBusinessList = () => {
  * @property {Object} params.filter - Business list filter
  * @property {String} params.search - Search business
  * @property {String} params.orderBy - List order
+ * @property {String} params.category - Business category filter
+ * @property {String} params.tag - Business tag filter
+ * @property {String} params.area - Business area filter
+ * @property {Boolean} params.event - Business event filter
+ * @property {Array} params.ids - Busines ids
  */
 export const getBusinessList = (params) => {
   const _getBusinessListRequest = () => ({

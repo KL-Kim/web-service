@@ -9,37 +9,39 @@ import configureStore from './stores/store';
 import PrivateRoute from './helpers/PrivateRoute';
 
 // React Compontens
-import NoMatchPage from './components/404';
-import HomePage from './components/HomePage';
-import SignupPage from './components/SignupPage';
-import AboutPage from './components/AboutPage';
-import TermsPolicyPage from './components/TermsPolicyPage';
-import LicensePage from './components/LicensePage';
-import ForgetPasswordPage from './components/ForgetPasswordPage';
-import AccountVerificationPage from './components/AccountVerificationPage';
-import ChangePasswordPage from './components/ChangePasswordPage';
-import SearchPage from './components/SearchPage';
-import BusinessListPage from './components/BusinessListPage';
-import SingleBusinessPage from './components/SingleBusinessPage';
-import BlogListPage from './components/BlogListPage';
-import SinglePostPage from './components/SinglePostPage';
+import NoMatchPage from 'js/components/404';
+import HomePage from 'js/components/HomePage';
+import SignupPage from 'js/components/SignupPage';
+import AboutPage from 'js/components/AboutPage';
+import TermsPolicyPage from 'js/components/TermsPolicyPage';
+import LicensePage from 'js/components/LicensePage';
+import ForgetPasswordPage from 'js/components/ForgetPasswordPage';
+import AccountVerificationPage from 'js/components/AccountVerificationPage';
+import ChangePasswordPage from 'js/components/ChangePasswordPage';
+import SearchPage from 'js/components/SearchPage';
+import BusinessListByCategoryPage from 'js/components/BusinessListByCategoryPage';
+import BusinessListByTagPage from 'js/components/BusinessListByTagPage';
+import SingleBusinessPage from 'js/components/SingleBusinessPage';
+import BlogListPage from 'js/components/BlogListPage';
+import SinglePostPage from 'js/components/SinglePostPage';
 
 // Setting
-import SettingAccount from './components/setting/AccountPage';
-import SettingReview from './components/setting/ReviewPage';
-import SettingFavor from './components/setting/FavorPage';
-import SettingNotification from './components/setting/NotificationPage';
-import SettingPost from './components/setting/PostPage';
-import SettingSinglePost from './components/setting/SinglePostPage';
-import SettingComment from './components/setting/CommentPage';
+import SettingAccount from 'js/components/setting/AccountPage';
+import SettingReview from 'js/components/setting/ReviewPage';
+import SettingFavor from 'js/components/setting/FavorPage';
+import SettingNotification from 'js/components/setting/NotificationPage';
+import SettingPost from 'js/components/setting/PostPage';
+import SettingSinglePost from 'js/components/setting/SinglePostPage';
+import SettingComment from 'js/components/setting/CommentPage';
 
 // WebStorage
-import { loadFromStorage } from './helpers/webStorage';
-import webStorageTypes from './constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
-import { getMyself } from './actions/user.actions';
-import { getCategoriesList } from './actions/category.actions.js';
+import { getMyself } from 'js/actions/user.actions';
+import { getCategoriesList } from 'js/actions/category.actions.js';
+import { getTagsList } from 'js/actions/tag.actions.js'
 
 const App = () => {
   const store = configureStore();
@@ -50,6 +52,7 @@ const App = () => {
   }
 
   store.dispatch(getCategoriesList());
+  store.dispatch(getTagsList());
 
   return (
     <Provider store={store}>
@@ -64,7 +67,8 @@ const App = () => {
           <Route path="/verify/:token" component={AccountVerificationPage} />
           <Route path="/forget-password" component={ForgetPasswordPage} />
           <Route path="/change-password/:token" component={ChangePasswordPage} />
-          <Route path="/business/category/:slug" component={BusinessListPage} />
+          <Route path="/business/category/:slug" component={BusinessListByCategoryPage} />
+          <Route path="/business/tag/:slug" component={BusinessListByTagPage} />
           <Route path="/business/s/:slug" component={SingleBusinessPage} />
           <Route exact path="/blog" component={BlogListPage} />
           <Route path="/post/s/:id" component={SinglePostPage} />

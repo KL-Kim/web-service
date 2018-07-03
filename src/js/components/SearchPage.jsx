@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import qs from 'querystring';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
 import _ from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -28,6 +29,7 @@ import ListItem from '@material-ui/core/ListItem';
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import FilterList from '@material-ui/icons/FilterList';
 
 // Custom Components
 import Container from './layout/Container';
@@ -35,13 +37,22 @@ import BusinessCard from './utils/BusinessCard';
 import CustomButton from './utils/Button';
 
 // Actions
-import { getBusinessList } from 'js/actions/business.actions.js';
+import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
+import { getCategoriesList } from 'js/actions/category.actions';
+import { getTagsList } from 'js/actions/tag.actions';
 
 // WebStorage
-import { loadFromStorage } from 'js/helpers/webStorage';
+import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
+// Helpers
+import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
+import saveSearchHistory from 'js/helpers/saveSearchHistory';
+
 const styles = theme => ({
+  "section": {
+    marginBottom: theme.spacing.unit * 8,
+  },
   "categoryButton": {
     marginRight: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
@@ -64,6 +75,12 @@ const styles = theme => ({
   },
   "menuItem": {
     textAlign: "center",
+    marginBottom: theme.spacing.unit / 2,
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+  },
+  "leftIcon": {
+    marginRight: theme.spacing.unit,
   }
 });
 
@@ -74,7 +91,7 @@ class SearchPage extends Component {
     const parsed = qs.parse(props.location.search.slice(1));
 
     this.state = {
-      "limit": 12,
+      "limit": 24,
       "count": 0,
       "categories": [],
       "categorySlug": '',
@@ -84,6 +101,8 @@ class SearchPage extends Component {
       "event": false,
       "hasMore": false,
       "filterPopoverOpen": false,
+      "searchCategoryResponse": [],
+      "searchTagResponse": [],
       ...parsed,
     };
 
@@ -99,46 +118,63 @@ class SearchPage extends Component {
   }
 
   componentDidMount() {
+    this.props.getBusinessList({
+      limit: this.state.limit,
+      search: this.state.s,
+    })
+    .then(response => {
+      if (response) {
+        const categories = [];
+        const categoryIds = [];
+        const areas = [];
+        const areaIds = [];
+        let cIndex, aIndex;
+
+        response.list.map(business => {
+          cIndex = categoryIds.indexOf(business.category._id);
+
+          if (cIndex < 0) {
+            categories.push(business.category);
+            categoryIds.push(business.category._id);
+          }
+
+          aIndex = areaIds.indexOf(business.address.area.code)
+
+          if (aIndex < 0) {
+            areaIds.push(business.address.area.code);
+            areas.push(business.address.area);
+          }
+
+          return ;
+        });
+
+        this.setState({
+          categories: categories.slice(),
+          areas: areas.slice(),
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
+        });
+      }
+    });
+
     if (this.state.s && !_.isEmpty(this.state.s)) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        search: this.state.s,
-      })
-      .then(response => {
-        if (response) {
-          const categories = [];
-          const categoryIds = [];
-          const areas = [];
-          const areaIds = [];
-          let cIndex, aIndex;
+      const categories = searchCategoryOrTag('category', this.state.s);
 
-          response.list.map(business => {
-            cIndex = categoryIds.indexOf(business.category._id);
+      if (categories) {
+        this.setState({
+          searchCategoryResponse: categories.slice()
+        });
+      }
 
-            if (cIndex < 0) {
-              categories.push(business.category);
-              categoryIds.push(business.category._id);
-            }
+      const tags = searchCategoryOrTag('tag', this.state.s);
 
-            aIndex = areaIds.indexOf(business.address.area.code)
+      if (tags) {
+        this.setState({
+          searchTagResponse: tags.slice(),
+        });
+      }
 
-            if (aIndex < 0) {
-              areaIds.push(business.address.area.code);
-              areas.push(business.address.area);
-            }
-
-
-            return '';
-          });
-
-          this.setState({
-            categories: categories.slice(),
-            areas: areas.slice(),
-            count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount,
-          });
-        }
-      });
+      saveSearchHistory(this.state.s);
     }
   }
 
@@ -173,7 +209,7 @@ class SearchPage extends Component {
               areas.push(business.address.area);
             }
 
-            return '';
+            return ;
           });
 
           this.setState({
@@ -181,12 +217,35 @@ class SearchPage extends Component {
             categories: categories.slice(),
             areas: areas.slice(),
             count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount
+            hasMore: response.list.length < response.totalCount
           });
         }
       });
 
+      if (parsed.s) {
+        const categories = searchCategoryOrTag('category', parsed.s);
+
+        if (categories) {
+          this.setState({
+            searchCategoryResponse: categories.slice()
+          });
+        }
+
+        const tags = searchCategoryOrTag('tag', parsed.s);
+
+        if (tags) {
+          this.setState({
+            searchTagResponse: tags.slice(),
+          });
+        }
+
+        saveSearchHistory(parsed.s);
+      }
     }
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   handleClickCategory = slug => e => {
@@ -204,7 +263,7 @@ class SearchPage extends Component {
           this.setState({
             categorySlug: slug,
             count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount
+            hasMore: response.list.length < response.totalCount
           });
         }
       });
@@ -226,7 +285,7 @@ class SearchPage extends Component {
           this.setState({
             area: area,
             count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount,
+            hasMore: response.list.length < response.totalCount,
           });
         }
         this.setState({
@@ -251,7 +310,7 @@ class SearchPage extends Component {
           this.setState({
             orderBy: item,
             count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount
+            hasMore: response.list.length < response.totalCount
           });
         }
         this.setState({
@@ -274,7 +333,7 @@ class SearchPage extends Component {
       if (response) {
         this.setState({
           count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
+          hasMore: response.list.length < response.totalCount
         });
       }
     });
@@ -309,7 +368,7 @@ class SearchPage extends Component {
     .then((response => {
         this.setState({
           count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
+          hasMore: response.list.length < response.totalCount
         });
       }));
     }
@@ -321,93 +380,148 @@ class SearchPage extends Component {
     return (
       <Container>
         <div>
-          <Grid container justify="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="display1">Search: {this.state.s}</Typography>
-            </Grid>
-            <Grid item>
-              <Button
-                onClick={this.handleOpenFilterPopover}
-                buttonRef={node => {
-                  this.filterAnchorEl = node;
-                }}
-              >
-                Filter
-                {
-                  this.state.filterPopoverOpen
-                    ? <ArrowDropUp />
-                    : <ArrowDropDown />
-                }
-              </Button>
-            </Grid>
-          </Grid>
+          {
+            _.isEmpty(this.state.searchCategoryResponse) ? ''
+              : <div className={classes.section}>
+                  <Typography variant="display1" gutterBottom>Category: '{this.state.s}'</Typography>
+                  <Divider />
+                  <br />
+                  {
+                    this.state.searchCategoryResponse.map((item) => (
+                      <Link to={"/business/category/" + item.enName} key={item._id}>
+                        <CustomButton
+                          color="primary"
+                          round
+                          className={classes.categoryButton}
+                        >
+                          {item.krName}
+                        </CustomButton>
+                      </Link>
+                    ))
+                  }
+                  <br />
+                </div>
+
+          }
 
           {
-            this.props.isFetching
-              ? <LinearProgress style={{ height: 1 }} />
-              : <Divider />
+            _.isEmpty(this.state.searchTagResponse) ? ''
+              : <div className={classes.section}>
+                  <Typography variant="display1" gutterBottom>Tag: '{this.state.s}'</Typography>
+                  <Divider />
+                  <br />
+                  {
+                    this.state.searchTagResponse.map((item) => (
+                      <Link to={"/business/tag/" + item.enName} key={item._id}>
+                        <CustomButton
+                          color="primary"
+                          round
+                          className={classes.categoryButton}
+                        >
+                          {item.krName}
+                        </CustomButton>
+                      </Link>
+                    ))
+                  }
+                  <br />
+                </div>
           }
-          <br />
 
           <div>
-            <CustomButton
-              color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
-              round
-              className={classes.categoryButton}
-              onClick={this.handleClickCategory('')}
-            >
-              All
-            </CustomButton>
-            {
-              _.isEmpty(this.state.categories) ? ''
-                : this.state.categories.map((item) => (
-                  <CustomButton
-                    key={item._id}
-                    color={this.state.categorySlug === item.enName ? "primary" : 'white'}
-                    round
-                    className={classes.categoryButton}
-                    onClick={this.handleClickCategory(item.enName)}
-                  >
-                    {item.krName}
-                  </CustomButton>
-                ))
-            }
-          </div>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="display1" gutterBottom>
+                  {
+                    this.state.s ? 'Business: \'' + this.state.s + '\'' : 'All Businesses'
 
-          <br />
-
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.state.hasMore}
-            loader={<div style={{ textAlign: 'center' }} key={0}>
-                      <CircularProgress size={30} />
-                    </div>}
-          >
-            <Grid container spacing={16}>
-              {
-                _.isEmpty(businessList)
-                  ? <Grid item xs={12}>
-                      <Typography variant="headline" align="center">None</Typography>
-                    </Grid>
-                  : businessList.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <BusinessCard
-                          bid={item._id}
-                          title={item.krName}
-                          enName={item.enName}
-                          rating={item.ratingAverage}
-                          thumbnailUri={item.thumbnailUri}
-                          category={item.category}
-                          tags={item.tags}
-                          event={item.event}
-                          myFavors={this.state.myFavors}
-                        />
-                      </Grid>
-                    ))
-              }
+                  }
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  onClick={this.handleOpenFilterPopover}
+                  buttonRef={node => {
+                    this.filterAnchorEl = node;
+                  }}
+                >
+                  <FilterList className={classes.leftIcon} />
+                  Filter
+                  {
+                    this.state.filterPopoverOpen
+                      ? <ArrowDropUp />
+                      : <ArrowDropDown />
+                  }
+                </Button>
+              </Grid>
             </Grid>
-          </InfiniteScroll>
+
+            {
+              this.props.isFetching
+                ? <LinearProgress style={{ height: 1 }} />
+                : <Divider />
+            }
+            <br />
+
+            <div>
+              <CustomButton
+                color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
+                round
+                className={classes.categoryButton}
+                onClick={this.handleClickCategory('')}
+              >
+                All
+              </CustomButton>
+              {
+                _.isEmpty(this.state.categories) ? ''
+                  : this.state.categories.map((item) => (
+                    <CustomButton
+                      key={item._id}
+                      color={this.state.categorySlug === item.enName ? "primary" : 'white'}
+                      round
+                      className={classes.categoryButton}
+                      onClick={this.handleClickCategory(item.enName)}
+                    >
+                      {item.krName}
+                    </CustomButton>
+                  ))
+              }
+            </div>
+
+            <br />
+
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={this.loadMore}
+              hasMore={this.state.hasMore}
+              loader={<div style={{ textAlign: 'center' }} key={0}>
+                        <CircularProgress size={30} />
+                      </div>}
+            >
+              <Grid container spacing={16}>
+                {
+                  _.isEmpty(businessList)
+                    ? <Grid item xs={12}>
+                        <Typography variant="headline" align="center">None</Typography>
+                      </Grid>
+                    : businessList.map(item => (
+                        <Grid item xs={4} key={item._id}>
+                          <BusinessCard
+                            bid={item._id}
+                            title={item.krName}
+                            enName={item.enName}
+                            rating={item.ratingAverage}
+                            thumbnailUri={item.thumbnailUri}
+                            category={item.category}
+                            tags={item.tags}
+                            event={item.event}
+                            myFavors={this.state.myFavors}
+                          />
+                        </Grid>
+                      ))
+                }
+              </Grid>
+            </InfiniteScroll>
+          </div>
 
           <div>
             <Popover
@@ -429,7 +543,7 @@ class SearchPage extends Component {
                     <Typography variant="title">District</Typography>
                   </Grid>
                   <Grid item xs={9}>
-                    <Grid container justify="space-between">
+                    <Grid container justify="flex-start">
                       <Grid item xs={4} className={classes.menuItem}>
                         <Button
                           fullWidth
@@ -552,4 +666,9 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList })(withStyles(styles)(SearchPage));
+export default connect(mapStateToProps, {
+  getBusinessList,
+  clearBusinessList,
+  getCategoriesList,
+  getTagsList,
+})(withStyles(styles)(SearchPage));

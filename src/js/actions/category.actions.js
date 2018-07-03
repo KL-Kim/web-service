@@ -1,6 +1,7 @@
 /**
  * Business Category Actions
  */
+import _ from 'lodash';
 
 import categoryTypes from '../constants/category.types';
 import * as AlertActions from './alert.actions';
@@ -10,9 +11,8 @@ import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/we
 
 /**
  * Get business categories list
- * @param {Object} params - Parameter object
  */
-export const getCategoriesList = (params) => {
+export const getCategoriesList = () => {
   const _getCategoriesRequest = () => ({
     "type": categoryTypes.GET_CATEGORY_REQUEST,
   });
@@ -36,17 +36,19 @@ export const getCategoriesList = (params) => {
   return (dispatch, getState) => {
     dispatch(_getCategoriesRequest());
 
+
     const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
     const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
 
     if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
       dispatch(_getCategoriesSuccess(categories));
 
-      return categories;
+      return Promise.resolve(categories);
     }
 
-    return fetchCategoriesOrTags("CATAGORY", params)
+    return fetchCategoriesOrTags("CATAGORY")
       .then(response => {
+
         saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST, response);
         saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT, Date.now());
 

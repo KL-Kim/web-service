@@ -90,18 +90,27 @@ class BusinessCard extends Component {
     return (
       <div>
         <Card className={classes.card}>
-          <Link to={{
-            "pathname": "/business/s/" + this.props.enName,
-          }}>
+          <Link to={"/business/s/" + this.props.enName}>
             <CardMedia className={classes.media}
               image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
               title={this.props.title}
             />
+
             <CardContent>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="title">{this.props.title}</Typography>
-
+                  <Grid container spacing={8} alignItems="center">
+                    <Grid item>
+                      <Typography variant="title">{this.props.title}</Typography>
+                    </Grid>
+                    <Grid item>
+                      {
+                        this.props.event
+                          ? <Badge color="rose">이벤트</Badge>
+                          : ''
+                      }
+                    </Grid>
+                  </Grid>
                 </Grid>
 
                 <Grid item>
@@ -110,39 +119,34 @@ class BusinessCard extends Component {
               </Grid>
 
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
-
-              <br />
-              {
-                this.props.event
-                  ? <Badge
-                      color="rose"
-                      className={classes.chip}
-                    >
-                    이벤트
-                  </Badge>
-                  : ''
-              }
-              {
-                this.props.tags.map(item => (
-                  <Badge
-                    color="info"
-                    key={item._id}
-                    className={classes.chip}
-                  >
-                    {item.krName}
-                  </Badge>
-                ))
-              }
             </CardContent>
           </Link>
+
           <CardActions>
-            <Tooltip id="favor-icon" title="Add to Favor">
-              <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
                 {
-                  this.state.isFavor ? <Favorite /> : <FavoriteBorder />
+                  this.props.tags.map(item => (
+                    <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
+                      <Badge
+                        color="info"
+                      >
+                        {item.krName}
+                      </Badge>
+                    </Link>
+                  ))
                 }
-              </IconButton>
-            </Tooltip>
+              </Grid>
+              <Grid item>
+                <Tooltip id="favor-icon" title="Add to Favor">
+                  <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
+                    {
+                      this.state.isFavor ? <Favorite /> : <FavoriteBorder />
+                    }
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </CardActions>
         </Card>
       </div>
