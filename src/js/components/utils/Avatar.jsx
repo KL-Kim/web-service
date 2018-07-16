@@ -37,7 +37,7 @@ class AvatarModule extends Component {
     const { classes, type, user, updatedAt } = this.props;
     let avatar;
     let avatarSrc = _.isEmpty(user) ? '' : config.API_GATEWAY_ROOT + '/' + user.profilePhotoUri + '?t=' + updatedAt;
-    let initial = _.isEmpty(user.lastName) ? _.upperCase(user.username[0]) :  _.upperCase(user.lastName[0]);
+    let initial = _.isEmpty(user.lastName) ? _.upperCase(user.username[0]) : _.upperCase(user.lastName[0]);
 
     switch (type) {
       case "BIG":
@@ -73,7 +73,6 @@ AvatarModule.propTypes = {
   user: PropTypes.object.isRequired,
   updatedAt: PropTypes.number,
   type: PropTypes.string,
-
 };
 
 export default withStyles(styles)(AvatarModule);

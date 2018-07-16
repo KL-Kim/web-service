@@ -9,11 +9,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Chip from '@material-ui/core/Chip';
+import CardHeader from '@material-ui/core/CardHeader';
 
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
@@ -21,6 +22,7 @@ import ThumbUp from '@material-ui/icons/ThumbUp';
 // Custom Components
 import ConfirmationDialog from './ConfirmationDialog';
 import ProperName from './ProperName';
+import Avatar from './Avatar';
 
 // Mock Image
 import image from 'css/ikt-icon.gif';
@@ -29,13 +31,16 @@ const styles = theme => ({
   "media": {
     height: 180,
   },
+  "iconNum": {
+    fontSize: '1rem',
+  },
   "chip":{
     marginRight: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
   },
 });
 
-class ReviewCard extends Component {
+class ReviewCardAlt extends Component {
   constructor(props) {
     super(props);
 
@@ -114,6 +119,18 @@ class ReviewCard extends Component {
     return (
       <div>
         <Card>
+          <CardHeader
+            avatar={<Avatar user={this.props.owner} />}
+            title={<ProperName user={this.props.owner} />}
+            action={
+              <div>
+                <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
+                  <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} style={{ marginRight: 8 }}/>
+                  <span className={classes.iconNum}>{this.state.upvoteNum}</span>
+                </IconButton>
+              </div>
+            }
+          />
           <CardMedia className={classes.media}
             image={image}
           />
@@ -129,16 +146,7 @@ class ReviewCard extends Component {
             }
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
 
-            <br />
-            {
-              this.props.showUser
-                ? <Typography variant="body2" gutterBottom>
-                    <strong>
-                      <ProperName user={this.props.owner} />
-                    </strong>
-                  </Typography>
-                : ''
-            }
+
             <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
 
             <br />
@@ -153,18 +161,9 @@ class ReviewCard extends Component {
                 this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : ''
               }
             </div>
-
-
           </CardContent>
+
           <CardActions>
-
-            <div>
-              <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
-                <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
-              </IconButton>
-              {this.state.upvoteNum}
-            </div>
-
             {
               (this.props.isOwn && !this.props.showUser)
                 ? <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
@@ -181,7 +180,8 @@ class ReviewCard extends Component {
                   content="Are you sure to delete the review?"
                   operation={this.handleDelete}
                   handleClose={this.handleDeleteDialogClose}
-                />)
+                />
+              )
             : <div />
         }
         </div>
@@ -190,7 +190,7 @@ class ReviewCard extends Component {
   }
 }
 
-ReviewCard.propTypes = {
+ReviewCardAlt.propTypes = {
   "classes": PropTypes.object.isRequired,
   "id": PropTypes.string.isRequired,
   "isOwn": PropTypes.bool.isRequired,
@@ -210,4 +210,4 @@ ReviewCard.propTypes = {
   "getNewReviews": PropTypes.func,
 };
 
-export default withStyles(styles)(ReviewCard);
+export default withStyles(styles)(ReviewCardAlt);

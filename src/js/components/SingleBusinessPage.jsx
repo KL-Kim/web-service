@@ -47,6 +47,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // Custom Components
 import Container from './layout/Container'
 import ReviewCard from './utils/ReviewCard';
+import ReviewCardAlt from './utils/ReviewCardAlt';
 import WriteReviewDialog from './utils/WriteReviewDialog';
 import ReportDialog from './utils/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
@@ -781,7 +782,7 @@ class SingleBusinessPage extends Component {
                         ? ''
                         : reviews.map(review => (
                           <div key={review._id} className={classes.card}>
-                            <ReviewCard
+                            <ReviewCardAlt
                               showUser
                               id={review._id}
                               owner={review.user}

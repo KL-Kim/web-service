@@ -26,10 +26,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import Restaurant from '@material-ui/icons/Restaurant';
 
 // Custom Components
 import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
+import BusinessCardAlt from './utils/BusinessCardAlt';
 import CustomButton from './utils/Button';
 
 // Actions
@@ -395,8 +397,7 @@ class BusinessListPage extends Component {
                         </Grid>)
                   : businessList.map(item => (
                       <Grid item xs={4} key={item._id}>
-                        <BusinessCard
-                          key={item._id}
+                        <BusinessCardAlt
                           bid={item._id}
                           title={item.krName}
                           enName={item.enName}

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import Img from 'react-image';
 import qs from 'querystring';
+import classNames from 'classnames';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -46,20 +47,20 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
-import LinkContainer from '../utils/LinkContainer';
-import Avatar from '../utils/Avatar';
-import LoginDialog from '../utils/LoginDialog';
-import MessageContent from '../utils/MessageContent';
-import ProperName from '../utils/ProperName';
-import getElapsedTime from '../../helpers/ElapsedTime';
-import CustomButton from '../utils/Button';
+import Avatar from 'js/components/utils/Avatar';
+import LoginDialog from 'js/components/utils/LoginDialog';
+import MessageContent from 'js/components/utils/MessageContent';
+import ProperName from 'js/components/utils/ProperName';
+import getElapsedTime from 'js/helpers/ElapsedTime';
+import CustomButton from 'js/components/utils/Button';
+import SearchBar from 'js/components/utils/SearchBar';
 
 // Actions
-import { logout } from '../../actions/user.actions';
-import { openLoginDialog } from '../../actions/app.actions';
-import { getNotification } from '../../actions/notification.actions';
+import { logout } from 'js/actions/user.actions';
+import { openLoginDialog } from 'js/actions/app.actions';
+import { getNotification } from 'js/actions/notification.actions';
 
-import Logo from '../../../img/logo.png';
+import Logo from 'img/logo.png';
 
 const styles = theme => ({
   "root": {
@@ -67,17 +68,20 @@ const styles = theme => ({
   },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
-    "backgroundColor": 'gold'
+    backgroundColor: 'gold',
+  },
+  "transparentAppBar": {
+    backgroundColor: 'transparent',
+    boxShadow: 'unset',
   },
   "flex": {
-    "flex": 1,
+    flex: 1,
   },
   "logo": {
-    "width": 150,
-    "height": '100%',
-  },
-  "float": {
-    float: 'left',
+    marginRight: theme.spacing.unit * 3,
+    //"width": 230,
+    //"height": '100%',
+    color: 'white',
   },
   "button": {
     marginLeft: theme.spacing.unit,
@@ -95,22 +99,6 @@ const styles = theme => ({
   "avatarName": {
     "marginTop": theme.spacing.unit,
   },
-  "bootstrapRoot": {
-    padding: 0,
-    borderRadius: 4,
-    border: '2px solid #fff',
-  },
-  "bootstrapInput": {
-    fontSize: 20,
-    paddingLeft: theme.spacing.unit * 2,
-    '&:focus': {
-      backgroundColor: theme.palette.common.white,
-    }
-  },
-  "adornmentRoot":{
-    maxHeight: '3em',
-    margin: 0,
-  },
   "popoverContainer": {
     width: 500,
     height: 400,
@@ -120,7 +108,6 @@ const styles = theme => ({
     width: 80,
     marginLeft: theme.spacing.unit * 3,
   },
-
 });
 
 class Header extends Component {
@@ -136,8 +123,6 @@ class Header extends Component {
       "notificationsList": [],
       "categoriesPopoverOpen": false,
     };
-
-
 
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -241,59 +226,25 @@ class Header extends Component {
 
     return (
       <div className={classes.root}>
-        <AppBar position={this.props.position} className={classes.appBar}>
+        <AppBar
+          position={this.props.position}
+          className={this.props.position === 'fixed' ? classes.appBar : classNames(classes.appBar, classes.transparentAppBar)}
+        >
           <Toolbar>
             <div className={classes.flex}>
               <Grid container alignItems="center">
                 <Grid item>
-                  <div style={{
-                      marginRight: 40,
-                    }}
-                  >
+                  <div>
                     <Link to="/">
-                      <Img src={Logo} className={classes.logo} />
+                      {/* <Img src={Logo} className={classes.logo} />*/}
+                      <Typography variant="title" color="inherit" className={classes.logo} >iKoreaTown | Nanjing</Typography>
                     </Link>
                   </div>
-
                 </Grid>
+
                 <Grid item>
-                  <div style={{
-                      width: 400,
-                    }}
-                  >
-                  <form onSubmit={this.handleSearch} >
-                    <FormControl fullWidth>
-                      <Input
-                        classes={{
-                          root: classes.bootstrapRoot,
-                          input: classes.bootstrapInput,
-                        }}
-                        id="search-bar"
-                        type="text"
-                        name="search"
-                        placeholder="Search..."
-                        autoComplete="off"
-                        defaultValue={this.state.search}
-                        disableUnderline
-                        onChange={this.handleChange}
-                        endAdornment={
-                          <InputAdornment position="end" classes={{root: classes.adornmentRoot}}>
-                            <IconButton
-                              disableRipple
-                              aria-label="Toggle password visibility"
-                              onClick={this.handleSearch}
-                              style={{
-                                paddingLeft: 4,
-                                paddingRight: 4,
-                              }}
-                            >
-                              <Search />
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                      />
-                    </FormControl>
-                  </form>
+                  <div>
+                    <SearchBar width={400} />
                   </div>
                 </Grid>
               </Grid>
@@ -316,15 +267,15 @@ class Header extends Component {
               }
             </CustomButton>
 
-            <LinkContainer to="/blog">
-              <CustomButton
-                simple
-                size="lg"
-                color="transparent"
-              >
-                Articles
-              </CustomButton>
-            </LinkContainer>
+            <CustomButton
+              href="/blog"
+              simple
+              size="lg"
+              color="transparent"
+            >
+              Articles
+            </CustomButton>
+
 
             {
               isLoggedIn
@@ -378,19 +329,19 @@ class Header extends Component {
                   <Divider />
 
                   <MenuList>
-                    <LinkContainer to="/setting/account">
+                    <Link to="/setting/account">
                       <MenuItem>
                         <ListItemIcon>
                           <AccountCircle />
                         </ListItemIcon>
                         <ListItemText primary="account" />
                       </MenuItem>
-                    </LinkContainer>
+                    </Link>
                     <MenuItem onClick={this.handleLogout}>
                       <ListItemIcon>
                         <ExitToApp />
                       </ListItemIcon>
-                      <ListItemText primary="logout" />
+                      <ListItemText primary="Sign Out" />
                     </MenuItem>
                   </MenuList>
                 </Drawer>)
@@ -533,6 +484,10 @@ class Header extends Component {
     );
   }
 }
+
+Header.defaultProps = {
+  position: "fixed"
+};
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired,

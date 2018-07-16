@@ -42,15 +42,13 @@ const styles = (theme) => ({
   "media": {
     height: 180,
   },
-  "content": {
-    paddingBottom: '0px !important',
-  },
+
   "chip": {
-    marginRight: theme.spacing.unit,
+    marginLeft: 8,
   },
 });
 
-class BusinessCard extends Component {
+class BusinessCardAlt extends Component {
   constructor(props) {
     super(props);
 
@@ -93,59 +91,41 @@ class BusinessCard extends Component {
     return (
       <div>
         <Card className={classes.card}>
+
+          <CardHeader
+            title={this.props.title}
+            subheader={this.props.category.krName}
+            action={
+              <Tooltip id="favor-icon" title="Add to Favor">
+                <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
+                  {
+                    this.state.isFavor ? <Favorite /> : <FavoriteBorder />
+                  }
+                </IconButton>
+              </Tooltip>
+            }
+          />
           <Link to={"/business/s/" + this.props.enName}>
             <CardMedia className={classes.media}
               image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
             />
             <CardContent className={classes.content}>
-              <Grid container justify="space-between" alignItems="flex-start">
-                <Grid item>
-                  <Grid container spacing={8} alignItems="center">
-                    <Grid item>
-                      <Typography variant="title">{this.props.title}</Typography>
-                    </Grid>
-                    <Grid item>
-                      {
-                        this.props.event
-                          ? <Badge color="rose">이벤트</Badge>
-                          : ''
-                      }
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item>
-                  <Typography variant="subheading">{this.props.category.krName}</Typography>
-                </Grid>
-              </Grid>
-
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
             </CardContent>
           </Link>
 
           <CardActions>
-            <Grid container justify="space-between" alignItems="center" className={classes.actionContainer}>
-              <Grid item>
-                {
-                  this.props.tags.map(item => (
-                    <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
-                      <Badge color="info">
-                        {item.krName}
-                      </Badge>
-                    </Link>
-                  ))
-                }
-              </Grid>
-              <Grid item>
-                <Tooltip id="favor-icon" title="Add to Favor">
-                  <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
-                    {
-                      this.state.isFavor ? <Favorite /> : <FavoriteBorder />
-                    }
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
+            <div className={classes.actionContainer}>
+              {
+                this.props.tags.map(item => (
+                  <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
+                    <Badge color="info">
+                      {item.krName}
+                    </Badge>
+                  </Link>
+                ))
+              }
+            </div>
           </CardActions>
         </Card>
       </div>
@@ -153,14 +133,14 @@ class BusinessCard extends Component {
   }
 }
 
-BusinessCard.defaultProps = {
+BusinessCardAlt.defaultProps = {
   thumbnail: {},
   category: {},
   tags: [],
   myFavors: [],
 };
 
-BusinessCard.propTypes = {
+BusinessCardAlt.propTypes = {
   "classes": PropTypes.object.isRequired,
   "bid": PropTypes.string.isRequired,
   "enName": PropTypes.string.isRequired,
@@ -178,4 +158,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { favorOperation, openLoginDialog })(withStyles(styles)(BusinessCard));
+export default connect(mapStateToProps, { favorOperation, openLoginDialog })(withStyles(styles)(BusinessCardAlt));

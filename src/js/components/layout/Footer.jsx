@@ -12,12 +12,12 @@ const styles = (theme) => ({
   footer: {
     width: 960,
     margin: 'auto',
-
+    paddingBottom: theme.spacing.unit * 3,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-  }
+  },
 });
 
 class Footer extends Component{

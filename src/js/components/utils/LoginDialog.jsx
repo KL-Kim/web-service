@@ -25,7 +25,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Error from '@material-ui/icons/Error';
 
 // Actions
-import { closeLoginDialog } from '../../actions/app.actions';
+import { closeLoginDialog } from 'js/actions/app.actions';
 import { login } from '../../actions/user.actions';
 
 // WebStorage
@@ -186,7 +186,7 @@ class LoginDialog extends Component {
           <div className={classes.container}>
             <Typography variant="display1" align="center">Sign In</Typography>
             <form onSubmit={this.handleLogin}>
-              <FormControl fullWidth >
+              <FormControl fullWidth className={classes.section}>
                 <InputLabel htmlFor="email">Email</InputLabel>
                 <Input
                   type="email"
@@ -209,8 +209,6 @@ class LoginDialog extends Component {
                   }
                 </FormHelperText>
               </FormControl>
-
-              <br />
 
               <FormControl fullWidth className={classes.section}>
                 <InputLabel htmlFor="password">Password</InputLabel>
@@ -235,8 +233,6 @@ class LoginDialog extends Component {
                   }
                 </FormHelperText>
               </FormControl>
-
-              <br />
 
               <div className={classes.section}>
                 <Button

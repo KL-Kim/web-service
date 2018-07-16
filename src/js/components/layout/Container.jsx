@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
+// Custom Components
 import Header from './Header';
 import Footer from './Footer';
 import Alert from '../utils/Alert';
+
+// For dev
 import DevTools from './DevTools';
 
 const styles = theme => ({
@@ -21,7 +24,7 @@ const styles = theme => ({
     height: '100%',
     margin: 'auto',
     marginTop: theme.spacing.unit * 15,
-    marginBottom: theme.spacing.unit * 12,
+    marginBottom: theme.spacing.unit * 15,
   },
 });
 

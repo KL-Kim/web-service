@@ -29,7 +29,8 @@ import ConfirmationDialog from './ConfirmationDialog';
 
 const styles = theme => ({
   "paper": {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 3,
   },
   "buttonContainer": {
     "display": "flex",
