@@ -43,11 +43,9 @@ class UsernamePanel extends Component {
 
     this.state = {
       "expanded": null,
-      "username": {
-        "value": null,
-        "showError": false,
-        "errorMessage": ''
-      },
+      "username": '',
+      "showError": false,
+      "errorMessage": '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -67,50 +65,41 @@ class UsernamePanel extends Component {
 
     if (name === 'username') {
       this.setState({
-        "username": {
-          "value": value,
-          "showError": false,
-          "errorMessage": ''
-        },
+        "username": value,
+        "showError": false,
+        "errorMessage": '',
       });
     }
   }
 
   isValidUsername() {
-    const username = this.state.username.value;
+    const username = this.state.username;
 
     if(_.isEmpty(username)) {
       this.setState({
-        "username": {
-          "value": username,
-          "showError": true,
-          "errorMessage": 'Error: Input a valid username'
-        }
+        "username": username,
+        "showError": true,
+        "errorMessage": 'Error: Input a valid username',
       });
       return false;
     } else if (!isAlphanumeric(username)) {
       this.setState({
-        "username": {
-          "value": username,
-          "showError": true,
-          "errorMessage": 'Error: Only contains a-z, A-Z, 0-9'
-        }
+        "username": username,
+        "showError": true,
+        "errorMessage": 'Error: Only contains a-z, A-Z, 0-9',
       });
-    } else if (!isLength(username, {min: 4, max: 30})) {
+    } else if (!isLength(username, { min: 4, max: 30 })) {
       this.setState({
-        "username": {
-          "value": username,
-          "showError": true,
-          "errorMessage": 'Error: should longer than 3 letters and shorter than 31 letters.'
-        }
+        "username": username,
+        "showError": true,
+        "errorMessage": 'Error: should longer than 3 letters and shorter than 31 letters.',
       });
     } else {
       this.setState({
-        "username": {
-          "value": username,
-          "showError": false,
-          "errorMessage": ''
-        }
+        "username": username,
+        "showError": false,
+        "errorMessage": '',
+
       });
 
       return true;
@@ -123,14 +112,12 @@ class UsernamePanel extends Component {
     const id = this.props.user._id;
 
     if (id && this.isValidUsername()) {
-      this.props.updateUserProfile(id, { "username": this.state.username.value })
+      this.props.updateUserProfile(id, { "username": this.state.username })
         .then(response => {
           if (!_.isEmpty(response) && this.props.error) {
             this.setState({
-              "username": {
-                "showError": true,
-                "errorMessage": this.props.errorMessage,
-              }
+              "showError": true,
+              "errorMessage": this.props.errorMessage,
             });
           }
         })
@@ -145,15 +132,15 @@ class UsernamePanel extends Component {
       <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="body1" className={classes.heading}>Username</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.username) ? '' : user.username}</Typography>
+          <Typography variant="body1" className={classes.secondaryHeading}>{user.username}</Typography>
         </ExpansionPanelSummary>
         <Divider />
         <ExpansionPanelDetails>
           <TextField
             fullWidth
             name="username"
-            error={this.state.username.showError}
-            helperText={this.state.username.showError ? this.state.username.errorMessage : 'Only contains a-z, A-Z, 0-9, should longer than 3 letters and shorter than 31 letters.'}
+            error={this.state.showError}
+            helperText={this.state.showError ? this.state.errorMessage : 'Only contains a-z, A-Z, 0-9, should longer than 3 letters and shorter than 31 letters.'}
             onChange={this.handleChange}
             onBlur={this.isValidUsername}
             label="New username"
@@ -163,7 +150,7 @@ class UsernamePanel extends Component {
           />
         </ExpansionPanelDetails>
         <ExpansionPanelActions>
-          <Button variant="raised" disabled={this.state.username.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
+          <Button variant="raised" disabled={this.state.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
             {isFetching ? (<CircularProgress size={20} />) : 'Update'}
           </Button>
           <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>

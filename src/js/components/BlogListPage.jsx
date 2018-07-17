@@ -19,8 +19,11 @@ import { getPostsList } from '../actions/blog.actions.js';
 
 const styles = theme => ({
   "root": {
-    width: 760,
+    width: 960,
     margin: 'auto',
+  },
+  "section": {
+    marginBottom: theme.spacing.unit * 8
   },
 });
 
@@ -40,7 +43,8 @@ class BlogListPage extends Component {
   componentDidMount() {
     this.props.getPostsList({
       limit: this.state.limit,
-      status: "PUBLISHED",
+      status: 'PUBLISHED',
+      state: 'NORMAL',
     }).then(response => {
       if (response) {
         this.setState({
@@ -58,6 +62,7 @@ class BlogListPage extends Component {
       this.props.getPostsList({
         limit: newCount,
         status: "PUBLISHED",
+        state: 'NORMAL',
       }).then(response => {
         if (response) {
           this.setState({
@@ -75,27 +80,31 @@ class BlogListPage extends Component {
     return (
       <Container>
         <div className={classes.root}>
-          <Typography variant="display1" gutterBottom align="center">Articles</Typography>
-          <Grid container alignContent="center" alignItems="center" justify="center">
+          <Typography variant="display2" gutterBottom align="center">Articles</Typography>
+          <br />
+
+          <Grid container justify="center">
             {
               _.isEmpty(list) ? ''
                 : list.map((item, index) =>
                   item.state === 'NORMAL'
-                    ? (<Grid item xs={12} key={item._id}>
-                        <PostPanel
-                          rtl={(index % 2) ? true : false}
-                          post={item}
-                        />
-                    </Grid>)
-                    : ''
+                    ? (
+                        <Grid item xs={12} key={item._id} className={classes.section}>
+                          <PostPanel
+                            rtl={(index % 2) ? true : false}
+                            post={item}
+                          />
+                        </Grid>
+                      )
+                    : null
                 )
             }
             <Grid item>
-            {
-              this.state.hasMore
-                ? <Button variant="raised" color="primary" onClick={this.loadMore}>Read more</Button>
-                : <Typography variant="body1" align="center" gutterBottom>--- No more posts ---</Typography>
-            }
+              {
+                this.state.hasMore
+                  ? <Button variant="raised" color="primary" onClick={this.loadMore}>Load more</Button>
+                  : <Typography variant="caption" align="center">--- No more posts ---</Typography>
+              }
             </Grid>
           </Grid>
         </div>

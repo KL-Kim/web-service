@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 // Material UI Components
@@ -18,94 +19,89 @@ import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import Favorite from '@material-ui/icons/Favorite';
 import Notifications from '@material-ui/icons/Notifications';
 
-import LinkContainer from '../utils/LinkContainer';
-
 const styles = theme => ({
-  // drawerHeader: theme.mixins.toolbar,
   "drawerPaper": {
     width: 260,
-    position: 'fixed',
     marginTop: theme.spacing.unit * 8,
   },
   'selected': {
     color: theme.palette.primary.main,
-    fontWeight: 600,
+    fontWeight: 550,
   }
 });
 
 class Sidebar extends Component {
   render() {
-    const { classes, user, match } = this.props;
-    const role = _.isEmpty(user) ? '' : user.role;
+    const { classes, match } = this.props;
 
     return (
-      <div>
-          <Drawer variant="permanent"
-            open
-            classes={{
-              paper: classes.drawerPaper
-            }}>
-            <MenuList>
-              <LinkContainer to="/setting/account">
-                <MenuItem selected={match.path === "/setting/account"} >
-                  <ListItemIcon>
-                    <AccountCircle />
-                  </ListItemIcon>
-                  <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+      <aside>
+        <Drawer variant="permanent"
+          open
+          classes={{
+            paper: classes.drawerPaper
+          }}>
+          <MenuList>
+            <Link to="/setting/account">
+              <MenuItem selected={match.path === "/setting/account"} >
+                <ListItemIcon>
+                  <AccountCircle />
+                </ListItemIcon>
+                <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
 
-              <LinkContainer to="/setting/review">
-                <MenuItem selected={match.path === "/setting/review"}>
-                  <ListItemIcon>
-                    <RateReview />
-                  </ListItemIcon>
-                  <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+            <Link to="/setting/review">
+              <MenuItem selected={match.path === "/setting/review"}>
+                <ListItemIcon>
+                  <RateReview />
+                </ListItemIcon>
+                <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
 
-              <LinkContainer to="/setting/favor">
-                <MenuItem selected={match.path === "/setting/favor"}>
-                  <ListItemIcon>
-                    <Favorite />
-                  </ListItemIcon>
-                  <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+            <Link to="/setting/favor">
+              <MenuItem selected={match.path === "/setting/favor"}>
+                <ListItemIcon>
+                  <Favorite />
+                </ListItemIcon>
+                <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
 
-              <LinkContainer to="/setting/notification">
-                <MenuItem selected={match.path === "/setting/notification"}>
-                  <ListItemIcon>
-                    <Notifications />
-                  </ListItemIcon>
-                  <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+            <Link to="/setting/notification">
+              <MenuItem selected={match.path === "/setting/notification"}>
+                <ListItemIcon>
+                  <Notifications />
+                </ListItemIcon>
+                <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
 
-              <LinkContainer to="/setting/comment">
-                <MenuItem selected={match.path === "/setting/comment"}>
-                  <ListItemIcon>
-                    <QuestionAnswer />
-                  </ListItemIcon>
-                  <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
-                </MenuItem>
-              </LinkContainer>
+            <Link to="/setting/comment">
+              <MenuItem selected={match.path === "/setting/comment"}>
+                <ListItemIcon>
+                  <QuestionAnswer />
+                </ListItemIcon>
+                <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
 
-              {
-                (role === 'writer')
-                  ? (<LinkContainer to="/setting/post">
-                      <MenuItem selected={match.path === "/setting/post"}>
-                        <ListItemIcon>
-                          <Book />
-                        </ListItemIcon>
-                        <ListItemText primary="Posts" classes={match.path === "/setting/post" ? { primary: classes.selected } : {}} />
-                      </MenuItem>
-                    </LinkContainer>)
-                  : ''
-              }
-            </MenuList>
-          </Drawer>
-      </div>
+            {
+              this.props.role === 'writer'
+                ? (<Link to="/setting/post">
+                    <MenuItem selected={match.path === "/setting/post"}>
+                      <ListItemIcon>
+                        <Book />
+                      </ListItemIcon>
+                      <ListItemText primary="Posts" classes={match.path === "/setting/post" ? { primary: classes.selected } : {}} />
+                    </MenuItem>
+                  </Link>)
+                : null
+            }
+          </MenuList>
+        </Drawer>
+      </aside>
     );
   }
 }
@@ -113,7 +109,7 @@ class Sidebar extends Component {
 Sidebar.propTypes = {
   "match": PropTypes.object.isRequired,
   "classes": PropTypes.object.isRequired,
-  "user": PropTypes.object,
+  "role": PropTypes.string,
 }
 
 export default withStyles(styles)(Sidebar);

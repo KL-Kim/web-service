@@ -68,7 +68,7 @@ const styles = theme => ({
   },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: 'gold',
+    backgroundColor: theme.palette.primary.main,
   },
   "transparentAppBar": {
     backgroundColor: 'transparent',
@@ -88,7 +88,7 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
   },
   "drawerPaper": {
-    "width": 300,
+    "width": 260,
   },
   "account": {
     "margin": "0 auto",
@@ -334,7 +334,7 @@ class Header extends Component {
                         <ListItemIcon>
                           <AccountCircle />
                         </ListItemIcon>
-                        <ListItemText primary="account" />
+                        <ListItemText primary="Account" />
                       </MenuItem>
                     </Link>
                     <MenuItem onClick={this.handleLogout}>

@@ -5,7 +5,11 @@ const calcauteElapsedTime = (time) => {
   const timestamp  = new Date(time);
   const diff = now - timestamp;
 
-  return ms(diff) + ' ago';
+  if (diff < 60 * 1000) {
+    return '1m ago'
+  } else {
+    return ms(diff) + ' ago';
+  }
 }
 
 export default calcauteElapsedTime;

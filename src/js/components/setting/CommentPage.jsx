@@ -94,49 +94,47 @@ class CommentsPage extends Component {
     return (
       <SettingContainer>
         <div>
-          <Grid container justify="center">
-            <Grid item xs={12}>
-              <Typography variant="display1">Comments</Typography>
+          <Typography variant="display1" align="center">Comments</Typography>
+          <br />
+
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.state.hasMore}
+            loader={<div className="loader" key={0}>Loading ...</div>}
+          >
+            <Grid container justify="center">
+              {
+                _.isEmpty(comments)
+                  ? null
+                  : comments.map(comment => (
+                    <Grid item xs={12} key={comment._id}>
+                      <CommentPanel
+                        showDelete
+                        commentId={comment._id}
+                        postId={comment.postId._id}
+                        postTitle={comment.postId.title}
+                        parentComment={comment.parentId}
+                        replyToUser={comment.replyToUser}
+                        status={comment.status}
+                        content={comment.content}
+                        owner={comment.userId}
+                        isLoggedIn={this.props.isLoggedIn}
+                        user={this.props.user}
+                        isOwn={this.props.user && comment.userId._id === this.props.user._id}
+                        upvoteCount={comment.upvote.length}
+                        downvoteCount={comment.downvote.length}
+                        createdAt={comment.createdAt}
+                        addNewComment={this.props.addNewComment}
+                        getNewComments={this.getNewComments}
+                        voteComment={this.props.voteComment}
+                        deleteComment={this.props.deleteComment}
+                      />
+                    </Grid>
+                  ))
+              }
             </Grid>
-          </Grid>
-
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadMore}
-              hasMore={this.state.hasMore}
-              loader={<div className="loader" key={0}>Loading ...</div>}
-            >
-              <Grid container justify="center">
-                {
-                  _.isEmpty(comments) ? ''
-                    : comments.map((comment, index) => (
-                      <Grid item xs={8} key={index}>
-                        <CommentPanel
-                          showDelete
-                          commentId={comment._id}
-                          postId={comment.postId._id}
-                          postTitle={comment.postId.title}
-                          parentComment={comment.parentId}
-                          replyToUser={comment.replyToUser}
-                          status={comment.status}
-                          content={comment.content}
-                          owner={comment.userId}
-                          user={this.props.user}
-                          isOwn={this.props.user && comment.userId._id === this.props.user._id}
-                          upvote={comment.upvote.length}
-                          downvote={comment.downvote.length}
-                          createdAt={comment.createdAt}
-                          addNewComment={this.props.addNewComment}
-                          getNewComments={this.getNewComments}
-                          voteComment={this.props.voteComment}
-                          deleteComment={this.props.deleteComment}
-                        />
-                      </Grid>
-                    ))
-                }
-              </Grid>
-            </InfiniteScroll>
-
+          </InfiniteScroll>
         </div>
       </SettingContainer>
     );
@@ -149,6 +147,7 @@ CommentsPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "user": state.userReducer.user,
     "comments": state.commentReducer.comments,
     "totalCount": state.commentReducer.totalCount,

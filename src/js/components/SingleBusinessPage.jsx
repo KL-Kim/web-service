@@ -795,7 +795,7 @@ class SingleBusinessPage extends Component {
                               serviceGood={review.serviceGood}
                               envGood={review.envGood}
                               comeback={review.comeback}
-                              upvoteNum={review.upvote.length}
+                              upvoteCount={review.upvote.length}
                               handleVote={this.props.voteReview}
                               openLoginDialog={this.props.openLoginDialog}
                             />

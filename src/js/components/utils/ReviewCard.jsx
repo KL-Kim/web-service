@@ -15,12 +15,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 
-// Material UI Icons
-import ThumbUp from '@material-ui/icons/ThumbUp';
-
 // Custom Components
 import ConfirmationDialog from './ConfirmationDialog';
 import ProperName from './ProperName';
+import ThumbButton from './ThumbButton';
 
 // Mock Image
 import image from 'css/ikt-icon.gif';
@@ -41,13 +39,13 @@ class ReviewCard extends Component {
 
     this.state = {
       "deleteDialogOpen": false,
-      "upvoteNum": props.upvoteNum,
+      "upvoteCount": props.upvoteCount,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
-    this.hanldeUpvote = this.hanldeUpvote.bind(this);
+    this.handleUpvote = this.handleUpvote.bind(this);
   }
 
   handleDeleteDialogOpen() {
@@ -85,7 +83,7 @@ class ReviewCard extends Component {
     }
   }
 
-  hanldeUpvote() {
+  handleUpvote() {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
@@ -101,7 +99,7 @@ class ReviewCard extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            "upvoteNum": response.review.upvote.length,
+            "upvoteCount": response.review.upvote.length,
           });
         }
       });
@@ -114,9 +112,7 @@ class ReviewCard extends Component {
     return (
       <div>
         <Card>
-          <CardMedia className={classes.media}
-            image={image}
-          />
+          <CardMedia className={classes.media} image={image} />
           <CardContent>
             {
               this.props.showBusinessName
@@ -125,7 +121,7 @@ class ReviewCard extends Component {
                       {this.props.business.krName}
                     </Typography>
                   </Link>
-                : ''
+                : null
             }
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
 
@@ -137,7 +133,7 @@ class ReviewCard extends Component {
                       <ProperName user={this.props.owner} />
                     </strong>
                   </Typography>
-                : ''
+                : null
             }
             <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
 
@@ -158,31 +154,31 @@ class ReviewCard extends Component {
           </CardContent>
           <CardActions>
 
-            <div>
-              <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
-                <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
-              </IconButton>
-              {this.state.upvoteNum}
-            </div>
+            <ThumbButton
+              type="up"
+              disabled={this.props.isOwn}
+              count={this.state.upvoteCount}
+              handleSubmit={this.handleUpvote}
+            />
 
             {
               (this.props.isOwn && !this.props.showUser)
                 ? <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
-                : ''
+                : null
             }
           </CardActions>
         </Card>
         <div>
         {
           this.props.isOwn
-            ? (<ConfirmationDialog
+            ? <ConfirmationDialog
                   open={this.state.deleteDialogOpen}
                   title="Warning"
                   content="Are you sure to delete the review?"
                   operation={this.handleDelete}
                   handleClose={this.handleDeleteDialogClose}
-                />)
-            : <div />
+                />
+            : null
         }
         </div>
       </div>
@@ -205,7 +201,7 @@ ReviewCard.propTypes = {
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
-  "upvoteNum": PropTypes.number,
+  "upvoteCount": PropTypes.number,
   "handleDelete": PropTypes.func,
   "getNewReviews": PropTypes.func,
 };

@@ -16,13 +16,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardHeader from '@material-ui/core/CardHeader';
 
-// Material UI Icons
-import ThumbUp from '@material-ui/icons/ThumbUp';
-
 // Custom Components
 import ConfirmationDialog from './ConfirmationDialog';
 import ProperName from './ProperName';
 import Avatar from './Avatar';
+import ThumbButton from './ThumbButton';
 
 // Mock Image
 import image from 'css/ikt-icon.gif';
@@ -30,9 +28,6 @@ import image from 'css/ikt-icon.gif';
 const styles = theme => ({
   "media": {
     height: 180,
-  },
-  "iconNum": {
-    fontSize: '1rem',
   },
   "chip":{
     marginRight: theme.spacing.unit,
@@ -46,13 +41,13 @@ class ReviewCardAlt extends Component {
 
     this.state = {
       "deleteDialogOpen": false,
-      "upvoteNum": props.upvoteNum,
+      "upvoteCount": props.upvoteCount,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
-    this.hanldeUpvote = this.hanldeUpvote.bind(this);
+    this.handleUpvote = this.handleUpvote.bind(this);
   }
 
   handleDeleteDialogOpen() {
@@ -90,27 +85,29 @@ class ReviewCardAlt extends Component {
     }
   }
 
-  hanldeUpvote() {
+  handleUpvote() {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
       return;
     }
 
-    if (!_.isUndefined(this.props.handleVote) && !_.isEmpty(this.props.user) && this.props.owner._id !== this.props.user._id) {
-      this.props.handleVote(this.props.id, {
-        uid: this.props.user._id,
-        businessName: this.props.business.krName + '/' + this.props.business.cnName,
-        businessSlug: this.props.business.enName,
-        vote: 'upvote',
-      }).then(response => {
-        if (response) {
-          this.setState({
-            "upvoteNum": response.review.upvote.length,
-          });
-        }
-      });
-    }
+    if (_.isUndefined(this.props.handleVote) || _.isEmpty(this.props.user) || this.props.owner._id === this.props.user._id)
+      return ;
+
+
+    this.props.handleVote(this.props.id, {
+      uid: this.props.user._id,
+      businessName: this.props.business.krName + '/' + this.props.business.cnName,
+      businessSlug: this.props.business.enName,
+      vote: 'upvote',
+    }).then(response => {
+      if (response) {
+        this.setState({
+          "upvoteCount": response.review.upvote.length,
+        });
+      }
+    });
   }
 
   render() {
@@ -122,16 +119,15 @@ class ReviewCardAlt extends Component {
           <CardHeader
             avatar={<Avatar user={this.props.owner} />}
             title={<ProperName user={this.props.owner} />}
-            action={
-              <div>
-                <IconButton onClick={this.hanldeUpvote} disabled={this.props.isOwn}>
-                  <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} style={{ marginRight: 8 }}/>
-                  <span className={classes.iconNum}>{this.state.upvoteNum}</span>
-                </IconButton>
-              </div>
-            }
+            action={<ThumbButton
+                      type="up"
+                      disabled={this.props.isOwn}
+                      count={this.state.upvoteCount}
+                      handleSubmit={this.handleUpvote}
+                    />}
           />
-          <CardMedia className={classes.media}
+          <CardMedia
+            className={classes.media}
             image={image}
           />
           <CardContent>
@@ -205,7 +201,7 @@ ReviewCardAlt.propTypes = {
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
-  "upvoteNum": PropTypes.number,
+  "upvoteCount": PropTypes.number,
   "handleDelete": PropTypes.func,
   "getNewReviews": PropTypes.func,
 };

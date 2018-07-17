@@ -24,17 +24,16 @@ import ThumbDown from '@material-ui/icons/ThumbDown';
 // Custom Components
 import Avatar from './Avatar';
 import ProperName from './ProperName';
-import ElapsedTime from '../../helpers/ElapsedTime';
+import ElapsedTime from 'js/helpers/ElapsedTime';
 import ConfirmationDialog from './ConfirmationDialog';
+import ThumbButton from './ThumbButton';
 
 const styles = theme => ({
   "paper": {
     padding: theme.spacing.unit * 4,
-    marginBottom: theme.spacing.unit * 3,
   },
-  "buttonContainer": {
-    "display": "flex",
-    "justifyContent": "flex-end",
+  "iconButton": {
+    marginRight: theme.spacing.unit
   },
 });
 
@@ -46,8 +45,8 @@ class CommentPanel extends Component {
       "replyDialogOpen": false,
       "deleteDialogOpen": false,
       "content": '',
-      "upvoteNum": props.upvote,
-      "downvoteNum": props.downvote,
+      "upvoteCount": props.upvoteCount,
+      "downvoteCount": props.downvoteCount,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -57,6 +56,7 @@ class CommentPanel extends Component {
     this.handleCloseDeleteDialog = this.handleCloseDeleteDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.handleDeleteComment = this.handleDeleteComment.bind(this);
+    this.handleVoteComment = this.handleVoteComment.bind(this);
   }
 
   handleChange(e) {
@@ -150,8 +150,8 @@ class CommentPanel extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            upvoteNum: response.comment.upvote.length,
-            downvoteNum: response.comment.downvote.length,
+            upvoteCount: response.comment.upvote.length,
+            downvoteCount: response.comment.downvote.length,
           })
         }
       });
@@ -190,11 +190,11 @@ class CommentPanel extends Component {
               <Avatar user={this.props.owner} type="SMALL" />
             </Grid>
             <Grid item xs={10}>
-              <Typography variant="title" gutterBottom>
+              <Typography variant="subheading" gutterBottom>
                 <strong>
                   <ProperName user={this.props.owner} />
                 </strong>
-                <span> {ElapsedTime(this.props.createdAt)}</span>
+                <span> - {ElapsedTime(this.props.createdAt)}</span>
               </Typography>
               <Typography variant="body1" gutterBottom>
                 {
@@ -218,26 +218,20 @@ class CommentPanel extends Component {
               }
               {
                 this.props.status === 'NORMAL'
-                  ? (<Grid container alignItems="center">
-                      <Grid item xs={6}>
-                        <span>
-                          <IconButton disabled={this.props.isOwn} onClick={this.handleVoteComment("UPVOTE")}>
-                            <ThumbUp color={this.props.isOwn ? "inherit" : "primary"} />
-                          </IconButton>
-                          {this.state.upvoteNum}
+                  ? (<Grid container justify="space-between" alignItems="center">
+                      <Grid item>
+                        <span className={classes.iconButton}>
+                          <ThumbButton type="up" disabled={this.props.isOwn} count={this.state.upvoteCount} handleSubmit={this.handleVoteComment("UPVOTE")} />
                         </span>
-                        <span>
-                          <IconButton disabled={this.props.isOwn} onClick={this.handleVoteComment("DOWNVOTE")}>
-                            <ThumbDown color={this.props.isOwn ? "inherit" : "action"}/>
-                          </IconButton>
-                          {this.state.downvoteNum}
+                        <span className={classes.iconButton}>
+                          <ThumbButton type="down" disabled={this.props.isOwn} count={this.state.downvoteCount} handleSubmit={this.handleVoteComment("DOWNVOTE")} />
                         </span>
                       </Grid>
-                      <Grid item xs={6}>
-                        <div className={classes.buttonContainer}>
+                      <Grid item>
+                        <div>
                           {
                             this.props.isOwn
-                              ? ''
+                              ? null
                               : (<Button color="primary" onClick={this.handleOpenReplyDialog}>
                                   Reply
                                 </Button>)
@@ -247,7 +241,7 @@ class CommentPanel extends Component {
                               ? (<Button color="secondary" onClick={this.handleOpenDeleteDialog}>
                                 Delete
                               </Button>)
-                              : ''
+                              : null
                           }
                         </div>
                       </Grid>
@@ -260,7 +254,7 @@ class CommentPanel extends Component {
         <div>
           {
             this.props.isOwn
-              ? (<div>
+              ? (
                   <ConfirmationDialog
                     open={this.state.deleteDialogOpen}
                     title="Warning"
@@ -268,39 +262,41 @@ class CommentPanel extends Component {
                     operation={this.handleDeleteComment}
                     handleClose={this.handleCloseDeleteDialog}
                   />
-                </div>)
-              : (<Dialog fullWidth
-                open={this.state.replyDialogOpen}
-                onClose={this.handleCloseReplyDialog}
-                aria-labelledby="reply-dialog-title"
-                aria-describedby="reply-dialog-description"
-              >
-                <DialogTitle id="reply-dialog-title">
-                  Reply to <ProperName user={this.props.owner} />
-                </DialogTitle>
-                <DialogContent id="reply-dialog-description">
-                  <FormControl fullWidth required>
-                    <InputLabel htmlFor="content">Content</InputLabel>
-                    <Input
-                      type="text"
-                      id="content"
-                      multiline
-                      rows={10}
-                      name="content"
-                      value={this.state.content}
-                      onChange={this.handleChange}
-                    />
-                  </FormControl>
-                </DialogContent>
-                <DialogActions>
-                  <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                    Save
-                  </Button>
-                  <Button color="primary" onClick={this.handleCloseReplyDialog}>
-                    Cancel
-                  </Button>
-                </DialogActions>
-              </Dialog>)
+                )
+              : (
+                  <Dialog fullWidth
+                    open={this.state.replyDialogOpen}
+                    onClose={this.handleCloseReplyDialog}
+                    aria-labelledby="reply-dialog-title"
+                    aria-describedby="reply-dialog-description"
+                  >
+                    <DialogTitle id="reply-dialog-title">
+                      Reply to <ProperName user={this.props.owner} />
+                    </DialogTitle>
+                    <DialogContent id="reply-dialog-description">
+                      <FormControl fullWidth required>
+                        <InputLabel htmlFor="content">Content</InputLabel>
+                        <Input
+                          type="text"
+                          id="content"
+                          multiline
+                          rows={10}
+                          name="content"
+                          value={this.state.content}
+                          onChange={this.handleChange}
+                        />
+                      </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                        Save
+                      </Button>
+                      <Button color="primary" onClick={this.handleCloseReplyDialog}>
+                        Cancel
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                )
           }
         </div>
       </div>
@@ -316,12 +312,13 @@ CommentPanel.propTypes = {
   "status": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
   "owner": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
   "user": PropTypes.object.isRequired,
   "isOwn": PropTypes.bool.isRequired,
   "parentComment": PropTypes.object,
   "replyToUser": PropTypes.object,
-  "upvote": PropTypes.number.isRequired,
-  "downvote": PropTypes.number.isRequired,
+  "upvoteCount": PropTypes.number.isRequired,
+  "downvoteCount": PropTypes.number.isRequired,
   "createdAt": PropTypes.string.isRequired,
   "addNewComment": PropTypes.func,
   "getNewComments": PropTypes.func,

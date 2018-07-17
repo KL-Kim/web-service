@@ -8,56 +8,57 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 // Custom Components
 import ProperName from './ProperName';
-import ElapsedTime from '../../helpers/ElapsedTime';
+import ElapsedTime from 'js/helpers/ElapsedTime';
 
 // Mock image
-import image from '../../../css/ikt-icon.gif';
+import image from 'img/background_1.jpg';
 
 const styles = theme => ({
   "thumbnail": {
     width: '100%',
-    height: 'auto',
+    borderRadius: "6px",
+    boxShadow: theme.shadows[5]
+  },
+  "wrapper": {
+    marginBottom: theme.spacing.unit * 2,
+    width: 768,
+    margin: 'auto',
   },
   "paper": {
-    padding: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 2,
-  },
+    padding: theme.spacing.unit * 4,
+    height: 300,
+  }
 });
 
 class PostPanel extends Component {
   render() {
     const { classes, post } = this.props;
 
-    const thumbnail = (
-      <Grid item xs={4}>
-        <Img src={image} className={classes.thumbnail}/>
-      </Grid>
-    );
-
-    const content = (
-      <Grid item xs={8}>
-        <Typography variant="display1" gutterBottom>{post.title}</Typography>
-        <Typography variant="body1" gutterBottom>{post.summary}</Typography>
-        <Typography variant="body1" gutterBottom>
-          By <strong><ProperName  user={post.authorId} /></strong>
-        </Typography>
-        <Typography variant="body1" gutterBottom>Creadted at: {ElapsedTime(post.createdAt)}</Typography>
-      </Grid>
-    );
-
     return (
-      <div>
-        <Link to={"/post/s/" + this.props.post._id}>
-          <Paper className={classes.paper}>
-            <Grid container spacing={24}>
-              {this.props.rtl ? content : thumbnail}
-              {this.props.rtl ? thumbnail : content}
-            </Grid>
-          </Paper>
-        </Link>
+      <div className={classes.wrapper}>
+        <Grid container spacing={24} justify="center">
+          <Grid item xs={12}>
+              <Img src={image} className={classes.thumbnail} />
+          </Grid>
+
+          <Grid item xs={12}>
+              <Typography variant="title" align="center">{post.title}</Typography>
+              <Typography variant="body2" align="center" gutterBottom>
+                <strong><ProperName  user={post.authorId} /></strong>
+              </Typography>
+              <Typography variant="body1" align="center" gutterBottom>{post.summary}</Typography>
+              <Grid container justify="center">
+                <Grid item>
+                  <Button href={"/post/s/" + this.props.post._id} color="primary">Read More</Button>
+                </Grid>
+              </Grid>
+
+          </Grid>
+        </Grid>
       </div>
     );
   }

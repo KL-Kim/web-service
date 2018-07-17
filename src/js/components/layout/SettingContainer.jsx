@@ -12,8 +12,8 @@ import Alert from '../utils/Alert';
 import DevTools from './DevTools';
 
 // Actions
-import { logout } from '../../actions/user.actions';
-import { getNotification } from '../../actions/notification.actions';
+import { logout } from 'js/actions/user.actions';
+import { getNotification } from 'js/actions/notification.actions';
 
 const styles = (theme) => ({
   "root": {
@@ -36,7 +36,7 @@ const styles = (theme) => ({
     marginLeft: 260,
     marginBottom: 48
   },
-  "content": {
+  "container": {
     width: 960,
     margin: 'auto',
     paddingTop: theme.spacing.unit * 5,
@@ -51,23 +51,15 @@ class SettingContainer extends Component {
   }
 
   render() {
-    const { classes, isLoggedIn, user, logout, updatedAt, newNotificationCount } = this.props;
+    const { classes, user } = this.props;
 
     return (
       <div className={classes.root}>
-        <Header
-          user={user}
-          isLoggedIn={isLoggedIn}
-          logout={logout}
-          updatedAt={updatedAt}
-          position={"fixed"}
-          newNotificationCount={newNotificationCount}
-          getNotification={this.props.getNotification}
-        />
-        <Sidebar user={user} match={this.props.match}/>
+        <Header position={"fixed"} />
+        <Sidebar role={user.role} match={this.props.match} />
         <div className={classes.appFrame}>
           <main className={classes.main}>
-            <div className={classes.content}>
+            <div className={classes.container}>
               {this.props.children}
             </div>
             <SettingFooter />
@@ -81,23 +73,17 @@ class SettingContainer extends Component {
 }
 
 SettingContainer.propTypes = {
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
-  user: PropTypes.object,
-  updatedAt: PropTypes.number,
+  user: PropTypes.object.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
-  logout: PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
-    "updatedAt": state.userReducer.updatedAt,
     "isLoggedIn": state.userReducer.isLoggedIn,
-    "newNotificationCount": state.notificationReducer.unreadCount,
   };
 };
 
-export default withRouter(connect(mapStateToProps, { logout, getNotification })(withStyles(styles)(SettingContainer)));
+export default withRouter(connect(mapStateToProps, {})(withStyles(styles)(SettingContainer)));

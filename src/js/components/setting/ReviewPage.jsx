@@ -164,7 +164,7 @@ class ReviewPage extends Component {
                               isLoggedIn={this.props.isLoggedIn}
                               content={review.content}
                               rating={review.rating}
-                              upvoteNum={review.upvote.length}
+                              upvoteCount={review.upvote.length}
                               serviceGood={review.serviceGood}
                               envGood={review.envGood}
                               comeback={review.comeback}

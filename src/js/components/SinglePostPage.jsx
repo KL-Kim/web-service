@@ -37,39 +37,47 @@ import Container from './layout/Container';
 import CommentPanel from './utils/CommentPanel';
 import ReportDialog from './utils/ReportDialog';
 import ProperName from './utils/ProperName';
-import ElapsedTime from '../helpers/ElapsedTime';
+import ElapsedTime from 'js/helpers/ElapsedTime';
+import ThumbButton from './utils/ThumbButton';
 
 // Actions
-import { getSinglePost, votePost, reportPost } from '../actions/blog.actions';
+import { getSinglePost, votePost, reportPost } from 'js/actions/blog.actions';
 import { getComments,
   addNewComment,
   voteComment,
   deleteComment,
   clearCommentsList,
-} from '../actions/comment.actions';
-import { openLoginDialog } from '../actions/app.actions';
+} from 'js/actions/comment.actions';
+import { openLoginDialog } from 'js/actions/app.actions';
 
 // Mock image
-import image from '../../css/ikt-icon.gif';
+import image from 'img/background_1.jpg';
 
 const styles = theme => ({
   "root": {
     width: 760,
     margin: 'auto',
   },
+  "section": {
+    marginBottom: theme.spacing.unit * 3,
+  },
   "paper": {
-    padding: theme.spacing.unit * 5,
+    padding: theme.spacing.unit * 4,
   },
   "rightIcon": {
     marginLeft: theme.spacing.unit,
   },
   "image": {
     width: '100%',
-    height: 400,
+    borderRadius: "6px",
+    boxShadow: "0 5px 15px -8px rgba(0, 0, 0, 0.24), 0 8px 10px -5px rgba(0, 0, 0, 0.2)"
   },
   "iconButton": {
     marginRight: theme.spacing.unit,
   },
+  "itemWrapper": {
+      marginBottom: theme.spacing.unit * 2,
+  }
 });
 
 class SinglePostPage extends Component {
@@ -323,37 +331,28 @@ class SinglePostPage extends Component {
     return (
       <Container>
         <div className={classes.root}>
-          <Grid container justify="center" style={{ marginBottom: 80 }}>
-            <Grid item xs={12}>
-              <Typography variant="display3" align="center" gutterBottom>{post.title}</Typography>
+          <Grid container justify="center">
+            <Grid item xs={12} className={classes.section}>
+              <Typography variant="display2" align="center" gutterBottom>{post.title}</Typography>
               <Typography variant="title" align="center">
                 By <strong><ProperName  user={post.authorId} /></strong>
               </Typography>
-              <Typography variant="caption" align="center" gutterBottom>{ElapsedTime(post.createdAt)}</Typography>
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={12} className={classes.section}>
               <Img src={image} className={classes.image} />
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={12} className={classes.section}>
               <Paper className={classes.paper}>
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
                   <span className={classes.iconButton}>
-                    <IconButton
-                      color="primary"
-                      onClick={this.handleVote("UPVOTE")}>
-                      <ThumbUp />
-                    </IconButton>
-                    {_.isEmpty(post.upvote) ? 0 :post.upvote.length}
+                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVote("UPVOTE")} />
                   </span>
 
                   <span className={classes.iconButton}>
-                    <IconButton
-                      color="default"
-                      onClick={this.handleVote("DOWNVOTE")}>
-                      <ThumbDown />
-                    </IconButton>
-                    {_.isEmpty(post.downvote) ? 0 :post.downvote.length}
+                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVote("DOWNVOTE")} />
                   </span>
 
                   <span>
@@ -368,15 +367,14 @@ class SinglePostPage extends Component {
                   </span>
                 </div>
               </Paper>
-
             </Grid>
           </Grid>
 
-          <Grid container justify="center" style={{ marginBottom: 8 }}>
+          <Grid container justify="center">
             <Grid item xs={12}>
               <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} className={classes.itemWrapper}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
                   <Button
@@ -395,7 +393,7 @@ class SinglePostPage extends Component {
                 </Grid>
                 <Grid item>
                   <Button variant="raised" color="primary" onClick={this.handleOpenWriteCommentDialog}>
-                    Write comment
+                    Write Comment
                   </Button>
                 </Grid>
               </Grid>
@@ -414,7 +412,7 @@ class SinglePostPage extends Component {
               {
                 _.isEmpty(comments) ? ''
                   : comments.map(comment => (
-                    <Grid item xs={12} key={comment._id}>
+                    <Grid item xs={12} key={comment._id} className={classes.itemWrapper}>
                       <CommentPanel
                         commentId={comment._id}
                         postId={this.state.id}
@@ -424,10 +422,11 @@ class SinglePostPage extends Component {
                         status={comment.status}
                         content={comment.content}
                         owner={comment.userId}
+                        isLoggedIn={this.props.isLoggedIn}
                         user={this.props.user}
                         isOwn={comment.userId._id === this.props.user._id}
-                        upvote={comment.upvote.length}
-                        downvote={comment.downvote.length}
+                        upvoteCount={comment.upvote.length}
+                        downvoteCount={comment.downvote.length}
                         createdAt={comment.createdAt}
                         addNewComment={this.props.addNewComment}
                         getNewComments={this.getNewComments}

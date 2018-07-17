@@ -24,7 +24,7 @@ const blogServiceUri = {
  * @property {String} uid - Author user id
  * @property {String} status - Post status
  */
-export const fetchPostsList = ({ skip, limit, search, uid, status } = {}) => {
+export const fetchPostsList = ({ skip, limit, search, uid, status, state } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -52,6 +52,10 @@ export const fetchPostsList = ({ skip, limit, search, uid, status } = {}) => {
 
   if (status) {
     url = url + '&status=' + status;
+  }
+
+  if (state) {
+    url = url + '&state=' + state;
   }
 
   return fetch(url, options)

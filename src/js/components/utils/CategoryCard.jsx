@@ -21,9 +21,6 @@ const styles = theme => ({
     minWidth: 200,
     width: '100%',
     position: 'relative',
-    '&:hover': {
-      bottom: 3,
-    },
   },
   image: {
     position: 'relative',
@@ -60,6 +57,7 @@ const styles = theme => ({
     right: 0,
     top: 0,
     bottom: 0,
+    filter: 'blur(2px)',
     backgroundSize: 'cover',
     backgroundPosition: 'center 50%',
   },
@@ -76,7 +74,7 @@ const styles = theme => ({
   imageTitle: {
     position: 'relative',
     padding: theme.spacing.unit * 2,
-    fontSize: '1.25rem',
+    fontSize: '1.3rem',
   },
 });
 
