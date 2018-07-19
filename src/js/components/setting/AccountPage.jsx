@@ -18,7 +18,7 @@ import AddressPanel from './panels/AddressPanel';
 import PhonePanel from './panels/PhonePanel';
 import BirthdayPanel from './panels/BirthdayPanel';
 import ChangePasswordPanel from './panels/ChangePasswordPanel';
-import ChangeAvatarModule from './panels/ChangeAvatarModule';
+import AvatarPanel from './panels/AvatarPanel';
 
 // Actions
 import { updateUserProfile, uploadProfilePhoto, updateMobilePhone } from 'js/actions/user.actions';
@@ -118,7 +118,7 @@ class AccountPage extends Component {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <ChangeAvatarModule
+              <AvatarPanel
                 user={user}
                 error={error}
                 isFetching={isFetching}

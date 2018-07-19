@@ -15,6 +15,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 
+// Material UI Icons
+import Delete from '@material-ui/icons/Delete';
+
 // Custom Components
 import ConfirmationDialog from './ConfirmationDialog';
 import ProperName from './ProperName';
@@ -24,9 +27,6 @@ import ThumbButton from './ThumbButton';
 import image from 'css/ikt-icon.gif';
 
 const styles = theme => ({
-  "media": {
-    height: 180,
-  },
   "chip":{
     marginRight: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
@@ -112,7 +112,10 @@ class ReviewCard extends Component {
     return (
       <div>
         <Card>
-          <CardMedia className={classes.media} image={image} />
+          <CardMedia
+            image={image}
+            style={{ height: 180 }}
+          />
           <CardContent>
             {
               this.props.showBusinessName
@@ -149,10 +152,16 @@ class ReviewCard extends Component {
                 this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : ''
               }
             </div>
-
-
           </CardContent>
+
           <CardActions>
+            {
+              (this.props.isOwn && !this.props.showUser)
+                ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
+                    <Delete />
+                  </IconButton>
+                : null
+            }
 
             <ThumbButton
               type="up"
@@ -160,26 +169,21 @@ class ReviewCard extends Component {
               count={this.state.upvoteCount}
               handleSubmit={this.handleUpvote}
             />
-
-            {
-              (this.props.isOwn && !this.props.showUser)
-                ? <Button color="secondary" onClick={this.handleDeleteDialogOpen}>Delete</Button>
-                : null
-            }
           </CardActions>
         </Card>
-        <div>
-        {
-          this.props.isOwn
-            ? <ConfirmationDialog
-                  open={this.state.deleteDialogOpen}
-                  title="Warning"
-                  content="Are you sure to delete the review?"
-                  operation={this.handleDelete}
-                  handleClose={this.handleDeleteDialogClose}
-                />
-            : null
-        }
+
+        <div >
+          {
+            this.props.isOwn
+              ? <ConfirmationDialog
+                    open={this.state.deleteDialogOpen}
+                    title="Warning"
+                    content="Are you sure to delete the review?"
+                    operation={this.handleDelete}
+                    handleClose={this.handleDeleteDialogClose}
+                  />
+              : null
+          }
         </div>
       </div>
     );

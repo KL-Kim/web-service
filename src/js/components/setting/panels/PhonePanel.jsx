@@ -282,7 +282,7 @@ class PhonePanel extends Component {
                           {
                             isFetching
                               ? (<CircularProgress size={20} />)
-                              : (activeStep === steps.length - 1 ? 'Update' : 'Next')
+                              : (activeStep === steps.length - 1 ? 'Verify' : 'Next')
                           }
                         </Button>
                         <Button

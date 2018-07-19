@@ -8,6 +8,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
@@ -20,14 +21,16 @@ import { getBusinessList, clearBusinessList } from '../../actions/business.actio
 import { loadFromStorage } from '../../helpers/webStorage';
 import webStorageTypes from '../../constants/webStorage.types';
 
-const styles = (theme) => ({});
+const styles = (theme) => ({
+
+});
 
 class FavorPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      limit: 20,
+      limit: 18,
       count: 0,
       hasMore: false,
     };
@@ -81,44 +84,50 @@ class FavorPage extends Component {
     return (
       <SettingContainer>
         <div>
-          <Typography variant="display1" gutterBottom>
-            Favorite Business
-          </Typography>
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.state.hasMore}
-            loader={<div className="loader" key={0}>Loading ...</div>}
-          >
-            <Grid container spacing={16}>
-              {
-                _.isEmpty(businessList)
-                  ? <Grid item xs={12}>
-                      <Typography variant="body1" align="center">None</Typography>
+          <Typography variant="display1">My Favorite Business</Typography>
+          <br />
+
+          {
+            _.isEmpty(businessList)
+              ? <Typography variant="body1" align="center">None</Typography>
+              : <div>
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.state.hasMore}
+                    loader={<div style={{ textAlign: 'center' }} key={0}>
+                              <CircularProgress size={30} />
+                            </div>}
+                  >
+                    <Grid container spacing={24} style={{ marginBottom: 12 }}>
+                      {
+                        businessList.map(item => (
+                          <Grid item xs={4} key={item._id}>
+                            <BusinessCard
+                              bid={item._id}
+                              title={item.krName}
+                              enName={item.enName}
+                              rating={item.ratingAverage}
+                              thumbnailUri={item.thumbnailUri}
+                              category={item.category}
+                              tags={item.tags}
+                              myFavors={this.state.myFavors}
+                            />
+                          </Grid>
+                        ))
+                      }
                     </Grid>
-                  : businessList.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <BusinessCard
-                          bid={item._id}
-                          key={item._id}
-                          title={item.krName}
-                          enName={item.enName}
-                          rating={item.ratingAverage}
-                          thumbnailUri={item.thumbnailUri}
-                          category={item.category}
-                          tags={item.tags}
-                          myFavors={this.state.myFavors}
-                        />
-                      </Grid>
-                    ))
-              }
-              <Grid item xs={12}>
-                <Typography variant="caption" align="center">
-                  --- No more favors. You have total {this.props.totalCount} favors ---
-                </Typography>
-              </Grid>
-            </Grid>
-          </InfiniteScroll>
+                    {
+                      this.state.hasMore
+                        ? null
+                        : <Typography variant="caption" align="center">
+                            --- No more favorite business. You have total {this.props.totalCount} favors ---
+                          </Typography>
+
+                    }
+                  </InfiniteScroll>
+                </div>
+          }
         </div>
       </SettingContainer>
     );

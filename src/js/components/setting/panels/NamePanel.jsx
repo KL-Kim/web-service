@@ -127,7 +127,7 @@ class NamePanel extends Component {
             onClick={this.handleSubmit}
           >
             {
-              isFetching ? (<CircularProgress size={20} />) : 'Update'
+              isFetching ? (<CircularProgress size={20} />) : 'Save'
             }
           </Button>
         </ExpansionPanelActions>

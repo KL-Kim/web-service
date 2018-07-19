@@ -5,28 +5,27 @@ import { Link } from 'react-router-dom';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+
+// Material UI Icons
+import Edit from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
 import ProperName from './ProperName';
 
-import image from '../../../css/ikt-icon.gif';
+// Mock Image
+import image from 'css/ikt-icon.gif';
 
 const styles = theme => ({
-  container: {
-    width: '33.3%',
-  },
-  card: {
-    margin: theme.spacing.unit * 2,
-  },
-  media: {
-    height: 200,
-  },
+
 });
 
 class PostCard extends Component {
@@ -34,31 +33,29 @@ class PostCard extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={classes.container}>
-        <Card className={classes.card}>
-          <CardMedia className={classes.media}
+      <div>
+        <Card>
+          <CardMedia
             image={image}
+            style={{ height: 180 }}
           />
           <CardContent>
-            <Typography variant="title" gutterBottom>
-              {this.props.title + ' '}
-
-              {this.props.status === 'PUBLISHED' ? '' : '(' + _.toLower(this.props.status) + ')'}
+            <Typography variant="title">
+              {this.props.title}
             </Typography>
-            <Typography variant="body1" gutterBottom>
-              <ProperName user={this.props.author} />
+            <Typography variant="subheading" gutterBottom>
+              {_.toLower(this.props.status)}
             </Typography>
             <Typography variant="body1" gutterBottom>{this.props.summary}</Typography>
           </CardContent>
-          {
-            this.props.isOwn ? (
-              <CardActions>
-                <Link to={"/setting/post/s/" + this.props.id}>
-                  <Button color="primary">Edit</Button>
-                </Link>
-              </CardActions>
-            ) : ''
-          }
+
+          <CardActions>
+            <Link to={"/setting/post/s/" + this.props.id}>
+              <IconButton color="primary">
+                <Edit />
+              </IconButton>
+            </Link>
+          </CardActions>
         </Card>
       </div>
     );
@@ -69,7 +66,6 @@ PostCard.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
   "author": PropTypes.object.isRequired,
-  "isOwn": PropTypes.bool.isRequired,
   "title": PropTypes.string.isRequired,
   "status": PropTypes.string.isRequired,
   "handleDelete": PropTypes.func,

@@ -23,7 +23,7 @@ import SettingContainer from '../layout/SettingContainer';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
 
 // Actions
-import { addNewPost, getSinglePost, updatePost, deletePost } from '../../actions/blog.actions';
+import { addNewPost, getSinglePost, updatePost, deletePost } from 'js/actions/blog.actions';
 
 const modules = {
   toolbar: [
@@ -190,11 +190,17 @@ class SinglePostPage extends Component {
     return (
       <SettingContainer>
         <div>
-          <Typography variant="display1" gutterBottom className={classes.title}>New Post</Typography>
-          <Grid container>
-            <Grid item xs={4}>
+          <Typography
+            variant="display1"
+            className={classes.title}
+            gutterBottom
+          >
+            {this.state.title ? this.state.title : 'New post'}
+          </Typography>
+          <Grid container spacing={16}>
+            <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <FormControl fullWidth >
+                <FormControl fullWidth>
                   <FormLabel component="label" required>State</FormLabel>
                   <RadioGroup
                     row
@@ -203,15 +209,15 @@ class SinglePostPage extends Component {
                     value={this.state.status}
                     onChange={this.handleChange}
                   >
-                    <FormControlLabel value="DRAFT" control={<Radio />} label="Draft" />
-                    <FormControlLabel value="PUBLISHED" control={<Radio />} label="Published" />
-                    <FormControlLabel value="TRASH" control={<Radio />} label="Trash" />
+                    <FormControlLabel value="DRAFT" control={<Radio color="primary" />} label="Draft" />
+                    <FormControlLabel value="PUBLISHED" control={<Radio color="primary" />} label="Published" />
+                    <FormControlLabel value="TRASH" control={<Radio color="primary" />} label="Trash" />
                   </RadioGroup>
                 </FormControl>
               </Paper>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Paper className={classes.paper}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="title" required>Title</InputLabel>
@@ -225,7 +231,7 @@ class SinglePostPage extends Component {
               </Paper>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Paper className={classes.paper}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="keywords">Keywords</InputLabel>
@@ -243,12 +249,13 @@ class SinglePostPage extends Component {
               <Paper className={classes.paper}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="summary">Summary</InputLabel>
-                    <Input type="text"
-                      id="summary"
-                      name="summary"
-                      value={this.state.summary}
-                      onChange={this.handleChange}
-                    />
+                  <Input type="text"
+                    id="summary"
+                    name="summary"
+                    multiline
+                    value={this.state.summary}
+                    onChange={this.handleChange}
+                  />
                 </FormControl>
               </Paper>
             </Grid>
@@ -299,7 +306,6 @@ class SinglePostPage extends Component {
               title="Warning"
               content="Are your sure to delete?"
             />
-
           </div>
         </div>
       </SettingContainer>

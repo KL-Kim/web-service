@@ -24,25 +24,24 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 // Material UI Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import Provinces from '../../../constants/provinces';
+import Provinces from 'js/constants/provinces';
 
 // Actions
-import { getCities, getAreas } from '../../../actions/pca.actions';
+import { getCities, getAreas } from 'js/actions/pca.actions';
 
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-    "width": 150,
-  },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
+  },
+  "button": {
+    "margin": theme.spacing.unit,
   },
 });
 
@@ -72,30 +71,31 @@ class AddressPanel extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (_.isEqual('province', name)) {
-      this.setState({
-        "provinceCode": value,
-      });
-      this.props.getCities(value);
-    }
+    switch (name) {
+      case 'province':
+        this.setState({
+          "provinceCode": value,
+        });
+        this.props.getCities(value);
+        break;
 
-    if (_.isEqual('city', name)) {
-      this.setState({
-        "cityCode": value
-      });
-      this.props.getAreas(value);
-    }
+      case 'city':
+        this.setState({
+          "cityCode": value
+        });
+        this.props.getAreas(value);
+        break;
 
-    if (_.isEqual('area', name)) {
-      this.setState({
-        "areaCode": value
-      });
-    }
+      case 'area':
+        this.setState({
+          "areaCode": value
+        });
+        break;
 
-    if (_.isEqual('street', name)) {
-      this.setState({
-        "street": value
-      });
+      default:
+        this.setState({
+          [name]: value
+        });
     }
   }
 
@@ -131,22 +131,20 @@ class AddressPanel extends Component {
 
   render() {
     const { classes, user, cities, areas, isFetching } = this.props;
-    let { expanded } = this.state;
 
-    let province = !_.isUndefined(user.address) ? (!_.isEmpty(user.address.province.name) ? user.address.province.name : '') : '';
-    let city = !_.isUndefined(user.address) ? (!_.isEmpty(user.address.city.name) ? user.address.city.name : '') : '';
-    let area = !_.isUndefined(user.address) ? (!_.isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
-    let street = !_.isUndefined(user.address) ? (!_.isEmpty(user.address.street) ? user.address.street : '') : '';
+    const city = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.city.name) ? user.address.city.name : '') : '';
+    const area = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
+    const street = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.street) ? user.address.street : '') : '';
 
     return _.isEmpty(user) ? '' : (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Address</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>
-            {province + ' ' + city + ' ' + area + ' ' + street}
+          <Typography className={classes.heading}>Address</Typography>
+          <Typography className={classes.secondaryHeading}>
+            {city + ' ' + area + ' ' + street}
           </Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
           <Grid container spacing={16} justify="center">
             <Grid item xs={4}>
@@ -160,9 +158,13 @@ class AddressPanel extends Component {
                   onChange={this.handleChange}
                 >
                   <option value="" />
-                  {_.isEmpty(Provinces) ? '' : Provinces.map(p => (
-                    <option key={p.code} value={p.code}>{p.cnName + ' ' + p.pinyin}</option>
-                  ))}
+                  {
+                    _.isEmpty(Provinces)
+                      ? null
+                      : Provinces.map(p => (
+                          <option key={p.code} value={p.code}>{p.cnName + ' ' + p.pinyin}</option>
+                        ))
+                  }
                 </Select>
               </FormControl>
             </Grid>
@@ -177,9 +179,13 @@ class AddressPanel extends Component {
                   input={<Input id="city" />}
                 >
                   <option value="" />
-                    {_.isEmpty(cities) ? '' : cities.map(c => (
-                      <option key={c.code} value={c.code}>{c.cnName + ' ' + c.pinyin}</option>
-                    ))}
+                  {
+                    _.isEmpty(cities)
+                      ? null
+                      : cities.map(c => (
+                          <option key={c.code} value={c.code}>{c.cnName + ' ' + c.pinyin}</option>
+                        ))
+                  }
                 </Select>
               </FormControl>
             </Grid>
@@ -194,9 +200,13 @@ class AddressPanel extends Component {
                   input={<Input id="area" />}
                 >
                   <option value="" />
-                  {_.isEmpty(areas) ? '' : areas.map(a => (
-                    <option key={a.code} value={a.code}>{a.cnName + ' ' + a.pinyin}</option>
-                  ))}
+                  {
+                    _.isEmpty(areas)
+                    ? null
+                    : areas.map(a => (
+                        <option key={a.code} value={a.code}>{a.cnName + ' ' + a.pinyin}</option>
+                      ))
+                  }
                 </Select>
               </FormControl>
             </Grid>
@@ -215,22 +225,31 @@ class AddressPanel extends Component {
             </Grid>
           </Grid>
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised"
+          <Button
+            size="small"
+            className={classes.button}
+            onClick={this.handlePanelChange('panel')}
+          >
+            Cancel
+          </Button>
+          <Button
+            className={classes.button}
+            size="small"
+            color="primary"
             disabled={_.isEmpty(this.state.provinceCode)
               || _.isEmpty(this.state.cityCode)
               || _.isEmpty(this.state.areaCode)
               || _.isEmpty(this.state.street)
               || isFetching}
             onClick={this.handleSubmit}
-            color="primary"
-            className={classes.button}
           >
-            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Save'
+            }
           </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
-            Cancel
-          </Button>
+
         </ExpansionPanelActions>
       </ExpansionPanel>
     );

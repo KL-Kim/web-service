@@ -16,6 +16,7 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import Search from '@material-ui/icons/Search';
@@ -25,16 +26,24 @@ import SettingContainer from '../layout/SettingContainer';
 import PostCard from '../utils/PostCard';
 
 // Webstorage
-import { loadFromStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
-import { getPostsList } from '../../actions/blog.actions';
+import { getPostsList } from 'js/actions/blog.actions';
 
 const styles = theme => ({
-  "buttonContainer": {
-    "display": "flex",
-    "justifyContent": "flex-end",
+  "masonryWrapper": {
+    width: 976,
+    position: 'relative',
+    top: 0,
+    left: -theme.spacing.unit,
+  },
+  "mansoryItem": {
+    width: "33.33%",
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    marginBottom: theme.spacing.unit * 2,
   },
 });
 
@@ -64,7 +73,7 @@ class PostPage extends Component {
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: response.list.length < this.props.totalCount,
+            hasMore: response.list.length < response.totalCount,
             count: response.list.length,
           });
         }
@@ -107,13 +116,12 @@ class PostPage extends Component {
     }).then(response => {
       if (response) {
         this.setState({
-          hasMore: response.list.length < this.props.totalCount,
+          hasMore: response.list.length < response.totalCount,
           count: response.list.length,
         });
       }
     });
   }
-
 
   render() {
     const { classes, postsList } = this.props;
@@ -121,24 +129,25 @@ class PostPage extends Component {
     return (
       <SettingContainer>
         <div>
-          <Grid container spacing={16}>
+          <Grid container spacing={16} justify="space-between" alignItems="center">
             <Grid item xs={12}>
               <Typography variant="display1" gutterBottom>
                 My Posts
               </Typography>
             </Grid>
 
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor="search">Search</InputLabel>
                   <Input
-                    id="search"
-                    type="text"
+                    type="search"
+                    id="search-post"
+                    autoComplete="off"
                     name="search"
+                    placeholder="Search ..."
                     onChange={this.handleChange}
-                    endAdornment={
-                      <InputAdornment position="end">
+                    startAdornment={
+                      <InputAdornment position="start">
                         <IconButton
                           aria-label="Searching"
                           onClick={this.handleSearch}
@@ -152,45 +161,53 @@ class PostPage extends Component {
               </form>
             </Grid>
 
-            <Grid item xs={9}>
-              <div className={classes.buttonContainer}>
-                <Link to="/setting/post/s/new">
-                  <Button variant="raised" color="primary">Add new</Button>
-                </Link>
-              </div>
+            <Grid item>
+              <Button variant="raised" color="primary" href="/setting/post/s/new">Add new</Button>
             </Grid>
 
             <Grid item xs={12}>
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={this.loadMore}
-                hasMore={this.state.hasMore}
-                loader={<div className="loader" key={0}>Loading ...</div>}
-              >
-                <Masonry>
-                  {
-                    _.isEmpty(postsList) ? (<p>None</p>)
-                      : postsList.map(item => (
-                        <PostCard
-                          key={item._id}
-                          id={item._id}
-                          author={item.authorId}
-                          user={this.props.user}
-                          isOwn={item.authorId._id === this.props.user._id}
-                          title={item.title}
-                          status={item.status}
-                          handleDelete={this.handleDelete}
-                        />
-                      ))
-                  }
-                </Masonry>
-              </InfiniteScroll>
-            </Grid>
+              {
+                _.isEmpty(postsList)
+                  ? <Typography>None</Typography>
+                  : <div>
+                      <InfiniteScroll
+                          pageStart={0}
+                          loadMore={this.loadMore}
+                          hasMore={this.state.hasMore}
+                          loader={<div style={{ textAlign: 'center' }} key={0}>
+                                    <CircularProgress size={30} />
+                                  </div>}
+                        >
+                        <div className={classes.masonryWrapper}>
+                          <Masonry>
+                            {
+                              postsList.map(item => (
+                                <div key={item._id} className={classes.mansoryItem}>
+                                  <PostCard
+                                    key={item._id}
+                                    id={item._id}
+                                    author={item.authorId}
+                                    user={this.props.user}
+                                    title={item.title}
+                                    summary={item.summary}
+                                    status={item.status}
+                                  />
+                                </div>
+                              ))
+                            }
+                          </Masonry>
+                        </div>
+                      </InfiniteScroll>
 
-            <Grid item xs={12}>
-              <Typography variant="caption" align="center">
-                --- No more posts, You have total {this.props.totalCount} posts ---
-              </Typography>
+                      {
+                        !this.state.hasMore
+                          ?   <Typography variant="caption" align="center">
+                                --- No more posts, You have total {this.props.totalCount} posts ---
+                              </Typography>
+                          : null
+                      }
+                    </div>
+              }
             </Grid>
           </Grid>
         </div>

@@ -36,15 +36,8 @@ import config from 'js/config/config';
 import image from 'css/ikt-icon.gif';
 
 const styles = (theme) => ({
-  "card": {
-    fontFamily: 'sans-serif',
-  },
-  "media": {
-    height: 180,
-  },
-
   "chip": {
-    marginLeft: 8,
+    marginLeft: theme.spacing.unit,
   },
 });
 
@@ -90,8 +83,7 @@ class BusinessCardAlt extends Component {
 
     return (
       <div>
-        <Card className={classes.card}>
-
+        <Card style={{ fontFamily: 'sans-serif', }}>
           <CardHeader
             title={this.props.title}
             subheader={this.props.category.krName}
@@ -105,8 +97,10 @@ class BusinessCardAlt extends Component {
               </Tooltip>
             }
           />
+
           <Link to={"/business/s/" + this.props.enName}>
-            <CardMedia className={classes.media}
+            <CardMedia
+              style={{ height: 180 }}
               image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
             />
             <CardContent className={classes.content}>

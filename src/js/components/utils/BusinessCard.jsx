@@ -36,12 +36,6 @@ import config from 'js/config/config';
 import image from 'css/ikt-icon.gif';
 
 const styles = (theme) => ({
-  "card": {
-    fontFamily: 'sans-serif',
-  },
-  "media": {
-    height: 180,
-  },
   "content": {
     paddingBottom: '0px !important',
   },
@@ -92,11 +86,13 @@ class BusinessCard extends Component {
 
     return (
       <div>
-        <Card className={classes.card}>
+        <Card style={{ fontFamily: 'sans-serif', }}>
           <Link to={"/business/s/" + this.props.enName}>
-            <CardMedia className={classes.media}
+            <CardMedia
+              style={{ height: 180 }}
               image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
             />
+
             <CardContent className={classes.content}>
               <Grid container justify="space-between" alignItems="flex-start">
                 <Grid item>
@@ -127,15 +123,18 @@ class BusinessCard extends Component {
             <Grid container justify="space-between" alignItems="center" className={classes.actionContainer}>
               <Grid item>
                 {
-                  this.props.tags.map(item => (
-                    <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
-                      <Badge color="info">
-                        {item.krName}
-                      </Badge>
-                    </Link>
-                  ))
+                  _.isEmpty(this.props.tags)
+                    ? null
+                    : this.props.tags.map(item => (
+                        <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
+                          <Badge color="info">
+                            {item.krName}
+                          </Badge>
+                        </Link>
+                    ))
                 }
               </Grid>
+              
               <Grid item>
                 <Tooltip id="favor-icon" title="Add to Favor">
                   <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>

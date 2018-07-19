@@ -11,23 +11,10 @@ a {
   text-decoration: none;
 }
 
+img {
+  width: 100%;
+}
+
 #root {
   height: 100%;
-}
-
-.ql-editor {
-  min-height: 150px !important;
-}
-
-.read-only .ql-toolbar {
-  display: none;
-}
-
-.read-only .ql-container {
-  border: 0 !important;
-}
-
-.read-only .ql-editor {
-  padding: 10px 0;
-  min-height: 100px !important;
 }

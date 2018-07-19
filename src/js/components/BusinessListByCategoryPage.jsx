@@ -377,44 +377,49 @@ class BusinessListPage extends Component {
           </div>
           <br />
 
+          {
+            _.isEmpty(businessList)
+              ? null
+              : <div>
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.state.hasMore}
+                    loader={<div style={{ textAlign: 'center' }} key={0}>
+                              <CircularProgress size={30} />
+                            </div>}
+                  >
+                    <Grid container spacing={24} style={{ marginBottom: 12 }}>
+                      {
+                        businessList.map(item => (
+                          <Grid item xs={4} key={item._id}>
+                            <BusinessCard
+                              bid={item._id}
+                              title={item.krName}
+                              enName={item.enName}
+                              rating={item.ratingAverage}
+                              thumbnailUri={item.thumbnailUri}
+                              category={item.category}
+                              tags={item.tags}
+                              event={item.event}
+                              myFavors={this.state.myFavors}
+                            />
+                          </Grid>
+                        ))
+                      }
+                    </Grid>
+                  </InfiniteScroll>
+                  {
+                    this.state.hasMore
+                      ? null
+                      : <Typography variant="caption" align="center">
+                          --- No More ---
+                        </Typography>
+                  }
+                </div>
+          }
 
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.state.hasMore}
-            loader={<div style={{ textAlign: 'center' }} key={0}>
-                      <CircularProgress size={30} />
-                    </div>}
-          >
-            <Grid container spacing={24}>
-              {
-                _.isEmpty(businessList)
-                  ? (this.props.isFetching
-                      ? ''
-                      :
-                        <Grid item xs={12}>
-                          <Typography variant="body1" align="center">--- None ---</Typography>
-                        </Grid>)
-                  : businessList.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <BusinessCardAlt
-                          bid={item._id}
-                          title={item.krName}
-                          enName={item.enName}
-                          rating={item.ratingAverage}
-                          thumbnailUri={item.thumbnailUri}
-                          category={item.category}
-                          tags={item.tags}
-                          event={item.event}
-                          myFavors={this.state.myFavors}
-                        />
-                      </Grid>
-                    ))
-              }
-            </Grid>
-          </InfiniteScroll>
-
-          <div>
+          <div id="modal-container">
             <Popover
               open={this.state.filterPopoverOpen}
               anchorEl={this.filterAnchorEl}

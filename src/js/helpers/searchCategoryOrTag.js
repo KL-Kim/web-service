@@ -26,17 +26,15 @@ const search = (type, query) => {
       return [];
   }
 
-  let matchList = [];
+  if (_.isEmpty(list)) return [];
 
   const regex = new RegExp(query);
 
-  list.map(item => {
-    if (regex.exec(item.krName)) {
-      matchList.push(item);
-    }
+  const match = list.filter(item => {
+    return regex.exec(item.krName);
   });
 
-  return matchList;
+  return match;
 }
 
 export default search;

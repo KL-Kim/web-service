@@ -41,7 +41,7 @@ const styles = (theme) => ({
   },
 });
 
-class ChangeAvatarModule extends Component {
+class AvatarPanel extends Component {
   constructor(props) {
     super(props);
 
@@ -50,19 +50,19 @@ class ChangeAvatarModule extends Component {
       slider: 10,
     };
 
-    this.onSliderChange = this.onSliderChange.bind(this);
-    this.onDrop = this.onDrop.bind(this);
+    this.handleSliderChange = this.handleSliderChange.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.handleClear = this.handleClear.bind(this);
   }
 
-  onSliderChange = (value) => {
+  handleSliderChange = (value) => {
     this.setState({
       "slider": value,
     });
   }
 
-  onDrop(acceptedFiles, rejectedFiles) {
+  handleDrop(acceptedFiles, rejectedFiles) {
     this.setState({
       image: acceptedFiles[0]
     });
@@ -112,25 +112,26 @@ class ChangeAvatarModule extends Component {
           <Grid item xs={6}>
             <Grid container justify="center">
               <Grid item>
-                {_.isEmpty(this.state.image)
-                  ? (<div style={{ marginBottom: 18 }}>
-                      <Avatar user={user} type="BIG" updatedAt={updatedAt}/>
-                    </div>)
-                  : (<div>
-                      <AvatarEditor
-                        ref={this.setEditorRef}
-                        image={this.state.image}
-                        width={150}
-                        height={150}
-                        border={50}
-                        borderRadius={100}
-                        color={[0, 0, 0, 0.5]} // RGBA
-                        scale={this.state.slider / 10}
-                        rotate={0}
+                {
+                  _.isEmpty(this.state.image)
+                    ? <div style={{ marginBottom: 18 }}>
+                        <Avatar user={user} type="BIG" updatedAt={updatedAt} />
+                      </div>
+                    : <div>
+                        <AvatarEditor
+                          ref={this.setEditorRef}
+                          image={this.state.image}
+                          width={150}
+                          height={150}
+                          border={50}
+                          borderRadius={100}
+                          color={[0, 0, 0, 0.5]} // RGBA
+                          scale={this.state.slider / 10}
+                          rotate={0}
                         />
-                      <Slider min={5} max={30} value={this.state.slider} onChange={this.onSliderChange} />
-                    </div>)
-                }
+                        <Slider min={5} max={30} value={this.state.slider} onChange={this.handleSliderChange} />
+                      </div>
+                  }
               </Grid>
             </Grid>
           </Grid>
@@ -141,10 +142,10 @@ class ChangeAvatarModule extends Component {
                 <Dropzone
                   multiple={false}
                   accept="image/*"
-                  onDrop={this.onDrop}
+                  onDrop={this.handleDrop}
                   className={classes.dropZone}
                 >
-                  <AddPhoto style={{ width:50, height:50, marginTop:75, marginLeft: 70 }} />
+                  <AddPhoto style={{ width: 50, height: 50, marginTop: 75, marginLeft: 70 }} />
                 </Dropzone>
               </Grid>
             </Grid>
@@ -154,15 +155,27 @@ class ChangeAvatarModule extends Component {
             <Divider className={classes.bigDivider}/>
             <Grid container justify="center">
               <Grid item>
-                <Button variant="raised" color="primary" className={classes.button}
+                <Button
+                  variant="raised"
+                  color="primary"
+                  size="small"
+                  className={classes.button}
                   onClick={this.handleUpload}
                   disabled={_.isEmpty(this.state.image) || isFetching}
                 >
-                  {isFetching ? (<CircularProgress size={20} />) : 'Upload'}
+                  {
+                    isFetching ? (<CircularProgress size={20} />) : 'Upload'
+                  }
                 </Button>
               </Grid>
               <Grid item>
-                <Button color="primary" className={classes.button} onClick={this.handleClear}>Cancel</Button>
+                <Button
+                  size="small"
+                  className={classes.button}
+                  onClick={this.handleClear}
+                >
+                  Cancel
+                </Button>
               </Grid>
             </Grid>
           </Grid>
@@ -172,7 +185,7 @@ class ChangeAvatarModule extends Component {
   };
 }
 
-ChangeAvatarModule.propTypes = {
+AvatarPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
   "updatedAt": PropTypes.number,
@@ -181,4 +194,4 @@ ChangeAvatarModule.propTypes = {
   "uploadProfilePhoto": PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(ChangeAvatarModule);
+export default withStyles(styles)(AvatarPanel);

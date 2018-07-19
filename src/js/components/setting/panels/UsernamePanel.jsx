@@ -164,7 +164,7 @@ class UsernamePanel extends Component {
             className={classes.button}
           >
             {
-              isFetching ? (<CircularProgress size={20} />) : 'Update'
+              isFetching ? (<CircularProgress size={20} />) : 'Save'
             }
           </Button>
         </ExpansionPanelActions>

@@ -29,7 +29,7 @@ import webStorageTypes from 'js/constants/webStorage.types';
 import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
 
 const styles = theme => ({
-  guide: {
+  "guide": {
     margin: 4,
     padding: theme.spacing.unit * 2,
   },

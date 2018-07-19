@@ -43,6 +43,8 @@ import Favorite from '@material-ui/icons/Favorite';
 import LocalPhone from '@material-ui/icons/LocalPhone';
 import Place from '@material-ui/icons/Place';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
 import Container from './layout/Container'
@@ -72,10 +74,6 @@ import webStorageTypes from '../constants/webStorage.types';
 import image from '../../css/ikt-icon.gif';
 
 const styles = theme => ({
-  "container": {
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-  },
   "wrapper": {
     marginBottom: theme.spacing.unit * 2,
   },
@@ -83,15 +81,8 @@ const styles = theme => ({
     padding: theme.spacing.unit * 4,
     marginBottom: theme.spacing.unit * 2,
   },
-  "button": {
-    margin: theme.spacing.unit,
-  },
   "badgeContent": {
     paddingRight: theme.spacing.unit * 2,
-  },
-  "buttonContainer": {
-    "display": "flex",
-    "justifyContent": "flex-end",
   },
   "mapWrapper": {
     width: '100%',
@@ -104,13 +95,13 @@ const styles = theme => ({
    fontSize: theme.typography.pxToRem(15),
    fontWeight: theme.typography.fontWeightRegular,
  },
-  "card": {
+  "mansoryItem": {
     width: "33.33%",
     paddingLeft: theme.spacing.unit,
     paddingRight: theme.spacing.unit,
     marginBottom: theme.spacing.unit * 2,
   },
-  "reviewWrapper": {
+  "masonryWrapper": {
     width: 976,
     position: 'relative',
     top: 0,
@@ -376,13 +367,13 @@ class SingleBusinessPage extends Component {
               <Grid container>
                 <Grid item xs={12}>
                   <Paper className={classes.paper}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={6}>
+                    <Grid container alignItems="center" justify="space-between">
+                      <Grid item>
                         <Typography variant="display2" >{business.krName}</Typography>
                         <Typography variant="body2" >{business.cnName}</Typography>
                       </Grid>
-                      <Grid item xs={6}>
-                        <div className={classes.buttonContainer}>
+                      <Grid item>
+                        <div>
                           <Tooltip id="favor-icon" title="Add to Favor">
                             <IconButton
                               color={this.state.isMyFavor ? "secondary" : 'default'}
@@ -442,7 +433,7 @@ class SingleBusinessPage extends Component {
                     <div>
                     {
                       _.isEmpty(business.tags)
-                        ? ''
+                        ? null
                         : business.tags.map(item => (
                           <Chip
                             key={item._id}
@@ -464,7 +455,7 @@ class SingleBusinessPage extends Component {
                           <div dangerouslySetInnerHTML={{ __html: business.event }} />
                         </Paper>
                       </Grid>
-                    : ''
+                    : null
                 }
 
                 <Grid item xs={12}>
@@ -531,7 +522,7 @@ class SingleBusinessPage extends Component {
                     <ExpansionPanelDetails>
                       {
                         _.isEmpty(business.chains)
-                          ? ''
+                          ? null
                           : business.chains.map(item => (
                             <Link to={item.enName} key={item.enName}>
                               <Button color="primary" variant="outlined">{item.krName}</Button>
@@ -751,6 +742,11 @@ class SingleBusinessPage extends Component {
                     onClick={this.handleSortMenuPopoverOpen}
                   >
                     Sort By
+                    {
+                      this.state.sortMenuPopoverOpen
+                        ? <ArrowDropUp />
+                        : <ArrowDropDown />
+                    }
                   </Button>
                 </Grid>
 
@@ -767,54 +763,61 @@ class SingleBusinessPage extends Component {
             </Grid>
 
             <Grid item xs={12}>
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={this.loadMore}
-                hasMore={this.state.hasMore}
-                loader={<div style={{ textAlign: 'center' }} key={0}>
-                          <CircularProgress size={30} />
-                        </div>}
-              >
-                <div className={classes.reviewWrapper}>
-                  <Masonry elementType={'div'}>
-                    {
-                      _.isEmpty(reviews)
-                        ? ''
-                        : reviews.map(review => (
-                          <div key={review._id} className={classes.card}>
-                            <ReviewCardAlt
-                              showUser
-                              id={review._id}
-                              owner={review.user}
-                              user={this.props.user}
-                              isLoggedIn={this.props.isLoggedIn}
-                              isOwn={_.isEmpty(this.props.user) ? false : review.user._id === this.props.user._id}
-                              business={review.business}
-                              content={review.content}
-                              rating={review.rating}
-                              serviceGood={review.serviceGood}
-                              envGood={review.envGood}
-                              comeback={review.comeback}
-                              upvoteCount={review.upvote.length}
-                              handleVote={this.props.voteReview}
-                              openLoginDialog={this.props.openLoginDialog}
-                            />
+              {
+                _.isEmpty(reviews)
+                  ? <Typography align="center">None</Typography>
+                  : <div>
+                      <InfiniteScroll
+                          pageStart={0}
+                          loadMore={this.loadMore}
+                          hasMore={this.state.hasMore}
+                          loader={<div style={{ textAlign: 'center' }} key={0}>
+                                    <CircularProgress size={30} />
+                                  </div>}
+                      >
+                        <div className={classes.masonryWrapper}>
+                          <Masonry>
+                            {
+                              reviews.map(review => (
+                                <div key={review._id} className={classes.mansoryItem}>
+                                  <ReviewCardAlt
+                                    showUser
+                                    id={review._id}
+                                    owner={review.user}
+                                    user={this.props.user}
+                                    isLoggedIn={this.props.isLoggedIn}
+                                    isOwn={_.isEmpty(this.props.user) ? false : review.user._id === this.props.user._id}
+                                    business={review.business}
+                                    content={review.content}
+                                    rating={review.rating}
+                                    serviceGood={review.serviceGood}
+                                    envGood={review.envGood}
+                                    comeback={review.comeback}
+                                    upvoteCount={review.upvote.length}
+                                    handleVote={this.props.voteReview}
+                                    openLoginDialog={this.props.openLoginDialog}
+                                  />
+                                </div>
+                              ))
+                            }
+                          </Masonry>
                         </div>
-                        ))
-                    }
-                  </Masonry>
-                </div>
-              </InfiniteScroll>
+                      </InfiniteScroll>
+                      {
+                        !this.state.hasMore
+                          ? <Typography variant="caption" align="center">
+                              --- No more reviews ---
+                            </Typography>
+                          : null
+                      }
+                    </div>
+              }
             </Grid>
 
-            <Grid item xs={12}>
-              <Typography variant="caption" align="center">
-                --- No more reviews ---
-              </Typography>
-            </Grid>
+
           </Grid>
 
-          <div>
+          <div id="modal-container">
             <WriteReviewDialog
               user={this.props.user}
               business={business}
@@ -855,19 +858,17 @@ class SingleBusinessPage extends Component {
                 horizontal: 'left',
               }}
             >
-              <div className={classes.popoverContainer}>
-                <MenuList role="menu">
-                  <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
-                    <ListItemText primary="Recommend" />
-                  </MenuItem>
-                  <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
-                    <ListItemText primary="Useful" />
-                  </MenuItem>
-                  <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
-                    <ListItemText primary="New" />
-                  </MenuItem>
-                </MenuList>
-              </div>
+              <MenuList role="menu" style={{ width: 150 }}>
+                <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
+                  <ListItemText primary="Recommend" />
+                </MenuItem>
+                <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
+                  <ListItemText primary="Useful" />
+                </MenuItem>
+                <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
+                  <ListItemText primary="New" />
+                </MenuItem>
+              </MenuList>
             </Popover>
           </div>
         </div>
