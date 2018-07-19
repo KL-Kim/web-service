@@ -17,12 +17,12 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 // Material UI Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import emailTypes from '../../../constants/email.types';
+import emailTypes from 'js/constants/email.types';
 
 const styles = (theme) => ({
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -31,7 +31,6 @@ const styles = (theme) => ({
   },
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
 });
 
@@ -62,29 +61,54 @@ class EmailPanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
-
-    const button = user.isVerified
-      ? (<Button variant="raised" color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>OK</Button>)
-      : (<div>
-          <Button variant="raised" disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
-            {isFetching ? (<CircularProgress size={20} />) : 'Verify Email'}
-          </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>Cancel</Button>
-        </div>);
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Email</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
+          <Typography className={classes.heading}>Email</Typography>
+          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
-          {user.isVerified ? 'Your email has been verified' : "Not Verified, send verification to your Email"}
+          {
+            user.isVerified
+              ? <Typography>Your email has been verified.</Typography>
+              : <Typography>Send verification link to your Email</Typography>
+          }
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          {button}
+          {
+            user.isVerified
+              ? (<Button
+                  size="small"
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.handlePanelChange('panel')}
+                >
+                  Close
+                </Button>)
+              : (<div>
+                  <Button
+                    size="small"
+                    className={classes.button}
+                    onClick={this.handlePanelChange('panel')}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="small"
+                    color="primary"
+                    className={classes.button}
+                    disabled={isFetching}
+                    onClick={this.handleSubmit}
+                  >
+                    {
+                      isFetching ? (<CircularProgress size={20} />) : 'Verify Email'
+                    }
+                  </Button>
+                </div>)
+          }
         </ExpansionPanelActions>
       </ExpansionPanel>
     );

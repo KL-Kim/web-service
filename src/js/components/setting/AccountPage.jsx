@@ -15,7 +15,7 @@ import EmailPanel from './panels/EmailPanel';
 import NamePanel from './panels/NamePanel';
 import GenderPanel from './panels/GenderPanel';
 import AddressPanel from './panels/AddressPanel';
-import MobilePanel from './panels/MobilePanel';
+import PhonePanel from './panels/PhonePanel';
 import BirthdayPanel from './panels/BirthdayPanel';
 import ChangePasswordPanel from './panels/ChangePasswordPanel';
 import ChangeAvatarModule from './panels/ChangeAvatarModule';
@@ -72,7 +72,7 @@ class AccountPage extends Component {
                 sendEmail={this.props.sendEmail}
               />
 
-              <MobilePanel
+              <PhonePanel
                 user={user}
                 error={error}
                 errorMessage={errorMessage}

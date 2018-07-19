@@ -24,11 +24,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -44,7 +43,7 @@ class GenderPanel extends Component {
 
     this.state = {
       "expanded": null,
-      "gender": this.props.user.gender || '',
+      "gender": props.user.gender || '',
     };
 
     this.handlePanelChange = this.handlePanelChange.bind(this);
@@ -52,7 +51,7 @@ class GenderPanel extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handlePanelChange = panel => (event, expanded) => {
+  handlePanelChange = panel => (e, expanded) => {
     this.setState({
       "expanded": expanded ? panel : undefined
     });
@@ -76,15 +75,14 @@ class GenderPanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Gender</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.gender) ? '' : user.gender}</Typography>
+          <Typography className={classes.heading}>Gender</Typography>
+          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.gender) ? '' : user.gender}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
           <FormControl fullWidth >
             <RadioGroup
@@ -94,18 +92,31 @@ class GenderPanel extends Component {
               value={this.state.gender}
               onChange={this.handleChange}
             >
-              <FormControlLabel value="Male" control={<Radio />} label="Male" />
-              <FormControlLabel value="Female" control={<Radio />} label="Female" />
-              <FormControlLabel value="Other" control={<Radio />} label="Other" />
+              <FormControlLabel value="Male" control={<Radio color="primary" />} label="Male" />
+              <FormControlLabel value="Female" control={<Radio color="primary" />} label="Female" />
+              <FormControlLabel value="Other" control={<Radio color="primary" />} label="Other" />
             </RadioGroup>
           </FormControl>
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised" disabled={isFetching} color="primary" className={classes.button} onClick={this.handleSubmit}>
-            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
-          </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
+          <Button
+            size="small"
+            className={classes.button}
+            onClick={this.handlePanelChange('panel')}
+          >
             Cancel
+          </Button>
+          <Button
+            size="small"
+            color="primary"
+            className={classes.button}
+            disabled={isFetching}
+            onClick={this.handleSubmit}
+          >
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Update'
+            }
           </Button>
         </ExpansionPanelActions>
       </ExpansionPanel>
@@ -116,7 +127,6 @@ class GenderPanel extends Component {
 GenderPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.bool,
   "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
 };

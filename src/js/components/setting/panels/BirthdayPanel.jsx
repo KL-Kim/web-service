@@ -20,11 +20,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -32,9 +31,7 @@ const styles = (theme) => ({
     "color": theme.palette.text.secondary,
   },
   "textField": {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 200,
+    width: 262,
   },
 });
 
@@ -78,17 +75,17 @@ class BirthdayPanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Birthday</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
+          <Typography className={classes.heading}>Birthday</Typography>
+          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
-          <TextField id="date"
+          <TextField
+            id="birthday"
             label="Birthday"
             type="date"
             className={classes.textField}
@@ -99,12 +96,25 @@ class BirthdayPanel extends Component {
             onChange={this.handleChange}
           />
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised" color="primary" disabled={_.isEmpty(this.state.date)} className={classes.button} onClick={this.handleSubmit}>
-            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
-          </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
+          <Button
+            size="small"
+            className={classes.button}
+            onClick={this.handlePanelChange('panel')}
+          >
             Cancel
+          </Button>
+          <Button
+            size="small"
+            color="primary"
+            disabled={_.isEmpty(this.state.date)}
+            className={classes.button}
+            onClick={this.handleSubmit}
+          >
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Update'
+            }
           </Button>
         </ExpansionPanelActions>
       </ExpansionPanel>

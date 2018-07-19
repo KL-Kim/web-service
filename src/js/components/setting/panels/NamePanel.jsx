@@ -23,11 +23,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -42,8 +41,8 @@ class NamePanel extends Component {
 
     this.state = {
       "expanded": null,
-      "firstName": null,
-      "lastName": null,
+      "firstName": '',
+      "lastName": '',
     };
 
     this.handlePanelChange = this.handlePanelChange.bind(this);
@@ -60,17 +59,9 @@ class NamePanel extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('firstName', name)) {
-      this.setState({
-        "firstName": value
-      });
-    }
-
-    if (validator.equals('lastName', name)) {
-      this.setState({
-        "lastName": value
-      });
-    }
+    this.setState({
+      [name]: value
+    });
   }
 
   handleSubmit(e) {
@@ -87,52 +78,57 @@ class NamePanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Name</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{(_.isEmpty(user.firstName) ? '' : user.firstName) + ' '+ (_.isEmpty(user.lastName) ? '' : user.lastName)}</Typography>
+          <Typography className={classes.heading}>Name</Typography>
+          <Typography className={classes.secondaryHeading}>{(_.isEmpty(user.firstName) ? '' : user.firstName) + ' '+ (_.isEmpty(user.lastName) ? '' : user.lastName)}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
           <Grid container spacing={16} justify="center">
-            <Grid item lg={6}>
+            <Grid item xs={6}>
               <TextField
-                onChange={this.handleChange}
+                type="text"
+                id="firstname"
                 fullWidth
                 label="First Name"
-                id="firstName"
-                type="text"
                 name="firstName"
+                onChange={this.handleChange}
               />
             </Grid>
-            <Grid item lg={6}>
+            <Grid item xs={6}>
               <TextField
-                onChange={this.handleChange}
+                id="lastname"
+                type="text"
                 fullWidth
                 label="Last Name"
-                id="lastName"
-                type="text"
                 name="lastName"
+                onChange={this.handleChange}
               />
             </Grid>
           </Grid>
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised"
+          <Button
+            size="small"
+            className={classes.button}
+            onClick={this.handlePanelChange('panel')}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="small"
             color="primary"
-            disabled={
-              _.isEmpty(this.state.firstName)
-              || _.isEmpty(this.state.lastName)}
+            disabled={_.isEmpty(this.state.firstName) || _.isEmpty(this.state.lastName)}
             className={classes.button}
             onClick={this.handleSubmit}
           >
-            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
-          </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
-            Cancel
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Update'
+            }
           </Button>
         </ExpansionPanelActions>
       </ExpansionPanel>
@@ -143,7 +139,6 @@ class NamePanel extends Component {
 NamePanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "error": PropTypes.bool,
   "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
 };

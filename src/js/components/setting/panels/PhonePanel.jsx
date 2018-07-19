@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import validator from 'validator';
+import isMobilePhone from 'validator/lib/isMobilePhone';
+import isInt from 'validator/lib/isInt';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -26,11 +27,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -41,10 +41,10 @@ const styles = (theme) => ({
 });
 
 const getSteps = (props) => {
-  return ['Input the phone number', 'Input the verification code'];
+  return ['Phone number', 'Verification code'];
 };
 
-class MobilePanel extends Component {
+class PhonePanel extends Component {
   constructor(props) {
     super(props);
 
@@ -113,15 +113,13 @@ class MobilePanel extends Component {
         );
 
       default:
-        return 'Uknown stepIndex';
+        return 'Unknown stepIndex';
     }
   }
 
   handleBack() {
-    const { activeStep } = this.state;
-
     this.setState({
-      "activeStep": activeStep - 1,
+      "activeStep": this.state.activeStep - 1,
       "verificationCode": {
         "value": '',
         "showError": false,
@@ -179,7 +177,7 @@ class MobilePanel extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (validator.equals('phoneNumber', name)) {
+    if ('phoneNumber' === name) {
       this.setState({
         "phoneNumber": {
           "value": value,
@@ -189,7 +187,7 @@ class MobilePanel extends Component {
       });
     }
 
-    if (validator.equals('verificationCode', name)) {
+    if ('verificationCode'=== name) {
       this.setState({
         "verificationCode": {
           "value": value,
@@ -203,7 +201,7 @@ class MobilePanel extends Component {
   isValidPhoneNumber() {
     const { phoneNumber } = this.state;
 
-    if (_.isEmpty(phoneNumber.value) || !validator.isMobilePhone(phoneNumber.value, 'zh-CN')) {
+    if (_.isEmpty(phoneNumber.value) || !isMobilePhone(phoneNumber.value, 'zh-CN')) {
       this.setState({
         "phoneNumber": {
           "value": phoneNumber.value,
@@ -221,7 +219,7 @@ class MobilePanel extends Component {
   isValidCode() {
     const { verificationCode } = this.state;
 
-    if (_.isEmpty(verificationCode.value) || !validator.isInt(verificationCode.value, {min: 100000, max: 999999})) {
+    if (_.isEmpty(verificationCode.value) || !isInt(verificationCode.value, {min: 100000, max: 999999})) {
       this.setState({
         "verificationCode": {
           "value": verificationCode.value,
@@ -238,17 +236,16 @@ class MobilePanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
     let steps = getSteps(this.props);
-    let { activeStep } = this.state;
+    const { activeStep } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Mobile Phone</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
+          <Typography className={classes.heading}>Mobile Phone</Typography>
+          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
           <Grid container justify="center">
             <Grid item xs={12}>
@@ -262,11 +259,11 @@ class MobilePanel extends Component {
                 })}
               </Stepper>
             </Grid>
-
-              {this.state.activeStep === steps.length
+            {
+              activeStep === steps.length
                 ? <Grid item xs={12}>
                     <Typography variant="body1" align="center">
-                      Congratulations, Your mobile phone has been updated!
+                      Congratulations, Your mobile phone number has been saved!
                     </Typography>
                   </Grid>
 
@@ -274,18 +271,25 @@ class MobilePanel extends Component {
                     {this.getStepContent(activeStep, this.props)}
                     <Grid container justify="center" alignItems="center">
                       <Grid item>
-                        <Button variant="raised"
+                        <Button
+                          className={classes.button}
+                          variant="raised"
+                          size="small"
                           color="primary"
                           disabled={this.state.phoneNumber.showError || this.state.verificationCode.showError || isFetching}
                           onClick={this.handleNext}
-                          className={classes.button}
                         >
-                          {isFetching ? (<CircularProgress size={20} />) : (activeStep === steps.length - 1 ? 'Update' : 'Next')}
+                          {
+                            isFetching
+                              ? (<CircularProgress size={20} />)
+                              : (activeStep === steps.length - 1 ? 'Update' : 'Next')
+                          }
                         </Button>
                         <Button
+                          className={classes.button}
+                          size="small"
                           disabled={activeStep === 0}
                           onClick={this.handleBack}
-                          className={classes.button}
                         >
                           Back
                         </Button>
@@ -300,7 +304,7 @@ class MobilePanel extends Component {
   }
 }
 
-MobilePanel.propTypes = {
+PhonePanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
@@ -310,4 +314,4 @@ MobilePanel.propTypes = {
   "updateMobilePhone": PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(MobilePanel);
+export default withStyles(styles)(PhonePanel);

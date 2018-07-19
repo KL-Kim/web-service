@@ -15,7 +15,7 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 // Material UI Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import emailTypes from '../../../constants/email.types';
+import emailTypes from 'js/constants/email.types';
 
 const styles = (theme) => ({
   "heading": {
@@ -23,13 +23,8 @@ const styles = (theme) => ({
     "flexBasis": '40%',
     "flexShrink": 0,
   },
-  "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "color": theme.palette.text.secondary,
-  },
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
 });
 
@@ -60,22 +55,37 @@ class ChangePasswordPanel extends Component {
 
   render() {
     const { classes, isFetching } = this.props;
-    let { expanded } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Password</Typography>
+          <Typography className={classes.heading}>Password</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
-          To change password, send email.
+          <Typography>To change password, send link to your email.</Typography>
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised" disabled={isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
-            {isFetching ? (<CircularProgress size={20} />) : 'Send Email'}
+          <Button
+            size="small"
+            className={classes.button}
+            onClick={this.handlePanelChange('panel')}
+          >
+            Cancel
           </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>Cancel</Button>
+          <Button
+            size="small"
+            disabled={isFetching}
+            color="primary"
+            onClick={this.handleSubmit}
+            className={classes.button}
+          >
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Send Email'
+            }
+          </Button>
+
         </ExpansionPanelActions>
       </ExpansionPanel>
     );

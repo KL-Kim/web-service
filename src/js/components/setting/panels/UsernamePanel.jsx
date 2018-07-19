@@ -23,11 +23,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const styles = (theme) => ({
   "button": {
     "margin": theme.spacing.unit,
-    "width": 150,
   },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
+    "flexBasis": '30%',
     "flexShrink": 0,
   },
   "secondaryHeading": {
@@ -126,35 +125,47 @@ class UsernamePanel extends Component {
 
   render() {
     const { classes, user, isFetching } = this.props;
-    let { expanded } = this.state;
 
     return (
-      <ExpansionPanel expanded={expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
+      <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="body1" className={classes.heading}>Username</Typography>
-          <Typography variant="body1" className={classes.secondaryHeading}>{user.username}</Typography>
+          <Typography className={classes.heading}>Username</Typography>
+          <Typography className={classes.secondaryHeading}>{user.username}</Typography>
         </ExpansionPanelSummary>
-        <Divider />
+
         <ExpansionPanelDetails>
           <TextField
+            type="text"
+            id="username"
             fullWidth
+            autoComplete="off"
+            label="New Username"
+            margin="normal"
             name="username"
             error={this.state.showError}
             helperText={this.state.showError ? this.state.errorMessage : 'Only contains a-z, A-Z, 0-9, should longer than 3 letters and shorter than 31 letters.'}
             onChange={this.handleChange}
             onBlur={this.isValidUsername}
-            label="New username"
-            id="username"
-            margin="normal"
-            type="text"
           />
         </ExpansionPanelDetails>
+
         <ExpansionPanelActions>
-          <Button variant="raised" disabled={this.state.showError || isFetching} color="primary" onClick={this.handleSubmit} className={classes.button}>
-            {isFetching ? (<CircularProgress size={20} />) : 'Update'}
-          </Button>
-          <Button color="primary" className={classes.button} onClick={this.handlePanelChange('panel')}>
+          <Button
+            className={classes.button}
+            size="small"
+            onClick={this.handlePanelChange('panel')}>
             Cancel
+          </Button>
+          <Button
+            color="primary"
+            size="small"
+            disabled={this.state.showError || isFetching}
+            onClick={this.handleSubmit}
+            className={classes.button}
+          >
+            {
+              isFetching ? (<CircularProgress size={20} />) : 'Update'
+            }
           </Button>
         </ExpansionPanelActions>
       </ExpansionPanel>
