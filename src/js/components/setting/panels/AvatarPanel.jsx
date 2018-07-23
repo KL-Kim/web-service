@@ -29,9 +29,6 @@ const styles = (theme) => ({
     "padding": theme.spacing.unit * 5,
     "color": theme.palette.text.secondary
   },
-  "button": {
-    "margin": theme.spacing.unit,
-  },
   "bigDivider": {
     "marginTop": theme.spacing.unit * 2,
     "marginBottom": theme.spacing.unit * 2
@@ -153,13 +150,12 @@ class AvatarPanel extends Component {
 
           <Grid item xs={12}>
             <Divider className={classes.bigDivider}/>
-            <Grid container justify="center">
+            <Grid container spacing={16} justify="center">
               <Grid item>
                 <Button
                   variant="raised"
                   color="primary"
                   size="small"
-                  className={classes.button}
                   onClick={this.handleUpload}
                   disabled={_.isEmpty(this.state.image) || isFetching}
                 >
@@ -171,7 +167,6 @@ class AvatarPanel extends Component {
               <Grid item>
                 <Button
                   size="small"
-                  className={classes.button}
                   onClick={this.handleClear}
                 >
                   Cancel

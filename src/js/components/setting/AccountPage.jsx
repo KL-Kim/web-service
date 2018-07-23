@@ -37,16 +37,14 @@ const styles = (theme) => ({
 class AccountPage extends Component {
 
   render() {
-    const { classes, user, updatedAt, error, isFetching, errorMessage, updateUserProfile } = this.props;
+    const { classes, user, error, isFetching, errorMessage, updateUserProfile } = this.props;
 
     return _.isEmpty(user) ? null : (
       <SettingContainer>
         <div className={classes.root}>
           <Grid container justify="center" className={classes.container}>
             <Grid item xs={12}>
-              <Typography variant="display1" gutterBottom>
-                Profile
-              </Typography>
+              <Typography variant="display1" gutterBottom>Profile</Typography>
             </Grid>
 
             <Grid item xs={12}>
@@ -122,7 +120,7 @@ class AccountPage extends Component {
                 user={user}
                 error={error}
                 isFetching={isFetching}
-                updatedAt={updatedAt}
+                updatedAt={this.props.updatedAt}
                 uploadProfilePhoto={this.props.uploadProfilePhoto} />
             </Grid>
           </Grid>

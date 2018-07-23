@@ -18,9 +18,6 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-  },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
     "flexBasis": '30%',
@@ -100,7 +97,6 @@ class BirthdayPanel extends Component {
         <ExpansionPanelActions>
           <Button
             size="small"
-            className={classes.button}
             onClick={this.handlePanelChange('panel')}
           >
             Cancel
@@ -109,7 +105,6 @@ class BirthdayPanel extends Component {
             size="small"
             color="primary"
             disabled={_.isEmpty(this.state.date)}
-            className={classes.button}
             onClick={this.handleSubmit}
           >
             {

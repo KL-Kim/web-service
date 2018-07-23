@@ -22,9 +22,6 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-  },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
     "flexBasis": '30%',
@@ -34,7 +31,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-
 });
 
 class GenderPanel extends Component {
@@ -70,6 +66,12 @@ class GenderPanel extends Component {
 
     this.props.updateUserProfile(id, {
       "gender": this.state.gender
+    }).then(response => {
+      if (response) {
+        this.setState({
+            "expanded": null,
+        });
+      }
     });
   }
 
@@ -102,7 +104,6 @@ class GenderPanel extends Component {
         <ExpansionPanelActions>
           <Button
             size="small"
-            className={classes.button}
             onClick={this.handlePanelChange('panel')}
           >
             Cancel
@@ -110,7 +111,6 @@ class GenderPanel extends Component {
           <Button
             size="small"
             color="primary"
-            className={classes.button}
             disabled={isFetching}
             onClick={this.handleSubmit}
           >

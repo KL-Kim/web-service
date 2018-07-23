@@ -80,11 +80,11 @@ class HomePage extends Component {
         <SectionCarousel />
         <main className={classes.appFrame}>
           <div className={classes.section}>
-            <Typography variant="display1" gutterBottom>Explore iKoreaTown</Typography>
+            <Typography variant="title" gutterBottom>Hot Category</Typography>
             <Grid container spacing={24} justify="center" alignItems="center">
               {
                 _.isEmpty(categories)
-                  ? ''
+                  ? null
                   : categories.map(item => {
                     if (item.priority > 7) {
                       return (
@@ -99,13 +99,13 @@ class HomePage extends Component {
           </div>
 
           <div className={classes.section}>
-            <Typography variant="display1" gutterBottom>
+            <Typography variant="title" gutterBottom>
               Hot Bussiness in Event
             </Typography>
             <Grid container spacing={24} justify="center">
               {
                 _.isEmpty(businessList)
-                  ? ''
+                  ? null
                   : businessList.map(item => (
                       <Grid item xs={4} key={item._id}>
                         <BusinessCard

@@ -47,6 +47,7 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
+import LinkContainer from 'js/components/utils/LinkContainer';
 import Avatar from 'js/components/utils/Avatar';
 import LoginDialog from 'js/components/utils/LoginDialog';
 import MessageContent from 'js/components/utils/MessageContent';
@@ -54,6 +55,8 @@ import ProperName from 'js/components/utils/ProperName';
 import getElapsedTime from 'js/helpers/ElapsedTime';
 import CustomButton from 'js/components/utils/Button';
 import SearchBar from 'js/components/utils/SearchBar';
+import Explore from '@material-ui/icons/Explore';
+import Settings from '@material-ui/icons/Settings';
 
 // Actions
 import { logout } from 'js/actions/user.actions';
@@ -64,7 +67,8 @@ import Logo from 'img/logo.png';
 
 const styles = theme => ({
   "root": {
-    flexGrow: 1
+    flexGrow: 1,
+
   },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
@@ -74,21 +78,18 @@ const styles = theme => ({
     backgroundColor: 'transparent',
     boxShadow: 'unset',
   },
-  "flex": {
-    flex: 1,
+  "buttonWrapper": {
+    width: 960,
+    margin: 'auto'
   },
   "logo": {
-    marginRight: theme.spacing.unit * 3,
-    //"width": 230,
-    //"height": '100%',
+    width: 200,
+    margin: 0,
+    height: '100%',
     color: 'white',
   },
   "button": {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-  },
-  "drawerPaper": {
-    "width": 260,
+    marginLeft: theme.spacing.unit * 2,
   },
   "account": {
     "margin": "0 auto",
@@ -102,11 +103,7 @@ const styles = theme => ({
   "popoverContainer": {
     width: 500,
     height: 400,
-    padding: theme.spacing.unit,
-  },
-  "menuItemContent": {
-    width: 80,
-    marginLeft: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 3,
   },
 });
 
@@ -150,19 +147,21 @@ class Header extends Component {
   }
 
   handleNotificationPopoverOpen() {
-    this.props.getNotification({
-      uid: this.props.user._id,
-      unRead: true,
-      limit: 10,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          notificationPopoverOpen: true,
-          notificationsList: response.list.slice(),
-        });
-      }
-    });
+    if (this.props.user._id) {
+      this.props.getNotification({
+        uid: this.props.user._id,
+        unRead: true,
+        limit: 10,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            notificationPopoverOpen: true,
+            notificationsList: response.list.slice(),
+          });
+        }
+      });
+    }
   }
 
   handleNotificationPopoverClose() {
@@ -230,52 +229,26 @@ class Header extends Component {
           position={this.props.position}
           className={this.props.position === 'fixed' ? classes.appBar : classNames(classes.appBar, classes.transparentAppBar)}
         >
-          <Toolbar>
-            <div className={classes.flex}>
-              <Grid container alignItems="center">
-                <Grid item>
-                  <div>
-                    <Link to="/">
-                      {/* <Img src={Logo} className={classes.logo} />*/}
-                      <Typography variant="title" color="inherit" className={classes.logo} >iKoreaTown | Nanjing</Typography>
-                    </Link>
-                  </div>
-                </Grid>
-
-                <Grid item>
-                  <div>
-                    <SearchBar width={400} />
-                  </div>
-                </Grid>
-              </Grid>
+          <div className={classes.buttonWrapper}>
+          <Toolbar disableGutters>
+            <div style={{ flex: 1 }}>
+              <Link to="/">
+                {/* <Img src={Logo} className={classes.logo} />*/}
+                <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown</Typography>
+              </Link>
             </div>
 
-            <CustomButton
-              simple
-              size="lg"
-              color="transparent"
-              onClick={this.handleCategoriesMenuOpen}
-              buttonRef={node => {
-                this.categoriesAnchorEl = node;
-              }}
-            >
-              Business
-              {
-                this.state.categoriesPopoverOpen
-                  ? <ArrowDropUp />
-                  : <ArrowDropDown />
-              }
-            </CustomButton>
+            <LinkContainer to="/search">
+              <IconButton color="inherit" className={classes.button}>
+                <Search />
+              </IconButton>
+            </LinkContainer>
 
-            <CustomButton
-              href="/blog"
-              simple
-              size="lg"
-              color="transparent"
-            >
-              Articles
-            </CustomButton>
-
+            <LinkContainer to="/explore">
+              <IconButton color="inherit" className={classes.button}>
+                <Explore />
+              </IconButton>
+            </LinkContainer>
 
             {
               isLoggedIn
@@ -297,54 +270,51 @@ class Header extends Component {
                       <Avatar user={user} updatedAt={updatedAt} />
                     </Button>
                   </div>
-                : <CustomButton
-                    simple
-                    size="lg"
-                    color="transparent"
-                    onClick={this.props.openLoginDialog}
-                  >
-                    Sign in
-                  </CustomButton>
+                : <IconButton color="inherit" className={classes.button} onClick={this.props.openLoginDialog}>
+                    <AccountCircle />
+                  </IconButton>
             }
           </Toolbar>
+          </div>
         </AppBar>
 
         <div>
           {
             isLoggedIn
-              ? (<Drawer
+              ? <Drawer
                   anchor="right"
                   open={this.state.drawerOpen}
                   onClose={this.handleDrawerToggle}
                   variant="temporary"
-                  classes={{paper: classes.drawerPaper}}
                 >
-                  <div className={classes.account}>
-                    <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
-                    <Typography variant="body1" className={classes.avatarName}>
-                      <ProperName user={user} />
-                    </Typography>
-                  </div>
+                  <div style={{ width: 230 }}>
+                    <div className={classes.account}>
+                      <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
+                      <Typography variant="body1" className={classes.avatarName}>
+                        <ProperName user={user} />
+                      </Typography>
+                    </div>
 
-                  <Divider />
+                    <Divider />
 
-                  <MenuList>
-                    <Link to="/setting/account">
-                      <MenuItem>
+                    <MenuList>
+                      <Link to="/setting/account">
+                        <MenuItem>
+                          <ListItemIcon>
+                            <Settings />
+                          </ListItemIcon>
+                          <ListItemText primary="Settings" />
+                        </MenuItem>
+                      </Link>
+                      <MenuItem onClick={this.handleLogout}>
                         <ListItemIcon>
-                          <AccountCircle />
+                          <ExitToApp />
                         </ListItemIcon>
-                        <ListItemText primary="Account" />
+                        <ListItemText primary="Sign Out" />
                       </MenuItem>
-                    </Link>
-                    <MenuItem onClick={this.handleLogout}>
-                      <ListItemIcon>
-                        <ExitToApp />
-                      </ListItemIcon>
-                      <ListItemText primary="Sign Out" />
-                    </MenuItem>
-                  </MenuList>
-                </Drawer>)
+                    </MenuList>
+                  </div>
+                </Drawer>
               : <LoginDialog />
           }
 
@@ -410,73 +380,6 @@ class Header extends Component {
                     </ListItem>
                 }
               </List>
-            </div>
-          </Popover>
-
-          <Popover
-            open={this.state.categoriesPopoverOpen}
-            anchorEl={this.categoriesAnchorEl}
-            onClose={this.handleCategoriesMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-          >
-            <div>
-              <MenuList role="menu">
-                <Link to={"/business/category/restaurant"}>
-                  <MenuItem >
-                    <ListItemIcon>
-                      <Restaurant />
-                    </ListItemIcon>
-                    <ListItemText primary="맛집" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-                <Link to={"/business/category/nightbar"}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <LocalBar />
-                    </ListItemIcon>
-                    <ListItemText primary="호프" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-                <Link to={"/business/category/ktv"}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <LocalPlay />
-                    </ListItemIcon>
-                    <ListItemText primary="노래방" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-                <Link to={"/business/category/hospital"}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <LocalHospital />
-                    </ListItemIcon>
-                    <ListItemText primary="병원" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-                <Link to={"/business/category/massage"}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <Spa />
-                    </ListItemIcon>
-                    <ListItemText primary="마사지" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-                <Link to={"/business/category/shopping_mall"}>
-                  <MenuItem>
-                    <ListItemIcon>
-                      <LocalMall />
-                    </ListItemIcon>
-                    <ListItemText primary="쇼핑몰" className={classes.menuItemContent} />
-                  </MenuItem>
-                </Link>
-              </MenuList>
             </div>
           </Popover>
         </div>

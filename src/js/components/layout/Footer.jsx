@@ -10,7 +10,8 @@ import Button from '@material-ui/core/Button';
 
 const styles = (theme) => ({
   footer: {
-    width: 960,
+    maxWidth: 960,
+    width: '100%',
     margin: 'auto',
     paddingBottom: theme.spacing.unit * 3,
     position: 'absolute',
@@ -28,7 +29,7 @@ class Footer extends Component{
       <footer className={classes.footer}>
         <Grid container justify="space-between" alignItems="center" >
           <Grid item>
-            <Grid container spacing={16}>
+            <Grid container>
               <Grid item>
                 <Link to="/about">
                   <Button>

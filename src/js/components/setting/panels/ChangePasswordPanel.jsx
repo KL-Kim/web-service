@@ -23,9 +23,6 @@ const styles = (theme) => ({
     "flexBasis": '40%',
     "flexShrink": 0,
   },
-  "button": {
-    "margin": theme.spacing.unit,
-  },
 });
 
 class ChangePasswordPanel extends Component {
@@ -69,7 +66,6 @@ class ChangePasswordPanel extends Component {
         <ExpansionPanelActions>
           <Button
             size="small"
-            className={classes.button}
             onClick={this.handlePanelChange('panel')}
           >
             Cancel
@@ -79,13 +75,11 @@ class ChangePasswordPanel extends Component {
             disabled={isFetching}
             color="primary"
             onClick={this.handleSubmit}
-            className={classes.button}
           >
             {
               isFetching ? (<CircularProgress size={20} />) : 'Send Email'
             }
           </Button>
-
         </ExpansionPanelActions>
       </ExpansionPanel>
     );

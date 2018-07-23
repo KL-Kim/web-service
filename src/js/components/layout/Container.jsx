@@ -5,7 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 // Custom Components
 import Header from './Header';
+import HeaderSmall from './HeaderSmall';
 import Footer from './Footer';
+import BottomNav from './BottomNav';
 import Alert from '../utils/Alert';
 
 // For dev
@@ -14,17 +16,18 @@ import DevTools from './DevTools';
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    width: '100%',
     height: '100%',
     zIndex: 1,
     overflow: 'hidden',
   },
   appFrame: {
-    maxWidth: 960,
+    maxWidth: 976,
     height: '100%',
     margin: 'auto',
-    marginTop: theme.spacing.unit * 15,
-    marginBottom: theme.spacing.unit * 15,
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit * 16,
+    marginBottom: theme.spacing.unit * 16,
   },
 });
 
@@ -38,7 +41,7 @@ class Container extends Component {
         <main className={classes.appFrame}>
           {this.props.children}
         </main>
-        <Footer />
+        <BottomNav />
         <DevTools />
         <Alert />
       </div>

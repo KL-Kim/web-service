@@ -344,12 +344,14 @@ class BusinessListByTag extends Component {
     return (
       <Container>
         <div>
-          <Grid container justify="space-between" alignItems="center">
+          <Grid container justify="space-between" alignItems="flex-end">
             <Grid item>
               <Typography variant="display1">#{this.state.tag.krName}</Typography>
             </Grid>
             <Grid item>
               <Button
+                variant="text"
+                color="primary"
                 onClick={this.handleOpenFilterPopover}
                 buttonRef={node => {
                   this.filterAnchorEl = node;
@@ -364,6 +366,8 @@ class BusinessListByTag extends Component {
               </Button>
             </Grid>
           </Grid>
+
+          <br/>
 
           {
             this.props.isFetching

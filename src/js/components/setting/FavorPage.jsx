@@ -15,11 +15,11 @@ import SettingContainer from '../layout/SettingContainer';
 import BusinessCard from '../utils/BusinessCard';
 
 // Actions
-import { getBusinessList, clearBusinessList } from '../../actions/business.actions';
+import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
 // Webstorage
-import { loadFromStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = (theme) => ({
 
@@ -81,7 +81,7 @@ class FavorPage extends Component {
   render() {
     const { classes, businessList } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
         <div>
           <Typography variant="display1">My Favorite Business</Typography>
@@ -99,7 +99,7 @@ class FavorPage extends Component {
                               <CircularProgress size={30} />
                             </div>}
                   >
-                    <Grid container spacing={24} style={{ marginBottom: 12 }}>
+                    <Grid container spacing={16} style={{ marginBottom: 12 }}>
                       {
                         businessList.map(item => (
                           <Grid item xs={4} key={item._id}>
@@ -117,15 +117,15 @@ class FavorPage extends Component {
                         ))
                       }
                     </Grid>
-                    {
-                      this.state.hasMore
-                        ? null
-                        : <Typography variant="caption" align="center">
-                            --- No more favorite business. You have total {this.props.totalCount} favors ---
-                          </Typography>
-
-                    }
                   </InfiniteScroll>
+                  {
+                    this.state.hasMore
+                      ? null
+                      : <Typography variant="caption" align="center">
+                          --- No more favorite business. You have total {this.props.totalCount} favors ---
+                        </Typography>
+
+                  }
                 </div>
           }
         </div>

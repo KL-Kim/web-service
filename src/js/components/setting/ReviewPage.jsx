@@ -53,20 +53,15 @@ class ReviewPage extends Component {
     super(props);
 
     this.state = {
-      "limit": 9,
+      "limit": 18,
       "count": 0,
-      'orderBy': 'new',
       'hasMore': false,
-      'sortPopoverOpen': false,
     };
 
     this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
 
-    this.handleOrderBy = this.handleOrderBy.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.getNewReviews = this.getNewReviews.bind(this);
-    this.handleOpenSortPopover = this.handleOpenSortPopover.bind(this);
-    this.handleCloseSortPopover = this.handleCloseSortPopover.bind(this);
   }
 
   componentDidMount() {
@@ -74,7 +69,7 @@ class ReviewPage extends Component {
       this.props.getReviews({
         limit: this.state.count,
         'uid': this.state.userId,
-        'orderBy': this.state.orderBy,
+        'orderBy': 'new',
       }).then(response => {
         if (response) {
           this.setState({
@@ -86,42 +81,12 @@ class ReviewPage extends Component {
     }
   }
 
-  handleOpenSortPopover() {
-    this.setState({
-      'sortPopoverOpen': true,
-    });
-  }
-
-  handleCloseSortPopover() {
-    this.setState({
-      'sortPopoverOpen': false,
-    });
-  }
-
-  handleOrderBy = (item) => e => {
-    if (this.state.userId) {
-      this.props.getReviews({
-        limit: this.state.limit,
-        'uid': this.state.userId,
-        'orderBy': item,
-      }).then(response => {
-        if (response) {
-          this.setState({
-            'orderBy': item,
-            hasMore: response.list.length < this.props.totalCount,
-            count: this.state.limit,
-          });
-        }
-      });
-    }
-  }
-
   loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
         limit: this.state.count + this.state.limit,
         'uid': this.state.userId,
-        'orderBy': this.state.orderBy,
+        'orderBy': 'new',
       }).then(response => {
         this.setState({
           count: response.list.length,
@@ -136,7 +101,7 @@ class ReviewPage extends Component {
       this.props.getReviews({
         limit: this.state.count,
         'uid': this.state.userId,
-        'orderBy': this.state.orderBy,
+        'orderBy': 'new',
       });
     }
   }
@@ -144,112 +109,61 @@ class ReviewPage extends Component {
   render() {
     const { classes, reviews } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
         <div>
-          <Grid container justify="space-between" alignItems="flex-end">
-            <Grid item>
-              <Typography variant="display1">
-                My Reviews
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={this.handleOpenSortPopover}
-                buttonRef={node => {
-                  this.sortAnchorEl = node;
-                }}
-              >
-                Sort
-                {
-                  this.state.sortPopoverOpen
-                    ? <ArrowDropUp />
-                    : <ArrowDropDown />
-                }
-              </Button>
-            </Grid>
-          </Grid>
-
+          <Typography variant="display1">My Reviews</Typography>
           <br />
 
-          <div>
-            {
-              _.isEmpty(reviews)
-                ? <Typography align="center">None</Typography>
-                : <div>
-                    <InfiniteScroll
-                      pageStart={0}
-                      loadMore={this.loadMore}
-                      hasMore={this.state.hasMore}
-                      loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
-                              </div>}
-                    >
-                      <div className={classes.mansoryWrapper}>
-                        <Masonry elementType={'div'}>
-                          {
-                            reviews.map(review => (
-                              <div key={review._id} className={classes.mansoryItem}>
-                                <ReviewCardAlt
-                                  id={review._id}
-                                  owner={review.user}
-                                  business={review.business}
-                                  showBusinessName={true}
-                                  user={this.props.user}
-                                  isOwn={review.userId === this.props.user._id}
-                                  isLoggedIn={this.props.isLoggedIn}
-                                  content={review.content}
-                                  rating={review.rating}
-                                  upvoteCount={review.upvote.length}
-                                  serviceGood={review.serviceGood}
-                                  envGood={review.envGood}
-                                  comeback={review.comeback}
-                                  handleDelete={this.props.deleteReview}
-                                  getNewReviews={this.getNewReviews}
-                                />
-                              </div>
-                            ))
-                          }
-                        </Masonry>
-                      </div>
-                  </InfiniteScroll>
-                  {
-                    this.state.hasMore
-                      ? null
-                      : <Typography variant="caption" align="center">
-                          --- No more reviews, You have total {this.props.totalCount} reviews ---
-                        </Typography>
-                  }
-                </div>
+          {
+            _.isEmpty(reviews)
+              ? <Typography align="center">None</Typography>
+              : <div>
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.state.hasMore}
+                    loader={<div style={{ textAlign: 'center' }} key={0}>
+                              <CircularProgress size={30} />
+                            </div>}
+                  >
+                    <div className={classes.mansoryWrapper}>
+                      <Masonry elementType={'div'}>
+                        {
+                          reviews.map(review => (
+                            <div key={review._id} className={classes.mansoryItem}>
+                              <ReviewCardAlt
+                                id={review._id}
+                                owner={review.user}
+                                business={review.business}
+                                showBusinessName={true}
+                                user={this.props.user}
+                                isOwn={review.userId === this.props.user._id}
+                                isLoggedIn={this.props.isLoggedIn}
+                                content={review.content}
+                                rating={review.rating}
+                                upvoteCount={review.upvote.length}
+                                serviceGood={review.serviceGood}
+                                envGood={review.envGood}
+                                comeback={review.comeback}
+                                handleDelete={this.props.deleteReview}
+                                getNewReviews={this.getNewReviews}
+                              />
+                            </div>
+                          ))
+                        }
+                      </Masonry>
+                    </div>
+                </InfiniteScroll>
+                {
+                  this.state.hasMore
+                    ? null
+                    : <Typography variant="caption" align="center">
+                        --- No more reviews, You have total {this.props.totalCount} reviews ---
+                      </Typography>
+                }
+              </div>
             }
-          </div>
-
-          <div id="modal-container">
-            <Popover
-              open={this.state.sortPopoverOpen}
-              anchorEl={this.sortAnchorEl}
-              onClose={this.handleCloseSortPopover}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              <MenuList role="menu" style={{ width: 100 }}>
-                <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleOrderBy('new')}>
-                  <ListItemText primary="New" />
-                </MenuItem>
-                <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleOrderBy('useful')}>
-                  <ListItemText primary="Hot" />
-                </MenuItem>
-              </MenuList>
-            </Popover>
-          </div>
         </div>
       </SettingContainer>
     );

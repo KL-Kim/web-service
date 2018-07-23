@@ -25,9 +25,6 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-  },
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
     "flexBasis": '30%',
@@ -37,7 +34,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-
 });
 
 const getSteps = (props) => {
@@ -260,19 +256,17 @@ class PhonePanel extends Component {
               </Stepper>
             </Grid>
             {
-              activeStep === steps.length
+              (activeStep === steps.length)
                 ? <Grid item xs={12}>
                     <Typography variant="body1" align="center">
                       Congratulations, Your mobile phone number has been saved!
                     </Typography>
                   </Grid>
-
-                : <Grid item xs={8}>
+                : <Grid item xs={6}>
                     {this.getStepContent(activeStep, this.props)}
-                    <Grid container justify="center" alignItems="center">
+                    <Grid container justify="center" spacing={8} alignItems="center">
                       <Grid item>
                         <Button
-                          className={classes.button}
                           variant="raised"
                           size="small"
                           color="primary"
@@ -285,8 +279,9 @@ class PhonePanel extends Component {
                               : (activeStep === steps.length - 1 ? 'Verify' : 'Next')
                           }
                         </Button>
+                      </Grid>
+                      <Grid item>
                         <Button
-                          className={classes.button}
                           size="small"
                           disabled={activeStep === 0}
                           onClick={this.handleBack}

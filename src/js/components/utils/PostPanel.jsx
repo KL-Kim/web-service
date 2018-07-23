@@ -18,20 +18,15 @@ import ElapsedTime from 'js/helpers/ElapsedTime';
 import image from 'img/background_1.jpg';
 
 const styles = theme => ({
+  "wrapper": {
+    width: '100%',
+  },
   "thumbnail": {
     width: '100%',
     borderRadius: "6px",
-    boxShadow: theme.shadows[5]
-  },
-  "wrapper": {
+    boxShadow: theme.shadows[5],
     marginBottom: theme.spacing.unit * 2,
-    width: 768,
-    margin: 'auto',
   },
-  "paper": {
-    padding: theme.spacing.unit * 4,
-    height: 300,
-  }
 });
 
 class PostPanel extends Component {
@@ -40,7 +35,7 @@ class PostPanel extends Component {
 
     return (
       <div className={classes.wrapper}>
-        <Grid container spacing={24} justify="center">
+        <Grid container justify="center">
           <Grid item xs={12}>
               <Img src={image} className={classes.thumbnail} />
           </Grid>
@@ -53,7 +48,9 @@ class PostPanel extends Component {
               <Typography variant="body1" align="center" gutterBottom>{post.summary}</Typography>
               <Grid container justify="center">
                 <Grid item>
-                  <Button href={"/post/s/" + this.props.post._id} color="primary">Read More</Button>
+                  <Link to={"/post/s/" + this.props.post._id}>
+                    <Button color="primary">Read More</Button>
+                  </Link>
                 </Grid>
               </Grid>
 

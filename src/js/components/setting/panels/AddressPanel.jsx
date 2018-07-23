@@ -40,9 +40,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-  "button": {
-    "margin": theme.spacing.unit,
-  },
 });
 
 class AddressPanel extends Component {
@@ -229,13 +226,11 @@ class AddressPanel extends Component {
         <ExpansionPanelActions>
           <Button
             size="small"
-            className={classes.button}
             onClick={this.handlePanelChange('panel')}
           >
             Cancel
           </Button>
           <Button
-            className={classes.button}
             size="small"
             color="primary"
             disabled={_.isEmpty(this.state.provinceCode)

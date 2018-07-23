@@ -126,16 +126,13 @@ class PostPage extends Component {
   render() {
     const { classes, postsList } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
         <div>
-          <Grid container spacing={16} justify="space-between" alignItems="center">
-            <Grid item xs={12}>
-              <Typography variant="display1" gutterBottom>
-                My Posts
-              </Typography>
-            </Grid>
+          <Typography variant="display1" >My Posts</Typography>
+          <br />
 
+          <Grid container justify="space-between" alignItems="flex-end">
             <Grid item xs={4}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
@@ -162,54 +159,56 @@ class PostPage extends Component {
             </Grid>
 
             <Grid item>
-              <Button variant="raised" color="primary" href="/setting/post/s/new">Add new</Button>
-            </Grid>
-
-            <Grid item xs={12}>
-              {
-                _.isEmpty(postsList)
-                  ? <Typography>None</Typography>
-                  : <div>
-                      <InfiniteScroll
-                          pageStart={0}
-                          loadMore={this.loadMore}
-                          hasMore={this.state.hasMore}
-                          loader={<div style={{ textAlign: 'center' }} key={0}>
-                                    <CircularProgress size={30} />
-                                  </div>}
-                        >
-                        <div className={classes.masonryWrapper}>
-                          <Masonry>
-                            {
-                              postsList.map(item => (
-                                <div key={item._id} className={classes.mansoryItem}>
-                                  <PostCard
-                                    key={item._id}
-                                    id={item._id}
-                                    author={item.authorId}
-                                    user={this.props.user}
-                                    title={item.title}
-                                    summary={item.summary}
-                                    status={item.status}
-                                  />
-                                </div>
-                              ))
-                            }
-                          </Masonry>
-                        </div>
-                      </InfiniteScroll>
-
-                      {
-                        !this.state.hasMore
-                          ?   <Typography variant="caption" align="center">
-                                --- No more posts, You have total {this.props.totalCount} posts ---
-                              </Typography>
-                          : null
-                      }
-                    </div>
-              }
+              <Link to="/setting/post/s/new">
+                <Button variant="outlined" color="primary">Add new</Button>
+              </Link>
             </Grid>
           </Grid>
+
+          <br />
+
+          {
+            _.isEmpty(postsList)
+              ? <Typography>None</Typography>
+              : <div>
+                  <InfiniteScroll
+                      pageStart={0}
+                      loadMore={this.loadMore}
+                      hasMore={this.state.hasMore}
+                      loader={<div style={{ textAlign: 'center' }} key={0}>
+                                <CircularProgress size={30} />
+                              </div>}
+                    >
+                    <div className={classes.masonryWrapper}>
+                      <Masonry>
+                        {
+                          postsList.map(item => (
+                            <div key={item._id} className={classes.mansoryItem}>
+                              <PostCard
+                                key={item._id}
+                                id={item._id}
+                                author={item.authorId}
+                                user={this.props.user}
+                                title={item.title}
+                                summary={item.summary}
+                                status={item.status}
+                              />
+                            </div>
+                          ))
+                        }
+                      </Masonry>
+                    </div>
+                  </InfiniteScroll>
+
+                  {
+                    !this.state.hasMore
+                      ?   <Typography variant="caption" align="center">
+                            --- No more posts, You have total {this.props.totalCount} posts ---
+                          </Typography>
+                      : null
+                  }
+                </div>
+              }
         </div>
       </SettingContainer>
     );

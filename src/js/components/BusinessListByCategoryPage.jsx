@@ -43,6 +43,16 @@ import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = theme => ({
+  "categoryButton": {
+    marginRight: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit,
+    paddingTop: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 3,
+    paddingRight: theme.spacing.unit * 3,
+    fontSize: '1rem',
+    minWidth: 100,
+  },
   "popoverContainer": {
     width: 500,
     padding: theme.spacing.unit * 3,
@@ -57,16 +67,6 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit / 2,
     paddingLeft: theme.spacing.unit,
     paddingRight: theme.spacing.unit,
-  },
-  "categoryButton": {
-    marginRight: theme.spacing.unit * 2,
-    marginRight: theme.spacing.unit,
-    paddingTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
-    fontSize: '1rem',
-    minWidth: 100,
   },
 });
 
@@ -87,9 +87,10 @@ class BusinessListPage extends Component {
       "areaPopoverOpen": false,
       "sortPopoverOpen": false,
       "filterPopoverOpen": false,
+      "myFavors": [],
     };
 
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+    // this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.loadMore = this.loadMore.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
@@ -101,58 +102,57 @@ class BusinessListPage extends Component {
   }
 
   componentDidMount() {
-    this.props.getBusinessList({
-      limit: this.state.limit,
-      category: this.props.match.params.slug,
-    })
-    .then(response => {
-      if (response) {
-        const areas = [];
-        const areaIds = [];
-        let aIndex;
-
-        response.list.map(business => {
-          aIndex = areaIds.indexOf(business.address.area.code)
-
-          if (aIndex < 0) {
-            areaIds.push(business.address.area.code);
-            areas.push(business.address.area);
-          }
-
-          return '';
-        });
-
-        this.setState({
-          areas: areas.slice(),
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount,
-        });
-      }
-    });
-
-    this.props.getCategoriesList()
+    if (this.props.match.params.slug) {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        category: this.props.match.params.slug,
+      })
       .then(response => {
         if (response) {
-          _.find(response, item => {
-            if (item.enName === this.props.match.params.slug) {
-              this.setState({
-                category: item
-              });
+          const areas = [];
+          const areaIds = [];
+          let aIndex;
 
-              return item;
+          response.list.map(business => {
+            aIndex = areaIds.indexOf(business.address.area.code)
+
+            if (aIndex < 0) {
+              areaIds.push(business.address.area.code);
+              areas.push(business.address.area);
             }
+
+            return '';
+          });
+
+          this.setState({
+            areas: areas.slice(),
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
 
-    // this.props.categories.map(item => {
-    //   if (item.enName === this.props.match.params.slug) {
-    //     this.setState({
-    //       category: item
-    //     });
-    //   }
-    // });
+      this.props.getCategoriesList()
+        .then(response => {
+          if (response) {
+            _.find(response, item => {
+              if (item.enName === this.props.match.params.slug) {
+                this.setState({
+                  category: item
+                });
+              }
+            });
+          }
+        });
+    }
 
+    if (this.props.isLoggedIn) {
+      const list  = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+
+      this.setState({
+        myFavors: list.slice()
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -325,16 +325,19 @@ class BusinessListPage extends Component {
     return (
       <Container>
         <div>
-          <Grid container justify="space-between" alignItems="center">
+          <Grid container justify="space-between" alignItems="flex-end">
             <Grid item>
-              <Typography variant="display1" className={classes.flex}>
+              <Typography variant="display1">
                 {
                   _.isEmpty(this.state.category) ? '' : this.state.category.krName
                 }
               </Typography>
             </Grid>
+
             <Grid item>
               <Button
+                variant="text"
+                color="primary"
                 onClick={this.handleOpenFilterPopover}
                 buttonRef={node => {
                   this.filterAnchorEl = node;
@@ -349,6 +352,8 @@ class BusinessListPage extends Component {
               </Button>
             </Grid>
           </Grid>
+
+          <br />
 
           {
             this.props.isFetching
@@ -442,7 +447,7 @@ class BusinessListPage extends Component {
                   <Grid item xs={9}>
                     <Grid container>
                     {
-                      categories.map(item => item.parent ? '' : (
+                      categories.map(item => item.parent ? null : (
                         <Grid item xs={4} key={item._id} className={classes.menuItem}>
                           <Link to={'/business/category/' + item.enName}>
                             <Button
@@ -561,7 +566,7 @@ class BusinessListPage extends Component {
 
                 <Grid container justify="flex-end" alignItems="center">
                   <Grid item>
-                    <Button variant="raised" color="primary" onClick={this.handleCloseFilterPopover}>
+                    <Button variant="raised" color="primary" size="small" onClick={this.handleCloseFilterPopover}>
                       Ok
                     </Button>
                   </Grid>
@@ -582,10 +587,12 @@ BusinessListPage.propTypes = {
   "totalCount": PropTypes.number.isRequired,
   "categories": PropTypes.array.isRequired,
   "isFetching": PropTypes.bool,
+  "isLoggedIn": PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
     "categories": state.categoryReducer.categoriesList,

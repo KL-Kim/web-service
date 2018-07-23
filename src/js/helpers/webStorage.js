@@ -1,35 +1,39 @@
 /**
  * WebStorage Utilities
+ *
+ * @since 0.0.1
  */
 
 /**
-* load state from localStorage
+* Load state from localStorage
 */
 export const loadFromStorage = (item) => {
   try {
-    const serializedState = localStorage.getItem(item);
-    if (serializedState === null) return null;
-    return JSON.parse(serializedState);
+    return JSON.parse(localStorage.getItem(item));
   } catch(err) {
     return null;
   }
 };
 
 /**
-* set state from localStorage
+* Set state from localStorage
 */
 export const saveToStorage = (item, state) => {
-  const serializedState = JSON.stringify(state);
-  localStorage.setItem(item, serializedState);
-  return ;
+  try {
+    localStorage.setItem(item, JSON.stringify(state));
+    return ;
+  } catch(err) {
+    return null;
+  }
 };
 
 /**
-* remove state from localStorage
+* Remove state from localStorage
 */
 export const removeFromStorage = (item) => {
   try {
     localStorage.removeItem(item);
+    return ;
   } catch(err) {
     return null;
   }

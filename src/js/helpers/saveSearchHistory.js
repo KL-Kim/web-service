@@ -8,6 +8,8 @@ import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
 const saveSearchHistory = (query) => {
+  if (!query) return ;
+
   let history = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY);
 
   if (!Array.isArray(history)) {
@@ -25,9 +27,10 @@ const saveSearchHistory = (query) => {
   if (history.length > 5) {
     history.shift();
   }
+
   saveToStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY, history);
 
-  return history;
+  return ;
 }
 
 export default saveSearchHistory;

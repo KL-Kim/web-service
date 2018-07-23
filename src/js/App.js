@@ -11,6 +11,7 @@ import PrivateRoute from './helpers/PrivateRoute';
 // React Compontens
 import NoMatchPage from 'js/components/404';
 import HomePage from 'js/components/HomePage';
+import ExplorePage from 'js/components/ExplorePage';
 import SignupPage from 'js/components/SignupPage';
 import AboutPage from 'js/components/AboutPage';
 import TermsPolicyPage from 'js/components/TermsPolicyPage';
@@ -72,6 +73,7 @@ const App = () => {
           <Route path="/business/s/:slug" component={SingleBusinessPage} />
           <Route exact path="/blog" component={BlogListPage} />
           <Route path="/post/s/:id" component={SinglePostPage} />
+          <Route path="/explore" component={ExplorePage} />
 
           {/*  Setting Routes */}
           <PrivateRoute path="/setting/account" component={SettingAccount} />

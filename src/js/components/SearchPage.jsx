@@ -23,23 +23,28 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
+
+import Paper from '@material-ui/core/Paper';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import FilterList from '@material-ui/icons/FilterList';
+import Search from '@material-ui/icons/Search';
 
 // Custom Components
 import Container from './layout/Container';
 import BusinessCard from './utils/BusinessCard';
 import CustomButton from './utils/Button';
+import SearchBar from './utils/SearchBar'
 
 // Actions
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
-import { getCategoriesList } from 'js/actions/category.actions';
-import { getTagsList } from 'js/actions/tag.actions';
 
 // WebStorage
 import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
@@ -50,11 +55,13 @@ import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
 import saveSearchHistory from 'js/helpers/saveSearchHistory';
 
 const styles = theme => ({
+  "searchField": {
+    padding: theme.spacing.unit * 2,
+  },
   "section": {
-    marginBottom: theme.spacing.unit * 8,
+    marginBottom: theme.spacing.unit * 4,
   },
   "categoryButton": {
-    marginRight: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
@@ -91,10 +98,11 @@ class SearchPage extends Component {
     const parsed = qs.parse(props.location.search.slice(1));
 
     this.state = {
+      "search": '',
       "limit": 24,
       "count": 0,
       "categories": [],
-      "categorySlug": '',
+      "selectedCategory": '',
       "areas": [],
       "area": '',
       "orderBy": '',
@@ -103,11 +111,13 @@ class SearchPage extends Component {
       "filterPopoverOpen": false,
       "searchCategoryResponse": [],
       "searchTagResponse": [],
-      ...parsed,
+      "searchHistory": [],
     };
 
     this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
     this.handleClickCategory = this.handleClickCategory.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
@@ -118,73 +128,159 @@ class SearchPage extends Component {
   }
 
   componentDidMount() {
+    const searchHistory = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY) || [];
+
+    this.setState({
+      searchHistory: searchHistory.reverse().slice(),
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
+  }
+
+  handleChange(e) {
+    const { value } = e.target
+
+    if (this.state.typingTimeout) {
+      clearTimeout(this.state.typingTimeout);
+    }
+
+    this.setState({
+      search: value,
+      typing: false,
+      typingTimeout: setTimeout(() => {
+        this.searchCategoryOrTag(value);
+      }, 300),
+    });
+  }
+
+  searchCategoryOrTag(query) {
+    if (query) {
+      const categories = searchCategoryOrTag('category', query);
+      const tags = searchCategoryOrTag('tag', query);
+
+      this.setState({
+        searchCategoryResponse: categories.slice(),
+        searchTagResponse: tags.slice(),
+      });
+    }
+  }
+
+  handleClickCategory = slug => e => {
+    if (this.state.selectedCategory !== slug) {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        category: slug,
+        area: this.state.area.code,
+        event: this.state.event,
+        orderBy: this.state.orderBy,
+        search: this.state.search,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            selectedCategory: slug,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }
+      });
+    }
+  }
+
+  handleClickArea = area => e => {
+    if (this.state.area.code !== area.code) {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        category: this.state.selectedCategory,
+        area: area.code,
+        event: this.state.event,
+        orderBy: this.state.orderBy,
+        search: this.state.search,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            area: area,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount,
+          });
+        }
+        this.setState({
+          areaPopoverOpen: false,
+        });
+      });
+    }
+  }
+
+  handleClickOrderBy = item => e => {
+    if (this.state.orderBy !== item) {
+      this.props.getBusinessList({
+        limit: this.state.limit,
+        category: this.state.selectedCategory,
+        area: this.state.area.code,
+        event: this.state.event,
+        orderBy: item,
+        search: this.state.search,
+      })
+      .then(response => {
+        if (response) {
+          this.setState({
+            orderBy: item,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }
+        this.setState({
+          sortPopoverOpen: false,
+        });
+      });
+    }
+  }
+
+  handleEventSwitch() {
     this.props.getBusinessList({
       limit: this.state.limit,
-      search: this.state.s,
+      category: this.state.selectedCategory,
+      area: this.state.area.code,
+      event: !this.state.event,
+      orderBy: this.state.orderBy,
+      search: this.state.search,
     })
     .then(response => {
       if (response) {
-        const categories = [];
-        const categoryIds = [];
-        const areas = [];
-        const areaIds = [];
-        let cIndex, aIndex;
-
-        response.list.map(business => {
-          cIndex = categoryIds.indexOf(business.category._id);
-
-          if (cIndex < 0) {
-            categories.push(business.category);
-            categoryIds.push(business.category._id);
-          }
-
-          aIndex = areaIds.indexOf(business.address.area.code)
-
-          if (aIndex < 0) {
-            areaIds.push(business.address.area.code);
-            areas.push(business.address.area);
-          }
-
-          return ;
-        });
-
         this.setState({
-          categories: categories.slice(),
-          areas: areas.slice(),
           count: response.list.length,
-          hasMore: response.list.length < response.totalCount,
+          hasMore: response.list.length < response.totalCount
         });
       }
     });
 
-    if (this.state.s && !_.isEmpty(this.state.s)) {
-      const categories = searchCategoryOrTag('category', this.state.s);
-
-      if (categories) {
-        this.setState({
-          searchCategoryResponse: categories.slice()
-        });
-      }
-
-      const tags = searchCategoryOrTag('tag', this.state.s);
-
-      if (tags) {
-        this.setState({
-          searchTagResponse: tags.slice(),
-        });
-      }
-
-      saveSearchHistory(this.state.s);
-    }
+    this.setState({
+      event: !this.state.event,
+    })
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.location.search !== this.props.location.search) {
-      const parsed = qs.parse(this.props.location.search.slice(1));
+  handleOpenFilterPopover() {
+    this.setState({
+      filterPopoverOpen: true,
+    });
+  }
 
+  handleCloseFilterPopover() {
+    this.setState({
+      filterPopoverOpen: false,
+    });
+  }
+
+  handleSearch(e) {
+    e.preventDefault();
+
+    if (this.state.search) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        search: parsed.s,
+        search: this.state.search,
       })
       .then(response => {
         if (response) {
@@ -213,156 +309,26 @@ class SearchPage extends Component {
           });
 
           this.setState({
-            s: parsed.s,
             categories: categories.slice(),
             areas: areas.slice(),
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-      });
-
-      if (parsed.s) {
-        const categories = searchCategoryOrTag('category', parsed.s);
-
-        if (categories) {
-          this.setState({
-            searchCategoryResponse: categories.slice()
-          });
-        }
-
-        const tags = searchCategoryOrTag('tag', parsed.s);
-
-        if (tags) {
-          this.setState({
-            searchTagResponse: tags.slice(),
-          });
-        }
-
-        saveSearchHistory(parsed.s);
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
-  }
-
-  handleClickCategory = slug => e => {
-    if (this.state.categorySlug !== slug) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: slug,
-        area: this.state.area.code,
-        event: this.state.event,
-        orderBy: this.state.orderBy,
-        search: this.state.s,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            categorySlug: slug,
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-      });
-    }
-  }
-
-  handleClickArea = area => e => {
-    if (this.state.area.code !== area.code) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.state.categorySlug,
-        area: area.code,
-        event: this.state.event,
-        orderBy: this.state.orderBy,
-        search: this.state.s,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            area: area,
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
         }
-        this.setState({
-          areaPopoverOpen: false,
-        });
       });
+
+      saveSearchHistory(this.state.search);
     }
-  }
-
-  handleClickOrderBy = item => e => {
-    if (this.state.orderBy !== item) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.state.categorySlug,
-        area: this.state.area.code,
-        event: this.state.event,
-        orderBy: item,
-        search: this.state.s,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            orderBy: item,
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-        this.setState({
-          sortPopoverOpen: false,
-        });
-      });
-    }
-  }
-
-  handleEventSwitch() {
-    this.props.getBusinessList({
-      limit: this.state.limit,
-      category: this.state.categorySlug,
-      area: this.state.area.code,
-      event: !this.state.event,
-      orderBy: this.state.orderBy,
-      search: this.state.s,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount
-        });
-      }
-    });
-
-    this.setState({
-      event: !this.state.event,
-    })
-  }
-
-  handleOpenFilterPopover() {
-    this.setState({
-      filterPopoverOpen: true,
-    });
-  }
-
-  handleCloseFilterPopover() {
-    this.setState({
-      filterPopoverOpen: false,
-    });
   }
 
   loadMore() {
     if (this.state.count < this.props.totalCount) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
-        category: this.state.categorySlug,
+        category: this.state.selectedCategory,
         area: this.state.area.code,
         event: this.state.event,
-        search: this.state.s,
+        search: this.state.search,
         orderBy: this.state.orderBy,
     })
     .then((response => {
@@ -380,10 +346,57 @@ class SearchPage extends Component {
     return (
       <Container>
         <div>
+
+          <div className={classes.section}>
+            <Paper className={classes.searchField}>
+              <form onSubmit={this.handleSearch}>
+                <FormControl fullWidth>
+                  <Input
+                    type="search"
+                    name="search"
+                    placeholder="Search..."
+                    autoComplete="off"
+                    defaultValue={this.state.search}
+                    disableUnderline
+                    onChange={this.handleChange}
+                    startAdornment={
+                      <InputAdornment position="start" classes={{ root: classes.adornmentRoot }}>
+                        <IconButton
+                          disableRipple
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleSearch}
+                        >
+                          <Search />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </form>
+            </Paper>
+          </div>
+
           {
-            _.isEmpty(this.state.searchCategoryResponse) ? ''
+            _.isEmpty(this.state.searchHistory) || this.state.search
+              ? null
+              : <Paper className={classes.section}>
+                  <List subheader={<ListSubheader component="div">Recent Search</ListSubheader> }>
+                    {
+                      this.state.searchHistory.map((item, index) => (
+                        <ListItem key={index} button>
+                          <ListItemText primary={item} />
+                        </ListItem>
+                      ))
+                    }
+                  </List>
+                </Paper>
+          }
+
+          {
+            _.isEmpty(this.state.searchCategoryResponse)
+              ? null
               : <div className={classes.section}>
-                  <Typography variant="display1" gutterBottom>Category: '{this.state.s}'</Typography>
+                  <Typography variant="title" gutterBottom>Category: '{this.state.search}'</Typography>
                   <Divider />
                   <br />
                   {
@@ -401,13 +414,13 @@ class SearchPage extends Component {
                   }
                   <br />
                 </div>
-
           }
 
           {
-            _.isEmpty(this.state.searchTagResponse) ? ''
+            _.isEmpty(this.state.searchTagResponse)
+              ? null
               : <div className={classes.section}>
-                  <Typography variant="display1" gutterBottom>Tag: '{this.state.s}'</Typography>
+                  <Typography variant="title" gutterBottom>Tag: '{this.state.search}'</Typography>
                   <Divider />
                   <br />
                   {
@@ -427,103 +440,110 @@ class SearchPage extends Component {
                 </div>
           }
 
-          <div>
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <Typography variant="display1" gutterBottom>
+          {
+            _.isEmpty(businessList)
+              ? null
+              : <div>
+                  <Grid container justify="space-between" alignItems="flex-end">
+                    <Grid item>
+                      <Typography variant="title">
+                        {
+                          this.state.search ? 'Business: \'' + this.state.search + '\'' : 'All'
+                        }
+                      </Typography>
+                    </Grid>
+
+                    <Grid item>
+                      <Button
+                        color="primary"
+                        onClick={this.handleOpenFilterPopover}
+                        buttonRef={node => {
+                          this.filterAnchorEl = node;
+                        }}
+                      >
+                        Filter
+                        {
+                          this.state.filterPopoverOpen
+                            ? <ArrowDropUp />
+                            : <ArrowDropDown />
+                        }
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  <br />
                   {
-                    this.state.s ? 'Business: \'' + this.state.s + '\'' : 'All Businesses'
-
+                    this.props.isFetching
+                      ? <LinearProgress style={{ height: 1 }} />
+                      : <Divider />
                   }
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Button
-                  onClick={this.handleOpenFilterPopover}
-                  buttonRef={node => {
-                    this.filterAnchorEl = node;
-                  }}
-                >
-                  <FilterList className={classes.leftIcon} />
-                  Filter
-                  {
-                    this.state.filterPopoverOpen
-                      ? <ArrowDropUp />
-                      : <ArrowDropDown />
-                  }
-                </Button>
-              </Grid>
-            </Grid>
+                  <br />
 
-            {
-              this.props.isFetching
-                ? <LinearProgress style={{ height: 1 }} />
-                : <Divider />
-            }
-            <br />
-
-            <div>
-              <CustomButton
-                color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
-                round
-                className={classes.categoryButton}
-                onClick={this.handleClickCategory('')}
-              >
-                All
-              </CustomButton>
-              {
-                _.isEmpty(this.state.categories) ? ''
-                  : this.state.categories.map((item) => (
+                  <div>
                     <CustomButton
-                      key={item._id}
-                      color={this.state.categorySlug === item.enName ? "primary" : 'white'}
+                      color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
                       round
                       className={classes.categoryButton}
-                      onClick={this.handleClickCategory(item.enName)}
+                      onClick={this.handleClickCategory('')}
                     >
-                      {item.krName}
+                      All
                     </CustomButton>
-                  ))
-              }
-            </div>
 
-            <br />
+                    {
+                      _.isEmpty(this.state.categories)
+                        ? null
+                        : this.state.categories.map(item => (
+                          <CustomButton
+                            key={item._id}
+                            color={this.state.selectedCategory === item.enName ? "primary" : 'white'}
+                            round
+                            className={classes.categoryButton}
+                            onClick={this.handleClickCategory(item.enName)}
+                          >
+                            {item.krName}
+                          </CustomButton>
+                        ))
+                    }
+                  </div>
 
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadMore}
-              hasMore={this.state.hasMore}
-              loader={<div style={{ textAlign: 'center' }} key={0}>
-                        <CircularProgress size={30} />
-                      </div>}
-            >
-              <Grid container spacing={16}>
-                {
-                  _.isEmpty(businessList)
-                    ? <Grid item xs={12}>
-                        <Typography variant="headline" align="center">None</Typography>
+                  <br />
+
+                  {
+                    <InfiniteScroll
+                      pageStart={0}
+                      loadMore={this.loadMore}
+                      hasMore={this.state.hasMore}
+                      loader={<div style={{ textAlign: 'center' }} key={0}>
+                                <CircularProgress size={30} />
+                              </div>}
+                    >
+                      <Grid container spacing={16} style={{ marginBottom: 12 }}>
+                        {
+                          businessList.map(item => (
+                            <Grid item xs={4} key={item._id}>
+                              <BusinessCard
+                                bid={item._id}
+                                title={item.krName}
+                                enName={item.enName}
+                                rating={item.ratingAverage}
+                                thumbnailUri={item.thumbnailUri}
+                                category={item.category}
+                                tags={item.tags}
+                                event={item.event}
+                                myFavors={this.state.myFavors}
+                              />
+                            </Grid>
+                          ))
+                        }
                       </Grid>
-                    : businessList.map(item => (
-                        <Grid item xs={4} key={item._id}>
-                          <BusinessCard
-                            bid={item._id}
-                            title={item.krName}
-                            enName={item.enName}
-                            rating={item.ratingAverage}
-                            thumbnailUri={item.thumbnailUri}
-                            category={item.category}
-                            tags={item.tags}
-                            event={item.event}
-                            myFavors={this.state.myFavors}
-                          />
-                        </Grid>
-                      ))
-                }
-              </Grid>
-            </InfiniteScroll>
-          </div>
+                    </InfiniteScroll>
+                  }
+                </div>
+          }
 
-          <div>
+
+
+          <div id="modal-container">
             <Popover
               open={this.state.filterPopoverOpen}
               anchorEl={this.filterAnchorEl}
@@ -585,6 +605,7 @@ class SearchPage extends Component {
                     <Grid container justify="space-around">
                       <Grid item xs={4} className={classes.menuItem}>
                         <Button
+                          fullWidth
                           color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
                           size="small"
                           variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
@@ -595,6 +616,7 @@ class SearchPage extends Component {
                       </Grid>
                       <Grid item xs className={classes.menuItem}>
                         <Button
+                          fullWidth
                           color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
                           size="small"
                           variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
@@ -605,6 +627,7 @@ class SearchPage extends Component {
                       </Grid>
                       <Grid item xs className={classes.menuItem}>
                         <Button
+                          fullWidth
                           color={this.state.orderBy === 'new' ? 'primary' : 'default'}
                           size="small"
                           variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
@@ -636,7 +659,7 @@ class SearchPage extends Component {
 
                 <Grid container justify="flex-end" alignItems="center">
                   <Grid item>
-                    <Button variant="raised" color="primary" onClick={this.handleCloseFilterPopover}>
+                    <Button variant="raised" size="small" color="primary" onClick={this.handleCloseFilterPopover}>
                       Ok
                     </Button>
                   </Grid>
@@ -669,6 +692,4 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, {
   getBusinessList,
   clearBusinessList,
-  getCategoriesList,
-  getTagsList,
 })(withStyles(styles)(SearchPage));

@@ -26,7 +26,6 @@ const styles = theme => ({
   },
   'selected': {
     color: theme.palette.primary.main,
-    fontWeight: 550,
   }
 });
 
@@ -44,43 +43,43 @@ class Sidebar extends Component {
           <MenuList>
             <Link to="/setting/account">
               <MenuItem selected={match.path === "/setting/account"} >
-                <ListItemIcon>
+                <ListItemIcon color={match.path === "/setting/account" ? "primary" : 'inherit'}>
                   <AccountCircle />
                 </ListItemIcon>
                 <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
               </MenuItem>
             </Link>
 
-            <Link to="/setting/review">
-              <MenuItem selected={match.path === "/setting/review"}>
-                <ListItemIcon>
-                  <RateReview />
-                </ListItemIcon>
-                <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
-              </MenuItem>
-            </Link>
-
-            <Link to="/setting/favor">
-              <MenuItem selected={match.path === "/setting/favor"}>
-                <ListItemIcon>
-                  <Favorite />
-                </ListItemIcon>
-                <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
-              </MenuItem>
-            </Link>
-
             <Link to="/setting/notification">
               <MenuItem selected={match.path === "/setting/notification"}>
-                <ListItemIcon>
+                <ListItemIcon color={match.path === "/setting/notification" ? "primary" : 'inherit'}>
                   <Notifications />
                 </ListItemIcon>
                 <ListItemText primary="Notifications" classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}} />
               </MenuItem>
             </Link>
 
+            <Link to="/setting/favor">
+              <MenuItem selected={match.path === "/setting/favor"}>
+                <ListItemIcon color={match.path === "/setting/favor" ? "primary" : 'inherit'}>
+                  <Favorite />
+                </ListItemIcon>
+                <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
+
+            <Link to="/setting/review">
+              <MenuItem selected={match.path === "/setting/review"}>
+                <ListItemIcon color={match.path === "/setting/review" ? "primary" : 'inherit'}>
+                  <RateReview />
+                </ListItemIcon>
+                <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
+              </MenuItem>
+            </Link>
+
             <Link to="/setting/comment">
               <MenuItem selected={match.path === "/setting/comment"}>
-                <ListItemIcon>
+                <ListItemIcon color={match.path === "/setting/comment" ? "primary" : 'inherit'}>
                   <QuestionAnswer />
                 </ListItemIcon>
                 <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
@@ -91,7 +90,7 @@ class Sidebar extends Component {
               this.props.role === 'writer'
                 ? (<Link to="/setting/post">
                     <MenuItem selected={match.path === "/setting/post"}>
-                      <ListItemIcon>
+                      <ListItemIcon color={match.path === "/setting/post" ? "primary" : 'inherit'}>
                         <Book />
                       </ListItemIcon>
                       <ListItemText primary="Posts" classes={match.path === "/setting/post" ? { primary: classes.selected } : {}} />

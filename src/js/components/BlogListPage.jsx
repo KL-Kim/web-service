@@ -19,7 +19,7 @@ import { getPostsList } from '../actions/blog.actions.js';
 
 const styles = theme => ({
   "root": {
-    width: 960,
+    maxWidth: 760,
     margin: 'auto',
   },
   "section": {

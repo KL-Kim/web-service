@@ -28,13 +28,17 @@ const search = (type, query) => {
 
   if (_.isEmpty(list)) return [];
 
-  const regex = new RegExp(query);
+  if (query === 'ALL') {
+    return list;
+  } else {
+    const regex = new RegExp(query);
 
-  const match = list.filter(item => {
-    return regex.exec(item.krName);
-  });
+    const match = list.filter(item => {
+      return regex.exec(item.krName);
+    });
 
-  return match;
+    return match;
+  }
 }
 
 export default search;

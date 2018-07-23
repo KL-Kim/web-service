@@ -29,9 +29,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-  "button": {
-    "margin": theme.spacing.unit,
-  },
 });
 
 class EmailPanel extends Component {
@@ -83,7 +80,6 @@ class EmailPanel extends Component {
               ? (<Button
                   size="small"
                   color="primary"
-                  className={classes.button}
                   onClick={this.handlePanelChange('panel')}
                 >
                   Close
@@ -91,7 +87,6 @@ class EmailPanel extends Component {
               : (<div>
                   <Button
                     size="small"
-                    className={classes.button}
                     onClick={this.handlePanelChange('panel')}
                   >
                     Cancel
@@ -99,7 +94,6 @@ class EmailPanel extends Component {
                   <Button
                     size="small"
                     color="primary"
-                    className={classes.button}
                     disabled={isFetching}
                     onClick={this.handleSubmit}
                   >

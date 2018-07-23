@@ -129,7 +129,6 @@ class SearchBar extends Component {
   handleSearch(e) {
     e.preventDefault();
 
-    this.props.history.push("/search?s=" + this.state.search);
   }
 
   render() {
@@ -160,7 +159,7 @@ class SearchBar extends Component {
                           onFocus={this.handleFocusInput}
                           onChange={this.handleChange}
                           startAdornment={
-                            <InputAdornment position="start" classes={{root: classes.adornmentRoot}}>
+                            <InputAdornment position="start" classes={{ root: classes.adornmentRoot }}>
                               <IconButton
                                 disableRipple
                                 aria-label="Toggle password visibility"
@@ -168,7 +167,6 @@ class SearchBar extends Component {
                                 style={{
                                   paddingLeft: 4,
                                   paddingRight: 4,
-                                  color: 'white',
                                 }}
                               >
                                 <Search />

@@ -16,36 +16,44 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import DeleteIcon from '@material-ui/icons/Delete';
 import FiberNew from '@material-ui/icons/FiberNew';
+import ClearAll from '@material-ui/icons/ClearAll';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import MessageContent from '../utils/MessageContent';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
-import getElapsedTime from '../../helpers/ElapsedTime';
+import getElapsedTime from 'js/helpers/ElapsedTime';
 
 // Webstorage
-import { loadFromStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
 import {
   getNotification,
   deleteNotification,
   clearReadNotifications
-} from '../../actions/notification.actions';
+} from 'js/actions/notification.actions';
 
 
 const styles = (theme) => ({
-  paper: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
+  "root": {
+    maxWidth: 720,
+    margin: 'auto'
   },
-  button: {
+  "itemWrapper": {
+    marginBottom: theme.spacing.unit * 2,
+  },
+  "button": {
     margin: theme.spacing.unit,
+  },
+  "rightIcon": {
+    marginLeft: theme.spacing.unit,
   },
 });
 
@@ -62,7 +70,7 @@ class NotificationPage extends Component {
       hasMore: false,
     };
 
-    this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+    this.state.userId = props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleConfirmationDialogOpen = this.handleConfirmationDialogOpen.bind(this);
@@ -73,16 +81,18 @@ class NotificationPage extends Component {
   }
 
   componentDidMount() {
-    this.props.getNotification({ uid: this.state.userId, limit: this.state.limit })
-      .then(response => {
-        if (response) {
-          this.setState({
-            list: response.list.slice(),
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-      });
+    if (this.state.userId) {
+      this.props.getNotification({ uid: this.state.userId, limit: this.state.limit })
+        .then(response => {
+          if (response) {
+            this.setState({
+              list: response.list.slice(),
+              count: response.list.length,
+              hasMore: response.list.length < response.totalCount
+            });
+          }
+        });
+    }
   }
 
   handleDelete = (id, index) => e =>  {
@@ -153,7 +163,7 @@ class NotificationPage extends Component {
         if (response) {
           this.setState({
             count: this.state.count + response.list.length,
-            hasMore: (this.state.count + response.list.length) < this.props.totalCount,
+            hasMore: (this.state.count + response.list.length) < response.totalCount,
             list: this.state.list.concat(response.list),
           });
         }
@@ -165,74 +175,99 @@ class NotificationPage extends Component {
   render() {
     const { classes } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
-        <div>
-          <Grid container className={classes.root} spacing={16} justify="center" alignItems="flex-start">
-            <Grid item xs={12}>
-              <Typography variant="display1" gutterBottom>
-                Notifications
-              </Typography>
+        <div className={classes.root}>
+          <Grid container className={classes.root} justify="space-between" alignItems="flex-end">
+            <Grid item>
+              <Typography variant="display1">Notifications</Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Button color="primary" onClick={this.handleConfirmationDialogOpen}>Clear</Button>
-            </Grid>
-            <Grid item xs={12}>
-              <List>
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMore}
-                  hasMore={this.state.hasMore}
-                  loader={<div className="loader" key={0}>Loading ...</div>}
-                >
-                  {
-                    _.isEmpty(this.state.list) ? ''
-                      : this.state.list.map((item, index) =>
-                        <Paper className={classes.paper} key={index}>
-                          <ListItem className={classes.listItem} button onClick={this.handleClickListItem(item)}>
-                            {
-                              item.isRead ? ''
-                                : <ListItemIcon>
-                                    <FiberNew color="secondary"/>
-                                  </ListItemIcon>
-                            }
-                            <ListItemText
-                              primary={
-                                <MessageContent
-                                  key={item._id}
-                                  sender={item.senderId}
-                                  type={item.type}
-                                  event={item.event}
-                                  subjectTitle={item.subjectTitle}
-                                  subjectContent={item.subjectContent}
-                                  commentContent={item.commentContent}
-                                  subjectUrl={item.subjectUrl}
-                                  commentId={item.commentId}
-                                  content={item.content}
-                                />
-                              }
-                              secondary={getElapsedTime(item.createdAt)}
-                            />
-                            <ListItemSecondaryAction>
-                              <IconButton aria-label="Delete" onClick={this.handleDelete(item._id, index)}>
-                                <DeleteIcon />
-                              </IconButton>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        </Paper>
-                      )
-                  }
-                </InfiniteScroll>
-              </List>
+            <Grid item>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.handleConfirmationDialogOpen}
+              >
+                Clear
+                <ClearAll className={classes.rightIcon} />
+              </Button>
             </Grid>
           </Grid>
-          <ConfirmationDialog
-            open={this.state.dialogOpen}
-            title="Warning"
-            content="Are you sure to clear all?"
-            operation={this.handleClearNotifications}
-            handleClose={this.handleConfirmationDialogClose}
-          />
+
+          <br />
+
+          {
+            _.isEmpty(this.state.list)
+              ? <Typography align="center">None</Typography>
+              : <div>
+                  <List>
+                    <InfiniteScroll
+                      pageStart={0}
+                      loadMore={this.loadMore}
+                      hasMore={this.state.hasMore}
+                      loader={<div style={{ textAlign: 'center' }} key={0}>
+                                <CircularProgress size={30} />
+                              </div>}
+                    >
+                      {
+                        this.state.list.map((item, index) =>
+                          <Paper className={classes.itemWrapper} key={item._id}>
+                            <ListItem className={classes.listItem} button onClick={this.handleClickListItem(item)}>
+                              {
+                                item.isRead
+                                  ? null
+                                  : <ListItemIcon>
+                                      <FiberNew color="secondary"/>
+                                    </ListItemIcon>
+                              }
+                              <ListItemText
+                                primary={
+                                  <MessageContent
+                                    key={item._id}
+                                    sender={item.senderId}
+                                    type={item.type}
+                                    event={item.event}
+                                    subjectTitle={item.subjectTitle}
+                                    subjectContent={item.subjectContent}
+                                    commentContent={item.commentContent}
+                                    subjectUrl={item.subjectUrl}
+                                    commentId={item.commentId}
+                                    content={item.content}
+                                  />
+                                }
+                                secondary={getElapsedTime(item.createdAt)}
+                              />
+                              <ListItemSecondaryAction>
+                                <IconButton aria-label="delete" onClick={this.handleDelete(item._id, index)}>
+                                  <DeleteIcon />
+                                </IconButton>
+                              </ListItemSecondaryAction>
+                            </ListItem>
+                          </Paper>
+                        )
+                      }
+                    </InfiniteScroll>
+                  </List>
+                  {
+                    this.state.hasMore
+                      ? null
+                      : <Typography variant="caption" align="center">
+                          --- No More Notifications ---
+                        </Typography>
+                  }
+                </div>
+
+          }
+
+          <div id="modal-container">
+            <ConfirmationDialog
+              open={this.state.dialogOpen}
+              title="Warning"
+              content="Are you sure to clear all?"
+              operation={this.handleClearNotifications}
+              handleClose={this.handleConfirmationDialogClose}
+            />
+          </div>
         </div>
       </SettingContainer>
     );
@@ -242,13 +277,11 @@ class NotificationPage extends Component {
 NotificationPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
-  "isLoggedIn": PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
     "notificationList": state.notificationReducer.list,
     "totalCount": state.notificationReducer.totalCount,
   };

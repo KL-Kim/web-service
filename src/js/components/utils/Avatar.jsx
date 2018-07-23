@@ -33,34 +33,38 @@ const styles = theme => ({
 });
 
 class AvatarModule extends Component {
+
   render() {
+    if (_.isEmpty(this.props.user)) return null;
+
     const { classes, type, user, updatedAt } = this.props;
+
     let avatar;
-    let avatarSrc = _.isEmpty(user) ? '' : config.API_GATEWAY_ROOT + '/' + user.profilePhotoUri + '?t=' + updatedAt;
-    let initial = _.isEmpty(user.lastName) ? _.upperCase(user.username[0]) : _.upperCase(user.lastName[0]);
+    const avatarSrc = _.isEmpty(user) ? '' : config.API_GATEWAY_ROOT + '/' + user.profilePhotoUri + '?t=' + updatedAt;
+    const initialLetter = _.isEmpty(user) ? '' : _.upperCase(user.username[0]);
 
     switch (type) {
       case "BIG":
         avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.big}>{initial}</Avatar>)
+          ? (<Avatar className={classes.big}>{initialLetter}</Avatar>)
           : (<Avatar className={classes.big} alt={user.username[0]} src={avatarSrc} />);
         break;
 
       case "MEDIUM":
         avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.medium}>{initial}</Avatar>)
+          ? (<Avatar className={classes.medium}>{initialLetter}</Avatar>)
           : (<Avatar className={classes.medium} alt={user.username[0]} src={avatarSrc} />);
         break;
 
       case "SMALL":
-      avatar = _.isEmpty(user.profilePhotoUri)
-        ? (<Avatar className={classes.small}>{initial}</Avatar>)
-        : (<Avatar className={classes.small} alt={user.username[0]} src={avatarSrc} />);
-      break;
+        avatar = _.isEmpty(user.profilePhotoUri)
+          ? (<Avatar className={classes.small}>{initialLetter}</Avatar>)
+          : (<Avatar className={classes.small} alt={user.username[0]} src={avatarSrc} />);
+        break;
 
       default:
         avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.avatar}>{initial}</Avatar>)
+          ? (<Avatar className={classes.avatar}>{initialLetter}</Avatar>)
           : (<Avatar className={classes.avatar} alt={user.username[0]} src={avatarSrc} />);
     }
 

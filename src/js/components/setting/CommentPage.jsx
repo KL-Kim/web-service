@@ -8,19 +8,28 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
 import CommentPanel from '../utils/CommentPanel';
 
 // Webstorage
-import { loadFromStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
-import { getComments, deleteComment } from '../../actions/comment.actions';
+import { getComments, deleteComment } from 'js/actions/comment.actions';
 
-const styles = (theme) => ({});
+const styles = (theme) => ({
+  "root": {
+    maxWidth: 720,
+    margin: 'auto'
+  },
+  "itemWrapper": {
+    marginBottom: theme.spacing.unit * 2,
+  },
+});
 
 class CommentsPage extends Component {
   constructor(props) {
@@ -91,50 +100,61 @@ class CommentsPage extends Component {
   render() {
     const { classes, comments } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
-        <div>
-          <Typography variant="display1" align="center">Comments</Typography>
+        <div className={classes.root}>
+          <Typography variant="display1">My Comments</Typography>
           <br />
 
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.state.hasMore}
-            loader={<div className="loader" key={0}>Loading ...</div>}
-          >
-            <Grid container justify="center">
-              {
-                _.isEmpty(comments)
-                  ? null
-                  : comments.map(comment => (
-                    <Grid item xs={12} key={comment._id}>
-                      <CommentPanel
-                        showDelete
-                        commentId={comment._id}
-                        postId={comment.postId._id}
-                        postTitle={comment.postId.title}
-                        parentComment={comment.parentId}
-                        replyToUser={comment.replyToUser}
-                        status={comment.status}
-                        content={comment.content}
-                        owner={comment.userId}
-                        isLoggedIn={this.props.isLoggedIn}
-                        user={this.props.user}
-                        isOwn={this.props.user && comment.userId._id === this.props.user._id}
-                        upvoteCount={comment.upvote.length}
-                        downvoteCount={comment.downvote.length}
-                        createdAt={comment.createdAt}
-                        addNewComment={this.props.addNewComment}
-                        getNewComments={this.getNewComments}
-                        voteComment={this.props.voteComment}
-                        deleteComment={this.props.deleteComment}
-                      />
-                    </Grid>
-                  ))
-              }
-            </Grid>
-          </InfiniteScroll>
+          {
+            _.isEmpty(comments)
+              ? <Typography align="center">None</Typography>
+              : <div>
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMore}
+                    hasMore={this.state.hasMore}
+                    loader={<div style={{ textAlign: 'center' }} key={0}>
+                              <CircularProgress size={30} />
+                            </div>}
+                  >
+                    {
+                      comments.map(comment => (
+                        <div key={comment._id} className={classes.itemWrapper}>
+                          <CommentPanel
+                            showDelete
+                            commentId={comment._id}
+                            postId={comment.postId._id}
+                            postTitle={comment.postId.title}
+                            parentComment={comment.parentId}
+                            replyToUser={comment.replyToUser}
+                            status={comment.status}
+                            content={comment.content}
+                            owner={comment.userId}
+                            isLoggedIn={this.props.isLoggedIn}
+                            user={this.props.user}
+                            isOwn={this.props.user && comment.userId._id === this.props.user._id}
+                            upvoteCount={comment.upvote.length}
+                            downvoteCount={comment.downvote.length}
+                            createdAt={comment.createdAt}
+                            addNewComment={this.props.addNewComment}
+                            getNewComments={this.getNewComments}
+                            voteComment={this.props.voteComment}
+                            deleteComment={this.props.deleteComment}
+                          />
+                        </div>
+                      ))
+                    }
+                  </InfiniteScroll>
+                  {
+                    this.state.hasMore
+                      ? null
+                      : <Typography variant="caption" align="center">
+                          --- No more comments ---
+                        </Typography>
+                  }
+                </div>
+          }
         </div>
       </SettingContainer>
     );

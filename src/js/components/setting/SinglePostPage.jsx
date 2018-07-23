@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import Quill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -187,7 +188,7 @@ class SinglePostPage extends Component {
   render() {
     const { classes } = this.props;
 
-    return (
+    return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
         <div>
           <Typography

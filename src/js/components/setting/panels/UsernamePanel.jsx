@@ -21,9 +21,7 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-  },
+
   "heading": {
     "fontSize": theme.typography.pxToRem(15),
     "flexBasis": '30%',
@@ -33,7 +31,6 @@ const styles = (theme) => ({
     "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
-
 });
 
 class UsernamePanel extends Component {
@@ -98,7 +95,6 @@ class UsernamePanel extends Component {
         "username": username,
         "showError": false,
         "errorMessage": '',
-
       });
 
       return true;
@@ -113,11 +109,17 @@ class UsernamePanel extends Component {
     if (id && this.isValidUsername()) {
       this.props.updateUserProfile(id, { "username": this.state.username })
         .then(response => {
-          if (!_.isEmpty(response) && this.props.error) {
+          if (response) {
             this.setState({
-              "showError": true,
-              "errorMessage": this.props.errorMessage,
+              "expanded": null,
             });
+          } else {
+            if (this.props.error) {
+              this.setState({
+                "showError": true,
+                "errorMessage": this.props.errorMessage,
+              });
+            }
           }
         })
     }
@@ -151,7 +153,6 @@ class UsernamePanel extends Component {
 
         <ExpansionPanelActions>
           <Button
-            className={classes.button}
             size="small"
             onClick={this.handlePanelChange('panel')}>
             Cancel
@@ -161,10 +162,9 @@ class UsernamePanel extends Component {
             size="small"
             disabled={this.state.showError || isFetching}
             onClick={this.handleSubmit}
-            className={classes.button}
           >
             {
-              isFetching ? (<CircularProgress size={20} />) : 'Save'
+              isFetching ? <CircularProgress size={20} /> : 'Save'
             }
           </Button>
         </ExpansionPanelActions>
@@ -178,7 +178,7 @@ UsernamePanel.propTypes = {
   "user": PropTypes.object.isRequired,
   "error": PropTypes.bool,
   "errorMessage": PropTypes.string,
-  "isFetching": PropTypes.bool,
+  "isFetching": PropTypes.bool.isRequired,
   "updateUserProfile": PropTypes.func.isRequired,
 };
 

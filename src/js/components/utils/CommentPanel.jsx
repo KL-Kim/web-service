@@ -20,6 +20,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
 import ThumbDown from '@material-ui/icons/ThumbDown';
+import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
 import Avatar from './Avatar';
@@ -29,7 +30,7 @@ import ConfirmationDialog from './ConfirmationDialog';
 import ThumbButton from './ThumbButton';
 
 const styles = theme => ({
-  "paper": {
+  "root": {
     padding: theme.spacing.unit * 4,
   },
   "iconButton": {
@@ -184,12 +185,12 @@ class CommentPanel extends Component {
 
     return (
       <div>
-        <Paper className={classes.paper}>
-          <Grid container>
-            <Grid item xs={2}>
+        <Paper className={classes.root}>
+          <Grid container spacing={24}>
+            <Grid item>
               <Avatar user={this.props.owner} type="SMALL" />
             </Grid>
-            <Grid item xs={10}>
+            <Grid item xs>
               <Typography variant="subheading" gutterBottom>
                 <strong>
                   <ProperName user={this.props.owner} />
@@ -218,7 +219,7 @@ class CommentPanel extends Component {
               }
               {
                 this.props.status === 'NORMAL'
-                  ? (<Grid container justify="space-between" alignItems="center">
+                  ? <Grid container justify="space-between" alignItems="center">
                       <Grid item>
                         <span className={classes.iconButton}>
                           <ThumbButton type="up" disabled={this.props.isOwn} count={this.state.upvoteCount} handleSubmit={this.handleVoteComment("UPVOTE")} />
@@ -227,6 +228,7 @@ class CommentPanel extends Component {
                           <ThumbButton type="down" disabled={this.props.isOwn} count={this.state.downvoteCount} handleSubmit={this.handleVoteComment("DOWNVOTE")} />
                         </span>
                       </Grid>
+
                       <Grid item>
                         <div>
                           {
@@ -238,15 +240,15 @@ class CommentPanel extends Component {
                           }
                           {
                             this.props.showDelete
-                              ? (<Button color="secondary" onClick={this.handleOpenDeleteDialog}>
-                                Delete
-                              </Button>)
+                              ? <IconButton color="secondary" onClick={this.handleOpenDeleteDialog}>
+                                  <Delete />
+                                </IconButton>
                               : null
                           }
                         </div>
                       </Grid>
-                    </Grid>)
-                  : ''
+                    </Grid>
+                  : null
               }
             </Grid>
           </Grid>
