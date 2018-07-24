@@ -31,6 +31,7 @@ import Paper from '@material-ui/core/Paper';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -54,8 +55,15 @@ import webStorageTypes from 'js/constants/webStorage.types';
 import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
 import saveSearchHistory from 'js/helpers/saveSearchHistory';
 
+const queries = [
+  '꼬치',
+  '삼계탕',
+  '병원',
+  '수리',
+]
+
 const styles = theme => ({
-  "searchField": {
+  "paper": {
     padding: theme.spacing.unit * 2,
   },
   "section": {
@@ -88,7 +96,10 @@ const styles = theme => ({
   },
   "leftIcon": {
     marginRight: theme.spacing.unit,
-  }
+  },
+  "chip": {
+    margin: theme.spacing.unit,
+  },
 });
 
 class SearchPage extends Component {
@@ -99,6 +110,7 @@ class SearchPage extends Component {
 
     this.state = {
       "search": '',
+      "searchedQuery": '',
       "limit": 24,
       "count": 0,
       "categories": [],
@@ -309,6 +321,7 @@ class SearchPage extends Component {
           });
 
           this.setState({
+            searchedQuery: this.state.search,
             categories: categories.slice(),
             areas: areas.slice(),
             count: response.list.length,
@@ -348,7 +361,7 @@ class SearchPage extends Component {
         <div>
 
           <div className={classes.section}>
-            <Paper className={classes.searchField}>
+            <Paper className={classes.paper}>
               <form onSubmit={this.handleSearch}>
                 <FormControl fullWidth>
                   <Input
@@ -377,20 +390,46 @@ class SearchPage extends Component {
           </div>
 
           {
-            _.isEmpty(this.state.searchHistory) || this.state.search
+            this.state.search
               ? null
-              : <Paper className={classes.section}>
-                  <List subheader={<ListSubheader component="div">Recent Search</ListSubheader> }>
-                    {
-                      this.state.searchHistory.map((item, index) => (
-                        <ListItem key={index} button>
-                          <ListItemText primary={item} />
-                        </ListItem>
-                      ))
-                    }
-                  </List>
-                </Paper>
+              : <div className={classes.section}>
+                  <Grid container spacing={24}>
+                    <Grid item xs={6}>
+                      <Paper>
+                          <List subheader={<ListSubheader component="div">Recent Searches</ListSubheader> }>
+                            {
+                              _.isEmpty(this.state.searchHistory)
+                                ? <ListItem>
+                                    <ListItemText primary={'None'} />
+                                  </ListItem>
+                                : this.state.searchHistory.map((item, index) => (
+                                  <ListItem key={index} button>
+                                    <ListItemText primary={item} />
+                                  </ListItem>
+                                ))
+                            }
+                          </List>
+                        </Paper>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <Paper>
+                        <List subheader={<ListSubheader component="div">Popular Searches</ListSubheader> }>
+                          {
+                            queries.map((item, index) => (
+                              <ListItem key={index} button>
+                                <ListItemText primary={item} />
+                              </ListItem>
+                            ))
+                          }
+                        </List>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </div>
           }
+
+
 
           {
             _.isEmpty(this.state.searchCategoryResponse)
@@ -403,7 +442,6 @@ class SearchPage extends Component {
                     this.state.searchCategoryResponse.map((item) => (
                       <Link to={"/business/category/" + item.enName} key={item._id}>
                         <CustomButton
-                          color="primary"
                           round
                           className={classes.categoryButton}
                         >
@@ -427,11 +465,10 @@ class SearchPage extends Component {
                     this.state.searchTagResponse.map((item) => (
                       <Link to={"/business/tag/" + item.enName} key={item._id}>
                         <CustomButton
-                          color="primary"
                           round
                           className={classes.categoryButton}
                         >
-                          {item.krName}
+                          #{item.krName}
                         </CustomButton>
                       </Link>
                     ))
@@ -447,9 +484,9 @@ class SearchPage extends Component {
                   <Grid container justify="space-between" alignItems="flex-end">
                     <Grid item>
                       <Typography variant="title">
-                        {
-                          this.state.search ? 'Business: \'' + this.state.search + '\'' : 'All'
-                        }
+
+                          Business: "{this.state.searchedQuery}"
+
                       </Typography>
                     </Grid>
 

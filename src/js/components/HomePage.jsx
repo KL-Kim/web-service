@@ -80,7 +80,7 @@ class HomePage extends Component {
         <SectionCarousel />
         <main className={classes.appFrame}>
           <div className={classes.section}>
-            <Typography variant="title" gutterBottom>Hot Category</Typography>
+            <Typography variant="title" gutterBottom>Popular Categories</Typography>
             <Grid container spacing={24} justify="center" alignItems="center">
               {
                 _.isEmpty(categories)

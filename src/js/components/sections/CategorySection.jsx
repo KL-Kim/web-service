@@ -76,7 +76,6 @@ class CategorySection extends Component {
                     !item.parent
                       ? <Link to={"/business/category/" + item.enName} key={item._id}>
                           <CustomButton
-                            color="primary"
                             round
                             className={classes.chip}
                           >
