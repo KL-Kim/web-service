@@ -30,7 +30,7 @@ const styles = (theme) => ({
     margin: 'auto'
   },
   "container": {
-    "marginBottom": theme.spacing.unit * 4
+    marginBottom: theme.spacing.unit * 4
   },
 });
 

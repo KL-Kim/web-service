@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -20,10 +20,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
-import ConfirmationDialog from './ConfirmationDialog';
-import ProperName from './ProperName';
-import Avatar from './Avatar';
-import ThumbButton from './ThumbButton';
+import ConfirmationDialog from 'js/components/utils/ConfirmationDialog';
+import ProperName from 'js/components/utils/ProperName';
+import Avatar from 'js/components/utils/Avatar';
+import ThumbButton from 'js/components/utils/ThumbButton';
 
 // Mock Image
 import image from 'css/ikt-icon.gif';
@@ -35,7 +35,7 @@ const styles = theme => ({
   },
 });
 
-class ReviewCardAlt extends Component {
+class ReviewCardAlt extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -47,7 +47,7 @@ class ReviewCardAlt extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
-    this.handleUpvote = this.handleUpvote.bind(this);
+    this.handleClickUpvoteIcon = this.handleClickUpvoteIcon.bind(this);
   }
 
   handleDeleteDialogOpen() {
@@ -62,52 +62,44 @@ class ReviewCardAlt extends Component {
     });
   }
 
-  handleDelete() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
-    }
-
-    if (this.props.handleDelete && this.props.id) {
-      this.props.handleDelete({
-        _id: this.props.id,
-        uid: this.props.owner._id,
-      })
-      .then(response => {
-        if (response) {
-          return this.props.getNewReviews();
-        }
-      })
-      .then(() => {
-        this.setState({
-          deleteDialogOpen: false,
-        });
-      });
-    }
-  }
-
-  handleUpvote() {
+  handleClickUpvoteIcon() {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
       return;
     }
 
-    if (_.isUndefined(this.props.handleVote) || _.isEmpty(this.props.user) || this.props.owner._id === this.props.user._id)
-      return ;
+    if (this.props.voteReview && this.props.userId && !this.props.isOwn) {
+      this.props.voteReview(this.props.id, {
+        uid: this.props.userId,
+        businessName: this.props.business.krName + '/' + this.props.business.cnName,
+        businessSlug: this.props.business.enName,
+        vote: 'upvote',
+      }).then(response => {
+        if (response) {
+          this.setState({
+            "upvoteCount": response.review.upvote.length,
+          });
+        }
+      });
+    }
+  }
 
-
-    this.props.handleVote(this.props.id, {
-      uid: this.props.user._id,
-      businessName: this.props.business.krName + '/' + this.props.business.cnName,
-      businessSlug: this.props.business.enName,
-      vote: 'upvote',
-    }).then(response => {
-      if (response) {
-        this.setState({
-          "upvoteCount": response.review.upvote.length,
-        });
-      }
-    });
+  handleDelete() {
+    if (this.props.deleteReview && this.props.id && this.props.isOwn) {
+      this.props.deleteReview({
+        _id: this.props.id,
+        uid: this.props.owner._id,
+      })
+      .then(response => {
+        if (response) {
+          this.props.getNewReviews();
+          this.setState({
+            deleteDialogOpen: false,
+          });
+        }
+      });
+    }
   }
 
   render() {
@@ -117,13 +109,17 @@ class ReviewCardAlt extends Component {
       <div>
         <Card>
           <CardHeader
-            avatar={<Avatar user={this.props.owner} />}
-            title={<ProperName user={this.props.owner} />}
+            avatar={<Link to={"/profile/" + this.props.owner.username}>
+                      <Avatar user={this.props.owner} />
+                    </Link>}
+            title={<Link to={"/profile/" + this.props.owner.username}>
+                    <ProperName user={this.props.owner} />
+                  </Link>}
             action={<ThumbButton
                       type="up"
                       disabled={this.props.isOwn}
                       count={this.state.upvoteCount}
-                      handleSubmit={this.handleUpvote}
+                      handleSubmit={this.handleClickUpvoteIcon}
                     />}
           />
 
@@ -150,20 +146,20 @@ class ReviewCardAlt extends Component {
 
             <div>
               {
-                this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : ''
+                this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : null
               }
               {
-                this.props.envGood ? <Chip className={classes.chip} label="환경 + 1" /> : ''
+                this.props.envGood ? <Chip className={classes.chip} label="환경 + 1" /> : null
               }
               {
-                this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : ''
+                this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : null
               }
             </div>
           </CardContent>
 
           <CardActions>
             {
-              (this.props.isOwn && !this.props.showUser)
+              this.props.deleteReview
                 ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
                     <Delete />
                   </IconButton>
@@ -175,14 +171,13 @@ class ReviewCardAlt extends Component {
         <div>
           {
             this.props.isOwn
-              ? (<ConfirmationDialog
-                    open={this.state.deleteDialogOpen}
-                    title="Warning"
-                    content="Are you sure to delete the review?"
-                    operation={this.handleDelete}
-                    handleClose={this.handleDeleteDialogClose}
-                  />
-                )
+              ? <ConfirmationDialog
+                  open={this.state.deleteDialogOpen}
+                  title="Warning"
+                  content="Are you sure to delete the review?"
+                  operation={this.handleDelete}
+                  handleClose={this.handleDeleteDialogClose}
+                />
               : null
           }
         </div>
@@ -191,14 +186,20 @@ class ReviewCardAlt extends Component {
   }
 }
 
+ReviewCardAlt.defaultProps = {
+  "isLoggedIn": false,
+  "userId": '',
+  "isOwn": false,
+  
+};
+
 ReviewCardAlt.propTypes = {
   "classes": PropTypes.object.isRequired,
   "id": PropTypes.string.isRequired,
   "isOwn": PropTypes.bool.isRequired,
   "owner": PropTypes.object.isRequired,
-  "user": PropTypes.object.isRequired,
+  "userId": PropTypes.string,
   "isLoggedIn": PropTypes.bool.isRequired,
-  "showUser": PropTypes.bool,
   "business": PropTypes.object.isRequired,
   "showBusinessName": PropTypes.bool,
   "rating": PropTypes.number.isRequired,
@@ -207,7 +208,11 @@ ReviewCardAlt.propTypes = {
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "upvoteCount": PropTypes.number,
-  "handleDelete": PropTypes.func,
+
+  // Fuctions
+  "openLoginDialog": PropTypes.func,
+  "voteReview": PropTypes.func,
+  "deleteReview": PropTypes.func,
   "getNewReviews": PropTypes.func,
 };
 

@@ -17,7 +17,6 @@ const pcaReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: true,
-        "error": null,
       };
 
     case pcaTypes.GET_CITIES_FAILURE:
@@ -33,14 +32,14 @@ const pcaReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        cities: action.payload.cities,
+        cities: [...action.payload.cities],
       };
 
     case pcaTypes.GET_AREAS_SUCCESS:
       return {
         ...state,
         isFetching: false,
-        areas: action.payload.areas,
+        areas: [...action.payload.areas],
       };
 
     default:

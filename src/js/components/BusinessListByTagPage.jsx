@@ -30,15 +30,13 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
 import Container from './layout/Container';
-import BusinessCard from './utils/BusinessCard';
 import CustomButton from './utils/Button';
+import BusinessPanel from './sections/BusinessPanel';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
-
-// WebStorage
-import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = theme => ({
   "categoryButton": {
@@ -86,8 +84,6 @@ class BusinessListByTag extends Component {
       "filterPopoverOpen": false,
       "tag": '',
     };
-
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.handleClickCategory = this.handleClickCategory.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
@@ -178,7 +174,7 @@ class BusinessListByTag extends Component {
             }
 
 
-            return '';
+            return null;
           });
 
           this.setState({
@@ -201,10 +197,6 @@ class BusinessListByTag extends Component {
         }
       });
     }
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
   }
 
   handleClickCategory = slug => e => {
@@ -272,12 +264,10 @@ class BusinessListByTag extends Component {
           this.setState({
             orderBy: item,
             count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount
+            hasMore: response.list.length < response.totalCount,
+            sortPopoverOpen: false,
           });
         }
-        this.setState({
-          sortPopoverOpen: false,
-        });
       });
     }
   }
@@ -296,7 +286,7 @@ class BusinessListByTag extends Component {
       if (response) {
         this.setState({
           count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
+          hasMore: response.list.length < response.totalCount
         });
       }
     });
@@ -319,7 +309,7 @@ class BusinessListByTag extends Component {
   }
 
   loadMore() {
-    if (this.state.count < this.props.totalCount) {
+    if (this.state.hasMore) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         tag: this.props.match.params.slug,
@@ -329,12 +319,12 @@ class BusinessListByTag extends Component {
         search: this.state.s,
         orderBy: this.state.orderBy,
     })
-    .then((response => {
+    .then(response => {
         this.setState({
           count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
+          hasMore: response.list.length < response.totalCount
         });
-      }));
+      });
     }
   }
 
@@ -403,40 +393,19 @@ class BusinessListByTag extends Component {
 
           <br />
 
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
+          <BusinessPanel
             hasMore={this.state.hasMore}
-            loader={<div style={{ textAlign: 'center' }} key={0}>
-                      <CircularProgress size={30} />
-                    </div>}
-          >
-            <Grid container spacing={16}>
-              {
-                _.isEmpty(businessList)
-                  ? <Grid item xs={12}>
-                      <Typography variant="headline" align="center">None</Typography>
-                    </Grid>
-                  : businessList.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <BusinessCard
-                          bid={item._id}
-                          title={item.krName}
-                          enName={item.enName}
-                          rating={item.ratingAverage}
-                          thumbnailUri={item.thumbnailUri}
-                          category={item.category}
-                          tags={item.tags}
-                          event={item.event}
-                          myFavors={this.state.myFavors}
-                        />
-                      </Grid>
-                    ))
-              }
-            </Grid>
-          </InfiniteScroll>
+            loadMore={this.loadMore} 
+            businessList={this.props.businessList}
+            totalCount={this.props.totalCount}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+            favorOperation={this.props.favorOperation}
+            openLoginDialog={this.props.openLoginDialog}
+            clearBusinessList={this.props.clearBusinessList}
+          />
 
-          <div>
+          <div id="modal-container">
             <Popover
               open={this.state.filterPopoverOpen}
               anchorEl={this.filterAnchorEl}
@@ -567,11 +536,23 @@ class BusinessListByTag extends Component {
 
 BusinessListByTag.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "businessList": PropTypes.array.isRequired,
+  "totalCount": PropTypes.number.isRequired,
+  "isFetching": PropTypes.bool,
+  "user": PropTypes.object,
+  "isLoggedIn": PropTypes.bool.isRequired,
+
+  // Methods
+  "getBusinessList": PropTypes.func.isRequired,
+  "clearBusinessList": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
+  "favorOperation": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
     "tags": state.tagReducer.tagsList,
@@ -579,4 +560,9 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(BusinessListByTag));
+export default connect(mapStateToProps, { 
+  getBusinessList, 
+  clearBusinessList,
+  openLoginDialog,
+  favorOperation, 
+})(withStyles(styles)(BusinessListByTag));

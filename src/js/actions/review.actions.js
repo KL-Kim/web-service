@@ -96,14 +96,11 @@ export const addNewReview = (data) => {
     "payload": {}
   });
 
-  const _addNewReviewSuccess = (response) => ({
+  const _addNewReviewSuccess = () => ({
     "type": reviewTypes.ADD_NEW_REVIEW_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      reviews: response.list,
-      totalCount: response.totalCount,
-    },
+    "payload": {},
   });
 
   const _addNewReviewFailure = (error) => ({
@@ -126,7 +123,7 @@ export const addNewReview = (data) => {
         return reviewOperationFetch("ADD", token, data);
       })
       .then(response => {
-        dispatch(_addNewReviewSuccess(response));
+        dispatch(_addNewReviewSuccess());
         dispatch(AlertActions.alertSuccess("Add review successfully"));
 
         return ;
@@ -151,14 +148,11 @@ export const updateReview = (data) => {
     "payload": {}
   });
 
-  const _updateReviewSuccess = (response) => ({
+  const _updateReviewSuccess = () => ({
     "type": reviewTypes.UPDATE_REVIEW_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      reviews: response.list,
-      totalCount: response.totalCount,
-    },
+    "payload": {},
   });
 
   const _updateReviewFailure = (error) => ({
@@ -180,7 +174,7 @@ export const updateReview = (data) => {
         return reviewOperationFetch("UPDATE", token, data)
       })
       .then(response => {
-        dispatch(_updateReviewSuccess(response));
+        dispatch(_updateReviewSuccess());
         dispatch(AlertActions.alertSuccess("Update review successfully"));
 
         return response;
@@ -205,14 +199,11 @@ export const deleteReview = (data) => {
     "payload": {}
   });
 
-  const _deleteReviewSuccess = (response) => ({
+  const _deleteReviewSuccess = () => ({
     "type": reviewTypes.DELETE_REVIEW_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      reviews: response.list,
-      totalCount: response.totalCount,
-    },
+    "payload": {},
   });
 
   const _deleteReviewFailure = (error) => ({
@@ -234,7 +225,7 @@ export const deleteReview = (data) => {
         return reviewOperationFetch("DELETE", token, data)
       })
       .then(response => {
-        dispatch(_deleteReviewSuccess(response));
+        dispatch(_deleteReviewSuccess());
         dispatch(AlertActions.alertSuccess("Delete review successfully"));
 
         return response;

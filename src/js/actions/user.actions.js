@@ -10,6 +10,7 @@ import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/we
 
 // API Methods
 import {
+  getUsernameFetch,
   registerFetch,
   verifyFetch,
   changePasswordFetch,
@@ -80,6 +81,52 @@ export const login = (email, password) => {
         saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, loginFailedCount + 1);
 
         dispatch(_loginFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  };
+};
+
+/**
+ * Log out
+ */
+export const logout = () => {
+  const _logoutRequest = () => ({
+    "type": userTypes.LOGOUT_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {},
+  });
+
+  const _logoutSuccess = () => ({
+    "type": userTypes.LOGOUT_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {},
+  });
+
+  const _logoutFailure = (error) => ({
+    "type": userTypes.LOGOUT_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {},
+  });
+
+  return (dispatch, getState) => {
+    dispatch(_logoutRequest);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+
+    return logoutFetch()
+      .then(response => {
+        dispatch(_logoutSuccess());
+        dispatch(AlertActions.alertSuccess("Goodbye!"));
+
+        return response;
+      }).catch(err => {
+        dispatch(_logoutFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;
@@ -301,50 +348,51 @@ export const getMyself = (id) => {
 }
 
 /**
- * Log out
+ * Get user by username
+ * @param {String} username - User's username
  */
-export const logout = () => {
-  const _logoutRequest = () => ({
-    "type": userTypes.LOGOUT_REQUEST,
+export const getUserByUsername = (username) => {
+  const _getUserByUsernameRequest  = () => ({
+    "type": userTypes.GET_USER_BY_USERNAME_REQUEST,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const _logoutSuccess = () => ({
-    "type": userTypes.LOGOUT_SUCCESS,
+  const _getUserByUsernameSuccess  = () => ({
+    "type": userTypes.GET_USER_BY_USERNAME_SUCCESS,
     "meta": {},
     "error": null,
     "payload": {},
   });
 
-  const _logoutFailure = (error) => ({
-    "type": userTypes.LOGOUT_FAILURE,
+  const _getUserByUsernameFailure  = (error) => ({
+    "type": userTypes.GET_USER_BY_USERNAME_FAILURE,
     "meta": {},
     "error": error,
     "payload": {},
   });
 
   return (dispatch, getState) => {
-    dispatch(_logoutRequest);
-    removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
-    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-    removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+    if (_.isEmpty(username)) {
+      dispatch(AlertActions.alertFailure("Bad Request"));
 
-    return logoutFetch()
+      return null;
+    }
+
+    return getUsernameFetch(username)
       .then(response => {
-        dispatch(_logoutSuccess());
-        dispatch(AlertActions.alertSuccess("Goodbye!"));
-
         return response;
-      }).catch(err => {
-        dispatch(_logoutFailure(err));
+      })
+      .catch(err => {
         dispatch(AlertActions.alertFailure(err.message));
+        dispatch(_getUserByUsernameFailure(err));
 
-        return ;
+        return null;
       });
-  };
-};
+  }
+}
+
 
 /**
  * Update user's profile
@@ -377,8 +425,8 @@ export const updateUserProfile = (id, data) => {
 
   return (dispatch, getState) => {
     if (_.isEmpty(id) || _.isEmpty(data)) {
-      const error = new Error("Bad Request");
-      return Promise.reject(error);
+      dispatch(AlertActions.alertFailure("Bad Request"));
+      return null;
     }
 
     const user = getState().userReducer.user;

@@ -40,11 +40,12 @@ import Search from '@material-ui/icons/Search';
 
 // Custom Components
 import Container from './layout/Container';
-import BusinessCard from './utils/BusinessCard';
 import CustomButton from './utils/Button';
-import SearchBar from './utils/SearchBar'
+import BusinessPanel from './sections/BusinessPanel';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
 // WebStorage
@@ -126,14 +127,12 @@ class SearchPage extends Component {
       "searchHistory": [],
     };
 
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
-
     this.handleChange = this.handleChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.handleClickCategory = this.handleClickCategory.bind(this);
-    this.handleClickArea = this.handleClickArea.bind(this);
-    this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
-    this.handleEventSwitch = this.handleEventSwitch.bind(this);
+    this.handleSelectCategory = this.handleSelectCategory.bind(this);
+    this.handleSelectArea = this.handleSelectArea.bind(this);
+    this.handleSelectOrder = this.handleSelectOrder.bind(this);
+    this.handleToggleEvent = this.handleToggleEvent.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
     this.loadMore = this.loadMore.bind(this);
@@ -145,10 +144,6 @@ class SearchPage extends Component {
     this.setState({
       searchHistory: searchHistory.reverse().slice(),
     });
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
   }
 
   handleChange(e) {
@@ -179,7 +174,7 @@ class SearchPage extends Component {
     }
   }
 
-  handleClickCategory = slug => e => {
+  handleSelectCategory = slug => e => {
     if (this.state.selectedCategory !== slug) {
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -201,7 +196,7 @@ class SearchPage extends Component {
     }
   }
 
-  handleClickArea = area => e => {
+  handleSelectArea = area => e => {
     if (this.state.area.code !== area.code) {
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -226,7 +221,7 @@ class SearchPage extends Component {
     }
   }
 
-  handleClickOrderBy = item => e => {
+  handleSelectOrder = item => e => {
     if (this.state.orderBy !== item) {
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -251,7 +246,7 @@ class SearchPage extends Component {
     }
   }
 
-  handleEventSwitch() {
+  handleToggleEvent() {
     this.props.getBusinessList({
       limit: this.state.limit,
       category: this.state.selectedCategory,
@@ -271,7 +266,7 @@ class SearchPage extends Component {
 
     this.setState({
       event: !this.state.event,
-    })
+    });
   }
 
   handleOpenFilterPopover() {
@@ -335,7 +330,7 @@ class SearchPage extends Component {
   }
 
   loadMore() {
-    if (this.state.count < this.props.totalCount) {
+    if (this.state.hasMore) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         category: this.state.selectedCategory,
@@ -343,14 +338,14 @@ class SearchPage extends Component {
         event: this.state.event,
         search: this.state.search,
         orderBy: this.state.orderBy,
-    })
-    .then((response => {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount
-        });
-      }));
-    }
+      })
+      .then((response => {
+          this.setState({
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }));
+      }
   }
 
   render() {
@@ -393,8 +388,8 @@ class SearchPage extends Component {
             this.state.search
               ? null
               : <div className={classes.section}>
-                  <Grid container spacing={24}>
-                    <Grid item xs={6}>
+                  <Grid container spacing={16}>
+                    <Grid item xs={12} sm={6}>
                       <Paper>
                           <List subheader={<ListSubheader component="div">Recent Searches</ListSubheader> }>
                             {
@@ -412,7 +407,7 @@ class SearchPage extends Component {
                         </Paper>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                       <Paper>
                         <List subheader={<ListSubheader component="div">Popular Searches</ListSubheader> }>
                           {
@@ -484,9 +479,7 @@ class SearchPage extends Component {
                   <Grid container justify="space-between" alignItems="flex-end">
                     <Grid item>
                       <Typography variant="title">
-
-                          Business: "{this.state.searchedQuery}"
-
+                        Business: "{this.state.searchedQuery}"
                       </Typography>
                     </Grid>
 
@@ -521,7 +514,7 @@ class SearchPage extends Component {
                       color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
                       round
                       className={classes.categoryButton}
-                      onClick={this.handleClickCategory('')}
+                      onClick={this.handleSelectCategory('')}
                     >
                       All
                     </CustomButton>
@@ -535,7 +528,7 @@ class SearchPage extends Component {
                             color={this.state.selectedCategory === item.enName ? "primary" : 'white'}
                             round
                             className={classes.categoryButton}
-                            onClick={this.handleClickCategory(item.enName)}
+                            onClick={this.handleSelectCategory(item.enName)}
                           >
                             {item.krName}
                           </CustomButton>
@@ -545,36 +538,18 @@ class SearchPage extends Component {
 
                   <br />
 
-                  {
-                    <InfiniteScroll
-                      pageStart={0}
-                      loadMore={this.loadMore}
-                      hasMore={this.state.hasMore}
-                      loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
-                              </div>}
-                    >
-                      <Grid container spacing={16} style={{ marginBottom: 12 }}>
-                        {
-                          businessList.map(item => (
-                            <Grid item xs={4} key={item._id}>
-                              <BusinessCard
-                                bid={item._id}
-                                title={item.krName}
-                                enName={item.enName}
-                                rating={item.ratingAverage}
-                                thumbnailUri={item.thumbnailUri}
-                                category={item.category}
-                                tags={item.tags}
-                                event={item.event}
-                                myFavors={this.state.myFavors}
-                              />
-                            </Grid>
-                          ))
-                        }
-                      </Grid>
-                    </InfiniteScroll>
-                  }
+                  <BusinessPanel
+                    hasMore={this.state.hasMore}
+                    loadMore={this.loadMore} 
+                    businessList={businessList}
+                    totalCount={this.props.totalCount}
+                    isLoggedIn={this.props.isLoggedIn}
+                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                    favorOperation={this.props.favorOperation}
+                    openLoginDialog={this.props.openLoginDialog}
+                    clearBusinessList={this.props.clearBusinessList}
+                    showNoMore
+                  />
                 </div>
           }
 
@@ -607,7 +582,7 @@ class SearchPage extends Component {
                           size="small"
                           color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
                           variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
-                          onClick={this.handleClickArea('')}
+                          onClick={this.handleSelectArea('')}
                         >
                           All
                         </Button>
@@ -622,7 +597,7 @@ class SearchPage extends Component {
                                 size="small"
                                 color={this.state.area.code === item.code ? 'primary' : 'default'}
                                 variant={this.state.area.code === item.code ? 'outlined' : 'text'}
-                                onClick={this.handleClickArea(item)}
+                                onClick={this.handleSelectArea(item)}
                               >
                                 {item.name}
                               </Button>
@@ -646,7 +621,7 @@ class SearchPage extends Component {
                           color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
                           size="small"
                           variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('')}
+                          onClick={this.handleSelectOrder('')}
                         >
                           Recommend
                         </Button>
@@ -657,7 +632,7 @@ class SearchPage extends Component {
                           color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
                           size="small"
                           variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('rating')}
+                          onClick={this.handleSelectOrder('rating')}
                         >
                           Rating
                         </Button>
@@ -668,7 +643,7 @@ class SearchPage extends Component {
                           color={this.state.orderBy === 'new' ? 'primary' : 'default'}
                           size="small"
                           variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('new')}
+                          onClick={this.handleSelectOrder('new')}
                         >
                           New
                         </Button>
@@ -687,7 +662,7 @@ class SearchPage extends Component {
                       <Switch
                         color="primary"
                         checked={this.state.event}
-                        onChange={this.handleEventSwitch}
+                        onChange={this.handleToggleEvent}
                         value="event"
                       />
                     </FormControl>
@@ -714,14 +689,25 @@ class SearchPage extends Component {
 
 SearchPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "businessList": PropTypes.array.isRequired,
+  "totalCount": PropTypes.number.isRequired,
+  "isFetching": PropTypes.bool,
+  "user": PropTypes.object,
+  "isLoggedIn": PropTypes.bool.isRequired,
+
+  // Methods
+  "getBusinessList": PropTypes.func.isRequired,
+  "clearBusinessList": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
+  "favorOperation": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
-    "categories": state.categoryReducer.categoriesList,
     "isFetching": state.businessReducer.isFetching,
   };
 };
@@ -729,4 +715,6 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, {
   getBusinessList,
   clearBusinessList,
+  openLoginDialog,
+  favorOperation,
 })(withStyles(styles)(SearchPage));

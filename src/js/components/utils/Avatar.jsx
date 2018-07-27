@@ -26,8 +26,8 @@ const styles = theme => ({
   },
   "big": {
     "margin": 'auto',
-    "width": 250,
-    "height": 250,
+    "width": 200,
+    "height": 200,
     "fontSize": "10em",
   },
 });

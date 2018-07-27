@@ -39,7 +39,7 @@ const businessReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        businessList: action.payload.list,
+        businessList: [...action.payload.list],
         totalCount: action.payload.totalCount,
       };
 

@@ -12,9 +12,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
-import BusinessCard from '../utils/BusinessCard';
+import BusinessPanel from '../sections/BusinessPanel';
 
 // Actions
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
 // Webstorage
@@ -87,47 +88,14 @@ class FavorPage extends Component {
           <Typography variant="display1">My Favorite Business</Typography>
           <br />
 
-          {
-            _.isEmpty(businessList)
-              ? <Typography variant="body1" align="center">None</Typography>
-              : <div>
-                  <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.loadMore}
-                    hasMore={this.state.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                              <CircularProgress size={30} />
-                            </div>}
-                  >
-                    <Grid container spacing={16} style={{ marginBottom: 12 }}>
-                      {
-                        businessList.map(item => (
-                          <Grid item xs={4} key={item._id}>
-                            <BusinessCard
-                              bid={item._id}
-                              title={item.krName}
-                              enName={item.enName}
-                              rating={item.ratingAverage}
-                              thumbnailUri={item.thumbnailUri}
-                              category={item.category}
-                              tags={item.tags}
-                              myFavors={this.state.myFavors}
-                            />
-                          </Grid>
-                        ))
-                      }
-                    </Grid>
-                  </InfiniteScroll>
-                  {
-                    this.state.hasMore
-                      ? null
-                      : <Typography variant="caption" align="center">
-                          --- No more favorite business. You have total {this.props.totalCount} favors ---
-                        </Typography>
-
-                  }
-                </div>
-          }
+          <BusinessPanel 
+            businessList={this.props.businessList}
+            totalCount={this.props.totalCount}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={this.props.user._id}
+            favorOperation={this.props.favorOperation}
+          />
+          
         </div>
       </SettingContainer>
     );
@@ -141,9 +109,10 @@ FavorPage.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(FavorPage));
+export default connect(mapStateToProps, { getBusinessList, clearBusinessList, favorOperation })(withStyles(styles)(FavorPage));

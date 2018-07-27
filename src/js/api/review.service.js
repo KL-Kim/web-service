@@ -97,7 +97,7 @@ export const fetchSingleReview = id => {
 
 /**
  * Add, update, delete review
- * @param {String} type - UPDATE OR DELETE
+ * @param {String} type - ADD, UPDATE OR DELETE
  * @param {String} token - Verification token
  * @param {Object} data - Review data
  */
@@ -127,7 +127,7 @@ export const reviewOperationFetch = (type, token, data) => {
   return fetch(reviewSerivceUri.commonUrl, options)
     .then(response => {
       if (response.ok) {
-        return response.json();
+        return response;
       } else {
         return Promise.reject(responseErrorHandler(response));
       }

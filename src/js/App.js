@@ -25,6 +25,7 @@ import BusinessListByTagPage from 'js/components/BusinessListByTagPage';
 import SingleBusinessPage from 'js/components/SingleBusinessPage';
 import BlogListPage from 'js/components/BlogListPage';
 import SinglePostPage from 'js/components/SinglePostPage';
+import ProfilePage from 'js/components/ProfilePage';
 
 // Setting
 import SettingAccount from 'js/components/setting/AccountPage';
@@ -74,6 +75,7 @@ const App = () => {
           <Route exact path="/blog" component={BlogListPage} />
           <Route path="/post/s/:id" component={SinglePostPage} />
           <Route path="/explore" component={ExplorePage} />
+          <Route path="/profile/:username" component={ProfilePage} />
 
           {/*  Setting Routes */}
           <PrivateRoute path="/setting/account" component={SettingAccount} />

@@ -53,7 +53,6 @@ export const getTagsList = () => {
         saveToStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST, response);
         saveToStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT, Date.now());
 
-        dispatch(AlertActions.alertSuccess("Tags updated"));
         dispatch(_getTagsSuccess(response));
 
         return response;

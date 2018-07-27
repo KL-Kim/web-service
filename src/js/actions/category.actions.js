@@ -48,11 +48,9 @@ export const getCategoriesList = () => {
 
     return fetchCategoriesOrTags("CATAGORY")
       .then(response => {
-
         saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST, response);
         saveToStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT, Date.now());
 
-        dispatch(AlertActions.alertSuccess("Categories updated!"));
         dispatch(_getCategoriesSuccess(response));
 
         return response;

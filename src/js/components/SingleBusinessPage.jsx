@@ -48,30 +48,29 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
 import Container from './layout/Container'
-import ReviewCard from './utils/ReviewCard';
-import ReviewCardAlt from './utils/ReviewCardAlt';
 import WriteReviewDialog from './utils/WriteReviewDialog';
 import ReportDialog from './utils/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
+import ReviewPanel from './sections/ReviewPanel';
 
 // Actions
-import { favorOperation } from '../actions/user.actions';
-import { openLoginDialog } from '../actions/app.actions';
-import { getSingleBusiness, reportBusiness } from '../actions/business.actions';
+import { favorOperation } from 'js/actions/user.actions';
+import { openLoginDialog } from 'js/actions/app.actions';
+import { getSingleBusiness, reportBusiness } from 'js/actions/business.actions';
 import {
   getReviews,
   addNewReview,
   voteReview,
   clearReviewsList,
   getSingleReview
-} from '../actions/review.actions';
+} from 'js/actions/review.actions';
 
-import config from '../config/config';
-import { loadFromStorage } from '../helpers/webStorage';
-import webStorageTypes from '../constants/webStorage.types';
+import config from 'js/config/config';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Mock image
-import image from '../../css/ikt-icon.gif';
+import image from 'css/ikt-icon.gif';
 
 const styles = theme => ({
   "wrapper": {
@@ -116,7 +115,7 @@ class SingleBusinessPage extends Component {
     this.state = {
       "business": null,
       "addNewDialogOpen": false,
-      "limit": 20,
+      "limit": 12,
       'count': 0,
       "hasMore": false,
       "orderBy": 'recommended',
@@ -135,15 +134,16 @@ class SingleBusinessPage extends Component {
 
     this.handleAddNewReviewDialogOpen = this.handleAddNewReviewDialogOpen.bind(this);
     this.handleAddNewReviewDialogClose = this.handleAddNewReviewDialogClose.bind(this);
-    this.hanldeReviewSortBy = this.hanldeReviewSortBy.bind(this);
+    this.handleSortReviewsList = this.handleSortReviewsList.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.handleReviewDialogClose = this.handleReviewDialogClose.bind(this);
-    this.handleAddtoFavor = this.handleAddtoFavor.bind(this);
+    this.handleAddToFavor = this.handleAddToFavor.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
     this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
     this.handleSubmitReport = this.handleSubmitReport.bind(this);
     this.handleSortMenuPopoverOpen = this.handleSortMenuPopoverOpen.bind(this);
     this.handleSortMenuPopoverClose = this.handleSortMenuPopoverClose.bind(this);
+    this.getNewReviews = this.getNewReviews.bind(this);
   }
 
   componentDidMount() {
@@ -207,59 +207,19 @@ class SingleBusinessPage extends Component {
           });
 
           return this.props.getReviews({
-            limit: this.state.limit,
-            bid: business._id,
+            'limit': this.state.limit,
+            'bid': business._id,
           });
         })
         .then(response => {
           if (response) {
             this.setState({
-              hasMore: response.list.length < response.totalCount,
-              count: response.list.length,
+              'hasMore': response.list.length < response.totalCount,
+              'count': response.list.length,
             });
           }
         });
     }
-  }
-
-  componentWillUnmount() {
-    this.props.clearReviewsList();
-  }
-
-  handleSortMenuPopoverOpen() {
-    this.setState({
-      "sortMenuPopoverOpen": true,
-    });
-  }
-
-  handleSortMenuPopoverClose() {
-    this.setState({
-      "sortMenuPopoverOpen": false,
-    });
-  }
-
-  handleAddNewReviewDialogOpen() {
-    if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
-    }
-
-    this.setState({
-      "addNewDialogOpen": true,
-    });
-  }
-
-  handleAddNewReviewDialogClose() {
-    this.setState({
-      "addNewDialogOpen": false,
-    });
-  }
-
-  handleReviewDialogClose() {
-    this.setState({
-      "reviewDialogOpen": false,
-    });
   }
 
   handleReportDialogOpen() {
@@ -289,27 +249,7 @@ class SingleBusinessPage extends Component {
     }
   }
 
-  hanldeReviewSortBy = (item) => e => {
-    this.props.getReviews({
-      limit: this.state.limit,
-      bid: this.state.business._id,
-      orderBy: item,
-    }).then((response => {
-      if (response) {
-        this.setState({
-          'orderBy': item,
-          hasMore: response.list.length < this.props.totalCount,
-          count: response.list.length,
-        });
-      }
-    }));
-
-    this.setState({
-      sortMenuPopoverOpen: false
-    });
-  }
-
-  handleAddtoFavor() {
+  handleAddToFavor() {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
@@ -328,19 +268,94 @@ class SingleBusinessPage extends Component {
     }
   }
 
+  // Review Related Methods
+  handleAddNewReviewDialogOpen() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return;
+    }
+
+    this.setState({
+      "addNewDialogOpen": true,
+    });
+  }
+
+  handleAddNewReviewDialogClose() {
+    this.setState({
+      "addNewDialogOpen": false,
+    });
+  }
+
+  handleSortMenuPopoverOpen() {
+    this.setState({
+      "sortMenuPopoverOpen": true,
+    });
+  }
+
+  handleSortMenuPopoverClose() {
+    this.setState({
+      "sortMenuPopoverOpen": false,
+    });
+  }
+
+  handleReviewDialogClose() {
+    this.setState({
+      "reviewDialogOpen": false,
+    });
+  }
+  
+  handleSortReviewsList = (item) => e => {
+    this.props.getReviews({
+      'limit': this.state.limit,
+      'bid': this.state.business._id,
+      'orderBy': item,
+    }).then((response => {
+      if (response) {
+        this.setState({
+          'orderBy': item,
+          hasMore: response.list.length < response.totalCount,
+          count: response.list.length,
+        });
+      }
+    }));
+
+    this.setState({
+      sortMenuPopoverOpen: false
+    });
+  }
+
   loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
-        limit: this.state.count + this.state.limit,
+        'limit': this.state.count + this.state.limit,
         'bid': this.state.business._id,
         'orderBy': this.state.orderBy,
-      }).then((response => {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
-        });
-      }));
+      }).then(response => {
+        if (response) {
+          this.setState({
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }
+      });
     }
+  }
+
+  getNewReviews() {
+    this.props.getReviews({
+      'limit': this.state.limit,
+      'bid': this.state.business._id,
+      'orderBy': 'new',
+    }).then((response => {
+      if (response) {
+        this.setState({
+          'orderBy': 'new',
+          'hasMore': response.list.length < response.totalCount,
+          'count': response.list.length,
+        });
+      }
+    }));
   }
 
   render() {
@@ -363,7 +378,7 @@ class SingleBusinessPage extends Component {
       <Container>
         <div>
           <Grid container spacing={16} style={{ marginBottom: 80 }}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <Grid container>
                 <Grid item xs={12}>
                   <Paper className={classes.paper}>
@@ -377,7 +392,7 @@ class SingleBusinessPage extends Component {
                           <Tooltip id="favor-icon" title="Add to Favor">
                             <IconButton
                               color={this.state.isMyFavor ? "secondary" : 'default'}
-                              onClick={this.handleAddtoFavor}
+                              onClick={this.handleAddToFavor}
                             >
                               {
                                 this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
@@ -522,7 +537,7 @@ class SingleBusinessPage extends Component {
                     <ExpansionPanelDetails>
                       {
                         _.isEmpty(business.chains)
-                          ? null
+                          ? ''
                           : business.chains.map(item => (
                             <Link to={item.enName} key={item.enName}>
                               <Button color="primary" variant="outlined">{item.krName}</Button>
@@ -537,10 +552,7 @@ class SingleBusinessPage extends Component {
                       <Typography className={classes.heading}>영업시간</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                      <div style={{
-                          width: '100%'
-                        }}
-                      >
+                      <div style={{ width: '100%'}}>
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
                             <Typography variant="body2" gutterBottom><strong>월요일:</strong></Typography>
@@ -695,7 +707,7 @@ class SingleBusinessPage extends Component {
               </Grid>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <div className={classes.wrapper}>
                 <Thumbnail image={business.thumbnail} />
               </div>
@@ -724,13 +736,13 @@ class SingleBusinessPage extends Component {
 
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="display2" align="center" id="reviews" gutterBottom>
+              <Typography variant="display1" align="center" id="reviews" gutterBottom>
                 Reviews
               </Typography>
             </Grid>
 
             <Grid item xs={12}>
-              <Grid container spacing={16} justify="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+              <Grid container spacing={16} justify="space-between" alignItems="center">
                 <Grid item>
                   <Button
                     color="primary"
@@ -766,55 +778,19 @@ class SingleBusinessPage extends Component {
               {
                 _.isEmpty(reviews)
                   ? <Typography align="center">None</Typography>
-                  : <div>
-                      <InfiniteScroll
-                          pageStart={0}
-                          loadMore={this.loadMore}
-                          hasMore={this.state.hasMore}
-                          loader={<div style={{ textAlign: 'center' }} key={0}>
-                                    <CircularProgress size={30} />
-                                  </div>}
-                      >
-                        <div className={classes.masonryWrapper}>
-                          <Masonry>
-                            {
-                              reviews.map(review => (
-                                <div key={review._id} className={classes.mansoryItem}>
-                                  <ReviewCardAlt
-                                    showUser
-                                    id={review._id}
-                                    owner={review.user}
-                                    user={this.props.user}
-                                    isLoggedIn={this.props.isLoggedIn}
-                                    isOwn={_.isEmpty(this.props.user) ? false : review.user._id === this.props.user._id}
-                                    business={review.business}
-                                    content={review.content}
-                                    rating={review.rating}
-                                    serviceGood={review.serviceGood}
-                                    envGood={review.envGood}
-                                    comeback={review.comeback}
-                                    upvoteCount={review.upvote.length}
-                                    handleVote={this.props.voteReview}
-                                    openLoginDialog={this.props.openLoginDialog}
-                                  />
-                                </div>
-                              ))
-                            }
-                          </Masonry>
-                        </div>
-                      </InfiniteScroll>
-                      {
-                        !this.state.hasMore
-                          ? <Typography variant="caption" align="center">
-                              --- No more reviews ---
-                            </Typography>
-                          : null
-                      }
-                    </div>
+                  : <ReviewPanel
+                      reviews={reviews}
+                      totalCount={this.props.totalCount}
+                      hasMore={this.state.hasMore}
+                      loadMore={this.loadMore}
+                      clearReviewsList={this.props.clearReviewsList}
+                      isLoggedIn={this.props.isLoggedIn}
+                      userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                      voteReview={this.props.voteReview}
+                      openLoginDialog={this.props.openLoginDialog}
+                    />
               }
             </Grid>
-
-
           </Grid>
 
           <div id="modal-container">
@@ -823,20 +799,8 @@ class SingleBusinessPage extends Component {
               business={business}
               open={this.state.addNewDialogOpen}
               addNewReview={this.props.addNewReview}
+              getNewReviews={this.getNewReviews}
               handleClose={this.handleAddNewReviewDialogClose}
-            />
-
-            <WriteReviewDialog
-              readOnly
-              user={this.props.user}
-              rating={review.rating}
-              content={review.content}
-              serviceGood={review.serviceGood}
-              envGood={review.envGood}
-              comeback={review.comeback}
-              business={business}
-              open={this.state.reviewDialogOpen}
-              handleClose={this.handleReviewDialogClose}
             />
 
             <ReportDialog
@@ -859,17 +823,34 @@ class SingleBusinessPage extends Component {
               }}
             >
               <MenuList role="menu" style={{ width: 150 }}>
-                <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.hanldeReviewSortBy('recommended')}>
+                <MenuItem selected={this.state.orderBy === 'recommended'} onClick={this.handleSortReviewsList('recommended')}>
                   <ListItemText primary="Recommend" />
                 </MenuItem>
-                <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.hanldeReviewSortBy('useful')}>
+                <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSortReviewsList('useful')}>
                   <ListItemText primary="Useful" />
                 </MenuItem>
-                <MenuItem selected={this.state.orderBy === 'new'} onClick={this.hanldeReviewSortBy('new')}>
+                <MenuItem selected={this.state.orderBy === 'new'} onClick={this.handleSortReviewsList('new')}>
                   <ListItemText primary="New" />
                 </MenuItem>
               </MenuList>
             </Popover>
+
+            {
+              _.isEmpty(review)
+                ? null
+                : <WriteReviewDialog
+                    readOnly
+                    user={this.props.user}
+                    rating={review.rating}
+                    content={review.content}
+                    serviceGood={review.serviceGood}
+                    envGood={review.envGood}
+                    comeback={review.comeback}
+                    business={business}
+                    open={this.state.reviewDialogOpen}
+                    handleClose={this.handleReviewDialogClose}
+                  />
+            }
           </div>
         </div>
       </Container>

@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 
 // Custom Components
 import CustomButton from 'js/components/utils/Button';
@@ -18,13 +19,14 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 4,
   },
   "chip": {
+    marginLeft: 0,
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
     fontSize: '1rem',
-    minWidth: 100,
+    width: 112,
   },
 });
 
@@ -58,38 +60,41 @@ class CategorySection extends Component {
     const categories = searchCategoryOrTag('category', 'ALL');
 
     this.setState({
-      categories: categories.slice(),
+      categories: [...categories],
     });
   }
 
   render() {
     const { classes } = this.props;
 
-    return (
+    return _.isEmpty(this.state.categories) ? null :(
       <div>
+        <div className={classes.section}>
+          <Typography variant="title" gutterBottom>Category</Typography>
+          {
+            this.state.categories.map(item =>
+              !item.parent
+                ? <Link to={"/business/category/" + item.enName} key={item._id}>
+                    <CustomButton
+                      color="white"
+                      round
+                      className={classes.chip}
+                    >
+                      {item.krName}
+                    </CustomButton>
+                  </Link>
+                : null
+            )
+          }
+          <br />
+        </div>
+        
         {
-          _.isEmpty(this.state.categories)
-            ? null
-            : <div className={classes.section}>
-                {
-                  this.state.categories.map(item =>
-                    !item.parent
-                      ? <Link to={"/business/category/" + item.enName} key={item._id}>
-                          <CustomButton
-                            round
-                            className={classes.chip}
-                          >
-                            {item.krName}
-                          </CustomButton>
-                        </Link>
-                      : null
-                  )
-                }
-                <br />
-              </div>
-        }
-        {
-          categories.map(category => <div className={classes.section} key={category.code}><CategoryPanel category={category} /></div>)
+          categories.map(category => (
+            <div className={classes.section} key={category.code}>
+              <CategoryPanel category={category} />
+            </div>
+          ))
         }
       </div>
     );

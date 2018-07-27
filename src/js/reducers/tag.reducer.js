@@ -25,7 +25,7 @@ const categoryReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        tagsList: action.payload.list,
+        tagsList: [...action.payload.list],
         totalCount: action.payload.list.length,
       };
 

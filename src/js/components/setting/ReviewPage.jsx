@@ -17,21 +17,16 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-// Material UI Icons
-import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
-import ReviewCard from '../utils/ReviewCard';
-import ReviewCardAlt from '../utils/ReviewCardAlt';
+import SettingContainer from 'js/components/layout/SettingContainer';
+import ReviewPanel from 'js/components/sections/ReviewPanel';
 
 // Webstorage
-import { loadFromStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
-import { getReviews, deleteReview } from '../../actions/review.actions';
+import { getReviews, deleteReview, clearReviewsList } from 'js/actions/review.actions';
 
 const styles = theme => ({
   "mansoryWrapper": {
@@ -53,28 +48,30 @@ class ReviewPage extends Component {
     super(props);
 
     this.state = {
-      "limit": 18,
+      "limit": 12,
       "count": 0,
       'hasMore': false,
+      'userId': '',
     };
-
-    this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
 
     this.loadMore = this.loadMore.bind(this);
     this.getNewReviews = this.getNewReviews.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.userId) {
+    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    if (userId) {
       this.props.getReviews({
-        limit: this.state.count,
-        'uid': this.state.userId,
+        'limit': this.state.limit,
+        'uid': userId,
         'orderBy': 'new',
       }).then(response => {
         if (response) {
           this.setState({
-            hasMore: response.list.length < this.props.totalCount,
-            count: response.list.length,
+            userId,
+            'hasMore': response.list.length < response.totalCount,
+            'count': response.list.length,
           });
         }
       });
@@ -84,13 +81,13 @@ class ReviewPage extends Component {
   loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
-        limit: this.state.count + this.state.limit,
+        'limit': this.state.count + this.state.limit,
         'uid': this.state.userId,
         'orderBy': 'new',
       }).then(response => {
         this.setState({
           count: response.list.length,
-          hasMore: response.list.length < this.props.totalCount
+          hasMore: response.list.length < response.totalCount
         });
       });
     }
@@ -99,7 +96,7 @@ class ReviewPage extends Component {
   getNewReviews() {
     if (this.state.userId) {
       this.props.getReviews({
-        limit: this.state.count,
+        'limit': this.state.count,
         'uid': this.state.userId,
         'orderBy': 'new',
       });
@@ -112,58 +109,22 @@ class ReviewPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
         <div>
-          <Typography variant="display1">My Reviews</Typography>
-          <br />
-
+          <Typography variant="display1" gutterBottom>My Reviews</Typography>
           {
             _.isEmpty(reviews)
               ? <Typography align="center">None</Typography>
-              : <div>
-                  <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.loadMore}
-                    hasMore={this.state.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                              <CircularProgress size={30} />
-                            </div>}
-                  >
-                    <div className={classes.mansoryWrapper}>
-                      <Masonry elementType={'div'}>
-                        {
-                          reviews.map(review => (
-                            <div key={review._id} className={classes.mansoryItem}>
-                              <ReviewCardAlt
-                                id={review._id}
-                                owner={review.user}
-                                business={review.business}
-                                showBusinessName={true}
-                                user={this.props.user}
-                                isOwn={review.userId === this.props.user._id}
-                                isLoggedIn={this.props.isLoggedIn}
-                                content={review.content}
-                                rating={review.rating}
-                                upvoteCount={review.upvote.length}
-                                serviceGood={review.serviceGood}
-                                envGood={review.envGood}
-                                comeback={review.comeback}
-                                handleDelete={this.props.deleteReview}
-                                getNewReviews={this.getNewReviews}
-                              />
-                            </div>
-                          ))
-                        }
-                      </Masonry>
-                    </div>
-                </InfiniteScroll>
-                {
-                  this.state.hasMore
-                    ? null
-                    : <Typography variant="caption" align="center">
-                        --- No more reviews, You have total {this.props.totalCount} reviews ---
-                      </Typography>
-                }
-              </div>
-            }
+              : <ReviewPanel
+                  reviews={reviews}
+                  totalCount={this.props.totalCount}
+                  hasMore={this.state.hasMore}
+                  loadMore={this.loadMore}
+                  clearReviewsList={this.props.clearReviewsList}
+                  isLoggedIn={this.props.isLoggedIn}
+                  userId={this.props.user._id}
+                  deleteReview={this.props.deleteReview}
+                  getNewReviews={this.getNewReviews}
+                />
+          }
         </div>
       </SettingContainer>
     );
@@ -173,17 +134,21 @@ class ReviewPage extends Component {
 ReviewPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "reviews": PropTypes.array.isRequired,
+
+  // Methods
+  "getReviews": PropTypes.func.isRequired,
+  "deleteReview": PropTypes.func.isRequired,
+  "clearReviewsList": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
-    "updatedAt": state.userReducer.updatedAt,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "reviews": state.reviewReducer.reviews,
-    "totalCount": state.reviewReducer.totalCount,
-    "error": state.reviewReducer.error,
   };
 };
 
-export default connect(mapStateToProps, { getReviews, deleteReview })(withStyles(styles)(ReviewPage));
+export default connect(mapStateToProps, { getReviews, deleteReview, clearReviewsList })(withStyles(styles)(ReviewPage));

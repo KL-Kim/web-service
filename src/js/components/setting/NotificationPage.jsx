@@ -70,8 +70,6 @@ class NotificationPage extends Component {
       hasMore: false,
     };
 
-    this.state.userId = props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
     this.handleDelete = this.handleDelete.bind(this);
     this.handleConfirmationDialogOpen = this.handleConfirmationDialogOpen.bind(this);
     this.handleConfirmationDialogClose = this.handleConfirmationDialogClose.bind(this);
@@ -81,11 +79,17 @@ class NotificationPage extends Component {
   }
 
   componentDidMount() {
-    if (this.state.userId) {
-      this.props.getNotification({ uid: this.state.userId, limit: this.state.limit })
+    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    if (userId) {
+      this.props.getNotification({ 
+        uid: userId, 
+        limit: this.state.limit 
+      })
         .then(response => {
           if (response) {
             this.setState({
+              userId,
               list: response.list.slice(),
               count: response.list.length,
               hasMore: response.list.length < response.totalCount

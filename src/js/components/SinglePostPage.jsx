@@ -29,15 +29,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 // Material UI Icons
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ThumbUp from '@material-ui/icons/ThumbUp';
-import ThumbDown from '@material-ui/icons/ThumbDown';
 
 // Custom Components
 import Container from './layout/Container';
-import CommentPanel from './utils/CommentPanel';
+import CommentPanel from './sections/CommentPanel';
 import ReportDialog from './utils/ReportDialog';
 import ProperName from './utils/ProperName';
-import ElapsedTime from 'js/helpers/ElapsedTime';
 import ThumbButton from './utils/ThumbButton';
 
 // Actions
@@ -55,7 +52,7 @@ import image from 'img/background_1.jpg';
 
 const styles = theme => ({
   "root": {
-    width: 760,
+    maxWitdh: 760,
     margin: 'auto',
   },
   "section": {
@@ -75,9 +72,6 @@ const styles = theme => ({
   "iconButton": {
     marginRight: theme.spacing.unit,
   },
-  "itemWrapper": {
-      marginBottom: theme.spacing.unit * 2,
-  }
 });
 
 class SinglePostPage extends Component {
@@ -93,7 +87,7 @@ class SinglePostPage extends Component {
       parentId: '',
       replyToComment: '',
       replyToUser: '',
-      limit: 5,
+      limit: 10,
       count: 0,
       hasMore: false,
     };
@@ -107,7 +101,7 @@ class SinglePostPage extends Component {
     this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
     this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
-    this.handleVote = this.handleVote.bind(this);
+    this.handleVoteComment = this.handleVoteComment.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
     this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
     this.handleSubmitReport = this.handleSubmitReport.bind(this);
@@ -129,8 +123,9 @@ class SinglePostPage extends Component {
       })
       .then(() => {
         this.props.getComments({
+          limit: this.state.limit,
           pid: this.state.id,
-          orderBy: 'useful',
+          orderBy: this.state.orderBy,
         }).then(response => {
           if (response) {
             this.setState({
@@ -140,10 +135,6 @@ class SinglePostPage extends Component {
           }
         });
       });
-  }
-
-  componentWillUnmount() {
-    this.props.clearCommentsList();
   }
 
   handleChange(e) {
@@ -250,7 +241,7 @@ class SinglePostPage extends Component {
     }
   }
 
-  handleVote = vote => e => {
+  handleVoteComment = vote => e => {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
@@ -319,16 +310,7 @@ class SinglePostPage extends Component {
     const { classes, comments } = this.props;
     const { post } = this.state;
 
-    if (_.isEmpty(post)) {
-      return (
-        <Container>
-          <div style={{ textAlign: 'center' }}>
-            <CircularProgress size={30} />
-          </div>
-        </Container>);
-    }
-
-    return (
+    return _.isEmpty(post) ? null : (
       <Container>
         <div className={classes.root}>
           <Grid container justify="center">
@@ -348,11 +330,11 @@ class SinglePostPage extends Component {
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
                   <span className={classes.iconButton}>
-                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVote("UPVOTE")} />
+                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVoteComment("UPVOTE")} />
                   </span>
 
                   <span className={classes.iconButton}>
-                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVote("DOWNVOTE")} />
+                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVoteComment("DOWNVOTE")} />
                   </span>
 
                   <span>
@@ -374,7 +356,8 @@ class SinglePostPage extends Component {
             <Grid item xs={12}>
               <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
             </Grid>
-            <Grid item xs={12} className={classes.itemWrapper}>
+
+            <Grid item xs={12} >
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
                   <Button
@@ -400,47 +383,22 @@ class SinglePostPage extends Component {
             </Grid>
           </Grid>
 
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
+          <CommentPanel
             hasMore={this.state.hasMore}
-            loader={<div style={{ textAlign: 'center' }} key={0}>
-                      <CircularProgress size={30} />
-                    </div>}
-          >
-            <Grid container justify="center">
-              {
-                _.isEmpty(comments) ? ''
-                  : comments.map(comment => (
-                    <Grid item xs={12} key={comment._id} className={classes.itemWrapper}>
-                      <CommentPanel
-                        commentId={comment._id}
-                        postId={this.state.id}
-                        postTitle={this.state.post.title}
-                        parentComment={comment.parentId}
-                        replyToUser={comment.replyToUser}
-                        status={comment.status}
-                        content={comment.content}
-                        owner={comment.userId}
-                        isLoggedIn={this.props.isLoggedIn}
-                        user={this.props.user}
-                        isOwn={comment.userId._id === this.props.user._id}
-                        upvoteCount={comment.upvote.length}
-                        downvoteCount={comment.downvote.length}
-                        createdAt={comment.createdAt}
-                        addNewComment={this.props.addNewComment}
-                        getNewComments={this.getNewComments}
-                        voteComment={this.props.voteComment}
-                        deleteComment={this.props.deleteComment}
-                        openLoginDialog={this.props.openLoginDialog}
-                      />
-                    </Grid>
-                ))
-              }
-            </Grid>
-          </InfiniteScroll>
+            loadMore={this.loadMore}
+            commentsList={this.props.comments}
+            totalCount={this.props.totalCount}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+            openLoginDialog={this.props.openLoginDialog}
+            showReplyIcon
+            addNewComment={this.props.addNewComment}
+            voteComment={this.props.voteComment}
+            deleteComment={this.props.deleteComment}
+            getNewComments={this.getNewComments}
+          />
 
-          <div>
+          <div id="modal-container">
             <Popover
               open={this.state.sortPopoverOpen}
               anchorEl={this.sortAnchorEl}

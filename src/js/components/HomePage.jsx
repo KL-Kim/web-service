@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 // Material UI Components
@@ -15,17 +16,21 @@ import Header from './layout/Header';
 import Footer from './layout/Footer';
 import Alert from './utils/Alert';
 import DevTools from './layout/DevTools';
+import BottomNav from './layout/BottomNav';
 
 import SectionCarousel from './utils/SectionCarousel';
-import BusinessCard from './utils/BusinessCard';
-import CategoryCard from './utils/CategoryCard';
+import CategoryCard from './sections/cards/CategoryCard';
+import BusinessPanel from './sections/BusinessPanel';
 
 // Webstorage
 import { loadFromStorage } from '../helpers/webStorage';
 import webStorageTypes from '../constants/webStorage.types';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
+import { Button } from '../../../node_modules/@material-ui/core';
 
 const styles = theme => ({
   root: {
@@ -36,17 +41,16 @@ const styles = theme => ({
     overflow: 'hidden',
   },
   appFrame: {
-    maxWidth: 960,
+    maxWidth: 976,
     height: '100%',
     margin: 'auto',
-    marginBottom: theme.spacing.unit * 15,
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit * 16,
+    marginBottom: theme.spacing.unit * 16,
   },
   section: {
     marginTop: theme.spacing.unit * 8,
-  },
-  paper: {
-    padding: theme.spacing.unit * 5,
-    color: theme.palette.text.secondary
   },
 });
 
@@ -61,9 +65,9 @@ class HomePage extends Component {
 
   componentDidMount() {
     this.props.getBusinessList({
-      limit: 9,
-      orderBy: "useful",
-      event: 1,
+      'limit': 9,
+      'orderBy': "useful",
+      'event': 1,
     });
   }
 
@@ -80,15 +84,26 @@ class HomePage extends Component {
         <SectionCarousel />
         <main className={classes.appFrame}>
           <div className={classes.section}>
-            <Typography variant="title" gutterBottom>Popular Categories</Typography>
-            <Grid container spacing={24} justify="center" alignItems="center">
+            <Grid container justify="space-between" alignItems="flex-end">
+              <Grid item>
+                <Typography variant="title" gutterBottom>Popular Categories</Typography>
+              </Grid>
+
+              <Grid item>
+                <Link to="/explore">
+                  <Button>More</Button>
+                </Link>
+              </Grid>
+            </Grid>
+            
+            <Grid container spacing={16} justify="center" alignItems="center">
               {
                 _.isEmpty(categories)
                   ? null
                   : categories.map(item => {
                     if (item.priority > 7) {
                       return (
-                        <Grid item xs={3} key={item._id}>
+                        <Grid item xs={6} sm={3} key={item._id}>
                           <CategoryCard name={item.krName} url={"/business/category/" + item.enName} />
                         </Grid>
                       );
@@ -100,33 +115,20 @@ class HomePage extends Component {
 
           <div className={classes.section}>
             <Typography variant="title" gutterBottom>
-              Hot Bussiness in Event
+              Popular Event
             </Typography>
-            <Grid container spacing={24} justify="center">
-              {
-                _.isEmpty(businessList)
-                  ? null
-                  : businessList.map(item => (
-                      <Grid item xs={4} key={item._id}>
-                        <BusinessCard
-                          bid={item._id}
-                          title={item.krName}
-                          enName={item.enName}
-                          rating={item.ratingAverage}
-                          thumbnailUri={item.thumbnailUri}
-                          category={item.category}
-                          tags={item.tags}
-                          event={item.event}
-                          myFavors={this.state.myFavors}
-                        />
-                      </Grid>
-                    ))
-
-              }
-            </Grid>
+            <BusinessPanel
+              businessList={this.props.businessList}
+              totalCount={this.props.totalCount}
+              isLoggedIn={this.props.isLoggedIn}
+              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+              favorOperation={this.props.favorOperation}
+              openLoginDialog={this.props.openLoginDialog}
+              clearBusinessList={this.props.clearBusinessList}
+            />
           </div>
         </main>
-        <Footer />
+        <BottomNav />
         <DevTools />
         <Alert />
       </div>
@@ -138,14 +140,29 @@ HomePage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "businessList": PropTypes.array.isRequired,
   "isFetching": PropTypes.bool.isRequired,
+  "user": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
+
+  // Methods
+  getBusinessList: PropTypes.func.isRequired, 
+  clearBusinessList: PropTypes.func.isRequired, 
+  openLoginDialog: PropTypes.func.isRequired, 
+  favorOperation: PropTypes.func.isRequired, 
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "isFetching": state.businessReducer.isFetching,
     "categories": state.categoryReducer.categoriesList,
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(HomePage));
+export default connect(mapStateToProps, { 
+  getBusinessList, 
+  clearBusinessList,
+  openLoginDialog,
+  favorOperation, 
+})(withStyles(styles)(HomePage));

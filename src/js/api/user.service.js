@@ -14,7 +14,7 @@ const userServiceUri = {
   registerUrl: config.API_GATEWAY_ROOT + '/api/v1/user/register',
   verifyAccountUrl: config.API_GATEWAY_ROOT + '/api/v1/user/verify',
   changePasswordUrl: config.API_GATEWAY_ROOT + '/api/v1/user/password',
-  updateUsernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/username/',
+  usernameUrl: config.API_GATEWAY_ROOT + '/api/v1/user/username/',
   updatePhoneUrl: config.API_GATEWAY_ROOT + '/api/v1/user/phone/',
   uploadProfilePhotoUrl: config.API_GATEWAY_ROOT + '/api/v1/user/profilePhoto/',
   favorUrl: config.API_GATEWAY_ROOT + '/api/v1/user/favor/',
@@ -86,6 +86,30 @@ export const verifyFetch = (token) => {
       return Promise.reject(err);
     });
 };
+
+/**
+ * Fetch user by username
+ * @param {String} username - User's username
+ */
+export const getUsernameFetch = username => {
+  const options = {
+    "method": 'GET',
+    "headers": {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  return fetch(userServiceUri.usernameUrl + username, options)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+}
 
 /**
  * Fetch user by Id
@@ -174,7 +198,7 @@ export const updateUserFetch = (type = "PROFILE", token, id, data) => {
 
   switch (type) {
     case userTypes.UPDATE_USERNAME:
-      url = userServiceUri.updateUsernameUrl + id;
+      url = userServiceUri.usernameUrl + id;
       break;
 
     default:

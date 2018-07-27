@@ -40,16 +40,16 @@ const reviewReducer = (state = initialState, action) => {
       };
 
     case reviewTypes.GET_REVIEWS_SUCCESS:
-    case reviewTypes.ADD_NEW_REVIEW_SUCCESS:
-    case reviewTypes.UPDATE_REVIEW_SUCCESS:
-    case reviewTypes.DELETE_REVIEW_SUCCESS:
       return {
         ...state,
         isFetching: false,
-        reviews: action.payload.reviews,
+        reviews: [...action.payload.reviews],
         totalCount: action.payload.totalCount,
       };
 
+    case reviewTypes.ADD_NEW_REVIEW_SUCCESS:
+    case reviewTypes.UPDATE_REVIEW_SUCCESS:
+    case reviewTypes.DELETE_REVIEW_SUCCESS:
     case reviewTypes.VOTE_REVIEW_SUCCESS:
       return {
         ...state,

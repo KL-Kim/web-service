@@ -24,7 +24,7 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
 // Custom Components
-import Badge from './Badge';
+import Badge from 'js/components/utils/Badge';
 
 // Actions
 import { favorOperation } from 'js/actions/user.actions';

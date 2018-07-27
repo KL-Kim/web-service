@@ -26,21 +26,17 @@ import Toolbar from '@material-ui/core/Toolbar';
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import Restaurant from '@material-ui/icons/Restaurant';
 
 // Custom Components
 import Container from './layout/Container';
-import BusinessCard from './utils/BusinessCard';
-import BusinessCardAlt from './utils/BusinessCardAlt';
 import CustomButton from './utils/Button';
+import BusinessPanel from './sections/BusinessPanel';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 import { getCategoriesList } from 'js/actions/category.actions.js';
-
-// WebStorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = theme => ({
   "categoryButton": {
@@ -87,10 +83,7 @@ class BusinessListPage extends Component {
       "areaPopoverOpen": false,
       "sortPopoverOpen": false,
       "filterPopoverOpen": false,
-      "myFavors": [],
     };
-
-    // this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.loadMore = this.loadMore.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
@@ -104,8 +97,8 @@ class BusinessListPage extends Component {
   componentDidMount() {
     if (this.props.match.params.slug) {
       this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.props.match.params.slug,
+        'limit': this.state.limit,
+        'category': this.props.match.params.slug,
       })
       .then(response => {
         if (response) {
@@ -145,21 +138,13 @@ class BusinessListPage extends Component {
           }
         });
     }
-
-    if (this.props.isLoggedIn) {
-      const list  = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
-
-      this.setState({
-        myFavors: list.slice()
-      });
-    }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.match.params.slug !== prevProps.match.params.slug) {
       this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.props.match.params.slug,
+        'limit': this.state.limit,
+        'category': this.props.match.params.slug,
       })
       .then(response => {
         if (response) {
@@ -204,10 +189,6 @@ class BusinessListPage extends Component {
           }
         });
     }
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
   }
 
   handleClickArea = item => e => {
@@ -261,10 +242,6 @@ class BusinessListPage extends Component {
   }
 
   handleSwithEvent() {
-    this.setState({
-      event: !this.state.event,
-    });
-
     this.props.getBusinessList({
       limit: this.state.limit,
       category: this.state.category.enName,
@@ -279,6 +256,10 @@ class BusinessListPage extends Component {
           hasMore: response.list.length < response.totalCount
         });
       }
+    });
+
+    this.setState({
+      event: !this.state.event,
     });
   }
 
@@ -302,7 +283,7 @@ class BusinessListPage extends Component {
   }
 
   loadMore() {
-    if (this.state.count < this.props.totalCount) {
+    if (this.state.hasMore) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         category: this.state.category.enName,
@@ -320,7 +301,7 @@ class BusinessListPage extends Component {
   }
 
   render() {
-    const { classes, businessList, categories } = this.props;
+    const { classes, categories } = this.props;
 
     return (
       <Container>
@@ -329,7 +310,7 @@ class BusinessListPage extends Component {
             <Grid item>
               <Typography variant="display1">
                 {
-                  _.isEmpty(this.state.category) ? '' : this.state.category.krName
+                  _.isEmpty(this.state.category) ? null : this.state.category.krName
                 }
               </Typography>
             </Grid>
@@ -364,66 +345,35 @@ class BusinessListPage extends Component {
 
           <div >
             {
-              this.props.categories.map(item => (item.parent === this.state.category.code)
-                ? (
-                    <Link to={"/business/category/" + item.enName} key={item._id}>
-                      <CustomButton
-                        round
-                        color="primary"
-                        className={classes.categoryButton}
-                      >
-                        {item.krName}
-                      </CustomButton>
-                    </Link>
-                  )
-                : ''
+              categories.map(item => (item.parent === this.state.category.code)
+                ? <Link to={"/business/category/" + item.enName} key={item._id}>
+                    <CustomButton
+                      round
+                      color="primary"
+                      className={classes.categoryButton}
+                    >
+                      {item.krName}
+                    </CustomButton>
+                  </Link>
+                : null
               )
             }
           </div>
           <br />
 
-          {
-            _.isEmpty(businessList)
-              ? null
-              : <div>
-                  <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.loadMore}
-                    hasMore={this.state.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                              <CircularProgress size={30} />
-                            </div>}
-                  >
-                    <Grid container spacing={24} style={{ marginBottom: 12 }}>
-                      {
-                        businessList.map(item => (
-                          <Grid item xs={4} key={item._id}>
-                            <BusinessCard
-                              bid={item._id}
-                              title={item.krName}
-                              enName={item.enName}
-                              rating={item.ratingAverage}
-                              thumbnailUri={item.thumbnailUri}
-                              category={item.category}
-                              tags={item.tags}
-                              event={item.event}
-                              myFavors={this.state.myFavors}
-                            />
-                          </Grid>
-                        ))
-                      }
-                    </Grid>
-                  </InfiniteScroll>
-                  {
-                    this.state.hasMore
-                      ? null
-                      : <Typography variant="caption" align="center">
-                          --- No More ---
-                        </Typography>
-                  }
-                </div>
-          }
-
+          <BusinessPanel
+            hasMore={this.state.hasMore}
+            loadMore={this.loadMore} 
+            businessList={this.props.businessList}
+            totalCount={this.props.totalCount}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+            favorOperation={this.props.favorOperation}
+            openLoginDialog={this.props.openLoginDialog}
+            clearBusinessList={this.props.clearBusinessList}
+            showNoMore
+          />
+          
           <div id="modal-container">
             <Popover
               open={this.state.filterPopoverOpen}
@@ -587,11 +537,20 @@ BusinessListPage.propTypes = {
   "totalCount": PropTypes.number.isRequired,
   "categories": PropTypes.array.isRequired,
   "isFetching": PropTypes.bool,
+  "user": PropTypes.object,
   "isLoggedIn": PropTypes.bool.isRequired,
+
+  // Methods
+  "getBusinessList": PropTypes.func.isRequired,
+  "clearBusinessList": PropTypes.func.isRequired,
+  "getCategoriesList": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
+  "favorOperation": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
@@ -600,4 +559,10 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, getCategoriesList, clearBusinessList })(withStyles(styles)(BusinessListPage));
+export default connect(mapStateToProps, { 
+  getBusinessList, 
+  clearBusinessList,
+  getCategoriesList, 
+  openLoginDialog,
+  favorOperation,
+})(withStyles(styles)(BusinessListPage));

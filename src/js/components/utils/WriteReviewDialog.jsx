@@ -113,7 +113,8 @@ class WriteReviewDialog extends Component {
 
   handleSubmit() {
     if (this.props.user && !this.props.readOnly) {
-      const data = {
+
+      this.props.addNewReview({
         uid: this.props.user._id,
         rating: this.state.rating,
         content: this.state.content,
@@ -121,14 +122,12 @@ class WriteReviewDialog extends Component {
         envGood: this.state.envGood,
         comeback: this.state.comeback,
         bid: this.props.business._id,
-      }
-
-      this.props.addNewReview(data)
-        .then(response => {
-          this.handleClose();
-        });
+      })
+      .then(response => {
+        this.handleClose();
+        this.props.getNewReviews();
+      });
     }
-
   }
 
   render() {
@@ -268,6 +267,7 @@ WriteReviewDialog.propTypes = {
   "comeback": PropTypes.bool,
   "handleClose": PropTypes.func.isRequired,
   "handleSubmit": PropTypes.func,
+  "getNewReviews": PropTypes.func,
 }
 
 export default withStyles(styles)(WriteReviewDialog);

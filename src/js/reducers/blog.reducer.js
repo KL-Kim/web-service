@@ -46,7 +46,7 @@ const blogReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        list: action.payload.list,
+        list: [...action.payload.list],
         totalCount: action.payload.totalCount,
       };
 

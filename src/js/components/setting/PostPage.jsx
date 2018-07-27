@@ -58,21 +58,22 @@ class PostPage extends Component {
       "search": '',
     };
 
-    this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
     this.handleChange = this.handleChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.loadMore = this.loadMore.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.userId) {
+    const userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    if (userId) {
       this.props.getPostsList({
         'uid': this.state.userId,
         'limit': this.state.limit,
       }).then(response => {
         if (response) {
           this.setState({
+            userId,
             hasMore: response.list.length < response.totalCount,
             count: response.list.length,
           });

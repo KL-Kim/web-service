@@ -61,12 +61,12 @@ class ReviewCard extends Component {
   }
 
   handleDelete() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push('/signin');
+    if (!this.props.userId) {
+      this.props.openLoginDialog();
     }
 
-    if (this.props.handleDelete && this.props.id) {
-      this.props.handleDelete({
+    if (this.props.deleteReview && this.props.id && this.props.isOwn) {
+      this.props.deleteReview({
         _id: this.props.id,
         uid: this.props.owner._id,
       })
@@ -84,15 +84,15 @@ class ReviewCard extends Component {
   }
 
   handleUpvote() {
-    if (!this.props.isLoggedIn) {
+    if (!this.props.userId) {
       this.props.openLoginDialog();
 
       return;
     }
 
-    if (!_.isUndefined(this.props.handleVote) && !_.isEmpty(this.props.user) && this.props.owner._id !== this.props.user._id) {
+    if (!_.isUndefined(this.props.handleVote) && this.props.userId && !this.props.isOwn) {
       this.props.handleVote(this.props.id, {
-        uid: this.props.user._id,
+        uid: this.props.userId,
         businessName: this.props.business.krName + '/' + this.props.business.cnName,
         businessSlug: this.props.business.enName,
         vote: 'upvote',
@@ -195,8 +195,7 @@ ReviewCard.propTypes = {
   "id": PropTypes.string.isRequired,
   "isOwn": PropTypes.bool.isRequired,
   "owner": PropTypes.object.isRequired,
-  "user": PropTypes.object.isRequired,
-  "isLoggedIn": PropTypes.bool.isRequired,
+  "userId": PropTypes.string.isRequired,
   "showUser": PropTypes.bool,
   "business": PropTypes.object.isRequired,
   "showBusinessName": PropTypes.bool,
@@ -206,7 +205,7 @@ ReviewCard.propTypes = {
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "upvoteCount": PropTypes.number,
-  "handleDelete": PropTypes.func,
+  "deleteReview": PropTypes.func,
   "getNewReviews": PropTypes.func,
 };
 

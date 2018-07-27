@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
@@ -24,12 +23,9 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
 // Custom Components
-import Badge from './Badge';
+import Badge from 'js/components/utils/Badge';
 
-// Actions
-import { favorOperation } from 'js/actions/user.actions';
-import { openLoginDialog } from 'js/actions/app.actions';
-
+// Config
 import config from 'js/config/config';
 
 // Default Image
@@ -44,33 +40,34 @@ const styles = (theme) => ({
   },
 });
 
-class BusinessCard extends Component {
+class BusinessCard extends PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
-      isFavor: false,
+      isFavor: props.isFavor,
     };
 
-    if (props.myFavors) {
-      const index = props.myFavors.indexOf(props.bid);
-      if (index > -1) {
-        this.state.isFavor = true;
-      }
-    }
-
-    this.hanldeAddToFavor = this.hanldeAddToFavor.bind(this);
+    this.handleToggleFavor = this.handleToggleFavor.bind(this);
   }
 
-  hanldeAddToFavor() {
+  componentDidUpdate(prevProps) {
+    if (prevProps.isFavor !== this.props.isFavor) {
+      this.setState({
+        isFavor: this.props.isFavor,
+      });
+    }
+  }
+
+  handleToggleFavor() {
     if (!this.props.isLoggedIn) {
       this.props.openLoginDialog();
 
       return ;
     }
 
-    if (!_.isEmpty(this.props.user) && !_.isEmpty(this.props.bid)) {
-      this.props.favorOperation(this.props.user._id, this.props.bid)
+    if (this.props.favorOperation && this.props.userId && this.props.bid) {
+      this.props.favorOperation(this.props.userId, this.props.bid)
         .then(response => {
           if (response) {
             this.setState({
@@ -104,7 +101,7 @@ class BusinessCard extends Component {
                       {
                         this.props.event
                           ? <Badge color="rose">이벤트</Badge>
-                          : ''
+                          : null
                       }
                     </Grid>
                   </Grid>
@@ -137,7 +134,7 @@ class BusinessCard extends Component {
               
               <Grid item>
                 <Tooltip id="favor-icon" title="Add to Favor">
-                  <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.hanldeAddToFavor}>
+                  <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.handleToggleFavor}>
                     {
                       this.state.isFavor ? <Favorite /> : <FavoriteBorder />
                     }
@@ -153,10 +150,12 @@ class BusinessCard extends Component {
 }
 
 BusinessCard.defaultProps = {
-  thumbnail: {},
-  category: {},
-  tags: [],
-  myFavors: [],
+  "thumbnail": {},
+  "category": {},
+  "tags": [],
+  "myFavors": [],
+  "isLoggedIn": false,
+  "userId": '',
 };
 
 BusinessCard.propTypes = {
@@ -168,13 +167,12 @@ BusinessCard.propTypes = {
   "myFavors": PropTypes.array,
   "category": PropTypes.object.isRequired,
   "tags": PropTypes.array,
+
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "userId": PropTypes.string.isRequired,
+  "openLoginDialog": PropTypes.func,
+  "favorOperation": PropTypes.func,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
-  };
-};
 
-export default connect(mapStateToProps, { favorOperation, openLoginDialog })(withStyles(styles)(BusinessCard));
+export default withStyles(styles)(BusinessCard);

@@ -11,9 +11,11 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 // Custom Components
-import BusinessCard from 'js/components/utils/BusinessCard';
+import BusinessPanel from './BusinessPanel';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
+import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 
 const styles = theme => ({
@@ -36,14 +38,10 @@ class TagPanel extends PureComponent {
     }).then(response => {
       if (response) {
         this.setState({
-          list: response.list.slice(),
+          list: [...response.list],
         });
       }
     });
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
   }
 
   render() {
@@ -63,25 +61,14 @@ class TagPanel extends PureComponent {
           </Grid>
         </Grid>
 
-        <Grid container spacing={24} justify="center">
-        {
-          this.state.list.map(item => (
-            <Grid item lg={4} key={item._id}>
-              <BusinessCard
-                bid={item._id}
-                title={item.krName}
-                enName={item.enName}
-                rating={item.ratingAverage}
-                thumbnailUri={item.thumbnailUri}
-                category={item.category}
-                tags={item.tags}
-                event={item.event}
-                myFavors={this.state.myFavors}
-              />
-            </Grid>
-          ))
-        }
-        </Grid>
+        <BusinessPanel
+          businessList={this.state.list}
+          isLoggedIn={this.props.isLoggedIn}
+          userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+          favorOperation={this.props.favorOperation}
+          openLoginDialog={this.props.openLoginDialog}
+          clearBusinessList={this.props.clearBusinessList}
+        />
       </div>
     );
   }
@@ -91,12 +78,26 @@ TagPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "tag": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
-}
+  "user": PropTypes.object,
+  "isLoggedIn": PropTypes.bool.isRequired,
+
+  // Methods
+  "getBusinessList": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
+  "favorOperation": PropTypes.func.isRequired,
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "user": state.userReducer.user,
+    "isLoggedIn": state.userReducer.isLoggedIn,
     "isFetching": state.businessReducer.isFetching,
   };
 };
 
-export default connect(mapStateToProps, { getBusinessList, clearBusinessList })(withStyles(styles)(TagPanel));
+export default connect(mapStateToProps, { 
+  getBusinessList, 
+  openLoginDialog,
+  favorOperation, 
+  clearBusinessList,
+})(withStyles(styles)(TagPanel));

@@ -23,11 +23,11 @@ import ThumbDown from '@material-ui/icons/ThumbDown';
 import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
-import Avatar from './Avatar';
-import ProperName from './ProperName';
+import Avatar from 'js/components/utils/Avatar';
+import ProperName from 'js/components/utils/ProperName';
 import ElapsedTime from 'js/helpers/ElapsedTime';
-import ConfirmationDialog from './ConfirmationDialog';
-import ThumbButton from './ThumbButton';
+import ConfirmationDialog from 'js/components/utils/ConfirmationDialog';
+import ThumbButton from 'js/components/utils/ThumbButton';
 
 const styles = theme => ({
   "root": {
@@ -38,7 +38,7 @@ const styles = theme => ({
   },
 });
 
-class CommentPanel extends Component {
+class CommentCard extends Component {
   constructor(props) {
     super(props);
 
@@ -111,9 +111,9 @@ class CommentPanel extends Component {
       return;
     }
 
-    if (!_.isEmpty(this.props.user) && this.props.postId) {
+    if (this.props.addNewComment && this.props.userId && this.props.postId) {
       this.props.addNewComment({
-        userId: this.props.user._id,
+        userId: this.props.userId,
         postId: this.props.postId,
         parentId: this.props.commentId,
         content: this.state.content,
@@ -142,9 +142,9 @@ class CommentPanel extends Component {
       return;
     }
 
-    if (!_.isEmpty(this.props.user) && this.props.commentId) {
+    if (this.props.voteComment && this.props.userId && this.props.commentId) {
       this.props.voteComment(this.props.commentId, {
-        uid: this.props.user._id,
+        uid: this.props.userId,
         postTitle: this.props.postTitle,
         vote: vote,
       })
@@ -166,8 +166,8 @@ class CommentPanel extends Component {
       return;
     }
 
-    if (this.props.commentId && this.props.user) {
-      this.props.deleteComment(this.props.commentId, this.props.user._id)
+    if (this.props.deleteComment && this.props.commentId && this.props.userId) {
+      this.props.deleteComment(this.props.commentId, this.props.userId)
         .then(response => {
           if (response) {
             this.setState({
@@ -190,6 +190,7 @@ class CommentPanel extends Component {
             <Grid item>
               <Avatar user={this.props.owner} type="SMALL" />
             </Grid>
+
             <Grid item xs>
               <Typography variant="subheading" gutterBottom>
                 <strong>
@@ -203,19 +204,19 @@ class CommentPanel extends Component {
                 }
               </Typography>
               {
-                this.props.parentComment ? (
-                  <Typography variant="caption" gutterBottom>
-                    <strong>
-                    @
-                    {
-                      this.props.parentComment ? <ProperName user={this.props.replyToUser} /> : ''
-                    }
-                    :
-                    </strong>
-                    {' '}
-                    {this.props.parentComment.status === 'NORMAL' ? this.props.parentComment.content : 'This comment violated the policy of iKoreaTown'}
-                  </Typography>
-                ) : ''
+                this.props.parentComment 
+                  ? <Typography variant="caption" gutterBottom>
+                      <strong>
+                      @
+                      {
+                        this.props.parentComment ? <ProperName user={this.props.replyToUser} /> : null
+                      }
+                      :
+                      </strong>
+                      {' '}
+                      {this.props.parentComment.status === 'NORMAL' ? this.props.parentComment.content : 'This comment violated the policy of iKoreaTown'}
+                    </Typography>
+                  : null
               }
               {
                 this.props.status === 'NORMAL'
@@ -232,14 +233,14 @@ class CommentPanel extends Component {
                       <Grid item>
                         <div>
                           {
-                            this.props.isOwn
+                            this.props.isOwn || !this.props.showReplyIcon
                               ? null
-                              : (<Button color="primary" onClick={this.handleOpenReplyDialog}>
+                              : <Button color="primary" onClick={this.handleOpenReplyDialog}>
                                   Reply
-                                </Button>)
+                                </Button>
                           }
                           {
-                            this.props.showDelete
+                            this.props.isOwn && this.props.showDeleteIcon
                               ? <IconButton color="secondary" onClick={this.handleOpenDeleteDialog}>
                                   <Delete />
                                 </IconButton>
@@ -253,6 +254,7 @@ class CommentPanel extends Component {
             </Grid>
           </Grid>
         </Paper>
+
         <div>
           {
             this.props.isOwn
@@ -306,7 +308,15 @@ class CommentPanel extends Component {
   }
 }
 
-CommentPanel.propTypes = {
+CommentCard.defaultProps = {
+  "isLoggedIn": false,
+  "userId": '',
+  "isOwn": false,
+  "showReplyIcon": false,
+  "showDeleteIcon": false,
+}
+
+CommentCard.propTypes = {
   "classes": PropTypes.object.isRequired,
   "commentId": PropTypes.string.isRequired,
   "postId": PropTypes.string.isRequired,
@@ -314,18 +324,24 @@ CommentPanel.propTypes = {
   "status": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
   "owner": PropTypes.object.isRequired,
-  "isLoggedIn": PropTypes.bool.isRequired,
-  "user": PropTypes.object.isRequired,
-  "isOwn": PropTypes.bool.isRequired,
   "parentComment": PropTypes.object,
   "replyToUser": PropTypes.object,
   "upvoteCount": PropTypes.number.isRequired,
   "downvoteCount": PropTypes.number.isRequired,
   "createdAt": PropTypes.string.isRequired,
+
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "userId": PropTypes.string,
+  "isOwn": PropTypes.bool.isRequired,
+  "showDeleteIcon": PropTypes.bool,
+  "showReplyIcon": PropTypes.bool,
+
+  // Methods
   "addNewComment": PropTypes.func,
   "getNewComments": PropTypes.func,
   "voteComment": PropTypes.func,
   "deleteCommment": PropTypes.func,
+  "openLoginDialog": PropTypes.func,
 };
 
-export default withStyles(styles)(CommentPanel);
+export default withStyles(styles)(CommentCard);

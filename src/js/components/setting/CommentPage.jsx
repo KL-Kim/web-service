@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -12,7 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
-import CommentPanel from '../utils/CommentPanel';
+import CommentPanel from '../sections/CommentPanel';
 
 // Webstorage
 import { loadFromStorage } from 'js/helpers/webStorage';
@@ -41,21 +40,22 @@ class CommentsPage extends Component {
       hasMore: false,
     };
 
-    this.state.userId = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
     this.loadMore = this.loadMore.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.userId) {
+    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+
+    if (userId) {
       this.props.getComments({
         limit: this.state.limit,
-        uid: this.state.userId,
+        uid: userId,
         orderBy: 'new',
       }).then(response => {
         if (response) {
           this.setState({
+            userId,
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -106,55 +106,17 @@ class CommentsPage extends Component {
           <Typography variant="display1">My Comments</Typography>
           <br />
 
-          {
-            _.isEmpty(comments)
-              ? <Typography align="center">None</Typography>
-              : <div>
-                  <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.loadMore}
-                    hasMore={this.state.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                              <CircularProgress size={30} />
-                            </div>}
-                  >
-                    {
-                      comments.map(comment => (
-                        <div key={comment._id} className={classes.itemWrapper}>
-                          <CommentPanel
-                            showDelete
-                            commentId={comment._id}
-                            postId={comment.postId._id}
-                            postTitle={comment.postId.title}
-                            parentComment={comment.parentId}
-                            replyToUser={comment.replyToUser}
-                            status={comment.status}
-                            content={comment.content}
-                            owner={comment.userId}
-                            isLoggedIn={this.props.isLoggedIn}
-                            user={this.props.user}
-                            isOwn={this.props.user && comment.userId._id === this.props.user._id}
-                            upvoteCount={comment.upvote.length}
-                            downvoteCount={comment.downvote.length}
-                            createdAt={comment.createdAt}
-                            addNewComment={this.props.addNewComment}
-                            getNewComments={this.getNewComments}
-                            voteComment={this.props.voteComment}
-                            deleteComment={this.props.deleteComment}
-                          />
-                        </div>
-                      ))
-                    }
-                  </InfiniteScroll>
-                  {
-                    this.state.hasMore
-                      ? null
-                      : <Typography variant="caption" align="center">
-                          --- No more comments ---
-                        </Typography>
-                  }
-                </div>
-          }
+          <CommentPanel
+            hasMore={this.state.hasMore}
+            loadMore={this.loadMore}
+            commentsList={this.props.comments}
+            totalCount={this.props.totalCount}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={this.props.user._id}
+            showDeleteIcon
+            deleteComment={this.props.deleteComment}
+            getNewComments={this.getNewComments}
+          />
         </div>
       </SettingContainer>
     );

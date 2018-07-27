@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 
 // Custom Components
 import CustomButton from 'js/components/utils/Button';
@@ -56,7 +57,7 @@ class TagSection extends Component {
     const tags = searchCategoryOrTag('tag', 'ALL');
 
     this.setState({
-      tags: tags.slice(),
+      tags: [...tags],
     });
   }
 
@@ -74,11 +75,11 @@ class TagSection extends Component {
                     item.priority > 7
                       ? <Link to={"/business/tag/" + item.enName} key={item._id}>
                           <CustomButton
-                            color="primary"
+                            color="white"
                             round
                             className={classes.chip}
                           >
-                            {item.krName}
+                            #{item.krName}
                           </CustomButton>
                         </Link>
                       : null

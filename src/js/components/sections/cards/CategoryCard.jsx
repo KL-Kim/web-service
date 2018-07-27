@@ -18,7 +18,6 @@ const styles = theme => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    minWidth: 200,
     width: '100%',
     position: 'relative',
   },

@@ -36,7 +36,7 @@ const commentReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        comments: action.payload.comments,
+        comments: [...action.payload.comments],
         totalCount: action.payload.totalCount,
       };
 
