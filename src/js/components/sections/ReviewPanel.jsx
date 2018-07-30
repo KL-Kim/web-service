@@ -39,57 +39,59 @@ class ReviewPanel extends Component {
     render() {
         const { classes, reviews } = this.props;
 
-        return _.isEmpty(reviews) ? null : (
-            <div>
-                <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.props.loadMore}
-                    hasMore={this.props.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
-                            </div>}
-                >
-                    <div className={classes.mansoryWrapper}>
-                        <Masonry elementType={'div'}>
-                            {
-                                reviews.map(review => (
-                                    <div key={review._id} className={classes.mansoryItem}>
-                                        <ReviewCardAlt
-                                            id={review._id}
-                                            owner={review.user}
-                                            business={review.business}
-                                            content={review.content}
-                                            rating={review.rating}
-                                            serviceGood={review.serviceGood}
-                                            envGood={review.envGood}
-                                            comeback={review.comeback}
-                                            upvoteCount={review.upvote.length}
+        return _.isEmpty(reviews) 
+            ? <Typography align="center">None</Typography> 
+            : (
+                <div>
+                    <InfiniteScroll
+                        pageStart={0}
+                        loadMore={this.props.loadMore}
+                        hasMore={this.props.hasMore}
+                        loader={<div style={{ textAlign: 'center' }} key={0}>
+                                    <CircularProgress size={30} />
+                                </div>}
+                    >
+                        <div className={classes.mansoryWrapper}>
+                            <Masonry elementType={'div'}>
+                                {
+                                    reviews.map(review => (
+                                        <div key={review._id} className={classes.mansoryItem}>
+                                            <ReviewCardAlt
+                                                id={review._id}
+                                                owner={review.user}
+                                                business={review.business}
+                                                content={review.content}
+                                                rating={review.rating}
+                                                serviceGood={review.serviceGood}
+                                                envGood={review.envGood}
+                                                comeback={review.comeback}
+                                                upvoteCount={review.upvote.length}
 
-                                            showBusinessName={this.props.showBusinessName}
-                                            userId={this.props.userId}
-                                            isLoggedIn={this.props.isLoggedIn}
-                                            isOwn={review.userId === this.props.userId}
+                                                showBusinessName={this.props.showBusinessName}
+                                                userId={this.props.userId}
+                                                isLoggedIn={this.props.isLoggedIn}
+                                                isOwn={review.userId === this.props.userId}
 
-                                            openLoginDialog={this.props.openLoginDialog}
-                                            voteReview={this.props.voteReview}
-                                            deleteReview={this.props.deleteReview}
-                                            getNewReviews={this.props.getNewReviews}
-                                        />
-                                    </div>
-                                ))
-                            }
-                        </Masonry>
-                    </div>
-                    
-                </InfiniteScroll>
-                {
-                  this.props.hasMore
-                    ? null
-                    : <Typography variant="caption" align="center">
-                        --- No more reviews---
-                      </Typography>
-                }
-            </div>
+                                                openLoginDialog={this.props.openLoginDialog}
+                                                voteReview={this.props.voteReview}
+                                                deleteReview={this.props.deleteReview}
+                                                getNewReviews={this.props.getNewReviews}
+                                            />
+                                        </div>
+                                    ))
+                                }
+                            </Masonry>
+                        </div>
+                        
+                    </InfiniteScroll>
+                    {
+                    this.props.hasMore
+                        ? null
+                        : <Typography variant="caption" align="center">
+                            --- No more reviews---
+                        </Typography>
+                    }
+                </div>
         )
     }
 }

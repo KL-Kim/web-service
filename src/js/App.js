@@ -43,7 +43,7 @@ import webStorageTypes from 'js/constants/webStorage.types';
 // Actions
 import { getMyself } from 'js/actions/user.actions';
 import { getCategoriesList } from 'js/actions/category.actions.js';
-import { getTagsList } from 'js/actions/tag.actions.js'
+import { getTagsList } from 'js/actions/tag.actions.js';
 
 const App = () => {
   const store = configureStore();

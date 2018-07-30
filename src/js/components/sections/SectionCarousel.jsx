@@ -12,11 +12,11 @@ import { withStyles } from '@material-ui/core/styles';
 import image2 from 'img/background_2.jpg';
 import image3 from 'img/background_3.jpg';
 
-
 const styles = theme => ({
   image: {
     width: '100%',
-    height: 600,
+    height: 'auto',
+    minHeight: 150,
     objectFit: 'cover',
   }
 });

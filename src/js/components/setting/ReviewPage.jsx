@@ -110,21 +110,18 @@ class ReviewPage extends Component {
       <SettingContainer>
         <div>
           <Typography variant="display1" gutterBottom>My Reviews</Typography>
-          {
-            _.isEmpty(reviews)
-              ? <Typography align="center">None</Typography>
-              : <ReviewPanel
-                  reviews={reviews}
-                  totalCount={this.props.totalCount}
-                  hasMore={this.state.hasMore}
-                  loadMore={this.loadMore}
-                  clearReviewsList={this.props.clearReviewsList}
-                  isLoggedIn={this.props.isLoggedIn}
-                  userId={this.props.user._id}
-                  deleteReview={this.props.deleteReview}
-                  getNewReviews={this.getNewReviews}
-                />
-          }
+          
+          <ReviewPanel
+            reviews={reviews}
+            totalCount={this.props.totalCount}
+            hasMore={this.state.hasMore}
+            loadMore={this.loadMore}
+            clearReviewsList={this.props.clearReviewsList}
+            isLoggedIn={this.props.isLoggedIn}
+            userId={this.props.user._id}
+            deleteReview={this.props.deleteReview}
+            getNewReviews={this.getNewReviews}
+          />
         </div>
       </SettingContainer>
     );

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -34,22 +33,24 @@ class FavorPage extends Component {
       limit: 18,
       count: 0,
       hasMore: false,
+      myFavors: [],
     };
-
-    this.state.myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
     this.loadMore = this.loadMore.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.myFavors) {
+    const favors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
+
+    if (!_.isEmpty(favors)) {
       this.props.getBusinessList({
         limit: this.state.limit,
-        ids: this.state.myFavors,
+        ids: favors,
       })
       .then(response => {
         if (response) {
           this.setState({
+            myFavors: [...favors],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -80,7 +81,7 @@ class FavorPage extends Component {
   }
 
   render() {
-    const { classes, businessList } = this.props;
+    const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
       <SettingContainer>
@@ -89,11 +90,14 @@ class FavorPage extends Component {
           <br />
 
           <BusinessPanel 
+            hasMore={this.state.hasMore}
+            loadMore={this.loadMore}
             businessList={this.props.businessList}
             totalCount={this.props.totalCount}
             isLoggedIn={this.props.isLoggedIn}
             userId={this.props.user._id}
             favorOperation={this.props.favorOperation}
+            showNoMore
           />
           
         </div>

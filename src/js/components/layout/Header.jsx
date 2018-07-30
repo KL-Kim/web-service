@@ -43,7 +43,7 @@ import getElapsedTime from 'js/helpers/ElapsedTime';
 import CustomButton from 'js/components/utils/Button';
 import SearchBar from 'js/components/utils/SearchBar';
 import Explore from '@material-ui/icons/Explore';
-import Settings from '@material-ui/icons/Settings';
+import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Actions
 import { logout } from 'js/actions/user.actions';
@@ -193,7 +193,7 @@ class Header extends Component {
               <div style={{ flex: 1 }}>
                 <Link to="/">
                   {/* <Img src={Logo} className={classes.logo} />*/}
-                  <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown</Typography>
+                  <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown | Nanjing</Typography>
                 </Link>
               </div>
 
@@ -271,7 +271,7 @@ class Header extends Component {
                       <Link to="/setting/account">
                         <MenuItem>
                           <ListItemIcon>
-                            <Settings />
+                            <SettingsApplications />
                           </ListItemIcon>
                           <ListItemText primary="Settings" />
                         </MenuItem>

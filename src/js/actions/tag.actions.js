@@ -39,14 +39,14 @@ export const getTagsList = () => {
   return (dispatch, getState) => {
     dispatch(_getTagsRequest());
 
-    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
-    const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
+    // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
+    // const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
 
-    if (!_.isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-      dispatch(_getTagsSuccess(tags));
+    // if (!_.isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+    //   dispatch(_getTagsSuccess(tags));
 
-      return Promise.resolve(tags);
-    }
+    //   return Promise.resolve(tags);
+    // }
 
     return fetchCategoriesOrTags("TAG")
       .then(response => {

@@ -19,33 +19,14 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 4,
   },
   "chip": {
-    marginLeft: 0,
+    marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
     fontSize: '1rem',
-    width: 112,
+    width: 'auto',
   },
 });
-
-const categories = [
-  {
-    code: 1101,
-    enName: "korean",
-    krName: "한식",
-    cnName: "韩国料理",
-    parent: 11,
-  },
-  {
-    code: 1102,
-    enName: "chinese",
-    krName: "중식",
-    cnName: "中华料理",
-    parent: 11,
-  },
-];
 
 class CategorySection extends Component {
   constructor(props) {
@@ -71,10 +52,10 @@ class CategorySection extends Component {
       <div>
         <div className={classes.section}>
           <Typography variant="title" gutterBottom>Category</Typography>
-          {
-            this.state.categories.map(item =>
-              !item.parent
-                ? <Link to={"/business/category/" + item.enName} key={item._id}>
+          <div>
+            {
+              this.state.categories.map(item =>
+                  <Link to={"/business/category/" + item.enName} key={item._id}>
                     <CustomButton
                       color="white"
                       round
@@ -83,19 +64,10 @@ class CategorySection extends Component {
                       {item.krName}
                     </CustomButton>
                   </Link>
-                : null
-            )
-          }
-          <br />
+              )
+            }
+          </div>
         </div>
-        
-        {
-          categories.map(category => (
-            <div className={classes.section} key={category.code}>
-              <CategoryPanel category={category} />
-            </div>
-          ))
-        }
       </div>
     );
   }

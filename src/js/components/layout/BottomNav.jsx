@@ -23,7 +23,7 @@ const styles = (theme) => ({
   root: {
     width: '100%',
     position: 'fixed',
-    bottom: 0,
+    bottom: -1,
     left: 0,
     right: 0,
   },
@@ -34,7 +34,7 @@ class BottomNav extends Component {
     super(props);
 
     this.state = {
-      index: 0
+      index: null,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -63,11 +63,18 @@ class BottomNav extends Component {
           index: 2,
         });
         break;
-
-      default:
+      
+      case '/setting/*':
         this.setState({
           index: 3,
         });
+        break;
+
+      default:
+        this.setState({
+          index: null,
+        });
+        break;
     }
   }
 
@@ -78,7 +85,6 @@ class BottomNav extends Component {
       <Hidden smUp>
         <div className={classes.root}>
           <BottomNavigation
-            showLabels
             value={this.state.index}
             onChange={this.handleChange}
           >

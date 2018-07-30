@@ -39,7 +39,7 @@ import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.
 import { getCategoriesList } from 'js/actions/category.actions.js';
 
 const styles = theme => ({
-  "categoryButton": {
+  "chip": {
     marginRight: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
@@ -47,7 +47,17 @@ const styles = theme => ({
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
     fontSize: '1rem',
-    minWidth: 100,
+    width: 'auto',
+    display: 'inline-block',
+  },
+  "horizontalScrollBar": {
+    width: 'auto',
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+    paddingBottom: theme.spacing.unit * 2,
+    [theme.breakpoints.down('sx')]: {
+      whiteSpace: 'normal',
+    },
   },
   "popoverContainer": {
     width: 500,
@@ -76,16 +86,16 @@ class BusinessListPage extends Component {
       "event": false,
       "hasMore": false,
       "count": 0,
-      "area": '',
+      "area": {},
       "areas": [],
-      "category": '',
-      "categoryPopoverOpen": false,
-      "areaPopoverOpen": false,
-      "sortPopoverOpen": false,
+      "tagSlug": '',
+      "tags": [],
+      "category": {},
       "filterPopoverOpen": false,
     };
 
     this.loadMore = this.loadMore.bind(this);
+    this.handleClickTag = this.handleClickTag.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
     this.handleSwithEvent = this.handleSwithEvent.bind(this);
@@ -104,21 +114,38 @@ class BusinessListPage extends Component {
         if (response) {
           const areas = [];
           const areaIds = [];
-          let aIndex;
+          let aIndex, tIndex;
+
+          const tags = [];
+          const tagsIds = [];
 
           response.list.map(business => {
-            aIndex = areaIds.indexOf(business.address.area.code)
+            if (_.isEmpty(business)) return ;
+
+            aIndex = areaIds.indexOf(business.address.area.code);
 
             if (aIndex < 0) {
               areaIds.push(business.address.area.code);
               areas.push(business.address.area);
             }
 
-            return '';
+            business.tags.map(tag => {
+              if (_.isEmpty(tag)) return ;
+
+              tIndex = tagsIds.indexOf(tag.code);
+
+              if (tIndex < 0) {
+                tagsIds.push(tag.code);
+                tags.push(tag);
+              }
+            });
+
+            return null;
           });
 
           this.setState({
-            areas: areas.slice(),
+            areas: [...areas],
+            tags: [...tags],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -150,24 +177,38 @@ class BusinessListPage extends Component {
         if (response) {
           const areas = [];
           const areaIds = [];
-          let aIndex;
+          let aIndex, tIndex;
+
+          const tags = [];
+          const tagsIds = [];
 
           response.list.map(business => {
-            aIndex = areaIds.indexOf(business.address.area.code)
+            if (_.isEmpty(business)) return ;
+
+            aIndex = areaIds.indexOf(business.address.area.code);
 
             if (aIndex < 0) {
               areaIds.push(business.address.area.code);
               areas.push(business.address.area);
             }
 
-            return '';
+            business.tags.map(tag => {
+              if (_.isEmpty(tag)) return ;
+
+              tIndex = tagsIds.indexOf(tag.code);
+
+              if (tIndex < 0) {
+                tagsIds.push(tag.code);
+                tags.push(tag);
+              }
+            });
+
+            return null;
           });
 
           this.setState({
-            areas: areas.slice(),
-            area: '',
-            "orderBy": '',
-            "event": false,
+            areas: [...areas],
+            tags: [...tags],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -191,11 +232,35 @@ class BusinessListPage extends Component {
     }
   }
 
+  handleClickTag = slug => e => {
+    this.props.getBusinessList({
+      tag: slug,
+      limit: this.state.limit,
+      category: this.state.category.enName,
+      area: this.state.area.code,
+      event: this.state.event,
+      orderBy: this.state.orderBy,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
+        });
+      }
+    });
+
+    this.setState({
+      tagSlug: slug,
+    });
+  }
+
   handleClickArea = item => e => {
     if (this.state.area.code !== item.code) {
       this.props.getBusinessList({
         limit: this.state.limit,
         category: this.state.category.enName,
+        tag: this.state.tagSlug,
         area: item.code,
         event: this.state.event,
         orderBy: this.state.orderBy
@@ -208,10 +273,9 @@ class BusinessListPage extends Component {
           });
         }
       });
-
+     
       this.setState({
         area: item,
-        areaPopoverOpen: false,
       });
     }
   }
@@ -221,6 +285,7 @@ class BusinessListPage extends Component {
       this.props.getBusinessList({
         limit: this.state.limit,
         category: this.state.category.enName,
+        tag: this.state.tagSlug,
         area: this.state.area.code,
         event: this.state.event,
         orderBy: item
@@ -228,23 +293,23 @@ class BusinessListPage extends Component {
       .then(response => {
         if (response) {
           this.setState({
-            orderBy: item,
             count: response.list.length,
             hasMore: response.list.length < response.totalCount
           });
         }
       });
-    }
 
-    this.setState({
-      sortPopoverOpen: false
-    });
+      this.setState({
+        orderBy: item,
+      });
+    }
   }
 
   handleSwithEvent() {
     this.props.getBusinessList({
       limit: this.state.limit,
       category: this.state.category.enName,
+      tag: this.state.tagSlug,
       area: this.state.area.code,
       event: !this.state.event,
       orderBy: this.state.orderBy
@@ -287,21 +352,22 @@ class BusinessListPage extends Component {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         category: this.state.category.enName,
+        tag: this.state.tagSlug,
         area: this.state.area.code,
         event: this.state.event,
         orderBy: this.state.orderBy,
       })
-      .then((response => {
+      .then(response => {
         this.setState({
           count: response.list.length,
           hasMore: response.list.length < response.totalCount
         });
-      }));
+      });
     }
   }
 
   render() {
-    const { classes, categories } = this.props;
+    const { classes } = this.props;
 
     return (
       <Container>
@@ -334,8 +400,6 @@ class BusinessListPage extends Component {
             </Grid>
           </Grid>
 
-          <br />
-
           {
             this.props.isFetching
               ? <LinearProgress style={{ height: 1 }} />
@@ -343,20 +407,27 @@ class BusinessListPage extends Component {
           }
           <br />
 
-          <div >
+          <div className={classes.horizontalScrollBar}>
+            <CustomButton
+              round
+              color={!this.state.tagSlug ? "primary" : "white"}
+              className={classes.chip}
+              onClick={this.handleClickTag()}
+            >
+              All
+            </CustomButton>
             {
-              categories.map(item => (item.parent === this.state.category.code)
-                ? <Link to={"/business/category/" + item.enName} key={item._id}>
-                    <CustomButton
-                      round
-                      color="primary"
-                      className={classes.categoryButton}
-                    >
-                      {item.krName}
-                    </CustomButton>
-                  </Link>
-                : null
-              )
+              this.state.tags.map(item => (
+                <CustomButton
+                  key={item._id}
+                  round
+                  color={this.state.tagSlug === item.enName ? "primary" : "white"}
+                  className={classes.chip}
+                  onClick={this.handleClickTag(item.enName)}
+                >
+                  #{item.krName}
+                </CustomButton>
+              ))
             }
           </div>
           <br />
@@ -389,34 +460,6 @@ class BusinessListPage extends Component {
               }}
             >
               <div className={classes.popoverContainer}>
-                <Grid container className={classes.menuSection}>
-                  <Grid item xs={3}>
-                    <Typography variant="title">Category</Typography>
-                  </Grid>
-
-                  <Grid item xs={9}>
-                    <Grid container>
-                    {
-                      categories.map(item => item.parent ? null : (
-                        <Grid item xs={4} key={item._id} className={classes.menuItem}>
-                          <Link to={'/business/category/' + item.enName}>
-                            <Button
-                              fullWidth
-                              size="small"
-                              color={this.state.category.code === item.code ? 'primary' : 'default'}
-                              variant={this.state.category.code === item.code ? 'outlined' : 'text'}
-                            >
-                              {item.krName}
-                            </Button>
-                          </Link>
-                        </Grid>
-                      ))
-                    }
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Divider />
-
                 <Grid container className={classes.menuSection}>
                   <Grid item xs={3}>
                     <Typography variant="title">District</Typography>
@@ -535,7 +578,6 @@ BusinessListPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "businessList": PropTypes.array.isRequired,
   "totalCount": PropTypes.number.isRequired,
-  "categories": PropTypes.array.isRequired,
   "isFetching": PropTypes.bool,
   "user": PropTypes.object,
   "isLoggedIn": PropTypes.bool.isRequired,
@@ -554,7 +596,6 @@ const mapStateToProps = (state, ownProps) => {
     "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
-    "categories": state.categoryReducer.categoriesList,
     "isFetching": state.businessReducer.isFetching,
   };
 };

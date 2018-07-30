@@ -31,16 +31,16 @@ const styles = theme => ({
 
 const tags = [
   {
+    code: 1,
+    enName: "korean_restaurant",
+    krName: "한식",
+    cnName: "韩式料理",
+  },
+  {
     code: 11,
     enName: "bbq",
     krName: "불고기",
     cnName: "烧烤",
-  },
-  {
-    code: 12,
-    enName: "buffet",
-    krName: "뷔페",
-    cnName: "自助餐",
   },
 ];
 
@@ -66,6 +66,7 @@ class TagSection extends Component {
 
     return (
       <div className={classes.wrapper}>
+        <Typography variant="title" gutterBottom>Popular Tags</Typography>
         {
           _.isEmpty(this.state.tags)
             ? null

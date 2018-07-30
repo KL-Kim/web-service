@@ -36,7 +36,8 @@ import BusinessPanel from './sections/BusinessPanel';
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
-import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
+import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
+import { getTagsList } from 'js/actions/tag.actions';
 
 const styles = theme => ({
   "categoryButton": {
@@ -82,7 +83,7 @@ class BusinessListByTag extends Component {
       "event": false,
       "hasMore": false,
       "filterPopoverOpen": false,
-      "tag": '',
+      "tag": {},
     };
 
     this.handleClickCategory = this.handleClickCategory.bind(this);
@@ -142,6 +143,19 @@ class BusinessListByTag extends Component {
         });
       }
     });
+
+    this.props.getTagsList()
+      .then(response => {
+        if (response) {
+          _.find(response, item => {
+            if (item.enName === this.props.match.params.slug) {
+              this.setState({
+                tag: item
+              });
+            }
+          });
+        }
+      });
   }
 
   componentDidUpdate(prevProps) {
@@ -189,13 +203,18 @@ class BusinessListByTag extends Component {
         }
       });
 
-      this.props.tags.map(item => {
-        if (item.enName === this.props.match.params.slug) {
-          this.setState({
-            tag: item
-          });
-        }
-      });
+      this.props.getTagsList()
+        .then(response => {
+          if (response) {
+            _.find(response, item => {
+              if (item.enName === this.props.match.params.slug) {
+                this.setState({
+                  tag: item
+                });
+              }
+            });
+          }
+        });
     }
   }
 
@@ -536,13 +555,15 @@ class BusinessListByTag extends Component {
 
 BusinessListByTag.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "user": PropTypes.object,
+  "isLoggedIn": PropTypes.bool.isRequired,
   "businessList": PropTypes.array.isRequired,
   "totalCount": PropTypes.number.isRequired,
   "isFetching": PropTypes.bool,
-  "user": PropTypes.object,
-  "isLoggedIn": PropTypes.bool.isRequired,
+  "tags": PropTypes.array.isRequired,
 
   // Methods
+  "getTagsList": PropTypes.func.isRequired,
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
   "openLoginDialog": PropTypes.func.isRequired,
@@ -555,14 +576,15 @@ const mapStateToProps = (state, ownProps) => {
     "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
-    "tags": state.tagReducer.tagsList,
     "isFetching": state.businessReducer.isFetching,
+    "tags": state.tagReducer.tagsList,
   };
 };
 
 export default connect(mapStateToProps, { 
   getBusinessList, 
   clearBusinessList,
+  getTagsList,
   openLoginDialog,
   favorOperation, 
 })(withStyles(styles)(BusinessListByTag));

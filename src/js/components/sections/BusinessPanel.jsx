@@ -69,53 +69,55 @@ class BusinessPanel extends Component {
         const { classes, businessList } = this.props;
         let index;
 
-        return _.isEmpty(businessList) ? null : (
-            <div>
-                <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.props.loadMore}
-                    hasMore={this.props.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                              <CircularProgress size={30} />
-                            </div>}
-                >
-                    <Grid container spacing={16} style={{ marginBottom: 12 }}>
-                        {
-                            businessList.map(item => {
-                                index = this.state.myFavors.indexOf(item._id);
+        return _.isEmpty(businessList) 
+            ? <Typography align="center">None</Typography> 
+            : (
+                <div>
+                    <InfiniteScroll
+                        pageStart={0}
+                        loadMore={this.props.loadMore}
+                        hasMore={this.props.hasMore}
+                        loader={<div style={{ textAlign: 'center' }} key={0}>
+                                <CircularProgress size={30} />
+                                </div>}
+                    >
+                        <Grid container spacing={16} style={{ marginBottom: 12 }}>
+                            {
+                                businessList.map(item => {
+                                    index = this.state.myFavors.indexOf(item._id);
 
-                                return (
-                                    <Grid item xs={6} sm={4} key={item._id}>
-                                        <BusinessCard
-                                            bid={item._id}
-                                            title={item.krName}
-                                            enName={item.enName}
-                                            rating={item.ratingAverage}
-                                            thumbnailUri={item.thumbnailUri}
-                                            category={item.category}
-                                            tags={item.tags}
-                                            event={!!(item.event)}
+                                    return (
+                                        <Grid item xs={6} sm={4} key={item._id}>
+                                            <BusinessCard
+                                                bid={item._id}
+                                                title={item.krName}
+                                                enName={item.enName}
+                                                rating={item.ratingAverage}
+                                                thumbnailUri={item.thumbnailUri}
+                                                category={item.category}
+                                                tags={item.tags}
+                                                event={!!(item.event)}
 
-                                            isFavor={index > -1 ? true : false}
-                                            isLoggedIn={this.props.isLoggedIn}
-                                            userId={this.props.userId}
-                                            favorOperation={this.props.favorOperation}
-                                            openLoginDialog={this.props.openLoginDialog}
-                                        />
-                                    </Grid>
-                                );
-                            })
-                        }
-                    </Grid>
-                </InfiniteScroll>
-                {
-                    !this.props.hasMore && this.props.showNoMore
-                        ?   <Typography variant="caption" align="center">
-                                --- No More ---
-                            </Typography>
-                        : null
-                }
-            </div>
+                                                isFavor={index > -1 ? true : false}
+                                                isLoggedIn={this.props.isLoggedIn}
+                                                userId={this.props.userId}
+                                                favorOperation={this.props.favorOperation}
+                                                openLoginDialog={this.props.openLoginDialog}
+                                            />
+                                        </Grid>
+                                    );
+                                })
+                            }
+                        </Grid>
+                    </InfiniteScroll>
+                    {
+                        !this.props.hasMore && this.props.showNoMore
+                            ?   <Typography variant="caption" align="center">
+                                    --- No More ---
+                                </Typography>
+                            : null
+                    }
+                </div>
         )
     }
 }

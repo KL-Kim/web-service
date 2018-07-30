@@ -18,13 +18,9 @@ import Alert from './utils/Alert';
 import DevTools from './layout/DevTools';
 import BottomNav from './layout/BottomNav';
 
-import SectionCarousel from './utils/SectionCarousel';
+import SectionCarousel from './sections/SectionCarousel';
 import CategoryCard from './sections/cards/CategoryCard';
 import BusinessPanel from './sections/BusinessPanel';
-
-// Webstorage
-import { loadFromStorage } from '../helpers/webStorage';
-import webStorageTypes from '../constants/webStorage.types';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
@@ -46,23 +42,15 @@ const styles = theme => ({
     margin: 'auto',
     paddingLeft: theme.spacing.unit,
     paddingRight: theme.spacing.unit,
-    marginTop: theme.spacing.unit * 16,
+    marginTop: theme.spacing.unit * 4,
     marginBottom: theme.spacing.unit * 16,
   },
   section: {
-    marginTop: theme.spacing.unit * 8,
+    marginBottom: theme.spacing.unit * 4,
   },
 });
 
 class HomePage extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      myFavors: loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [],
-    };
-  }
-
   componentDidMount() {
     this.props.getBusinessList({
       'limit': 9,

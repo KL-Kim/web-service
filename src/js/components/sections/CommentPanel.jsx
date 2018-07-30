@@ -35,58 +35,60 @@ class CommentPanel extends Component {
     render() {
         const { classes } = this.props;
 
-        return _.isEmpty(this.props.commentsList) ? null : (
-            <div>
-                <InfiniteScroll
-                    pageStart={0}
-                    loadMore={this.props.loadMore}
-                    hasMore={this.props.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                            <CircularProgress size={30} />
-                            </div>}
-                >
-                    <Grid container justify="center">
-                        {
-                            this.props.commentsList.map(comment => (
-                                <Grid item xs={12} key={comment._id} className={classes.itemWrapper}>
-                                    <CommentCard
-                                        commentId={comment._id}
-                                        parentComment={comment.parentId}
-                                        replyToUser={comment.replyToUser}
-                                        status={comment.status}
-                                        content={comment.content}
-                                        owner={comment.userId}
-                                        createdAt={comment.createdAt}
-                                        upvoteCount={comment.upvote.length}
-                                        downvoteCount={comment.downvote.length}
-                                        postId={comment.postId._id}
-                                        postTitle={comment.postId.title}
+        return _.isEmpty(this.props.commentsList) 
+            ? <Typography align="center">None</Typography> 
+            : (
+                <div>
+                    <InfiniteScroll
+                        pageStart={0}
+                        loadMore={this.props.loadMore}
+                        hasMore={this.props.hasMore}
+                        loader={<div style={{ textAlign: 'center' }} key={0}>
+                                <CircularProgress size={30} />
+                                </div>}
+                    >
+                        <Grid container justify="center">
+                            {
+                                this.props.commentsList.map(comment => (
+                                    <Grid item xs={12} key={comment._id} className={classes.itemWrapper}>
+                                        <CommentCard
+                                            commentId={comment._id}
+                                            parentComment={comment.parentId}
+                                            replyToUser={comment.replyToUser}
+                                            status={comment.status}
+                                            content={comment.content}
+                                            owner={comment.userId}
+                                            createdAt={comment.createdAt}
+                                            upvoteCount={comment.upvote.length}
+                                            downvoteCount={comment.downvote.length}
+                                            postId={comment.postId._id}
+                                            postTitle={comment.postId.title}
 
-                                        isLoggedIn={this.props.isLoggedIn}
-                                        userId={this.props.userId}
-                                        isOwn={comment.userId._id === this.props.userId}
-                                        showReplyIcon={this.props.showReplyIcon}
-                                        showDeleteIcon={this.props.showDeleteIcon}
+                                            isLoggedIn={this.props.isLoggedIn}
+                                            userId={this.props.userId}
+                                            isOwn={comment.userId._id === this.props.userId}
+                                            showReplyIcon={this.props.showReplyIcon}
+                                            showDeleteIcon={this.props.showDeleteIcon}
 
-                                        addNewComment={this.props.addNewComment}
-                                        getNewComments={this.props.getNewComments}
-                                        voteComment={this.props.voteComment}
-                                        deleteComment={this.props.deleteComment}
-                                        openLoginDialog={this.props.openLoginDialog}
-                                    />
-                                </Grid>
-                            ))
-                        }
-                    </Grid>
-                </InfiniteScroll>
-                {
-                  this.props.hasMore
-                    ? null
-                    : <Typography variant="caption" align="center">
-                        --- No more comments---
-                      </Typography>
-                }
-            </div>
+                                            addNewComment={this.props.addNewComment}
+                                            getNewComments={this.props.getNewComments}
+                                            voteComment={this.props.voteComment}
+                                            deleteComment={this.props.deleteComment}
+                                            openLoginDialog={this.props.openLoginDialog}
+                                        />
+                                    </Grid>
+                                ))
+                            }
+                        </Grid>
+                    </InfiniteScroll>
+                    {
+                    this.props.hasMore
+                        ? null
+                        : <Typography variant="caption" align="center">
+                            --- No more comments---
+                        </Typography>
+                    }
+                </div>
         )
     }
 }

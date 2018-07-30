@@ -82,7 +82,7 @@ class ProfilePage extends Component {
                 }
             })
             .then(user => {
-                if (user.favors) {
+                if (!_.isEmpty(user.favors)) {
                     this.props.getBusinessList({
                         ids: user.favors,
                     });
