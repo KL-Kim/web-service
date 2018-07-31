@@ -32,6 +32,13 @@ import config from 'js/config/config';
 import image from 'css/ikt-icon.gif';
 
 const styles = (theme) => ({
+  "root": {
+    fontFamily: 'sans-serif', 
+    minWidth: 220,
+    [theme.breakpoints.up('md')]: {
+      minWidth: 270,
+    }
+  },
   "content": {
     paddingBottom: '0px !important',
   },
@@ -83,7 +90,7 @@ class BusinessCard extends PureComponent {
 
     return (
       <div>
-        <Card style={{ fontFamily: 'sans-serif', }}>
+        <Card className={classes.root}>
           <Link to={"/business/s/" + this.props.enName}>
             <CardMedia
               style={{ height: 180 }}

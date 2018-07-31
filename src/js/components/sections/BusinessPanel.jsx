@@ -7,13 +7,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Divider from '@material-ui/core/Divider';
-import Popover from '@material-ui/core/Popover';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 // Custom Components
 import BusinessCard from './cards/BusinessCard';
@@ -87,7 +81,7 @@ class BusinessPanel extends Component {
                                     index = this.state.myFavors.indexOf(item._id);
 
                                     return (
-                                        <Grid item xs={6} sm={4} key={item._id}>
+                                        <Grid item xs={12} sm={4} key={item._id}>
                                             <BusinessCard
                                                 bid={item._id}
                                                 title={item.krName}

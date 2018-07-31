@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -21,7 +19,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
-import Toolbar from '@material-ui/core/Toolbar';
+
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -31,6 +29,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Container from './layout/Container';
 import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
+import HorizontalScrollBar from './sections/HorizontalScrollBar';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
@@ -49,15 +48,6 @@ const styles = theme => ({
     fontSize: '1rem',
     width: 'auto',
     display: 'inline-block',
-  },
-  "horizontalScrollBar": {
-    width: 'auto',
-    overflowX: 'auto',
-    whiteSpace: 'nowrap',
-    paddingBottom: theme.spacing.unit * 2,
-    [theme.breakpoints.down('sx')]: {
-      whiteSpace: 'normal',
-    },
   },
   "popoverContainer": {
     width: 500,
@@ -407,7 +397,8 @@ class BusinessListPage extends Component {
           }
           <br />
 
-          <div className={classes.horizontalScrollBar}>
+          
+          <HorizontalScrollBar>
             <CustomButton
               round
               color={!this.state.tagSlug ? "primary" : "white"}
@@ -429,7 +420,7 @@ class BusinessListPage extends Component {
                 </CustomButton>
               ))
             }
-          </div>
+          </HorizontalScrollBar>
           <br />
 
           <BusinessPanel

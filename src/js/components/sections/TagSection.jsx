@@ -9,6 +9,7 @@ import { Typography } from '@material-ui/core';
 
 // Custom Components
 import CustomButton from 'js/components/utils/Button';
+import HorizontalScrollBar from './HorizontalScrollBar';
 import TagPanel from './TagPanel';
 
 // Helpers
@@ -71,26 +72,32 @@ class TagSection extends Component {
           _.isEmpty(this.state.tags)
             ? null
             : <div className={classes.section}>
-                {
-                  this.state.tags.map(item =>
-                    item.priority > 7
-                      ? <Link to={"/business/tag/" + item.enName} key={item._id}>
-                          <CustomButton
-                            color="white"
-                            round
-                            className={classes.chip}
-                          >
-                            #{item.krName}
-                          </CustomButton>
-                        </Link>
-                      : null
-                  )
-                }
+                <HorizontalScrollBar>
+                  {
+                    this.state.tags.map(item =>
+                      item.priority === 9
+                        ? <Link to={"/business/tag/" + item.enName} key={item._id}>
+                            <CustomButton
+                              color="white"
+                              round
+                              className={classes.chip}
+                            >
+                              #{item.krName}
+                            </CustomButton>
+                          </Link>
+                        : null
+                    )
+                  }
+                </HorizontalScrollBar>
               </div>
         }
 
         {
-          tags.map(tag => <div className={classes.section} key={tag.code}><TagPanel tag={tag} /></div>)
+          tags.map(tag => (
+            <div className={classes.section} key={tag.code}>
+              <TagPanel tag={tag} />
+            </div>
+          ))
         }
       </div>
     );

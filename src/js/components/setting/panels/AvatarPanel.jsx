@@ -27,7 +27,6 @@ const styles = (theme) => ({
   },
   "paper": {
     "padding": theme.spacing.unit * 5,
-    "color": theme.palette.text.secondary
   },
   "bigDivider": {
     "marginTop": theme.spacing.unit * 2,
@@ -101,7 +100,7 @@ class AvatarPanel extends Component {
   }
 
   render() {
-    const { classes, user, updatedAt, isFetching } = this.props;
+    const { classes, user, isFetching } = this.props;
 
     return (
       <Paper className={classes.paper}>
@@ -112,7 +111,7 @@ class AvatarPanel extends Component {
                 {
                   _.isEmpty(this.state.image)
                     ? <div style={{ marginBottom: 18 }}>
-                        <Avatar user={user} type="BIG" updatedAt={updatedAt} />
+                        <Avatar user={user} type="BIG" updatedAt={this.props.updatedAt} />
                       </div>
                     : <div>
                         <AvatarEditor

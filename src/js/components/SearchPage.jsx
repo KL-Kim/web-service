@@ -42,6 +42,7 @@ import Search from '@material-ui/icons/Search';
 import Container from './layout/Container';
 import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
+import HorizontalScrollBar from './sections/HorizontalScrollBar';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
@@ -432,7 +433,6 @@ class SearchPage extends Component {
               : <div className={classes.section}>
                   <Typography variant="title" gutterBottom>Category: '{this.state.search}'</Typography>
                   <Divider />
-                  <br />
                   {
                     this.state.searchCategoryResponse.map((item) => (
                       <Link to={"/business/category/" + item.enName} key={item._id}>
@@ -445,7 +445,6 @@ class SearchPage extends Component {
                       </Link>
                     ))
                   }
-                  <br />
                 </div>
           }
 
@@ -455,7 +454,6 @@ class SearchPage extends Component {
               : <div className={classes.section}>
                   <Typography variant="title" gutterBottom>Tag: '{this.state.search}'</Typography>
                   <Divider />
-                  <br />
                   {
                     this.state.searchTagResponse.map((item) => (
                       <Link to={"/business/tag/" + item.enName} key={item._id}>
@@ -468,12 +466,11 @@ class SearchPage extends Component {
                       </Link>
                     ))
                   }
-                  <br />
                 </div>
           }
 
           {
-            _.isEmpty(businessList)
+            _.isEmpty(businessList) || !this.state.search
               ? null
               : <div>
                   <Grid container justify="space-between" alignItems="flex-end">
@@ -509,7 +506,7 @@ class SearchPage extends Component {
                   }
                   <br />
 
-                  <div>
+                  <HorizontalScrollBar>
                     <CustomButton
                       color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
                       round
@@ -534,7 +531,7 @@ class SearchPage extends Component {
                           </CustomButton>
                         ))
                     }
-                  </div>
+                  </HorizontalScrollBar>
 
                   <br />
 

@@ -32,6 +32,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Container from './layout/Container';
 import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
+import HorizontalScrollBar from './sections/HorizontalScrollBar';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
@@ -385,7 +386,7 @@ class BusinessListByTag extends Component {
           }
           <br />
 
-          <div>
+          <HorizontalScrollBar>
             <CustomButton
               color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
               round
@@ -408,7 +409,7 @@ class BusinessListByTag extends Component {
                   </CustomButton>
                 ))
             }
-          </div>
+          </HorizontalScrollBar>
 
           <br />
 
