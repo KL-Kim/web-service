@@ -10,10 +10,8 @@ import Hidden from '@material-ui/core/Hidden';
 
 // Material UI Icons
 import Home from '@material-ui/icons/Home';
-import Business from '@material-ui/icons/Business';
 import Explore from '@material-ui/icons/Explore';
 import Search from '@material-ui/icons/Search';
-import Notifications from '@material-ui/icons/Notifications';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
 // Custom Components
@@ -85,13 +83,14 @@ class BottomNav extends Component {
       <Hidden smUp>
         <div className={classes.root}>
           <BottomNavigation
+            showLabels
             value={this.state.index}
             onChange={this.handleChange}
           >
-            <BottomNavigationAction label="Home" icon={<LinkContainer to="/"><Home /></LinkContainer>} />
-            <BottomNavigationAction label="Explore" icon={<LinkContainer to="/explore"><Explore /></LinkContainer>} />
-            <BottomNavigationAction label="Search" icon={<LinkContainer to="/search"><Search /></LinkContainer>} />
-            <BottomNavigationAction label="Account" icon={<LinkContainer to="/setting/account"><AccountCircle /></LinkContainer>} />
+            <BottomNavigationAction icon={<LinkContainer to="/"><Home /></LinkContainer>} />
+            <BottomNavigationAction icon={<LinkContainer to="/explore"><Explore /></LinkContainer>} />
+            <BottomNavigationAction icon={<LinkContainer to="/search"><Search /></LinkContainer>} />
+            <BottomNavigationAction icon={<LinkContainer to="/setting/account"><AccountCircle /></LinkContainer>} />
           </BottomNavigation>
         </div>
       </Hidden>

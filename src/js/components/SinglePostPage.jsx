@@ -45,14 +45,13 @@ import { getComments,
   deleteComment,
   clearCommentsList,
 } from 'js/actions/comment.actions';
-import { openLoginDialog } from 'js/actions/app.actions';
 
 // Mock image
 import image from 'img/background_1.jpg';
 
 const styles = theme => ({
   "root": {
-    maxWitdh: 760,
+    maxWidth: 760,
     margin: 'auto',
   },
   "section": {
@@ -173,9 +172,11 @@ class SinglePostPage extends Component {
 
   handleOpenWriteCommentDialog() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
     this.setState({
@@ -192,9 +193,11 @@ class SinglePostPage extends Component {
 
   handleSubmitComment() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
     if (!_.isEmpty(this.props.user) && this.state.id && this.state.content) {
@@ -243,12 +246,14 @@ class SinglePostPage extends Component {
 
   handleVoteComment = vote => e => {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
-    if (this.state.id) {
+    if (this.state.id && !_.isEmpty(this.props.user)) {
       this.props.votePost(this.state.id, {
         uid: this.props.user._id,
         vote: vote,
@@ -390,7 +395,6 @@ class SinglePostPage extends Component {
             totalCount={this.props.totalCount}
             isLoggedIn={this.props.isLoggedIn}
             userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-            openLoginDialog={this.props.openLoginDialog}
             showReplyIcon
             addNewComment={this.props.addNewComment}
             voteComment={this.props.voteComment}
@@ -491,5 +495,4 @@ export default connect(mapStateToProps, {
   voteComment,
   deleteComment,
   clearCommentsList,
-  openLoginDialog,
 })(withStyles(styles)(SinglePostPage));

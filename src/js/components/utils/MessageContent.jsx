@@ -101,7 +101,12 @@ class MessageContent extends Component {
           {_.isEmpty(this.props.sender) ? '' : this.props.sender.username}
         </strong>
         {' ' + this.state.message}
-        <Typography>{this.props.commentContent}</Typography>
+        {
+          this.props.showLess
+            ? <Typography>{this.props.commentContent.substr(0, 100)}...</Typography>
+            : <Typography>{this.props.commentContent}</Typography>
+        }
+        
       </div>
     )
   }

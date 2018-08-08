@@ -18,7 +18,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Drawer from '@material-ui/core/Drawer';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import Popover from '@material-ui/core/Popover';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -31,24 +30,20 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Notifications from '@material-ui/icons/Notifications';
 import Search from '@material-ui/icons/Search';
-import FiberNew from '@material-ui/icons/FiberNew';
+import Favorite from '@material-ui/icons/Favorite';
+import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
+import RateReview from '@material-ui/icons/RateReview';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
 import Avatar from 'js/components/utils/Avatar';
-import LoginDialog from 'js/components/utils/LoginDialog';
-import MessageContent from 'js/components/utils/MessageContent';
 import ProperName from 'js/components/utils/ProperName';
-import getElapsedTime from 'js/helpers/ElapsedTime';
-import CustomButton from 'js/components/utils/Button';
-import SearchBar from 'js/components/utils/SearchBar';
 import Explore from '@material-ui/icons/Explore';
 import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Actions
 import { logout } from 'js/actions/user.actions';
-import { openLoginDialog } from 'js/actions/app.actions';
-import { getNotification } from 'js/actions/notification.actions';
+import { getUnreadCount } from 'js/actions/notification.actions';
 
 import Logo from 'img/logo.png';
 
@@ -89,11 +84,9 @@ const styles = theme => ({
   "avatarName": {
     "marginTop": theme.spacing.unit,
   },
-  "popoverContainer": {
-    width: 500,
-    height: 400,
-    padding: theme.spacing.unit * 3,
-  },
+  'selected': {
+    color: theme.palette.primary.main,
+  }
 });
 
 class Header extends Component {
@@ -105,45 +98,16 @@ class Header extends Component {
     this.state = {
       "drawerOpen": false,
       "search": parsed.s || '',
-      "notificationPopoverOpen": false,
-      "notificationsList": [],
-      "categoriesPopoverOpen": false,
     };
 
     this.handleLogout = this.handleLogout.bind(this);
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
-    this.handleNotificationPopoverOpen = this.handleNotificationPopoverOpen.bind(this);
-    this.handleNotificationPopoverClose = this.handleNotificationPopoverClose.bind(this);
     this.handleClickListItem = this.handleClickListItem.bind(this);
   }
 
   handleDrawerToggle() {
     this.setState({
       "drawerOpen": !this.state.drawerOpen
-    });
-  }
-
-  handleNotificationPopoverOpen() {
-    if (this.props.user._id) {
-      this.props.getNotification({
-        uid: this.props.user._id,
-        unRead: true,
-        limit: 10,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            notificationPopoverOpen: true,
-            notificationsList: response.list.slice(),
-          });
-        }
-      });
-    }
-  }
-
-  handleNotificationPopoverClose() {
-    this.setState({
-      notificationPopoverOpen: false,
     });
   }
 
@@ -180,7 +144,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, user, isLoggedIn, updatedAt, newNotificationCount, categories } = this.props;
+    const { classes, user, isLoggedIn, updatedAt, newNotificationCount, categories, match } = this.props;
 
     return (
       <div className={classes.root}>
@@ -213,27 +177,25 @@ class Header extends Component {
 
               {
                 isLoggedIn
-                  ? <div>
-                      <IconButton
-                        color="inherit"
-                        className={classes.button}
-                        onClick={this.handleNotificationPopoverOpen}
-                        buttonRef={node => {
-                          this.notificationAnchorEl = node;
-                        }}
-                      >
-                        <Notifications />
+                  ? 
+                    <Button
+                      className={classes.button}
+                      onClick={this.handleDrawerToggle}
+                    >
+                      <Avatar user={user} updatedAt={updatedAt} />
+                    </Button>
+                    
+                  : <LinkContainer to={{
+                      pathname: "/signin",
+                      hash: "#",
+                      state: {
+                        from: this.props.location.pathname
+                      },
+                    }}>
+                      <IconButton color="inherit" className={classes.button}>
+                        <AccountCircle />
                       </IconButton>
-                      <Button
-                        className={classes.button}
-                        onClick={this.handleDrawerToggle}
-                      >
-                        <Avatar user={user} updatedAt={updatedAt} />
-                      </Button>
-                    </div>
-                  : <IconButton color="inherit" className={classes.button} onClick={this.props.openLoginDialog}>
-                      <AccountCircle />
-                    </IconButton>
+                    </LinkContainer>
               }
             </Toolbar>
           </div>
@@ -259,6 +221,25 @@ class Header extends Component {
                     <Divider />
 
                     <MenuList>
+                      <Link to="/setting/notification">
+                        <MenuItem selected={match.path === "/setting/notification"}>
+                          <ListItemIcon color={match.path === "/setting/notification" ? "primary" : 'inherit'}>
+                            <Notifications />
+                          </ListItemIcon>
+                          <ListItemText classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}}>
+                            {
+                              this.props.newNotificationCount > 0
+                                ? this.props.newNotificationCount + " New"
+                                : "Notifications"
+                            }
+                          </ListItemText>
+                        </MenuItem>
+                      </Link>
+                    </MenuList>
+
+                    <Divider />
+
+                    <MenuList>
                        <Link to={"/profile/" + user.username}>
                         <MenuItem>
                           <ListItemIcon>
@@ -269,14 +250,50 @@ class Header extends Component {
                       </Link>
 
                       <Link to="/setting/account">
-                        <MenuItem>
-                          <ListItemIcon>
+                        <MenuItem selected={match.path === "/setting/account"} >
+                          <ListItemIcon color={match.path === "/setting/account" ? "primary" : 'inherit'}>
                             <SettingsApplications />
                           </ListItemIcon>
-                          <ListItemText primary="Settings" />
+                          <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
                         </MenuItem>
                       </Link>
 
+                      
+
+                      <Link to="/setting/favor">
+                        <MenuItem selected={match.path === "/setting/favor"}>
+                          <ListItemIcon color={match.path === "/setting/favor" ? "primary" : 'inherit'}>
+                            <Favorite />
+                          </ListItemIcon>
+                          <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
+                        </MenuItem>
+                      </Link>
+
+                      <Link to="/setting/review">
+                        <MenuItem selected={match.path === "/setting/review"}>
+                          <ListItemIcon color={match.path === "/setting/review" ? "primary" : 'inherit'}>
+                            <RateReview />
+                          </ListItemIcon>
+                          <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
+                        </MenuItem>
+                      </Link>
+
+                      <Link to="/setting/comment">
+                        <MenuItem selected={match.path === "/setting/comment"}>
+                          <ListItemIcon color={match.path === "/setting/comment" ? "primary" : 'inherit'}>
+                            <QuestionAnswer />
+                          </ListItemIcon>
+                          <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
+                        </MenuItem>
+                      </Link>
+
+                     
+                     
+                    </MenuList>
+
+                    <Divider />
+
+                    <MenuList>
                       <MenuItem onClick={this.handleLogout}>
                         <ListItemIcon>
                           <ExitToApp />
@@ -286,77 +303,6 @@ class Header extends Component {
                     </MenuList>
                   </div>
                 </Drawer>
-              : <LoginDialog />
-          }
-
-          {
-            isLoggedIn 
-              ? <Popover
-                  open={this.state.notificationPopoverOpen}
-                  anchorEl={this.notificationAnchorEl}
-                  onClose={this.handleNotificationPopoverClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                >
-                  <div className={classes.popoverContainer}>
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <Typography variant="body1" gutterBottom>{newNotificationCount} new notifications</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Link to="/setting/notification">
-                          <Typography variant="button" align="right" gutterBottom>View all</Typography>
-                        </Link>
-                      </Grid>
-                    </Grid>
-                    <Divider />
-
-                    <List>
-                      {
-                        _.isEmpty(this.state.notificationsList)
-                          ? <Typography variant="body1" align="center">No more new notifications</Typography>
-                          : this.state.notificationsList.map((item, index) => (
-                            <ListItem key={index} divider button onClick={this.handleClickListItem(item)}>
-                              <ListItemIcon>
-                                <FiberNew color="secondary"/>
-                              </ListItemIcon>
-                              <ListItemText
-                                primary={
-                                  <MessageContent
-                                    sender={item.senderId}
-                                    type={item.type}
-                                    event={item.event}
-                                    subjectTitle={item.subjectTitle}
-                                    subjectContent={item.subjectContent}
-                                    subjectUrl={item.subjectUrl}
-                                    commentId={item.commentId}
-                                    commentContent={item.commentContent}
-                                    content={item.content}
-                                  />
-                                }
-                                secondary={getElapsedTime(item.createdAt)}
-                              />
-                            </ListItem>
-                          ))
-                      }
-                      {
-                        newNotificationCount <= 10
-                          ? null
-                          : <ListItem button>
-                              <Link to="/setting/notification">
-                                <ListItemText primary={"You have " + (newNotificationCount - 10)  + " more new notifications"} />
-                              </Link>
-                            </ListItem>
-                      }
-                    </List>
-                  </div>
-                </Popover>
               : null
           }
           
@@ -379,8 +325,6 @@ Header.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   newNotificationCount: PropTypes.number.isRequired,
   logout: PropTypes.func.isRequired,
-  getNotification: PropTypes.func.isRequired,
-  openLoginDialog: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -396,6 +340,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default withRouter(connect(mapStateToProps, {
   logout,
-  getNotification,
-  openLoginDialog
+  getUnreadCount,
 })(withStyles(styles)(Header)));

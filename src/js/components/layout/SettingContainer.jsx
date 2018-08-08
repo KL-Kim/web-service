@@ -6,14 +6,10 @@ import { withStyles } from '@material-ui/core/styles';
 
 // Custom Components
 import Header from './Header';
-import SettingFooter from './SettingFooter';
+import Footer from './Footer';
 import Sidebar from './Sidebar';
 import Alert from '../utils/Alert';
 import DevTools from './DevTools';
-
-// Actions
-import { logout } from 'js/actions/user.actions';
-import { getNotification } from 'js/actions/notification.actions';
 
 const styles = (theme) => ({
   "root": {
@@ -33,11 +29,10 @@ const styles = (theme) => ({
     flexGrow: 1,
     minHeight: `calc(100vh - 112px)`,
     marginTop: 64,
-    marginLeft: 260,
     marginBottom: 48
   },
   "container": {
-    width: 960,
+    maxWidth: 960,
     margin: 'auto',
     paddingTop: theme.spacing.unit * 5,
   }
@@ -56,15 +51,14 @@ class SettingContainer extends Component {
     return (
       <div className={classes.root}>
         <Header position={"fixed"} />
-        <Sidebar role={user.role} match={this.props.match} />
         <div className={classes.appFrame}>
           <main className={classes.main}>
             <div className={classes.container}>
               {this.props.children}
             </div>
-            <SettingFooter />
           </main>
         </div>
+        <Footer />
         <Alert />
         <DevTools />
       </div>

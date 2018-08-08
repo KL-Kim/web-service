@@ -22,7 +22,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Search from '@material-ui/icons/Search';
 
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import PostCard from '../utils/PostCard';
 
 // Webstorage
@@ -128,7 +128,7 @@ class PostPage extends Component {
     const { classes, postsList } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div>
           <Typography variant="display1" >My Posts</Typography>
           <br />
@@ -211,7 +211,7 @@ class PostPage extends Component {
                 </div>
               }
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

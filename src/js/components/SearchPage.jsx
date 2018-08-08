@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import qs from 'querystring';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
 import _ from 'lodash';
-import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Toolbar from '@material-ui/core/Toolbar';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
 import Popover from '@material-ui/core/Popover';
@@ -26,10 +24,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
-
-import Paper from '@material-ui/core/Paper';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 
@@ -42,15 +36,14 @@ import Search from '@material-ui/icons/Search';
 import Container from './layout/Container';
 import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
-import HorizontalScrollBar from './sections/HorizontalScrollBar';
+import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
 // WebStorage
-import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
+import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
 // Helpers
@@ -71,7 +64,7 @@ const styles = theme => ({
   "section": {
     marginBottom: theme.spacing.unit * 4,
   },
-  "categoryButton": {
+  "chip": {
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
@@ -81,34 +74,18 @@ const styles = theme => ({
     minWidth: 100,
   },
   "popoverContainer": {
-    width: 500,
-    padding: theme.spacing.unit * 3,
+    maxWidth: 400,
+    padding: theme.spacing.unit * 2,
   },
-  "menuSection": {
+  "divider": {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
-    paddingTop: theme.spacing. unit * 2,
-    paddingBottom: theme.spacing. unit * 2,
-  },
-  "menuItem": {
-    textAlign: "center",
-    marginBottom: theme.spacing.unit / 2,
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-  },
-  "leftIcon": {
-    marginRight: theme.spacing.unit,
-  },
-  "chip": {
-    margin: theme.spacing.unit,
   },
 });
 
 class SearchPage extends Component {
   constructor(props) {
     super(props);
-
-    const parsed = qs.parse(props.location.search.slice(1));
 
     this.state = {
       "search": '',
@@ -137,6 +114,7 @@ class SearchPage extends Component {
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
     this.loadMore = this.loadMore.bind(this);
+    this.handleSubmitFilter = this.handleSubmitFilter.bind(this);
   }
 
   componentDidMount() {
@@ -199,72 +177,21 @@ class SearchPage extends Component {
 
   handleSelectArea = area => e => {
     if (this.state.area.code !== area.code) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.state.selectedCategory,
-        area: area.code,
-        event: this.state.event,
-        orderBy: this.state.orderBy,
-        search: this.state.search,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            area: area,
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount,
-          });
-        }
-        this.setState({
-          areaPopoverOpen: false,
-        });
+      this.setState({
+        area: area,
       });
     }
   }
 
   handleSelectOrder = item => e => {
     if (this.state.orderBy !== item) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.state.selectedCategory,
-        area: this.state.area.code,
-        event: this.state.event,
+      this.setState({
         orderBy: item,
-        search: this.state.search,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            orderBy: item,
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-        this.setState({
-          sortPopoverOpen: false,
-        });
       });
     }
   }
 
   handleToggleEvent() {
-    this.props.getBusinessList({
-      limit: this.state.limit,
-      category: this.state.selectedCategory,
-      area: this.state.area.code,
-      event: !this.state.event,
-      orderBy: this.state.orderBy,
-      search: this.state.search,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount
-        });
-      }
-    });
-
     this.setState({
       event: !this.state.event,
     });
@@ -340,13 +267,38 @@ class SearchPage extends Component {
         search: this.state.search,
         orderBy: this.state.orderBy,
       })
-      .then((response => {
+      .then(response => {
+        if (response) {
           this.setState({
             count: response.list.length,
             hasMore: response.list.length < response.totalCount
           });
-        }));
+        }
+      });
+    }
+  }
+
+  handleSubmitFilter() {
+    this.props.getBusinessList({
+      limit: this.state.limit,
+      category: this.state.selectedCategory,
+      area: this.state.area.code,
+      event: this.state.event,
+      search: this.state.search,
+      orderBy: this.state.orderBy,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount
+        });
       }
+    });
+
+    this.setState({
+      filterPopoverOpen: false,
+    });
   }
 
   render() {
@@ -355,7 +307,6 @@ class SearchPage extends Component {
     return (
       <Container>
         <div>
-
           <div className={classes.section}>
             <Paper className={classes.paper}>
               <form onSubmit={this.handleSearch}>
@@ -363,16 +314,16 @@ class SearchPage extends Component {
                   <Input
                     type="search"
                     name="search"
-                    placeholder="Search..."
-                    autoComplete="off"
-                    defaultValue={this.state.search}
+                    autoFocus
                     disableUnderline
+                    autoComplete="off"
+                    placeholder="Search..."
                     onChange={this.handleChange}
                     startAdornment={
                       <InputAdornment position="start" classes={{ root: classes.adornmentRoot }}>
                         <IconButton
                           disableRipple
-                          aria-label="Toggle password visibility"
+                          aria-label="Search Icon"
                           onClick={this.handleSearch}
                         >
                           <Search />
@@ -392,6 +343,20 @@ class SearchPage extends Component {
                   <Grid container spacing={16}>
                     <Grid item xs={12} sm={6}>
                       <Paper>
+                        <List subheader={<ListSubheader component="div">Popular Searches</ListSubheader> }>
+                          {
+                            queries.map((item, index) => (
+                              <ListItem key={index} button>
+                                <ListItemText primary={item} />
+                              </ListItem>
+                            ))
+                          }
+                        </List>
+                      </Paper>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <Paper>
                           <List subheader={<ListSubheader component="div">Recent Searches</ListSubheader> }>
                             {
                               _.isEmpty(this.state.searchHistory)
@@ -407,25 +372,9 @@ class SearchPage extends Component {
                           </List>
                         </Paper>
                     </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <Paper>
-                        <List subheader={<ListSubheader component="div">Popular Searches</ListSubheader> }>
-                          {
-                            queries.map((item, index) => (
-                              <ListItem key={index} button>
-                                <ListItemText primary={item} />
-                              </ListItem>
-                            ))
-                          }
-                        </List>
-                      </Paper>
-                    </Grid>
                   </Grid>
                 </div>
           }
-
-
 
           {
             _.isEmpty(this.state.searchCategoryResponse)
@@ -438,7 +387,7 @@ class SearchPage extends Component {
                       <Link to={"/business/category/" + item.enName} key={item._id}>
                         <CustomButton
                           round
-                          className={classes.categoryButton}
+                          className={classes.chip}
                         >
                           {item.krName}
                         </CustomButton>
@@ -459,7 +408,7 @@ class SearchPage extends Component {
                       <Link to={"/business/tag/" + item.enName} key={item._id}>
                         <CustomButton
                           round
-                          className={classes.categoryButton}
+                          className={classes.chip}
                         >
                           #{item.krName}
                         </CustomButton>
@@ -510,7 +459,7 @@ class SearchPage extends Component {
                     <CustomButton
                       color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
                       round
-                      className={classes.categoryButton}
+                      className={classes.chip}
                       onClick={this.handleSelectCategory('')}
                     >
                       All
@@ -524,7 +473,7 @@ class SearchPage extends Component {
                             key={item._id}
                             color={this.state.selectedCategory === item.enName ? "primary" : 'white'}
                             round
-                            className={classes.categoryButton}
+                            className={classes.chip}
                             onClick={this.handleSelectCategory(item.enName)}
                           >
                             {item.krName}
@@ -543,14 +492,11 @@ class SearchPage extends Component {
                     isLoggedIn={this.props.isLoggedIn}
                     userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
                     favorOperation={this.props.favorOperation}
-                    openLoginDialog={this.props.openLoginDialog}
                     clearBusinessList={this.props.clearBusinessList}
                     showNoMore
                   />
                 </div>
           }
-
-
 
           <div id="modal-container">
             <Popover
@@ -567,95 +513,90 @@ class SearchPage extends Component {
               }}
             >
               <div className={classes.popoverContainer}>
-                <Grid container className={classes.menuSection}>
-                  <Grid item xs={3}>
-                    <Typography variant="title">District</Typography>
+                <Grid container spacing={8} alignItems="center">
+                  <Grid item xs={12}>
+                    <Typography variant="body2">District</Typography>
                   </Grid>
-                  <Grid item xs={9}>
-                    <Grid container justify="flex-start">
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          size="small"
-                          color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
-                          variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
-                          onClick={this.handleSelectArea('')}
-                        >
-                          All
-                        </Button>
-                      </Grid>
-                      {
-                        _.isEmpty(this.state.areas) ? ''
-                          : this.state.areas.map(item =>
-                            <Grid item xs={4} key={item.code}>
-                              <Button
-                                fullWidth
-                                key={item.code}
-                                size="small"
-                                color={this.state.area.code === item.code ? 'primary' : 'default'}
-                                variant={this.state.area.code === item.code ? 'outlined' : 'text'}
-                                onClick={this.handleSelectArea(item)}
-                              >
-                                {item.name}
-                              </Button>
-                            </Grid>
-                          )
-                      }
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Divider />
 
-                <Grid container className={classes.menuSection} alignItems="center">
-                  <Grid item xs={3}>
-                    <Typography variant="title">Order by</Typography>
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
+                      variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      onClick={this.handleSelectArea('')}
+                    >
+                      All
+                    </Button>
                   </Grid>
-                  <Grid item xs={9}>
-                    <Grid container justify="space-around">
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                          size="small"
-                          variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
-                          onClick={this.handleSelectOrder('')}
-                        >
-                          Recommend
-                        </Button>
-                      </Grid>
-                      <Grid item xs className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
-                          size="small"
-                          variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
-                          onClick={this.handleSelectOrder('rating')}
-                        >
-                          Rating
-                        </Button>
-                      </Grid>
-                      <Grid item xs className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          color={this.state.orderBy === 'new' ? 'primary' : 'default'}
-                          size="small"
-                          variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
-                          onClick={this.handleSelectOrder('new')}
-                        >
-                          New
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Divider />
 
-                <Grid container className={classes.menuSection} alignItems="center">
-                  <Grid item xs={3}>
-                    <Typography variant="title">Event</Typography>
+                  {
+                    this.state.areas.map(item =>
+                      <Grid item key={item.code}>
+                        <Button
+                          fullWidth
+                          size="small"
+                          color={this.state.area.code === item.code ? 'primary' : 'default'}
+                          variant={this.state.area.code === item.code ? 'outlined' : 'text'}
+                          onClick={this.handleSelectArea(item)}
+                        >
+                          {item.name}
+                        </Button>
+                      </Grid>
+                    )
+                  }
+
+                  <Grid item xs={12}>
+                    <Divider className={classes.divider} />
+                    <Typography variant="body2">Order by</Typography>
                   </Grid>
-                  <Grid item xs={9}>
-                    <FormControl>
+                  
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                      variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      onClick={this.handleSelectOrder('')}
+                    >
+                      Recommend
+                    </Button>
+                  </Grid>
+
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
+                      variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
+                      onClick={this.handleSelectOrder('rating')}
+                    >
+                      Rating
+                    </Button>
+                  </Grid>
+
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={this.state.orderBy === 'new' ? 'primary' : 'default'}
+                      variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
+                      onClick={this.handleSelectOrder('new')}
+                    >
+                      New
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Divider className={classes.divider} />
+                  </Grid>
+
+                  <Grid item>
+                    <Typography variant="body2">Event</Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <FormControl margin="none">
                       <Switch
                         color="primary"
                         checked={this.state.event}
@@ -666,9 +607,15 @@ class SearchPage extends Component {
                   </Grid>
                 </Grid>
 
-                <Grid container justify="flex-end" alignItems="center">
+                <Divider className={classes.divider} />
+                <Grid container spacing={8} justify="flex-end" alignItems="center">
                   <Grid item>
-                    <Button variant="raised" size="small" color="primary" onClick={this.handleCloseFilterPopover}>
+                    <Button size="small" onClick={this.handleCloseFilterPopover}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button color="primary" size="small" onClick={this.handleSubmitFilter}>
                       Ok
                     </Button>
                   </Grid>
@@ -695,9 +642,8 @@ SearchPage.propTypes = {
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
-  "openLoginDialog": PropTypes.func.isRequired,
   "favorOperation": PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -712,6 +658,5 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, {
   getBusinessList,
   clearBusinessList,
-  openLoginDialog,
   favorOperation,
 })(withStyles(styles)(SearchPage));

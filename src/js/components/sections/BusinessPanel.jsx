@@ -96,7 +96,6 @@ class BusinessPanel extends Component {
                                                 isLoggedIn={this.props.isLoggedIn}
                                                 userId={this.props.userId}
                                                 favorOperation={this.props.favorOperation}
-                                                openLoginDialog={this.props.openLoginDialog}
                                             />
                                         </Grid>
                                     );
@@ -132,7 +131,6 @@ BusinessPanel.propTypes = {
     "userId": PropTypes.string,
     "isLoggedIn": PropTypes.bool.isRequired,
     "favorOperation": PropTypes.func.isRequired,
-    "openLoginDialog": PropTypes.func,
 }
 
 export default withStyles(styles)(BusinessPanel);

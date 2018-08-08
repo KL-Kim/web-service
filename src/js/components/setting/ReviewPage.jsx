@@ -18,29 +18,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 // Custom Components
-import SettingContainer from 'js/components/layout/SettingContainer';
+import Container from 'js/components/layout/Container';
 import ReviewPanel from 'js/components/sections/ReviewPanel';
-
-// Webstorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
 import { getReviews, deleteReview, clearReviewsList } from 'js/actions/review.actions';
 
 const styles = theme => ({
-  "mansoryWrapper": {
-    width: 976,
-    position: 'relative',
-    top: 0,
-    left: - theme.spacing.unit,
-  },
-  "mansoryItem": {
-    width: "33.33%",
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    marginBottom: theme.spacing.unit * 2,
-  },
 });
 
 class ReviewPage extends Component {
@@ -51,7 +35,6 @@ class ReviewPage extends Component {
       "limit": 12,
       "count": 0,
       'hasMore': false,
-      'userId': '',
     };
 
     this.loadMore = this.loadMore.bind(this);
@@ -59,17 +42,14 @@ class ReviewPage extends Component {
   }
 
   componentDidMount() {
-    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
-    if (userId) {
+    if (this.props.userId) {
       this.props.getReviews({
         'limit': this.state.limit,
-        'uid': userId,
+        'uid': this.props.userId,
         'orderBy': 'new',
       }).then(response => {
         if (response) {
           this.setState({
-            userId,
             'hasMore': response.list.length < response.totalCount,
             'count': response.list.length,
           });
@@ -82,7 +62,7 @@ class ReviewPage extends Component {
     if (this.state.hasMore) {
       this.props.getReviews({
         'limit': this.state.count + this.state.limit,
-        'uid': this.state.userId,
+        'uid': this.props.userId,
         'orderBy': 'new',
       }).then(response => {
         this.setState({
@@ -94,10 +74,10 @@ class ReviewPage extends Component {
   }
 
   getNewReviews() {
-    if (this.state.userId) {
+    if (this.props.userId) {
       this.props.getReviews({
         'limit': this.state.count,
-        'uid': this.state.userId,
+        'uid': this.props.userId,
         'orderBy': 'new',
       });
     }
@@ -107,7 +87,7 @@ class ReviewPage extends Component {
     const { classes, reviews } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div>
           <Typography variant="display1" gutterBottom>My Reviews</Typography>
           
@@ -121,9 +101,10 @@ class ReviewPage extends Component {
             userId={this.props.user._id}
             deleteReview={this.props.deleteReview}
             getNewReviews={this.getNewReviews}
+            showBusinessName
           />
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

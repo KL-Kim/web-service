@@ -9,8 +9,6 @@ import { Typography } from '@material-ui/core';
 
 // Custom Components
 import CustomButton from 'js/components/utils/Button';
-import CategoryPanel from './CategoryPanel';
-import HorizontalScrollBar from './HorizontalScrollBar';
 
 // Helpers
 import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
@@ -55,33 +53,18 @@ class CategorySection extends Component {
           <Typography variant="title" gutterBottom>Category</Typography>
           <div>
             {
-              // this.state.categories.map(item =>
-              //     <Link to={"/business/category/" + item.enName} key={item._id}>
-              //       <CustomButton
-              //         color="white"
-              //         round
-              //         className={classes.chip}
-              //       >
-              //         {item.krName}
-              //       </CustomButton>
-              //     </Link>
-              // )
+              this.state.categories.map(item =>
+                  <Link to={"/business/category/" + item.enName} key={item._id}>
+                    <CustomButton
+                      color="white"
+                      round
+                      className={classes.chip}
+                    >
+                      {item.krName}
+                    </CustomButton>
+                  </Link>
+              )
             }
-            <HorizontalScrollBar>
-              {
-                this.state.categories.map(item =>
-                    <Link to={"/business/category/" + item.enName} key={item._id}>
-                      <CustomButton
-                        color="white"
-                        round
-                        className={classes.chip}
-                      >
-                        {item.krName}
-                      </CustomButton>
-                    </Link>
-                )
-              }
-            </HorizontalScrollBar>
           </div>
         </div>
       </div>

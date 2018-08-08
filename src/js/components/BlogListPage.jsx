@@ -57,10 +57,8 @@ class BlogListPage extends Component {
 
   loadMore() {
     if (this.state.hasMore) {
-      const newCount = this.state.count + this.state.limit;
-
       this.props.getPostsList({
-        limit: newCount,
+        limit: this.state.count + this.state.limit,
         status: "PUBLISHED",
         state: 'NORMAL',
       }).then(response => {
@@ -85,18 +83,12 @@ class BlogListPage extends Component {
 
           <Grid container justify="center">
             {
-              _.isEmpty(list) ? ''
-                : list.map((item, index) =>
-                  item.state === 'NORMAL'
-                    ? (
-                        <Grid item xs={12} key={item._id} className={classes.section}>
-                          <PostPanel
-                            rtl={(index % 2) ? true : false}
-                            post={item}
-                          />
-                        </Grid>
-                      )
-                    : null
+              _.isEmpty(list) 
+                ? null
+                : list.map(item =>
+                    <Grid item xs={12} key={item._id} className={classes.section}>
+                      <PostPanel post={item} />
+                    </Grid>
                 )
             }
             <Grid item>

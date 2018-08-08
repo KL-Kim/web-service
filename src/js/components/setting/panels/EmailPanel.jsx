@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
@@ -20,13 +21,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import emailTypes from 'js/constants/email.types';
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '30%',
-    "flexShrink": 0,
-  },
   "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
 });
@@ -62,8 +57,15 @@ class EmailPanel extends Component {
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Email</Typography>
-          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="body2">Email</Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.email) ? '' : user.email}</Typography>
+            </Grid>
+          </Grid>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>
@@ -77,13 +79,7 @@ class EmailPanel extends Component {
         <ExpansionPanelActions>
           {
             user.isVerified
-              ? (<Button
-                  size="small"
-                  color="primary"
-                  onClick={this.handlePanelChange('panel')}
-                >
-                  Close
-                </Button>)
+              ? ''
               : (<div>
                   <Button
                     size="small"

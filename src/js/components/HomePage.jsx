@@ -21,9 +21,9 @@ import BottomNav from './layout/BottomNav';
 import SectionCarousel from './sections/SectionCarousel';
 import CategoryCard from './sections/cards/CategoryCard';
 import BusinessPanel from './sections/BusinessPanel';
+import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
 import { Button } from '../../../node_modules/@material-ui/core';
@@ -48,6 +48,9 @@ const styles = theme => ({
   section: {
     marginBottom: theme.spacing.unit * 4,
   },
+  card: {
+    marginRight: theme.spacing.unit * 2,
+  },
 });
 
 class HomePage extends Component {
@@ -59,12 +62,8 @@ class HomePage extends Component {
     });
   }
 
-  componentWillUnmount() {
-    this.props.clearBusinessList();
-  }
-
   render() {
-    const { classes, businessList, categories } = this.props;
+    const { classes } = this.props;
 
     return (
       <div>
@@ -84,21 +83,21 @@ class HomePage extends Component {
               </Grid>
             </Grid>
             
-            <Grid container spacing={16} justify="center" alignItems="center">
+            <HorizontalScrollBar>
               {
-                _.isEmpty(categories)
-                  ? null
-                  : categories.map(item => {
+                this.props.categories.map(item => {
                     if (item.priority > 7) {
                       return (
-                        <Grid item xs={6} sm={3} key={item._id}>
+                        <div className={classes.card} key={item._id}>
                           <CategoryCard name={item.krName} url={"/business/category/" + item.enName} />
-                        </Grid>
+                        </div>
                       );
+                    } else {
+                      return null;
                     }
                   })
               }
-            </Grid>
+            </HorizontalScrollBar>
           </div>
 
           <div className={classes.section}>
@@ -111,7 +110,6 @@ class HomePage extends Component {
               isLoggedIn={this.props.isLoggedIn}
               userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
               favorOperation={this.props.favorOperation}
-              openLoginDialog={this.props.openLoginDialog}
               clearBusinessList={this.props.clearBusinessList}
             />
           </div>
@@ -133,8 +131,7 @@ HomePage.propTypes = {
 
   // Methods
   getBusinessList: PropTypes.func.isRequired, 
-  clearBusinessList: PropTypes.func.isRequired, 
-  openLoginDialog: PropTypes.func.isRequired, 
+  clearBusinessList: PropTypes.func.isRequired,  
   favorOperation: PropTypes.func.isRequired, 
 };
 
@@ -151,6 +148,5 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, { 
   getBusinessList, 
   clearBusinessList,
-  openLoginDialog,
   favorOperation, 
 })(withStyles(styles)(HomePage));

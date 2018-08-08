@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles'
+import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -13,7 +14,7 @@ const styles = (theme) => ({
     maxWidth: 960,
     width: '100%',
     margin: 'auto',
-    paddingBottom: theme.spacing.unit * 3,
+    paddingBottom: theme.spacing.unit,
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -26,6 +27,7 @@ class Footer extends Component{
     const { classes } = this.props;
 
     return (
+      <Hidden smDown>
       <footer className={classes.footer}>
         <Grid container justify="space-between" alignItems="center" >
           <Grid item>
@@ -76,6 +78,7 @@ class Footer extends Component{
           </Grid>
         </Grid>
       </footer>
+      </Hidden>
     );
   }
 }

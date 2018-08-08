@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
@@ -18,13 +19,7 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '30%',
-    "flexShrink": 0,
-  },
   "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
   "textField": {
@@ -76,8 +71,15 @@ class BirthdayPanel extends Component {
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Birthday</Typography>
-          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="body2">Birthday</Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
+            </Grid>
+          </Grid>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>

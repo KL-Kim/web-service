@@ -9,7 +9,7 @@ import { Typography } from '@material-ui/core';
 
 // Custom Components
 import CustomButton from 'js/components/utils/Button';
-import HorizontalScrollBar from './HorizontalScrollBar';
+import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 import TagPanel from './TagPanel';
 
 // Helpers
@@ -20,12 +20,15 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 4,
   },
   "chip": {
+    marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit * 2,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
-    fontSize: '1rem',
+    fontSize: theme.typography.pxToRem(15),
     minWidth: 100,
   },
 });

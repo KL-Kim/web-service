@@ -35,7 +35,7 @@ class Sidebar extends Component {
 
     return (
       <aside>
-        <Drawer variant="permanent"
+        <Drawer variant="persistent"
           open
           classes={{
             paper: classes.drawerPaper

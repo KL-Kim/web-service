@@ -32,6 +32,7 @@ export const getNotification = (data) => {
     "meta": {},
     "error": null,
     "payload": {
+      list: response.list,
       totalCount: response.totalCount,
       unreadCount: response.unreadCount,
     }
@@ -85,7 +86,7 @@ export const getUnreadCount = (uid) => {
     "meta": {},
     "error": null,
     "payload": {
-      totalCount: response.totalCount
+      unreadCount: response.unreadCount
     }
   });
 
@@ -185,14 +186,11 @@ export const clearReadNotifications = (uid) => {
     "payload": {}
   });
 
-  const _clearReadNotificationsSuccess = (response) => ({
+  const _clearReadNotificationsSuccess = () => ({
     "type": notificationTypes.CLEAR_READ_NOTIFICATION_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      totalCount: response.totalCount,
-      unreadCount: response.unreadCount,
-    }
+    "payload": {},
   });
 
   const _clearReadNotificationsFailure = (error) => ({
@@ -213,7 +211,7 @@ export const clearReadNotifications = (uid) => {
         return clearReadNotificationsFetch(token, uid);
       })
       .then(response => {
-        dispatch(_clearReadNotificationsSuccess(response));
+        dispatch(_clearReadNotificationsSuccess());
 
         return response;
       })

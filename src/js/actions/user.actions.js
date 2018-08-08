@@ -4,6 +4,7 @@
 import _ from 'lodash';
 
 import * as AlertActions from './alert.actions';
+import * as NotificationActions from './notification.actions';
 import userTypes from '../constants/user.types';
 import webStorageTypes from '../constants/webStorage.types.js';
 import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
@@ -79,6 +80,10 @@ export const login = (email, password) => {
         // Save login failed times
         const loginFailedCount = loadFromStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED);
         saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, loginFailedCount + 1);
+
+        removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
+        removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+        removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
 
         dispatch(_loginFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
@@ -337,6 +342,7 @@ export const getMyself = (id) => {
       })
       .then(user => {
         dispatch(_getMeSuccess(user));
+        dispatch(NotificationActions.getUnreadCount(user._id));
 
         return user;
       }).catch(err => {

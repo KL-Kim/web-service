@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import UsernamePanel from './panels/UsernamePanel';
 import EmailPanel from './panels/EmailPanel';
 import NamePanel from './panels/NamePanel';
@@ -22,7 +22,7 @@ import AvatarPanel from './panels/AvatarPanel';
 
 // Actions
 import { updateUserProfile, uploadProfilePhoto, updateMobilePhone } from 'js/actions/user.actions';
-import { sendPhoneVerificationCode, sendEmail } from 'js/actions/auth.actions'
+import { sendPhoneVerificationCode, sendEmail } from 'js/actions/auth.actions';
 
 const styles = (theme) => ({
   "root": {
@@ -40,92 +40,86 @@ class AccountPage extends Component {
     const { classes, user, error, isFetching, errorMessage, updateUserProfile } = this.props;
 
     return _.isEmpty(user) ? null : (
-      <SettingContainer>
+      <Container>
         <div className={classes.root}>
-          <Grid container justify="center" className={classes.container}>
-            <Grid item xs={12}>
-              <Typography variant="display1" gutterBottom>Profile</Typography>
-            </Grid>
+          <div className={classes.container}>
+            <Typography variant="display1" gutterBottom>Profile</Typography>
+          
+            <UsernamePanel
+              user={user}
+              error={error}
+              errorMessage={errorMessage}
+              isFetching={isFetching}
+              updateUserProfile={updateUserProfile}
+            />
 
-            <Grid item xs={12}>
-              <UsernamePanel
-                user={user}
-                error={error}
-                errorMessage={errorMessage}
-                isFetching={isFetching}
-                updateUserProfile={updateUserProfile}
-              />
+            <EmailPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              sendEmail={this.props.sendEmail}
+            />
 
-              <EmailPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                sendEmail={this.props.sendEmail}
-              />
+            <ChangePasswordPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              sendEmail={this.props.sendEmail}
+            />
 
-              <ChangePasswordPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                sendEmail={this.props.sendEmail}
-              />
+            <PhonePanel
+              user={user}
+              error={error}
+              errorMessage={errorMessage}
+              isFetching={isFetching}
+              sendPhoneVerificationCode={this.props.sendPhoneVerificationCode}
+              updateMobilePhone={this.props.updateMobilePhone}
+            />
 
-              <PhonePanel
-                user={user}
-                error={error}
-                errorMessage={errorMessage}
-                isFetching={isFetching}
-                sendPhoneVerificationCode={this.props.sendPhoneVerificationCode}
-                updateMobilePhone={this.props.updateMobilePhone}
-              />
+            <NamePanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              updateUserProfile={updateUserProfile}
+            />
 
-              <NamePanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                updateUserProfile={updateUserProfile}
-              />
+            <GenderPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              updateUserProfile={updateUserProfile}
+            />
 
-              <GenderPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                updateUserProfile={updateUserProfile}
-              />
+            <BirthdayPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              updateUserProfile={updateUserProfile}
+            />
 
-              <BirthdayPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                updateUserProfile={updateUserProfile}
-              />
+            <AddressPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              updateUserProfile={updateUserProfile}
+            />
+          </div>
 
-              <AddressPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                updateUserProfile={updateUserProfile}
-              />
-            </Grid>
-          </Grid>
-
-          <Grid container justify="center" className={classes.container}>
-            <Grid item xs={12}>
-              <Typography variant="display1" gutterBottom>
-                Photo
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <AvatarPanel
-                user={user}
-                error={error}
-                isFetching={isFetching}
-                updatedAt={this.props.updatedAt}
-                uploadProfilePhoto={this.props.uploadProfilePhoto} />
-            </Grid>
-          </Grid>
+          <div className={classes.container}>  
+            <Typography variant="display1" gutterBottom>
+              Photo
+            </Typography>
+          
+            <AvatarPanel
+              user={user}
+              error={error}
+              isFetching={isFetching}
+              updatedAt={this.props.updatedAt}
+              uploadProfilePhoto={this.props.uploadProfilePhoto} 
+            />
+          </div>
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

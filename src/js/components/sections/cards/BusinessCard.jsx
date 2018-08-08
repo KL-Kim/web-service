@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
 
@@ -68,7 +68,9 @@ class BusinessCard extends PureComponent {
 
   handleToggleFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
       return ;
     }
@@ -174,12 +176,9 @@ BusinessCard.propTypes = {
   "myFavors": PropTypes.array,
   "category": PropTypes.object.isRequired,
   "tags": PropTypes.array,
-
   "isLoggedIn": PropTypes.bool.isRequired,
   "userId": PropTypes.string.isRequired,
-  "openLoginDialog": PropTypes.func,
   "favorOperation": PropTypes.func,
 };
 
-
-export default withStyles(styles)(BusinessCard);
+export default withRouter(withStyles(styles)(BusinessCard));

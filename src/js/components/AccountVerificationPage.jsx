@@ -86,7 +86,7 @@ class AccountVerificationPage extends Component {
             <div>
               <Link to="/">
                 <Button variant="raised" color="primary">
-                  Redirect to Home Page
+                  Home
                 </Button>
               </Link>
             </div>

@@ -6,10 +6,9 @@ import isInt from 'validator/lib/isInt';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -25,13 +24,7 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '30%',
-    "flexShrink": 0,
-  },
   "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
 });
@@ -81,6 +74,7 @@ class PhonePanel extends Component {
             <TextField
               type="text"
               fullWidth
+              margin="normal"
               label="Phone number"
               id="phoneNumber"
               name="phoneNumber"
@@ -97,6 +91,7 @@ class PhonePanel extends Component {
             <TextField
               type="text"
               fullWidth
+              margin="normal"
               label="Verification Code"
               id="verificationCode"
               name="verificationCode"
@@ -238,8 +233,15 @@ class PhonePanel extends Component {
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Mobile Phone</Typography>
-          <Typography className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="body2">Mobile Phone</Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
+            </Grid>
+          </Grid>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>
@@ -262,7 +264,7 @@ class PhonePanel extends Component {
                       Congratulations, Your mobile phone number has been saved!
                     </Typography>
                   </Grid>
-                : <Grid item xs={6}>
+                : <Grid item xs={12}>
                     {this.getStepContent(activeStep, this.props)}
                     <Grid container justify="center" spacing={8} alignItems="center">
                       <Grid item>

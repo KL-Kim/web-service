@@ -22,7 +22,6 @@ import CommentPanel from './sections/CommentPanel';
 import ProperName from './utils/ProperName';
 
 // Actions
-import { openLoginDialog } from 'js/actions/app.actions';
 import { getUserByUsername, favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 import { getReviews, voteReview, clearReviewsList } from 'js/actions/review.actions';
@@ -147,21 +146,17 @@ class ProfilePage extends Component {
         switch(this.state.tabIndex) {
             case 1:
                 return (
-                    <div>
-                        {
-                            <ReviewPanel
-                                reviews={this.props.reviews}
-                                totalCount={this.props.totalCount}
-                                hasMore={this.state.reviewsHasMore}
-                                loadMore={this.loadMoreReviews}
-                                clearReviewsList={this.props.clearReviewsList}
-                                isLoggedIn={this.props.isLoggedIn}
-                                userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                                voteReview={this.props.voteReview}
-                                openLoginDialog={this.props.openLoginDialog}
-                            />
-                        }
-                    </div>
+                    <ReviewPanel
+                        reviews={this.props.reviews}
+                        totalCount={this.props.totalCount}
+                        hasMore={this.state.reviewsHasMore}
+                        loadMore={this.loadMoreReviews}
+                        clearReviewsList={this.props.clearReviewsList}
+                        isLoggedIn={this.props.isLoggedIn}
+                        userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                        voteReview={this.props.voteReview}
+                        showBusinessName
+                    />
                 );
 
             case 2:
@@ -174,23 +169,19 @@ class ProfilePage extends Component {
                             totalCount={this.props.totalCount}
                             isLoggedIn={this.props.isLoggedIn}
                             userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                            openLoginDialog={this.props.openLoginDialog}
                             voteComment={this.props.voteComment}
                         />
                     </div>
                 );
             default: 
                 return (
-                    <div>
-                        <BusinessPanel 
-                            businessList={this.props.businessList}
-                            totalCount={this.props.totalCount}
-                            isLoggedIn={this.props.isLoggedIn}
-                            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                            favorOperation={this.props.favorOperation}
-                            openLoginDialog={this.props.openLoginDialog}
-                        />
-                    </div>
+                    <BusinessPanel 
+                        businessList={this.props.businessList}
+                        totalCount={this.props.totalCount}
+                        isLoggedIn={this.props.isLoggedIn}
+                        userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                        favorOperation={this.props.favorOperation}
+                    />
                 );
         }
     }
@@ -206,16 +197,14 @@ class ProfilePage extends Component {
                         user
                             ?  <div>
                                     <section className={classes.section}>
-                                        <Grid container alignItems="center">
-                                            <Grid item xs={6}>
+                                        <Grid container spacing={40} justify="center" alignItems="center">
+                                            <Grid item xs={12} sm="auto">
                                                 <Avatar type="BIG" user={user} />
                                             </Grid>
 
-                                            <Grid item xs={6}>
-                                                <Typography variant="display1" gutterBottom><ProperName user={user} /></Typography>
-                                                <Typography variant="title" gutterBottom>{user.username}</Typography>
-                                                <Typography variant="body2">Gender: {user.gender}</Typography>
-
+                                            <Grid item xs={12} sm="auto">
+                                                <Typography variant="display1" align="center" gutterBottom><ProperName user={user} /></Typography>
+                                                <Typography variant="title" align="center" gutterBottom>@{user.username}</Typography>
                                             </Grid>
                                         </Grid>
                                     </section>
@@ -261,7 +250,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, { 
     getUserByUsername, 
-    openLoginDialog,
     getBusinessList, 
     favorOperation,
     clearBusinessList,

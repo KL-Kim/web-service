@@ -11,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import BusinessPanel from '../sections/BusinessPanel';
 
 // Actions
@@ -84,7 +85,7 @@ class FavorPage extends Component {
     const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div>
           <Typography variant="display1">My Favorite Business</Typography>
           <br />
@@ -101,7 +102,7 @@ class FavorPage extends Component {
           />
           
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

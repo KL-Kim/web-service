@@ -20,6 +20,10 @@ const styles = theme => ({
     flexWrap: 'wrap',
     width: '100%',
     position: 'relative',
+    width: 150,
+    [theme.breakpoints.up('md')]: {
+      minWidth: 220,
+    }
   },
   image: {
     position: 'relative',

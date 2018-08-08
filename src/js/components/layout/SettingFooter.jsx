@@ -9,7 +9,6 @@ const styles = theme => ({
   footer: {
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
-    marginLeft: 260,
     position: 'absolute',
     bottom: 0,
     left: 0,

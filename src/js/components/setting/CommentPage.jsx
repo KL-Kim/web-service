@@ -10,12 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import CommentPanel from '../sections/CommentPanel';
-
-// Webstorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
 import { getComments, deleteComment } from 'js/actions/comment.actions';
@@ -45,17 +41,14 @@ class CommentsPage extends Component {
   }
 
   componentDidMount() {
-    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
-    if (userId) {
+    if (this.props.userId) {
       this.props.getComments({
         limit: this.state.limit,
-        uid: userId,
+        uid: this.props.userId,
         orderBy: 'new',
       }).then(response => {
         if (response) {
           this.setState({
-            userId,
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -67,7 +60,7 @@ class CommentsPage extends Component {
   loadMore() {
     this.props.getComments({
       limit: this.state.limit,
-      uid: this.state.userId,
+      uid: this.props.userId,
       orderBy: 'new',
     })
     .then(response => {
@@ -81,10 +74,10 @@ class CommentsPage extends Component {
   }
 
   getNewComments() {
-    if (this.state.userId) {
+    if (this.props.userId) {
       this.props.getComments({
         limit: this.state.limit,
-        uid: this.state.userId,
+        uid: this.props.userId,
         orderBy: 'new',
       }).then(response => {
         if (response) {
@@ -101,7 +94,7 @@ class CommentsPage extends Component {
     const { classes, comments } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div className={classes.root}>
           <Typography variant="display1">My Comments</Typography>
           <br />
@@ -118,7 +111,7 @@ class CommentsPage extends Component {
             getNewComments={this.getNewComments}
           />
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

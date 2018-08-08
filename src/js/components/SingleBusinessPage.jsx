@@ -16,7 +16,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Table from '@material-ui/core/Table';
@@ -52,10 +51,10 @@ import WriteReviewDialog from './utils/WriteReviewDialog';
 import ReportDialog from './utils/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
 import ReviewPanel from './sections/ReviewPanel';
+import Badge from 'js/components/utils/Badge';
 
 // Actions
 import { favorOperation } from 'js/actions/user.actions';
-import { openLoginDialog } from 'js/actions/app.actions';
 import { getSingleBusiness, reportBusiness } from 'js/actions/business.actions';
 import {
   getReviews,
@@ -251,9 +250,11 @@ class SingleBusinessPage extends Component {
 
   handleAddToFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
     if (!_.isEmpty(this.props.user) && !_.isEmpty(this.state.business)) {
@@ -271,9 +272,11 @@ class SingleBusinessPage extends Component {
   // Review Related Methods
   handleAddNewReviewDialogOpen() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
     this.setState({
@@ -675,29 +678,30 @@ class SingleBusinessPage extends Component {
                         </TableHead>
                         <TableBody>
                           {
-                            _.isEmpty(business.menu) ? (<TableRow></TableRow>)
-                            : business.menu.map((item, index) => {
-                                let name;
+                            _.isEmpty(business.menu) 
+                              ? (<TableRow></TableRow>)
+                              : business.menu.map((item, index) => 
+                                  <TableRow hover key={index}>
+                                    <TableCell>
+                                      <Grid container spacing={8} alignItems="center">
+                                        <Grid item>
+                                          <Typography>{item.name}</Typography>
+                                        </Grid>
 
-                                if (item.hot) {
-                                  name = <Badge color="secondary" badgeContent={<Whatshot />}>
-                                      <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                                    </Badge>
-                                } else if (item.new) {
-                                  name = <Badge color="primary" badgeContent="New">
-                                      <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                                    </Badge>
-                                } else {
-                                  name = <Typography variant="body1" className={classes.badgeContent}>{item.name}</Typography>
-                                }
-
-                              return (<TableRow hover key={index}>
-                                <TableCell>
-                                  {name}
-                                </TableCell>
-                                <TableCell>{item.price}</TableCell>
-                              </TableRow>
-                            )})
+                                        <Grid item>
+                                          <div>
+                                            {item.hot ? <Badge color="danger">Hot</Badge>: null}
+                                            {item.new ? <Badge color="info">New</Badge>: null}
+                                          </div>
+                                        </Grid>
+                                      </Grid>
+                                     
+                                    </TableCell>
+                                    <TableCell>
+                                      <Typography>{item.price}</Typography>
+                                    </TableCell>
+                                  </TableRow>
+                              )
                           }
                         </TableBody>
                       </Table>
@@ -787,7 +791,6 @@ class SingleBusinessPage extends Component {
                       isLoggedIn={this.props.isLoggedIn}
                       userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
                       voteReview={this.props.voteReview}
-                      openLoginDialog={this.props.openLoginDialog}
                     />
               }
             </Grid>
@@ -885,5 +888,4 @@ export default connect(mapStateToProps, {
   clearReviewsList,
   getSingleReview,
   favorOperation,
-  openLoginDialog,
 })(withStyles(styles)(SingleBusinessPage));

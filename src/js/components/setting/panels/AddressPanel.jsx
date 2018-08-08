@@ -31,13 +31,7 @@ import { getCities, getAreas } from 'js/actions/pca.actions';
 
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '30%',
-    "flexShrink": 0,
-  },
   "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
 });
@@ -129,22 +123,26 @@ class AddressPanel extends Component {
   render() {
     const { classes, user, cities, areas, isFetching } = this.props;
 
-    const city = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.city.name) ? user.address.city.name : '') : '';
     const area = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
     const street = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.street) ? user.address.street : '') : '';
 
     return _.isEmpty(user) ? '' : (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Address</Typography>
-          <Typography className={classes.secondaryHeading}>
-            {city + ' ' + area + ' ' + street}
-          </Typography>
+           <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="body2">Address</Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="body1" className={classes.secondaryHeading}>{area + ' ' + street}</Typography>
+            </Grid>
+          </Grid>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>
           <Grid container spacing={16} justify="center">
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="province">Province</InputLabel>
                 <Select native
@@ -166,7 +164,7 @@ class AddressPanel extends Component {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="city">City</InputLabel>
                 <Select native
@@ -187,7 +185,7 @@ class AddressPanel extends Component {
               </FormControl>
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="area">Area</InputLabel>
                 <Select native

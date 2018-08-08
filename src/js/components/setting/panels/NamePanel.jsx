@@ -21,13 +21,7 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '30%',
-    "flexShrink": 0,
-  },
   "secondaryHeading": {
-    "fontSize": theme.typography.pxToRem(15),
     "color": theme.palette.text.secondary,
   },
 });
@@ -79,13 +73,22 @@ class NamePanel extends Component {
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Name</Typography>
-          <Typography className={classes.secondaryHeading}>{(_.isEmpty(user.firstName) ? '' : user.firstName) + ' '+ (_.isEmpty(user.lastName) ? '' : user.lastName)}</Typography>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="body2">Name</Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography variant="body1" className={classes.secondaryHeading}>
+                {(_.isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (_.isEmpty(user.lastName) ? '' : user.lastName)}
+              </Typography>
+            </Grid>
+          </Grid>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>
           <Grid container spacing={16} justify="center">
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 type="text"
                 id="firstname"
@@ -95,7 +98,7 @@ class NamePanel extends Component {
                 onChange={this.handleChange}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 id="lastname"
                 type="text"

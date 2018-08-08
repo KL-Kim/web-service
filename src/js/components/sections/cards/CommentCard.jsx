@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link, withRouter } from 'react-router-dom';
 import _ from 'lodash';
 
 // Material UI Components
@@ -17,6 +18,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardHeader from '@material-ui/core/CardHeader';
+
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
 import ThumbDown from '@material-ui/icons/ThumbDown';
@@ -32,9 +39,6 @@ import ThumbButton from 'js/components/utils/ThumbButton';
 const styles = theme => ({
   "root": {
     padding: theme.spacing.unit * 4,
-  },
-  "iconButton": {
-    marginRight: theme.spacing.unit
   },
 });
 
@@ -70,9 +74,9 @@ class CommentCard extends Component {
 
   handleOpenReplyDialog() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
     }
 
     this.setState({
@@ -88,9 +92,9 @@ class CommentCard extends Component {
 
   handleOpenDeleteDialog() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
     }
 
     this.setState({
@@ -106,9 +110,9 @@ class CommentCard extends Component {
 
   handleSubmitComment() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
     }
 
     if (this.props.addNewComment && this.props.userId && this.props.postId) {
@@ -137,9 +141,9 @@ class CommentCard extends Component {
 
   handleVoteComment = (vote) => e => {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
     }
 
     if (this.props.voteComment && this.props.userId && this.props.commentId) {
@@ -161,9 +165,9 @@ class CommentCard extends Component {
 
   handleDeleteComment() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
-
-      return;
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
     }
 
     if (this.props.deleteComment && this.props.commentId && this.props.userId) {
@@ -185,19 +189,16 @@ class CommentCard extends Component {
 
     return (
       <div>
-        <Paper className={classes.root}>
-          <Grid container spacing={24}>
-            <Grid item>
-              <Avatar user={this.props.owner} type="SMALL" />
-            </Grid>
-
-            <Grid item xs>
-              <Typography variant="subheading" gutterBottom>
-                <strong>
-                  <ProperName user={this.props.owner} />
-                </strong>
-                <span> - {ElapsedTime(this.props.createdAt)}</span>
-              </Typography>
+        <Card>
+          <CardHeader
+            avatar={<Link to={"/profile/" + this.props.owner.username}>
+                      <Avatar user={this.props.owner} type="small"/>
+                    </Link>}
+            title={<Link to={"/profile/" + this.props.owner.username}>
+                    <ProperName user={this.props.owner} />
+                  </Link>}
+          />
+          <CardContent>
               <Typography variant="body1" gutterBottom>
                 {
                   this.props.status === 'NORMAL' ? this.props.content : 'This comment violated the policy of iKoreaTown'
@@ -218,7 +219,9 @@ class CommentCard extends Component {
                     </Typography>
                   : null
               }
-              {
+          </CardContent>
+          <CardActions>
+            {
                 this.props.status === 'NORMAL'
                   ? <Grid container justify="space-between" alignItems="center">
                       <Grid item>
@@ -251,56 +254,51 @@ class CommentCard extends Component {
                     </Grid>
                   : null
               }
-            </Grid>
-          </Grid>
-        </Paper>
+          </CardActions>
+        </Card>
 
         <div>
           {
             this.props.isOwn
-              ? (
-                  <ConfirmationDialog
-                    open={this.state.deleteDialogOpen}
-                    title="Warning"
-                    content="Are you sure to delete the comment?"
-                    operation={this.handleDeleteComment}
-                    handleClose={this.handleCloseDeleteDialog}
-                  />
-                )
-              : (
-                  <Dialog fullWidth
-                    open={this.state.replyDialogOpen}
-                    onClose={this.handleCloseReplyDialog}
-                    aria-labelledby="reply-dialog-title"
-                    aria-describedby="reply-dialog-description"
-                  >
-                    <DialogTitle id="reply-dialog-title">
-                      Reply to <ProperName user={this.props.owner} />
-                    </DialogTitle>
-                    <DialogContent id="reply-dialog-description">
-                      <FormControl fullWidth required>
-                        <InputLabel htmlFor="content">Content</InputLabel>
-                        <Input
-                          type="text"
-                          id="content"
-                          multiline
-                          rows={10}
-                          name="content"
-                          value={this.state.content}
-                          onChange={this.handleChange}
-                        />
-                      </FormControl>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                        Save
-                      </Button>
-                      <Button color="primary" onClick={this.handleCloseReplyDialog}>
-                        Cancel
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                )
+              ? <ConfirmationDialog
+                  open={this.state.deleteDialogOpen}
+                  title="Warning"
+                  content="Are you sure to delete the comment?"
+                  operation={this.handleDeleteComment}
+                  handleClose={this.handleCloseDeleteDialog}
+                />
+              : <Dialog fullWidth
+                  open={this.state.replyDialogOpen}
+                  onClose={this.handleCloseReplyDialog}
+                  aria-labelledby="reply-dialog-title"
+                  aria-describedby="reply-dialog-description"
+                >
+                  <DialogTitle id="reply-dialog-title">
+                    Reply to <ProperName user={this.props.owner} />
+                  </DialogTitle>
+                  <DialogContent id="reply-dialog-description">
+                    <FormControl fullWidth required>
+                      <InputLabel htmlFor="content">Content</InputLabel>
+                      <Input
+                        type="text"
+                        id="content"
+                        multiline
+                        rows={10}
+                        name="content"
+                        value={this.state.content}
+                        onChange={this.handleChange}
+                      />
+                    </FormControl>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
+                      Save
+                    </Button>
+                    <Button color="primary" onClick={this.handleCloseReplyDialog}>
+                      Cancel
+                    </Button>
+                  </DialogActions>
+                </Dialog>
           }
         </div>
       </div>
@@ -341,7 +339,6 @@ CommentCard.propTypes = {
   "getNewComments": PropTypes.func,
   "voteComment": PropTypes.func,
   "deleteCommment": PropTypes.func,
-  "openLoginDialog": PropTypes.func,
 };
 
-export default withStyles(styles)(CommentCard);
+export default withRouter(withStyles(styles)(CommentCard));

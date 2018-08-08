@@ -15,23 +15,33 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import Container from './layout/Container';
-import emailTypes from '../constants/email.types';
+import emailTypes from 'js/constants/email.types';
 
 // Actions
-import { sendEmail } from '../actions/auth.actions';
+import { sendEmail } from 'js/actions/auth.actions';
 
 const styles = theme => ({
   "root": {
-    "marginTop": theme.spacing.unit * 20,
+    maxWidth: 600,
+    margin: 'auto',
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    transform: 'translateY(-50%)',
   },
   "paper": {
-    "paddingTop": theme.spacing.unit * 5,
-    "paddingBottom": theme.spacing.unit * 5,
-    "paddingLeft": theme.spacing.unit * 10,
-    "paddingRight": theme.spacing.unit * 10,
-    "marginBottom": theme.spacing.unit,
-    "textAlign": 'center',
+    "paddingTop": theme.spacing.unit * 8,
+    "paddingBottom": theme.spacing.unit * 8,
+    "paddingLeft": theme.spacing.unit * 12,
+    "paddingRight": theme.spacing.unit * 12,
     "color": theme.palette.text.secondary,
+
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit,
+      "padding": theme.spacing.unit * 4,
+    }
   },
   "button": {
     "marginTop": theme.spacing.unit * 4,
@@ -46,11 +56,9 @@ class ForgetPasswordPage extends Component {
     super(props);
 
     this.state = {
-      "email": {
-        "value": '',
-        "showError": false,
-        "errorMessage": '',
-      }
+      "email": '',
+      "showError": false,
+      "errorMessage": '',
     };
 
     this.isValidEmail = this.isValidEmail.bind(this);
@@ -61,34 +69,24 @@ class ForgetPasswordPage extends Component {
   handleChange(e) {
     const { name, value } = e.target;
 
-    if (_.isEqual('email', name)) {
+    if ('email' === name) {
       this.setState({
-        "email": {
-          "value": value,
-          "showError": false,
-          "errorMessage": ''
-        },
+        "email": value,
+        "showError": false,
       });
     }
   }
 
   isValidEmail() {
-    if(!this.state.email.value || !validator.isEmail(this.state.email.value)) {
+    if(!this.state.email || !validator.isEmail(this.state.email)) {
       this.setState({
-        "email": {
-          "value": this.state.email.value,
-          "showError": true,
-          "errorMessage": 'Error: Input a valid Email'
-        }
+        "showError": true,
+        "errorMessage": 'Error: Input a valid Email'
       });
       return false;
     } else {
       this.setState({
-        "email": {
-          "value": this.state.email.value,
-          "showError": false,
-          "errorMessage": ''
-        }
+        "showError": false,
       });
       return true;
     }
@@ -99,8 +97,8 @@ class ForgetPasswordPage extends Component {
 
     const { email } = this.state;
 
-    if (this.isValidEmail(email.value)) {
-      this.props.sendEmail(emailTypes.CHANGE_PASSWORD, email.value);
+    if (this.isValidEmail(email)) {
+      this.props.sendEmail(emailTypes.CHANGE_PASSWORD, email);
     }
   }
 
@@ -110,40 +108,35 @@ class ForgetPasswordPage extends Component {
     return (
       <Container>
         <div className={classes.root}>
-          <Grid container justify="center">
-            <Grid item xs={8}>
-              <Paper className={classes.paper}>
-                <Typography variant="display1" align="center">
-                  Forget Password
-                </Typography>
-                <form onSubmit={this.handleSubmit}>
-                  <TextField fullWidth
-                    type="email"
-                    name="email"
-                    label="Email"
-                    margin="normal"
-                    error={this.state.email.showError}
-                    helperText={this.state.email.showError ? this.state.email.errorMessage : ' '}
-                    onChange={this.handleChange}
-                    onBlur={this.isValidEmail}
+          <Paper className={classes.paper}>
+            <Typography variant="display1" align="center">Forget Password</Typography>
 
-                     />
-                  <br />
+            <form onSubmit={this.handleSubmit}>
+              <TextField fullWidth
+                autoComplete="off"
+                type="email"
+                name="email"
+                label="Email"
+                margin="normal"
+                error={this.state.showError}
+                helperText={this.state.showError ? this.state.errorMessage : ' '}
+                onChange={this.handleChange}
+                onBlur={this.isValidEmail}
+              />
+              <br />
 
-                  <Button fullWidth
-                    type="submit"
-                    name="signin"
-                    variant="raised"
-                    color="primary"
-                    className={classes.button}
-                    disabled={this.state.email.showError || isFetching}
-                  >
-                    {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
-                  </Button>
-                </form>
-              </Paper>
-            </Grid>
-          </Grid>
+              <Button fullWidth
+                type="submit"
+                name="signin"
+                variant="raised"
+                color="primary"
+                className={classes.button}
+                disabled={this.state.showError || isFetching}
+              >
+                {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
+              </Button>
+            </form>
+          </Paper>
         </div>
       </Container>
     );

@@ -22,8 +22,11 @@ const styles = theme => ({
     },
     "mansoryItem": {
       width: "33.33%",
-      [theme.breakpoints.down('xs')]: {
+      [theme.breakpoints.down('sm')]: {
         width: "50%",
+      },
+      [theme.breakpoints.down('xs')]: {
+        width: "100%",
       },
       paddingLeft: theme.spacing.unit,
       paddingRight: theme.spacing.unit,
@@ -72,7 +75,6 @@ class ReviewPanel extends Component {
                                                 isLoggedIn={this.props.isLoggedIn}
                                                 isOwn={review.userId === this.props.userId}
 
-                                                openLoginDialog={this.props.openLoginDialog}
                                                 voteReview={this.props.voteReview}
                                                 deleteReview={this.props.deleteReview}
                                                 getNewReviews={this.props.getNewReviews}
@@ -112,7 +114,6 @@ ReviewPanel.propTypes = {
     "hasMore": PropTypes.bool.isRequired,
 
     "loadMore": PropTypes.func.isRequired,
-    "openLoginDialog": PropTypes.func,
     "voteReview": PropTypes.func,
     "deleteReview": PropTypes.func,
     "getNewReviews": PropTypes.func,

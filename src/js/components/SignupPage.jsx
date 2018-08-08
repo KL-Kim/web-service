@@ -7,39 +7,56 @@ import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import Error from '@material-ui/icons/Error';
 
 // Custom Components
-import config from '../config/config';
+import config from 'js/config/config';
 import Container from './layout/Container';
 
 // Actions
-import { register } from '../actions/user.actions';
-import { closeLoginDialog } from '../actions/app.actions';
+import { register } from 'js/actions/user.actions';
 
 const styles = theme => ({
   "root": {
-    "marginTop": theme.spacing.unit * 20,
+    maxWidth: 600,
+    margin: 'auto',
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    transform: 'translateY(-50%)',
   },
-  "paper": {
-    "paddingTop": theme.spacing.unit * 5,
-    "paddingBottom": theme.spacing.unit * 5,
-    "paddingLeft": theme.spacing.unit * 10,
-    "paddingRight": theme.spacing.unit * 10,
+  "container": {
+    "paddingTop": theme.spacing.unit * 8,
+    "paddingBottom": theme.spacing.unit * 8,
+    "paddingLeft": theme.spacing.unit * 12,
+    "paddingRight": theme.spacing.unit * 12,
     "marginBottom": theme.spacing.unit,
-    "textAlign": 'center',
     "color": theme.palette.text.secondary,
+
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit,
+      "padding": theme.spacing.unit * 4,
+    }
+  },
+  "section": {
+    marginBottom: theme.spacing.unit * 2,
   },
   "button": {
-    "marginTop": theme.spacing.unit * 4,
+    "marginTop": theme.spacing.unit * 2,
   },
 });
 
@@ -184,79 +201,107 @@ class UserSignup extends Component {
 
     return (
       <Container>
-        <Grid container justify="center" alignItems="center" className={classes.root}>
-          <Grid item xs={8}>
-            <Paper className={classes.paper}>
-              <Typography variant="display1" align="center">Sign up</Typography>
+        <div className={classes.root}>
+          <Paper className={classes.container}>
+            <Typography variant="display1" align="center">Sign Up</Typography>
 
-              <form noValidate onSubmit={this.handleRegister}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Email"
-                  type="text"
-                  name="email"
-                  error={this.state.emailError}
-                  helperText={this.state.emailError ? this.state.emailErrorMessage : ' '}
-                  onBlur={this.isValidEmail}
-                  onChange={this.handleChange}
+            <form noValidate onSubmit={this.handleRegister}>
+              <FormControl fullWidth className={classes.section}>
+                <InputLabel htmlFor="email">Email</InputLabel>
+                <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    error={this.state.emailError}
+                    onBlur={this.isValidEmail}
+                    onChange={this.handleChange}
+                    endAdornment={
+                      this.state.emailError
+                        ? <InputAdornment position="end">
+                            <Error color="secondary"/>
+                          </InputAdornment>
+                        : null
+                    }
                 />
-                <br />
+                <FormHelperText id="email-helper-text" error>
+                {
+                  this.state.emailError ? this.state.emailErrorMessage : ' '
+                }
+                </FormHelperText>
+              </FormControl>
 
-                <TextField
-                  fullWidth
-                  type="password"
-                  margin="normal"
-                  label="Password"
-                  name="password"
-                  error={this.state.passwordError}
-                  helperText={this.state.passwordError ? this.state.passwordErrorMessage : ' '}
-                  onBlur={this.isValidPassword}
-                  onChange={this.handleChange}
+              <FormControl fullWidth className={classes.section}>
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <Input
+                    type="password"
+                    id="password"
+                    name="password"
+                    error={this.state.passwordError}
+                    onBlur={this.isValidPassword}
+                    onChange={this.handleChange}
+                    endAdornment={
+                      this.state.passwordError
+                        ? <InputAdornment position="end">
+                            <Error color="secondary" />
+                          </InputAdornment>
+                        : null
+                    }
                 />
-                <br />
+                <FormHelperText id="password-helper-text" error>
+                    {
+                      this.state.passwordError ? this.state.passwordErrorMessage : ' '
+                    }
+                </FormHelperText>
+              </FormControl>
 
-                <TextField
-                  fullWidth
-                  type="password"
-                  margin="normal"
-                  label="Confirm your password"
-                  name="passwordConfirmation"
-                  error={this.state.passwordConfirmationError}
-                  helperText={this.state.passwordConfirmationError ? this.state.passwordConfirmationErrorMessage : ' '}
-                  onBlur={this.isValidPasswordConfirmation}
-                  onChange={this.handleChange}
+              <FormControl fullWidth className={classes.section}>
+                <InputLabel htmlFor="password">Confirm Password</InputLabel>
+                <Input
+                    type="password"
+                    id="password-confirmation"
+                    name="passwordConfirmation"
+                    error={this.state.passwordConfirmationError}
+                    onBlur={this.isValidPasswordConfirmation}
+                    onChange={this.handleChange}
+                    endAdornment={
+                      this.state.passwordConfirmationError
+                        ? <InputAdornment position="end">
+                            <Error color="secondary" />
+                          </InputAdornment>
+                        : null
+                    }
                 />
-                <br />
+                <FormHelperText id="password-helper-text" error>
+                    {
+                      this.state.passwordConfirmationError ? this.state.passwordConfirmationErrorMessage : ' '
+                    }
+                </FormHelperText>
+              </FormControl>
 
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="raised"
-                  color="primary"
-                  className={classes.button}
-                  disabled={this.state.emailError
-                            || this.state.passwordError
-                            || this.state.passwordConfirmationError
-                            || this.props.isFetching
-                  }
-                >
-                  {
-                    this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up'
-                  }
-                </Button>
-              </form>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Link to="/terms-policy">
-              <Typography variant="body2" align="center">
-                If you sign up, it means you agree to follow the TERMS and POLICY.
-              </Typography>
-            </Link>
-          </Grid>
-        </Grid>
+              <Button
+                fullWidth
+                type="submit"
+                variant="raised"
+                color="primary"
+                className={classes.button}
+                disabled={this.state.emailError
+                          || this.state.passwordError
+                          || this.state.passwordConfirmationError
+                          || this.props.isFetching
+                }
+              >
+                {
+                  this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up'
+                }
+              </Button>
+            </form>
+          </Paper>
+        
+         
+          <Typography variant="caption" align="center">
+            If you sign up, it means you agree to follow the  <Link to="/terms-policy">TERMS and POLICY</Link>.
+          </Typography>
+        </div>
       </Container>
     );
   }
@@ -280,4 +325,4 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, { register, closeLoginDialog })(withStyles(styles)(UserSignup));
+export default connect(mapStateToProps, { register })(withStyles(styles)(UserSignup));

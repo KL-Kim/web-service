@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import SwipeableViews from 'react-swipeable-views';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -22,20 +23,28 @@ const styles = theme => ({
         overflowX: 'scroll',
         whiteSpace: 'nowrap',
         overscrollBehaviorX: "auto",
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit * 2,
+
+        [theme.breakpoints.down('xs')]: {
+            paddingTop: 0,
+            paddingBottom: 0,
+          }
     },
     "item": {
         display: 'inline-block'
     },
-    "button": {
+    "buttonWrapper": {
         position: "absolute",
-        top: '48%',
+        top: 0,
         bottom: 0,
         zIndex: 101,
         [theme.breakpoints.down('sm')]: {
             display: 'none'
         }
+    },
+    "button": {
+        position: "relative",
+        top: '50%',
+        transform: 'translateY(-50%)',
     }
 });
 
@@ -52,12 +61,56 @@ class HorizontalScrollBar extends Component {
 
         this.handleScrollLeft = this.handleScrollLeft.bind(this);
         this.handleScrollRight = this.handleScrollRight.bind(this);
+        this.handleScroll = this.handleScroll.bind(this);
     }
 
     componentDidMount() {
         if (this.ref.current) {
             this.setState({
                 showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth
+            });
+            this.ref.current.addEventListener("scroll", this.handleScroll);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (!_.isEqual(prevProps.children, this.props.children)) {
+            if (this.ref.current) {
+                if (prevState.showRightButton !== this.ref.current.clientWidth < this.ref.current.scrollWidth) {
+                    this.setState({
+                        showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth
+                    });
+                }
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.ref.current) {
+            this.ref.current.removeEventListener("scroll", this.handleScroll);
+        }
+    }
+
+    handleScroll() {
+        const node = this.ref.current;
+
+        if (node.scrollLeft > 0) {
+            this.setState({
+                showLeftButton: true,  
+            });
+        } else {
+            this.setState({
+                showLeftButton: false,  
+            });
+        }
+
+        if (node.scrollLeft + node.clientWidth < node.scrollWidth) {
+            this.setState({
+                showRightButton: true,
+            });
+        } else {
+            this.setState({
+                showRightButton: false,
             });
         }
     }
@@ -66,22 +119,12 @@ class HorizontalScrollBar extends Component {
         const diff = this.ref.current.scrollLeft - this.ref.current.clientWidth + this.props.diff;
 
         animate('scrollLeft', this.ref.current, diff > 0 ? diff : 0);
-
-        this.setState({
-            showLeftButton: diff > 0,
-            showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth,
-        });
     }
 
     handleScrollRight () {
         const diff = this.ref.current.scrollLeft + this.ref.current.clientWidth - this.props.diff;
 
-        animate('scrollLeft', this.ref.current, diff);
-
-        this.setState({
-            showLeftButton: this.ref.current.clientWidth < this.ref.current.scrollWidth,
-            showRightButton: diff + this.ref.current.clientWidth < this.ref.current.scrollWidth,
-        });
+        animate('scrollLeft', this.ref.current, diff);    
     }
 
     render() {
@@ -90,19 +133,21 @@ class HorizontalScrollBar extends Component {
         return (
             
             <div className={classes.root}>
-                <div className={classes.wrapper} ref={this.ref}>
-                    {
-                        this.props.children.map((item, index) => (
-                            <div className={classes.item} key={index}>
-                                {item} 
-                            </div>
-                        ))
-                    }
-                </div>
-                <div>
-                    <div>
+                <SwipeableViews resistance>
+                    <div className={classes.wrapper} ref={this.ref}>
                         {
-                            this.state.showLeftButton && <IconButton style={{ left: -48, }}
+                            this.props.children.map((item, index) => (
+                                <div className={classes.item} key={index}>
+                                    {item} 
+                                </div>
+                            ))
+                        }
+                    </div>
+                </SwipeableViews>
+                <div>
+                    <div className={classes.buttonWrapper} style={{ left: -48, }}>
+                        {
+                            this.state.showLeftButton && <IconButton 
                                 className={classes.button}
                                 onClick={this.handleScrollLeft}
                             >
@@ -110,10 +155,10 @@ class HorizontalScrollBar extends Component {
                             </IconButton>
                         }
                     </div>
-                    <div >
+                    <div className={classes.buttonWrapper} style={{ right: -48, }}>
                         {
                             this.state.showRightButton && <IconButton
-                                className={classes.button} style={{ right: -48, }}
+                                className={classes.button}
                                 onClick={this.handleScrollRight}
                             >
                                 <KeyboardArrowRight />
@@ -133,6 +178,7 @@ HorizontalScrollBar.defaultProps = {
 
 HorizontalScrollBar.propTypes = {
     "classes": PropTypes.object.isRequired,
+    "children": PropTypes.array.isRequired,
     "diff": PropTypes.number,
 };
 

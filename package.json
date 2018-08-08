@@ -38,6 +38,7 @@
     "react-scripts": "1.0.17",
     "react-slick": "^0.23.1",
     "react-stars": "^2.2.5",
+    "react-swipeable-views": "^0.12.15",
     "react-transition-group": "^2.2.1",
     "react-visibility-sensor": "^3.11.0",
     "redux": "^4.0.0",

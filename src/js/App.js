@@ -12,7 +12,8 @@ import PrivateRoute from './helpers/PrivateRoute';
 import NoMatchPage from 'js/components/404';
 import HomePage from 'js/components/HomePage';
 import ExplorePage from 'js/components/ExplorePage';
-import SignupPage from 'js/components/SignupPage';
+import SignUpPage from 'js/components/SignUpPage';
+import SignInPage from 'js/components/SignInPage';
 import AboutPage from 'js/components/AboutPage';
 import TermsPolicyPage from 'js/components/TermsPolicyPage';
 import LicensePage from 'js/components/LicensePage';
@@ -62,7 +63,8 @@ const App = () => {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/search" component={SearchPage} />
-          <Route path="/signup" component={SignupPage} />
+          <Route path="/signup" component={SignUpPage} />
+          <Route path="/signin" component={SignInPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />
           <Route path="/license" component={LicensePage} />

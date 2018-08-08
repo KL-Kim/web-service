@@ -71,7 +71,7 @@ export const fetchUnreadCount = (token, uid) => {
     },
   };
 
-  return fetch(notificationServiceUri.getUnreadCountUrl, options)
+  return fetch(notificationServiceUri.getUnreadCountUrl + uid, options)
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -101,7 +101,7 @@ export const deleteNotificationFetch = (token, id) => {
   return fetch(notificationServiceUri.commonUrl + id, options)
     .then(response => {
       if (response.ok) {
-        return response.json();
+        return response;
       } else {
         return Promise.reject(responseErrorHandler(response));
       }
@@ -128,7 +128,7 @@ export const clearReadNotificationsFetch = (token, uid) => {
   return fetch(notificationServiceUri.clearReadNotificationsUrl + uid, options)
     .then(response => {
       if (response.ok) {
-        return response.json();
+        return response;
       } else {
         return Promise.reject(responseErrorHandler(response));
       }

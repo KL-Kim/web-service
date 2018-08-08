@@ -29,10 +29,9 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Container from './layout/Container';
 import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
-import HorizontalScrollBar from './sections/HorizontalScrollBar';
+import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 import { getCategoriesList } from 'js/actions/category.actions.js';
@@ -50,19 +49,12 @@ const styles = theme => ({
     display: 'inline-block',
   },
   "popoverContainer": {
-    width: 500,
-    padding: theme.spacing.unit * 3,
+    maxWidth: 400,
+    padding: theme.spacing.unit * 2,
   },
-  "menuSection": {
+  "divider": {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
-    paddingTop: theme.spacing. unit * 2,
-    paddingBottom: theme.spacing. unit * 2,
-  },
-  "menuItem": {
-    marginBottom: theme.spacing.unit / 2,
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
   },
 });
 
@@ -88,10 +80,10 @@ class BusinessListPage extends Component {
     this.handleClickTag = this.handleClickTag.bind(this);
     this.handleClickArea = this.handleClickArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
-    this.handleSwithEvent = this.handleSwithEvent.bind(this);
+    this.handleToggleEventSwtich = this.handleToggleEventSwtich.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
-    this.hanldeShowAllAreas = this.hanldeShowAllAreas.bind(this);
+    this.handleSubmitFilter = this.handleSubmitFilter.bind(this);
   }
 
   componentDidMount() {
@@ -158,7 +150,7 @@ class BusinessListPage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.match.params.slug !== prevProps.match.params.slug) {
+    if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
       this.props.getBusinessList({
         'limit': this.state.limit,
         'category': this.props.match.params.slug,
@@ -223,37 +215,14 @@ class BusinessListPage extends Component {
   }
 
   handleClickTag = slug => e => {
-    this.props.getBusinessList({
-      tag: slug,
-      limit: this.state.limit,
-      category: this.state.category.enName,
-      area: this.state.area.code,
-      event: this.state.event,
-      orderBy: this.state.orderBy,
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount,
-        });
-      }
-    });
-
-    this.setState({
-      tagSlug: slug,
-    });
-  }
-
-  handleClickArea = item => e => {
-    if (this.state.area.code !== item.code) {
+    if (this.state.tagSlug !== slug) {
       this.props.getBusinessList({
+        tag: slug,
         limit: this.state.limit,
         category: this.state.category.enName,
-        tag: this.state.tagSlug,
-        area: item.code,
+        area: this.state.area.code,
         event: this.state.event,
-        orderBy: this.state.orderBy
+        orderBy: this.state.orderBy,
       })
       .then(response => {
         if (response) {
@@ -263,7 +232,15 @@ class BusinessListPage extends Component {
           });
         }
       });
-     
+  
+      this.setState({
+        tagSlug: slug,
+      });
+    }
+  }
+
+  handleClickArea = item => e => {
+    if (this.state.area.code !== item.code) {
       this.setState({
         area: item,
       });
@@ -271,48 +248,14 @@ class BusinessListPage extends Component {
   }
 
   handleClickOrderBy = item => e => {
-    if (this.state.orderBy !== item) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        category: this.state.category.enName,
-        tag: this.state.tagSlug,
-        area: this.state.area.code,
-        event: this.state.event,
-        orderBy: item
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-      });
-
+    if (item !== this.state.orderBy) {
       this.setState({
         orderBy: item,
       });
     }
   }
 
-  handleSwithEvent() {
-    this.props.getBusinessList({
-      limit: this.state.limit,
-      category: this.state.category.enName,
-      tag: this.state.tagSlug,
-      area: this.state.area.code,
-      event: !this.state.event,
-      orderBy: this.state.orderBy
-    })
-    .then(response => {
-      if (response) {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount
-        });
-      }
-    });
-
+  handleToggleEventSwtich() {
     this.setState({
       event: !this.state.event,
     });
@@ -327,13 +270,29 @@ class BusinessListPage extends Component {
   handleCloseFilterPopover() {
     this.setState({
       filterPopoverOpen: false,
-      areaCount: 5,
     });
   }
 
-  hanldeShowAllAreas() {
+  handleSubmitFilter() {
+    this.props.getBusinessList({
+      limit: this.state.count,
+      category: this.state.category.enName,
+      tag: this.state.tagSlug,
+      area: this.state.area.code,
+      event: this.state.event,
+      orderBy: this.state.orderBy,
+    })
+    .then(response => {
+      if (response) {
+        this.setState({
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount
+        });
+      }
+    });
+
     this.setState({
-      areaCount: Number.MAX_VALUE
+      filterPopoverOpen: false,
     });
   }
 
@@ -348,10 +307,12 @@ class BusinessListPage extends Component {
         orderBy: this.state.orderBy,
       })
       .then(response => {
-        this.setState({
-          count: response.list.length,
-          hasMore: response.list.length < response.totalCount
-        });
+        if (response) {
+          this.setState({
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }
       });
     }
   }
@@ -431,7 +392,6 @@ class BusinessListPage extends Component {
             isLoggedIn={this.props.isLoggedIn}
             userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
             favorOperation={this.props.favorOperation}
-            openLoginDialog={this.props.openLoginDialog}
             clearBusinessList={this.props.clearBusinessList}
             showNoMore
           />
@@ -451,106 +411,111 @@ class BusinessListPage extends Component {
               }}
             >
               <div className={classes.popoverContainer}>
-                <Grid container className={classes.menuSection}>
-                  <Grid item xs={3}>
-                    <Typography variant="title">District</Typography>
+                <Grid container spacing={8} alignItems="center">
+                  <Grid item xs={12}>
+                    <Typography variant="body2">District</Typography>
                   </Grid>
-                  <Grid item xs={9}>
-                    <Grid container justify="flex-start">
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          size="small"
-                          color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
-                          variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
-                          onClick={this.handleClickArea('')}
-                        >
-                          All
-                        </Button>
-                      </Grid>
-                      {
-                        this.state.areas.map((item, index) =>
-                          <Grid item xs={4} key={item.code} className={classes.menuItem}>
-                            <Button
-                              fullWidth
-                              size="small"
-                              color={this.state.area.code === item.code ? 'primary' : 'default'}
-                              variant={this.state.area.code === item.code ? 'outlined' : 'text'}
-                              onClick={this.handleClickArea(item)}
-                            >
-                              {item.name}
-                            </Button>
-                          </Grid>
-                        )
-                      }
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Divider />
 
-                <Grid container className={classes.menuSection} alignItems="center">
-                  <Grid item xs={3}>
-                    <Typography variant="title">Order by</Typography>
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
+                      variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      onClick={this.handleClickArea('')}
+                    >
+                      All
+                    </Button>
                   </Grid>
-                  <Grid item xs={9}>
-                    <Grid container justify="flex-start">
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          size="small"
-                          color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                          variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('')}
-                        >
-                          Recommend
-                        </Button>
-                      </Grid>
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          size="small"
-                          color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
-                          variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('rating')}
-                        >
-                          Rating
-                        </Button>
-                      </Grid>
-                      <Grid item xs={4} className={classes.menuItem}>
-                        <Button
-                          fullWidth
-                          size="small"
-                          color={this.state.orderBy === 'new' ? 'primary' : 'default'}
-                          variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
-                          onClick={this.handleClickOrderBy('new')}
-                        >
-                          New
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Divider />
 
-                <Grid container className={classes.menuSection} alignItems="center">
-                  <Grid item xs={3}>
-                    <Typography variant="title">Event</Typography>
+                  {
+                    this.state.areas.map(item =>
+                      <Grid item key={item.code}>
+                        <Button
+                          fullWidth
+                          size="small"
+                          color={this.state.area.code === item.code ? 'primary' : 'default'}
+                          variant={this.state.area.code === item.code ? 'outlined' : 'text'}
+                          onClick={this.handleClickArea(item)}
+                        >
+                          {item.name}
+                        </Button>
+                      </Grid>
+                    )
+                  }
+
+                  <Grid item xs={12}>
+                    <Divider className={classes.divider} />
+                    <Typography variant="body2">Order by</Typography>
                   </Grid>
-                  <Grid item xs={9}>
-                    <FormControl>
+
+                  
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                      variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      onClick={this.handleClickOrderBy('')}
+                    >
+                      Recommend
+                    </Button>
+                  </Grid>
+
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
+                      variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
+                      onClick={this.handleClickOrderBy('rating')}
+                    >
+                      Rating
+                    </Button>
+                  </Grid>
+
+                  <Grid item>
+                    <Button
+                      fullWidth
+                      size="small"
+                      color={this.state.orderBy === 'new' ? 'primary' : 'default'}
+                      variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
+                      onClick={this.handleClickOrderBy('new')}
+                    >
+                      New
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Divider className={classes.divider} />
+                    
+                  </Grid>
+
+                  <Grid item>
+                    <Typography variant="body2">Event</Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <FormControl margin="none">
                       <Switch
                         color="primary"
                         checked={this.state.event}
-                        onChange={this.handleSwithEvent}
+                        onChange={this.handleToggleEventSwtich}
                         value="event"
                       />
                     </FormControl>
                   </Grid>
                 </Grid>
 
-                <Grid container justify="flex-end" alignItems="center">
+                <Divider className={classes.divider} />
+                <Grid container spacing={8} justify="flex-end" alignItems="center">
                   <Grid item>
-                    <Button variant="raised" color="primary" size="small" onClick={this.handleCloseFilterPopover}>
+                    <Button size="small" onClick={this.handleCloseFilterPopover}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button color="primary" size="small" onClick={this.handleSubmitFilter}>
                       Ok
                     </Button>
                   </Grid>
@@ -577,7 +542,6 @@ BusinessListPage.propTypes = {
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
   "getCategoriesList": PropTypes.func.isRequired,
-  "openLoginDialog": PropTypes.func.isRequired,
   "favorOperation": PropTypes.func.isRequired,
 };
 
@@ -595,6 +559,5 @@ export default connect(mapStateToProps, {
   getBusinessList, 
   clearBusinessList,
   getCategoriesList, 
-  openLoginDialog,
   favorOperation,
 })(withStyles(styles)(BusinessListPage));

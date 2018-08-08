@@ -14,7 +14,6 @@ import Button from '@material-ui/core/Button';
 import BusinessPanel from './BusinessPanel';
 
 // Actions
-import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 
@@ -66,7 +65,6 @@ class CategoryPanel extends PureComponent {
           isLoggedIn={this.props.isLoggedIn}
           userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
           favorOperation={this.props.favorOperation}
-          openLoginDialog={this.props.openLoginDialog}
           clearBusinessList={this.props.clearBusinessList}
         />
       </div>
@@ -83,7 +81,6 @@ CategoryPanel.propTypes = {
 
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
-  "openLoginDialog": PropTypes.func.isRequired,
   "favorOperation": PropTypes.func.isRequired,
 }
 
@@ -97,7 +94,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, { 
   getBusinessList, 
-  openLoginDialog,
   favorOperation, 
   clearBusinessList,
 })(withStyles(styles)(CategoryPanel));

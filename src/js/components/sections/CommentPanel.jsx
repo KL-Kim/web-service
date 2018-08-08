@@ -74,7 +74,6 @@ class CommentPanel extends Component {
                                             getNewComments={this.props.getNewComments}
                                             voteComment={this.props.voteComment}
                                             deleteComment={this.props.deleteComment}
-                                            openLoginDialog={this.props.openLoginDialog}
                                         />
                                     </Grid>
                                 ))
@@ -114,7 +113,6 @@ CommentPanel.propTypes = {
     "getNewComments": PropTypes.func,
     "voteComment": PropTypes.func,
     "deleteCommment": PropTypes.func,
-    "openLoginDialog": PropTypes.func,
 };
 
 export default withStyles(styles)(CommentPanel);

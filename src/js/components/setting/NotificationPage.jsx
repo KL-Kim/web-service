@@ -24,14 +24,10 @@ import FiberNew from '@material-ui/icons/FiberNew';
 import ClearAll from '@material-ui/icons/ClearAll';
 
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import MessageContent from '../utils/MessageContent';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
 import getElapsedTime from 'js/helpers/ElapsedTime';
-
-// Webstorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
 import {
@@ -62,11 +58,10 @@ class NotificationPage extends Component {
     super(props);
 
     this.state = {
-      list: [],
       dialogOpen: false,
       limit: 20,
       count: 0,
-      id: '',
+      userId: '',
       hasMore: false,
     };
 
@@ -79,35 +74,35 @@ class NotificationPage extends Component {
   }
 
   componentDidMount() {
-    const userId = this.props.user._id || loadFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
-
-    if (userId) {
+    if (this.props.userId) {
       this.props.getNotification({ 
-        uid: userId, 
+        uid: this.props.userId, 
         limit: this.state.limit 
       })
-        .then(response => {
-          if (response) {
-            this.setState({
-              userId,
-              list: response.list.slice(),
-              count: response.list.length,
-              hasMore: response.list.length < response.totalCount
-            });
-          }
-        });
+      .then(response => {
+        if (response) {
+          this.setState({
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
+          });
+        }
+      });
     }
   }
 
-  handleDelete = (id, index) => e =>  {
+  handleDelete = (id) => e =>  {
     this.props.deleteNotification(id)
       .then(response => {
+        return this.props.getNotification({ 
+          uid: this.props.userId, 
+          limit: this.state.count - 1,
+        });
+      })
+      .then(response => {
         if (response) {
-          const list = this.state.list.slice();
-          list.splice(index, 1);
-
           this.setState({
-            list: list,
+            count: response.list.length,
+            hasMore: response.list.length < response.totalCount
           });
         }
       });
@@ -126,15 +121,11 @@ class NotificationPage extends Component {
   }
 
   handleClearNotifications() {
-    this.props.clearReadNotifications(this.state.userId)
-      .then(response => {
-        if (response) {
-          this.setState({
-            dialogOpen: false,
-            list: [],
-          });
-        }
-      });
+    this.props.clearReadNotifications(this.props.userId);
+
+    this.setState({
+      dialogOpen: false,
+    });
   }
 
   handleClickListItem = item => e => {
@@ -159,7 +150,7 @@ class NotificationPage extends Component {
   loadMore() {
     if (this.state.hasMore) {
       this.props.getNotification({
-        uid: this.state.userId,
+        uid: this.props.userId,
         limit: this.state.limit,
         skip: this.state.count
       })
@@ -168,10 +159,8 @@ class NotificationPage extends Component {
           this.setState({
             count: this.state.count + response.list.length,
             hasMore: (this.state.count + response.list.length) < response.totalCount,
-            list: this.state.list.concat(response.list),
           });
         }
-
       });
     }
   }
@@ -180,7 +169,7 @@ class NotificationPage extends Component {
     const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div className={classes.root}>
           <Grid container className={classes.root} justify="space-between" alignItems="flex-end">
             <Grid item>
@@ -188,7 +177,6 @@ class NotificationPage extends Component {
             </Grid>
             <Grid item>
               <Button
-                variant="outlined"
                 color="primary"
                 onClick={this.handleConfirmationDialogOpen}
               >
@@ -201,7 +189,7 @@ class NotificationPage extends Component {
           <br />
 
           {
-            _.isEmpty(this.state.list)
+            _.isEmpty(this.props.list)
               ? <Typography align="center">None</Typography>
               : <div>
                   <List>
@@ -214,7 +202,7 @@ class NotificationPage extends Component {
                               </div>}
                     >
                       {
-                        this.state.list.map((item, index) =>
+                        this.props.list.map((item) =>
                           <Paper className={classes.itemWrapper} key={item._id}>
                             <ListItem className={classes.listItem} button onClick={this.handleClickListItem(item)}>
                               {
@@ -237,12 +225,13 @@ class NotificationPage extends Component {
                                     subjectUrl={item.subjectUrl}
                                     commentId={item.commentId}
                                     content={item.content}
+                                    showLess
                                   />
                                 }
                                 secondary={getElapsedTime(item.createdAt)}
                               />
                               <ListItemSecondaryAction>
-                                <IconButton aria-label="delete" onClick={this.handleDelete(item._id, index)}>
+                                <IconButton aria-label="delete" onClick={this.handleDelete(item._id)}>
                                   <DeleteIcon />
                                 </IconButton>
                               </ListItemSecondaryAction>
@@ -273,7 +262,7 @@ class NotificationPage extends Component {
             />
           </div>
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }
@@ -286,7 +275,7 @@ NotificationPage.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
-    "notificationList": state.notificationReducer.list,
+    "list": state.notificationReducer.list,
     "totalCount": state.notificationReducer.totalCount,
   };
 };

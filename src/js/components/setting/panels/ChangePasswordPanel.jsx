@@ -18,11 +18,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import emailTypes from 'js/constants/email.types';
 
 const styles = (theme) => ({
-  "heading": {
-    "fontSize": theme.typography.pxToRem(15),
-    "flexBasis": '40%',
-    "flexShrink": 0,
-  },
 });
 
 class ChangePasswordPanel extends Component {
@@ -56,7 +51,7 @@ class ChangePasswordPanel extends Component {
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Password</Typography>
+          <Typography variant="body2">Password</Typography>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails>

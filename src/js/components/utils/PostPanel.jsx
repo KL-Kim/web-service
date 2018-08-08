@@ -37,24 +37,27 @@ class PostPanel extends Component {
       <div className={classes.wrapper}>
         <Grid container justify="center">
           <Grid item xs={12}>
+            <Link to={"/post/s/" + this.props.post._id}>
               <Img src={image} className={classes.thumbnail} />
+            </Link>
           </Grid>
 
           <Grid item xs={12}>
-              <Typography variant="title" align="center">{post.title}</Typography>
-              <Typography variant="body2" align="center" gutterBottom>
-                <strong><ProperName  user={post.authorId} /></strong>
-              </Typography>
-              <Typography variant="body1" align="center" gutterBottom>{post.summary}</Typography>
-              <Grid container justify="center">
-                <Grid item>
-                  <Link to={"/post/s/" + this.props.post._id}>
-                    <Button color="primary">Read More</Button>
-                  </Link>
-                </Grid>
-              </Grid>
+            <Typography variant="title" align="center">{post.title}</Typography>
+            <Typography variant="body2" align="center" gutterBottom>
+              <strong><ProperName user={post.authorId} /></strong>
+            </Typography>
+            <Typography variant="body1" align="center" gutterBottom>{post.summary}</Typography>
 
+            <Grid container justify="center">
+              <Grid item>
+                <Link to={"/post/s/" + this.props.post._id}>
+                  <Button color="primary">Read More</Button>
+                </Link>
+              </Grid>
+            </Grid>
           </Grid>
+
         </Grid>
       </div>
     );

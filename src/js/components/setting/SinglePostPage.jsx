@@ -20,7 +20,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 
 // Custom Components
-import SettingContainer from '../layout/SettingContainer';
+import Container from '../layout/Container';
 import ConfirmationDialog from '../utils/ConfirmationDialog';
 
 // Actions
@@ -59,12 +59,6 @@ const styles = (theme) => ({
     "width": 150,
   },
   "progress": {
-    margin: theme.spacing.unit * 2,
-  },
-  "chip": {
-    margin: theme.spacing.unit,
-  },
-  "badge": {
     margin: theme.spacing.unit * 2,
   },
   "title": {
@@ -189,7 +183,7 @@ class SinglePostPage extends Component {
     const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
-      <SettingContainer>
+      <Container>
         <div>
           <Typography
             variant="display1"
@@ -309,7 +303,7 @@ class SinglePostPage extends Component {
             />
           </div>
         </div>
-      </SettingContainer>
+      </Container>
     );
   }
 }

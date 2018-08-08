@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 // Material UI Icons
 import ThumbUp from '@material-ui/icons/ThumbUp';
@@ -35,10 +35,10 @@ class ThumbButton extends Component {
     }
 
     return (
-      <IconButton onClick={this.props.handleSubmit} disabled={this.props.disabled}>
+      <Button onClick={this.props.handleSubmit} disabled={this.props.disabled}>
         {button}
         <span className={classes.iconNum}>{this.props.count}</span>
-      </IconButton>
+      </Button>
     );
   }
 }

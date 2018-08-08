@@ -104,8 +104,8 @@ class AvatarPanel extends Component {
 
     return (
       <Paper className={classes.paper}>
-        <Grid container spacing={0} justify="center" alignItems="center">
-          <Grid item xs={6}>
+        <Grid container justify="center" alignItems="center">
+          <Grid item xs={12} sm={6}>
             <Grid container justify="center">
               <Grid item>
                 {
@@ -132,7 +132,7 @@ class AvatarPanel extends Component {
             </Grid>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Grid container justify="center">
               <Grid item>
                 <Dropzone
@@ -148,7 +148,7 @@ class AvatarPanel extends Component {
           </Grid>
 
           <Grid item xs={12}>
-            <Divider className={classes.bigDivider}/>
+            <Divider className={classes.bigDivider} />
             <Grid container spacing={16} justify="center">
               <Grid item>
                 <Button
@@ -162,8 +162,6 @@ class AvatarPanel extends Component {
                     isFetching ? (<CircularProgress size={20} />) : 'Upload'
                   }
                 </Button>
-              </Grid>
-              <Grid item>
                 <Button
                   size="small"
                   onClick={this.handleClear}

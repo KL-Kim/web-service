@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Stars from 'react-stars';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -64,9 +65,11 @@ class ReviewCardAlt extends PureComponent {
 
   handleClickUpvoteIcon() {
     if (!this.props.isLoggedIn) {
-      this.props.openLoginDialog();
+      this.props.history.push("/signin", {
+        from: this.props.location.pathname,
+      });
 
-      return;
+      return ;
     }
 
     if (this.props.voteReview && this.props.userId && !this.props.isOwn) {
@@ -115,12 +118,6 @@ class ReviewCardAlt extends PureComponent {
             title={<Link to={"/profile/" + this.props.owner.username}>
                     <ProperName user={this.props.owner} />
                   </Link>}
-            action={<ThumbButton
-                      type="up"
-                      disabled={this.props.isOwn}
-                      count={this.state.upvoteCount}
-                      handleSubmit={this.handleClickUpvoteIcon}
-                    />}
           />
 
           <Link to={"/business/s/" + this.props.business.enName}>
@@ -141,9 +138,6 @@ class ReviewCardAlt extends PureComponent {
                 : null
             }
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
-            <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
-            <br />
-
             <div>
               {
                 this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : null
@@ -155,16 +149,34 @@ class ReviewCardAlt extends PureComponent {
                 this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : null
               }
             </div>
+            <br />
+
+            <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
           </CardContent>
 
           <CardActions>
-            {
-              this.props.deleteReview
-                ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
-                    <Delete />
-                  </IconButton>
-                : null
-            }
+            <Grid container justify="space-between">
+              <Grid item>
+                <ThumbButton
+                  type="up"
+                  disabled={this.props.isOwn}
+                  count={this.state.upvoteCount}
+                  handleSubmit={this.handleClickUpvoteIcon}
+                />
+              </Grid>
+
+              <Grid item>
+                {
+                  this.props.deleteReview
+                    ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
+                        <Delete />
+                      </IconButton>
+                    : null
+                }
+              </Grid>
+            </Grid>
+            
+            
           </CardActions>
         </Card>
 
@@ -210,10 +222,9 @@ ReviewCardAlt.propTypes = {
   "upvoteCount": PropTypes.number,
 
   // Fuctions
-  "openLoginDialog": PropTypes.func,
   "voteReview": PropTypes.func,
   "deleteReview": PropTypes.func,
   "getNewReviews": PropTypes.func,
 };
 
-export default withStyles(styles)(ReviewCardAlt);
+export default withRouter(withStyles(styles)(ReviewCardAlt));

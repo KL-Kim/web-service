@@ -26,17 +26,24 @@ import Error from '@material-ui/icons/Error';
 
 // Actions
 import { closeLoginDialog } from 'js/actions/app.actions';
-import { login } from '../../actions/user.actions';
+import { login } from 'js/actions/user.actions';
 
 // WebStorage
-import { loadFromStorage, saveToStorage } from '../../helpers/webStorage';
-import webStorageTypes from '../../constants/webStorage.types';
+import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types';
 
-import config from '../../config/config';
+import config from 'js/config/config';
 
 const styles = (theme) => ({
   "container": {
     padding: theme.spacing.unit * 8,
+
+    [theme.breakpoints.down('xs')]: {
+      "paddingTop": theme.spacing.unit * 4,
+      "paddingBottom": theme.spacing.unit * 4,
+      "paddingLeft": theme.spacing.unit,
+      "paddingRight": theme.spacing.unit,
+    }
   },
   "section": {
     marginBottom: theme.spacing.unit * 2,
@@ -172,7 +179,7 @@ class LoginDialog extends Component {
     const { classes } = this.props;
 
     if (!this.props.dialogOpen) {
-      return (<div></div>);
+      return null;
     }
 
     return (
@@ -200,7 +207,7 @@ class LoginDialog extends Component {
                       ? (<InputAdornment position="end">
                           <Error color="secondary"/>
                         </InputAdornment>)
-                      : ''
+                      : null
                   }
                 />
                 <FormHelperText id="email-helper-text" error>
@@ -224,7 +231,7 @@ class LoginDialog extends Component {
                       ? (<InputAdornment position="end">
                           <Error color="secondary" />
                         </InputAdornment>)
-                      : ''
+                      : null
                   }
                 />
                 <FormHelperText id="password-helper-text" error>
