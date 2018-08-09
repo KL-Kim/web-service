@@ -8,6 +8,8 @@ const webStorageTypes = {
   "WEB_STORAGE_SEARCH_HISTORY": 'searchHistory',
   "WEB_STORAGE_TAGS_LIST": "tags",
   "WEB_STORAGE_TAGS_UPDATED_AT": 'tagsUpdatedAt',
-}
+  "WEB_STORAGE_CITY": 'city',
+  "WEB_STORAGE_AREAS_LIST": 'areas',
+};
 
 export default webStorageTypes;

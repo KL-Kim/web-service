@@ -9,13 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
 import Switch from '@material-ui/core/Switch';
 import Popover from '@material-ui/core/Popover';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
@@ -35,6 +31,7 @@ import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 import { getCategoriesList } from 'js/actions/category.actions.js';
+import { getAreas } from 'js/actions/pca.actions.js';
 
 const styles = theme => ({
   "chip": {
@@ -77,10 +74,10 @@ class BusinessListPage extends Component {
     };
 
     this.loadMore = this.loadMore.bind(this);
-    this.handleClickTag = this.handleClickTag.bind(this);
-    this.handleClickArea = this.handleClickArea.bind(this);
-    this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
-    this.handleToggleEventSwtich = this.handleToggleEventSwtich.bind(this);
+    this.handleSelectTag = this.handleSelectTag.bind(this);
+    this.handleSelectArea = this.handleSelectArea.bind(this);
+    this.handleSelectSort = this.handleSelectSort.bind(this);
+    this.handleToggleEvent = this.handleToggleEvent.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
     this.handleSubmitFilter = this.handleSubmitFilter.bind(this);
@@ -214,7 +211,11 @@ class BusinessListPage extends Component {
     }
   }
 
-  handleClickTag = slug => e => {
+  handleSelectTag = slug => e => {
+    this.setState({
+      hasMore: false,
+    });
+
     if (this.state.tagSlug !== slug) {
       this.props.getBusinessList({
         tag: slug,
@@ -239,7 +240,7 @@ class BusinessListPage extends Component {
     }
   }
 
-  handleClickArea = item => e => {
+  handleSelectArea = item => e => {
     if (this.state.area.code !== item.code) {
       this.setState({
         area: item,
@@ -247,7 +248,7 @@ class BusinessListPage extends Component {
     }
   }
 
-  handleClickOrderBy = item => e => {
+  handleSelectSort = item => e => {
     if (item !== this.state.orderBy) {
       this.setState({
         orderBy: item,
@@ -255,7 +256,7 @@ class BusinessListPage extends Component {
     }
   }
 
-  handleToggleEventSwtich() {
+  handleToggleEvent() {
     this.setState({
       event: !this.state.event,
     });
@@ -274,8 +275,12 @@ class BusinessListPage extends Component {
   }
 
   handleSubmitFilter() {
+    this.setState({
+      hasMore: false,
+    });
+    
     this.props.getBusinessList({
-      limit: this.state.count,
+      limit: this.state.limit,
       category: this.state.category.enName,
       tag: this.state.tagSlug,
       area: this.state.area.code,
@@ -284,9 +289,28 @@ class BusinessListPage extends Component {
     })
     .then(response => {
       if (response) {
+        let tIndex;
+
+        const tags = [];
+        const tagsIds = [];
+
+        response.list.map(business => {
+          business.tags.map(tag => {
+            tIndex = tagsIds.indexOf(tag.code);
+
+            if (tIndex < 0) {
+              tagsIds.push(tag.code);
+              tags.push(tag);
+            }
+          });
+
+          return null;
+        });
+
         this.setState({
+          tags: [...tags],
           count: response.list.length,
-          hasMore: response.list.length < response.totalCount
+          //hasMore: response.list.length < response.totalCount
         });
       }
     });
@@ -297,7 +321,7 @@ class BusinessListPage extends Component {
   }
 
   loadMore() {
-    if (this.state.hasMore) {
+    if (this.state.hasMore && !this.props.isFetching) {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         category: this.state.category.enName,
@@ -308,7 +332,26 @@ class BusinessListPage extends Component {
       })
       .then(response => {
         if (response) {
+          let tIndex;
+  
+          const tags = [];
+          const tagsIds = [];
+  
+          response.list.map(business => {
+            business.tags.map(tag => {
+              tIndex = tagsIds.indexOf(tag.code);
+  
+              if (tIndex < 0) {
+                tagsIds.push(tag.code);
+                tags.push(tag);
+              }
+            });
+  
+            return null;
+          });
+  
           this.setState({
+            tags: [...tags],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount
           });
@@ -364,7 +407,7 @@ class BusinessListPage extends Component {
               round
               color={!this.state.tagSlug ? "primary" : "white"}
               className={classes.chip}
-              onClick={this.handleClickTag()}
+              onClick={this.handleSelectTag()}
             >
               All
             </CustomButton>
@@ -375,7 +418,7 @@ class BusinessListPage extends Component {
                   round
                   color={this.state.tagSlug === item.enName ? "primary" : "white"}
                   className={classes.chip}
-                  onClick={this.handleClickTag(item.enName)}
+                  onClick={this.handleSelectTag(item.enName)}
                 >
                   #{item.krName}
                 </CustomButton>
@@ -388,6 +431,7 @@ class BusinessListPage extends Component {
             hasMore={this.state.hasMore}
             loadMore={this.loadMore} 
             businessList={this.props.businessList}
+            isFetching={this.props.isFetching}
             totalCount={this.props.totalCount}
             isLoggedIn={this.props.isLoggedIn}
             userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
@@ -422,7 +466,7 @@ class BusinessListPage extends Component {
                       size="small"
                       color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
                       variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
-                      onClick={this.handleClickArea('')}
+                      onClick={this.handleSelectArea('')}
                     >
                       All
                     </Button>
@@ -436,7 +480,7 @@ class BusinessListPage extends Component {
                           size="small"
                           color={this.state.area.code === item.code ? 'primary' : 'default'}
                           variant={this.state.area.code === item.code ? 'outlined' : 'text'}
-                          onClick={this.handleClickArea(item)}
+                          onClick={this.handleSelectArea(item)}
                         >
                           {item.name}
                         </Button>
@@ -456,7 +500,7 @@ class BusinessListPage extends Component {
                       size="small"
                       color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
                       variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('')}
+                      onClick={this.handleSelectSort('')}
                     >
                       Recommend
                     </Button>
@@ -468,7 +512,7 @@ class BusinessListPage extends Component {
                       size="small"
                       color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
                       variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('rating')}
+                      onClick={this.handleSelectSort('rating')}
                     >
                       Rating
                     </Button>
@@ -480,7 +524,7 @@ class BusinessListPage extends Component {
                       size="small"
                       color={this.state.orderBy === 'new' ? 'primary' : 'default'}
                       variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('new')}
+                      onClick={this.handleSelectSort('new')}
                     >
                       New
                     </Button>
@@ -500,7 +544,7 @@ class BusinessListPage extends Component {
                       <Switch
                         color="primary"
                         checked={this.state.event}
-                        onChange={this.handleToggleEventSwtich}
+                        onChange={this.handleToggleEvent}
                         value="event"
                       />
                     </FormControl>
@@ -560,4 +604,5 @@ export default connect(mapStateToProps, {
   clearBusinessList,
   getCategoriesList, 
   favorOperation,
+  getAreas,
 })(withStyles(styles)(BusinessListPage));

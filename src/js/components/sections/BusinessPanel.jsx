@@ -72,7 +72,7 @@ class BusinessPanel extends Component {
                         loadMore={this.props.loadMore}
                         hasMore={this.props.hasMore}
                         loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
+                                    <CircularProgress size={30} />
                                 </div>}
                     >
                         <Grid container spacing={16} style={{ marginBottom: 12 }}>
@@ -126,6 +126,7 @@ BusinessPanel.defaultProps = {
 BusinessPanel.propTypes = {
     "classes": PropTypes.object.isRequired,
     "businessList": PropTypes.array.isRequired,
+    "isFetching": PropTypes.bool.isRequired,
     "hasMore": PropTypes.bool,
     "loadMore": PropTypes.func,
     "userId": PropTypes.string,

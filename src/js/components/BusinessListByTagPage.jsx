@@ -10,18 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Toolbar from '@material-ui/core/Toolbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
 import Popover from '@material-ui/core/Popover';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItem from '@material-ui/core/ListItem';
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -206,7 +197,7 @@ class BusinessListByTag extends Component {
 
   handleSubmitFilter() {
     this.props.getBusinessList({
-      limit: this.state.count,
+      limit: this.state.limit,
       category: this.state.categorySlug,
       tag: this.props.match.params.slug,
       area: this.state.area.code,
@@ -334,8 +325,6 @@ class BusinessListByTag extends Component {
               </Button>
             </Grid>
           </Grid>
-
-          <br/>
 
           {
             this.props.isFetching

@@ -4,14 +4,16 @@
 import pcaTypes from '../constants/pca.types';
 
 const initialState = {
-  cities: null,
-  areas: null,
+  provinces: [],
+  cities: [],
+  areas: [],
   isFetching: false,
   error: null,
 };
 
 const pcaReducer = (state = initialState, action) => {
   switch (action.type) {
+    case pcaTypes.GET_PROVINCES_REQUEST:
     case pcaTypes.GET_CITIES_REQUEST:
     case pcaTypes.GET_AREAS_REQUEST:
       return {
@@ -19,6 +21,7 @@ const pcaReducer = (state = initialState, action) => {
         isFetching: true,
       };
 
+    case pcaTypes.GET_PROVINCES_FAILURE:
     case pcaTypes.GET_CITIES_FAILURE:
     case pcaTypes.GET_AREAS_FAILURE:
       return {
@@ -27,6 +30,12 @@ const pcaReducer = (state = initialState, action) => {
         error: action.error,
       };
 
+    case pcaTypes.GET_PROVINCES_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        provinces: [...action.payload.provinces],
+      };
 
     case pcaTypes.GET_CITIES_SUCCESS:
       return {

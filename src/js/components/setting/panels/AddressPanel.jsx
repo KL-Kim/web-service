@@ -24,11 +24,8 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 // Material UI Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import Provinces from 'js/constants/provinces';
-
 // Actions
-import { getCities, getAreas } from 'js/actions/pca.actions';
-
+import { getProvinces, getCities, getAreas } from 'js/actions/pca.actions';
 
 const styles = (theme) => ({
   "secondaryHeading": {
@@ -51,6 +48,10 @@ class AddressPanel extends Component {
     this.handlePanelChange = this.handlePanelChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getProvinces();
   }
 
   handlePanelChange = panel => (event, expanded) => {
@@ -95,7 +96,7 @@ class AddressPanel extends Component {
 
     const id = this.props.user._id;
 
-    const province = _.find(Provinces, { 'code': this.state.provinceCode });
+    const province = _.find(this.props.provinces, { 'code': this.state.provinceCode });
     const city = _.find(this.props.cities, { 'code': this.state.cityCode });
     const area = _.find(this.props.areas, { 'code': this.state.areaCode });
 
@@ -154,9 +155,9 @@ class AddressPanel extends Component {
                 >
                   <option value="" />
                   {
-                    _.isEmpty(Provinces)
+                    _.isEmpty(this.props.provinces)
                       ? null
-                      : Provinces.map(p => (
+                      : this.props.provinces.map(p => (
                           <option key={p.code} value={p.code}>{p.cnName + ' ' + p.pinyin}</option>
                         ))
                   }
@@ -263,9 +264,10 @@ AddressPanel.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    "provinces": state.pcaReducer.provinces,
     "cities": state.pcaReducer.cities,
     "areas": state.pcaReducer.areas,
   };
 };
 
-export default connect(mapStateToProps, { getCities, getAreas })(withStyles(styles)(AddressPanel));
+export default connect(mapStateToProps, { getProvinces, getCities, getAreas })(withStyles(styles)(AddressPanel));

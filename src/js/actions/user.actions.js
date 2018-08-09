@@ -5,9 +5,9 @@ import _ from 'lodash';
 
 import * as AlertActions from './alert.actions';
 import * as NotificationActions from './notification.actions';
-import userTypes from '../constants/user.types';
-import webStorageTypes from '../constants/webStorage.types.js';
-import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
+import userTypes from 'js/constants/user.types';
+import webStorageTypes from 'js/constants/webStorage.types.js';
+import { saveToStorage, loadFromStorage, removeFromStorage } from 'js/helpers/webStorage';
 
 // API Methods
 import {
@@ -20,8 +20,8 @@ import {
   uploadProfilePhotoFetch,
   updateMobilePhoneFetch,
   faverOperationFetch,
-} from '../api/user.service';
-import { getToken, loginFetch, logoutFetch } from '../api/auth.service';
+} from 'js/api/user.service';
+import { getToken, loginFetch, logoutFetch } from 'js/api/auth.service';
 
 /**
  * Login
@@ -347,6 +347,10 @@ export const getMyself = (id) => {
         return user;
       }).catch(err => {
         dispatch(_getMeFailure(err));
+
+        removeFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
+        removeFromStorage(webStorageTypes.WEB_STORAGE_USER_KEY);
+        removeFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR);
 
         return ;
       });

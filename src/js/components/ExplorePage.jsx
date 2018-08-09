@@ -18,6 +18,7 @@ import CategorySection from './sections/CategorySection';
 
 const styles = theme => ({
   "section": {
+    marginTop: theme.spacing.unit * 4,
     marginBottom: theme.spacing.unit * 4,
   },
 });
@@ -30,7 +31,9 @@ class ExplorePage extends Component {
       <Container>
         <div>
           <CategorySection />
+
           <Divider className={classes.section} />
+          
           <TagSection />
         </div>
       </Container>

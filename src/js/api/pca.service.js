@@ -17,7 +17,7 @@ const pcaSerivceUri = {
  * @param {String} type - Province, City, Areas
  * @param {Number} code - Province code
  */
-export const getPcaFetch = (type, code) => {
+export const fetchPCA = (type, code) => {
   const options = {
     method: 'GET',
     headers: {
@@ -25,12 +25,22 @@ export const getPcaFetch = (type, code) => {
     },
   };
 
-  let url = pcaSerivceUri.apiUrl;
+  let url;
 
-  if (_.isEqual('city', type)) {
-    url = url + '/cities/' + code;
-  } else if (_.isEqual('area', type)) {
-    url = url + '/areas/' + code;
+  switch (type) {
+    case 'province':
+      url = pcaSerivceUri.apiUrl + '/provinces';
+      break;
+
+    case 'city':
+      url = pcaSerivceUri.apiUrl + '/cities/' + code;
+      break;
+
+    case 'area':
+      url = pcaSerivceUri.apiUrl + '/areas/' + code;
+  
+    default:
+      return Promise.reject(new Error("Type is missing"));
   }
 
   return fetch(url, options)

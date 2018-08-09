@@ -4,8 +4,57 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 import * as AlertActions from './alert.actions';
-import pcaTypes from '../constants/pca.types';
-import { getPcaFetch } from '../api/pca.service';
+import pcaTypes from 'js/constants/pca.types';
+import { fetchPCA } from 'js/api/pca.service';
+
+// WebStorage Related
+import { saveToStorage, loadFromStorage, removeFromStorage } from 'js/helpers/webStorage';
+import webStorageTypes from 'js/constants/webStorage.types.js';
+
+/**
+ * Get provinces
+ */
+export const getProvinces = (code) => {
+  const _getProvincesRequest = () => ({
+    "type": pcaTypes.GET_PROVINCES_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _getProvincesSuccess = (res) => ({
+    "type": pcaTypes.GET_PROVINCES_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {
+      provinces: res,
+    }
+  });
+
+  const _getProvincesFailure = (error) => ({
+    "type": pcaTypes.GET_PROVINCES_FAILURE,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    dispatch(_getProvincesRequest());
+
+    return fetchPCA('province')
+      .then(response => {
+        dispatch(_getProvincesSuccess(response));
+
+        return response;
+      })
+      .catch(err => {
+        dispatch(_getProvincesFailure(err));
+        dispatch(AlertActions.alertFailure(err.message));
+
+        return ;
+      });
+  }
+} 
 
 /**
  * Get cities
@@ -43,7 +92,7 @@ export const getCities = (code) => {
 
     dispatch(_requestGetCities());
 
-    return getPcaFetch('city', code)
+    return fetchPCA('city', code)
       .then(res => {
         dispatch(_getCitiesSuccess(res));
 
@@ -93,9 +142,11 @@ export const getAreas = (code) => {
 
     dispatch(_requestGetAreas());
 
-    return getPcaFetch('area', code)
+    return fetchPCA('area', code)
       .then(res => {
         dispatch(_getAreasSuccess(res));
+
+
 
         return res;
       }).catch(err => {
