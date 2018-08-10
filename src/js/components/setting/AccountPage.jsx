@@ -43,7 +43,7 @@ class AccountPage extends Component {
       <Container>
         <div className={classes.root}>
           <div className={classes.container}>
-            <Typography variant="display1" gutterBottom>Profile</Typography>
+            <Typography variant="title" gutterBottom>Account</Typography>
           
             <UsernamePanel
               user={user}
@@ -106,7 +106,7 @@ class AccountPage extends Component {
           </div>
 
           <div className={classes.container}>  
-            <Typography variant="display1" gutterBottom>
+            <Typography variant="title" gutterBottom>
               Photo
             </Typography>
           

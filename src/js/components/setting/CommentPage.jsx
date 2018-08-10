@@ -96,8 +96,7 @@ class CommentsPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
-          <Typography variant="display1">My Comments</Typography>
-          <br />
+          <Typography variant="title" gutterBottom>My Comments</Typography>
 
           <CommentPanel
             hasMore={this.state.hasMore}

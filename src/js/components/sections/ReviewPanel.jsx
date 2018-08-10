@@ -9,6 +9,16 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+
+// Material UI Icons
+import Edit from '@material-ui/icons/Edit'
 
 // Custom Components
 import ReviewCardAlt from './cards/ReviewCardAlt';
@@ -22,29 +32,54 @@ const styles = theme => ({
     },
     "mansoryItem": {
       width: "33.33%",
+      paddingLeft: theme.spacing.unit,
+      paddingRight: theme.spacing.unit,
+      marginBottom: theme.spacing.unit * 2,
+
       [theme.breakpoints.down('sm')]: {
         width: "50%",
       },
       [theme.breakpoints.down('xs')]: {
         width: "100%",
       },
-      paddingLeft: theme.spacing.unit,
-      paddingRight: theme.spacing.unit,
-      marginBottom: theme.spacing.unit * 2,
     },
+    "newReview": {
+      width: "33.33%",
+      paddingLeft: theme.spacing.unit *2,
+      paddingRight: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit * 2,
+
+      [theme.breakpoints.down('sm')]: {
+        width: "50%",
+      },
+      [theme.breakpoints.down('xs')]: {
+        width: "100%",
+      },
+    }
 });
 
 class ReviewPanel extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleFocus = this.handleFocus.bind(this)
+    }
+
     componentWillUnmount() {
         this.props.clearReviewsList();
+    }
+
+    handleFocus(e) {
+        if (this.props.onFocusAddNew) {
+            this.props.onFocusAddNew();
+            e.target.blur();
+        }
     }
 
     render() {
         const { classes, reviews } = this.props;
 
-        return _.isEmpty(reviews) 
-            ? <Typography align="center">None</Typography> 
-            : (
+        return (
                 <div>
                     <InfiniteScroll
                         pageStart={0}
@@ -57,29 +92,56 @@ class ReviewPanel extends Component {
                         <div className={classes.mansoryWrapper}>
                             <Masonry elementType={'div'}>
                                 {
-                                    reviews.map(review => (
-                                        <div key={review._id} className={classes.mansoryItem}>
-                                            <ReviewCardAlt
-                                                id={review._id}
-                                                owner={review.user}
-                                                business={review.business}
-                                                content={review.content}
-                                                rating={review.rating}
-                                                serviceGood={review.serviceGood}
-                                                envGood={review.envGood}
-                                                comeback={review.comeback}
-                                                upvoteCount={review.upvote.length}
+                                    this.props.addNew 
+                                        ?   <div className={classes.mansoryItem}>
+                                                <Card>
+                                                    <CardContent>
+                                                            <FormControl fullWidth>
+                                                                <Input
+                                                                    id="add-new"
+                                                                    type="text"
+                                                                    name="new"
+                                                                    placeholder="Any ideas?"
+                                                                    autoComplete="off"
+                                                                    onFocus={this.handleFocus}
+                                                                    startAdornment={
+                                                                        <InputAdornment position="start">
+                                                                            <Edit />
+                                                                        </InputAdornment>
+                                                                    }
+                                                                />
+                                                            </FormControl>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        : null
+                                }
+                                {
+                                    _.isEmpty(reviews) 
+                                        ?   null 
+                                        :   reviews.map(review => (
+                                                <div key={review._id} className={classes.mansoryItem}>
+                                                    <ReviewCardAlt
+                                                        id={review._id}
+                                                        owner={review.user}
+                                                        business={review.business}
+                                                        content={review.content}
+                                                        rating={review.rating}
+                                                        serviceGood={review.serviceGood}
+                                                        envGood={review.envGood}
+                                                        comeback={review.comeback}
+                                                        upvoteCount={review.upvote.length}
 
-                                                showBusinessName={this.props.showBusinessName}
-                                                userId={this.props.userId}
-                                                isLoggedIn={this.props.isLoggedIn}
-                                                isOwn={review.userId === this.props.userId}
+                                                        showBusinessName={this.props.showBusinessName}
+                                                        userId={this.props.userId}
+                                                        isLoggedIn={this.props.isLoggedIn}
+                                                        isOwn={review.userId === this.props.userId}
 
-                                                voteReview={this.props.voteReview}
-                                                deleteReview={this.props.deleteReview}
-                                                getNewReviews={this.props.getNewReviews}
-                                            />
-                                        </div>
+                                                        voteReview={this.props.voteReview}
+                                                        deleteReview={this.props.deleteReview}
+                                                        getNewReviews={this.props.getNewReviews}
+                                                    />
+                                                </div>
                                     ))
                                 }
                             </Masonry>
@@ -104,6 +166,7 @@ ReviewPanel.defaultProps = {
     "hasMore": false,
     "loadMore": () => {},
     "reviews": [],
+    "addNew": false,
 };
 
 ReviewPanel.propTypes = {
@@ -112,6 +175,7 @@ ReviewPanel.propTypes = {
     "isLoggedIn": PropTypes.bool.isRequired,
     "userId": PropTypes.string,
     "hasMore": PropTypes.bool.isRequired,
+    "addNew": PropTypes.bool,
 
     "loadMore": PropTypes.func.isRequired,
     "voteReview": PropTypes.func,

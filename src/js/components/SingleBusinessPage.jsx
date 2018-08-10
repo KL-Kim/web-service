@@ -33,22 +33,21 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 
-
 // Material UI Icons
-import Whatshot from '@material-ui/icons/Whatshot';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
-import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import Favorite from '@material-ui/icons/Favorite';
+import ErrorOutline from '@material-ui/icons/ErrorOutline';
 import LocalPhone from '@material-ui/icons/LocalPhone';
 import Place from '@material-ui/icons/Place';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
+import AddCircleOutlined from '@material-ui/icons/AddCircleOutlined';
 
 // Custom Components
 import Container from './layout/Container'
-import WriteReviewDialog from './utils/WriteReviewDialog';
-import ReportDialog from './utils/ReportDialog';
+import WriteReviewDialog from 'js/components/dialogs/WriteReviewDialog';
+import ReportDialog from 'js/components/dialogs/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
 import ReviewPanel from './sections/ReviewPanel';
 import Badge from 'js/components/utils/Badge';
@@ -364,20 +363,14 @@ class SingleBusinessPage extends Component {
   render() {
     const { classes, reviews } = this.props;
     const { business, review } = this.state;
-    if (_.isEmpty(business)) {
-      return (
-        <Container>
-          <div style={{ textAlign: 'center' }}>
-            <CircularProgress size={30} />
-          </div>
-        </Container>
-      )
-    }
-    const thumbnail = (_.isEmpty(business.thumbnailUri))
-                        ? image
-                        : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
 
-    return (
+    const thumbnail = _.isEmpty(business)
+                        ? null
+                        : _.isEmpty(business.thumbnailUri) 
+                            ? image 
+                            : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
+
+    return _.isEmpty(business) ? null : (
       <Container>
         <div>
           <Grid container spacing={16} style={{ marginBottom: 80 }}>
@@ -392,7 +385,7 @@ class SingleBusinessPage extends Component {
                       </Grid>
                       <Grid item>
                         <div>
-                          <Tooltip id="favor-icon" title="Add to Favor">
+                          <Tooltip id="favor-icon" title="AddCircleOutlined to Favor">
                             <IconButton
                               color={this.state.isMyFavor ? "secondary" : 'default'}
                               onClick={this.handleAddToFavor}
@@ -449,17 +442,17 @@ class SingleBusinessPage extends Component {
                     <br />
 
                     <div>
-                    {
-                      _.isEmpty(business.tags)
-                        ? null
-                        : business.tags.map(item => (
-                          <Chip
-                            key={item._id}
-                            className={classes.chip}
-                            label={item.krName}
-                            />
-                        ))
-                    }
+                      {
+                        _.isEmpty(business.tags)
+                          ? null
+                          : business.tags.map(item => (
+                            <Chip
+                              key={item._id}
+                              className={classes.chip}
+                              label={'#' + item.krName}
+                              />
+                          ))
+                      }
                     </div>
 
                   </Paper>
@@ -738,63 +731,50 @@ class SingleBusinessPage extends Component {
             </Grid>
           </Grid>
 
-          <Grid container>
-            <Grid item xs={12}>
-              <Typography variant="display1" align="center" id="reviews" gutterBottom>
+          <Grid container spacing={16} justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="title" align="center" id="reviews">
                 Reviews
               </Typography>
             </Grid>
 
-            <Grid item xs={12}>
-              <Grid container spacing={16} justify="space-between" alignItems="center">
-                <Grid item>
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    disableRipple
-                    buttonRef={node => {
-                      this.sortMenuAnchorEl = node;
-                    }}
-                    onClick={this.handleSortMenuPopoverOpen}
-                  >
-                    Sort By
-                    {
-                      this.state.sortMenuPopoverOpen
-                        ? <ArrowDropUp />
-                        : <ArrowDropDown />
-                    }
-                  </Button>
-                </Grid>
-
-                <Grid item>
-                  <Button
-                    variant="raised"
-                    color="primary"
-                    onClick={this.handleAddNewReviewDialogOpen}
-                  >
-                    new review
-                  </Button>
-                </Grid>
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
-              {
-                _.isEmpty(reviews)
-                  ? <Typography align="center">None</Typography>
-                  : <ReviewPanel
-                      reviews={reviews}
-                      totalCount={this.props.totalCount}
-                      hasMore={this.state.hasMore}
-                      loadMore={this.loadMore}
-                      clearReviewsList={this.props.clearReviewsList}
-                      isLoggedIn={this.props.isLoggedIn}
-                      userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                      voteReview={this.props.voteReview}
-                    />
-              }
+            <Grid item>
+              <Button
+                color="primary"
+                disableRipple
+                buttonRef={node => {
+                  this.sortMenuAnchorEl = node;
+                }}
+                onClick={this.handleSortMenuPopoverOpen}
+              >
+                Sort By
+                {
+                  this.state.sortMenuPopoverOpen
+                    ? <ArrowDropUp />
+                    : <ArrowDropDown />
+                }
+              </Button>
             </Grid>
           </Grid>
+
+          <div>
+            
+              
+                <ReviewPanel
+                    reviews={reviews}
+                    totalCount={this.props.totalCount}
+                    hasMore={this.state.hasMore}
+                    loadMore={this.loadMore}
+                    clearReviewsList={this.props.clearReviewsList}
+                    isLoggedIn={this.props.isLoggedIn}
+                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                    voteReview={this.props.voteReview}
+
+                    addNew
+                    onFocusAddNew={this.handleAddNewReviewDialogOpen}
+                  />
+            
+          </div>
 
           <div id="modal-container">
             <WriteReviewDialog
@@ -818,11 +798,11 @@ class SingleBusinessPage extends Component {
               onClose={this.handleSortMenuPopoverClose}
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
             >
               <MenuList role="menu" style={{ width: 150 }}>

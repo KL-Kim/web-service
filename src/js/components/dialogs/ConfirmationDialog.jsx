@@ -12,10 +12,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
 const styles = (theme) => ({
-  "button": {
-    "margin": theme.spacing.unit,
-    "width": 100,
-  },
 });
 
 class ConfirmationDialog extends Component {
@@ -33,7 +29,9 @@ class ConfirmationDialog extends Component {
     const { classes } = this.props;
 
     return (
-      <Dialog fullWidth
+      <Dialog 
+        fullWidth
+        maxWidth="sm"
         open={this.props.open}
         onClose={this.props.handleClose}
         aria-labelledby="alert-dialog-title"
@@ -42,17 +40,19 @@ class ConfirmationDialog extends Component {
         <DialogTitle id="alert-dialog-title">
           {this.props.title}
         </DialogTitle>
+
         <DialogContent>
           <DialogContentText id="alert-dialog-description" >
             {this.props.content}
           </DialogContentText>
         </DialogContent>
+
         <DialogActions>
-          <Button color="primary" variant="raised" onClick={this.handleSubmit} className={classes.button}>
-            Ok
-          </Button>
-          <Button color="primary" onClick={this.props.handleClose} className={classes.button}>
+          <Button size="small" onClick={this.props.handleClose}>
             Cancel
+          </Button>
+          <Button color="primary" size="small" onClick={this.handleSubmit}>
+            Ok
           </Button>
         </DialogActions>
       </Dialog>

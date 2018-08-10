@@ -30,15 +30,19 @@ import { getBusinessList, clearBusinessList } from 'js/actions/business.actions'
 import { getTagsList } from 'js/actions/tag.actions';
 
 const styles = theme => ({
-  "categoryButton": {
-    marginRight: theme.spacing.unit * 2,
+  "chipBar": {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
+  },
+  "chip": {
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
-    fontSize: '1rem',
-    minWidth: 100,
+    fontSize: theme.typography.pxToRem(16),
+    width: 'auto',
+    display: 'inline-block',
   },
   "popoverContainer": {
     maxWidth: 400,
@@ -325,41 +329,38 @@ class BusinessListByTag extends Component {
               </Button>
             </Grid>
           </Grid>
-
-          {
-            this.props.isFetching
-              ? <LinearProgress style={{ height: 1 }} />
-              : <Divider />
-          }
-          <br />
-
-          <HorizontalScrollBar>
-            <CustomButton
-              color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
-              round
-              className={classes.categoryButton}
-              onClick={this.handleClickCategory('')}
-            >
-              All
-            </CustomButton>
+          <Divider />
+          
+          <div className={classes.chipBar}>
             {
-              _.isEmpty(this.state.categories) ? ''
-                : this.state.categories.map((item) => (
-                  <CustomButton
-                    key={item._id}
-                    color={this.state.categorySlug === item.enName ? "primary" : 'white'}
-                    round
-                    className={classes.categoryButton}
-                    onClick={this.handleClickCategory(item.enName)}
-                  >
-                    {item.krName}
-                  </CustomButton>
-                ))
+              _.isEmpty(this.state.categories) 
+                ? null
+                : <HorizontalScrollBar>
+                    <CustomButton
+                      color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
+                      round
+                      className={classes.chip}
+                      onClick={this.handleClickCategory('')}
+                    >
+                      All
+                    </CustomButton>
+                    {
+                      this.state.categories.map((item) => (
+                          <CustomButton
+                            key={item._id}
+                            color={this.state.categorySlug === item.enName ? "primary" : 'white'}
+                            round
+                            className={classes.chip}
+                            onClick={this.handleClickCategory(item.enName)}
+                          >
+                            {item.krName}
+                          </CustomButton>
+                        ))
+                    }
+                  </HorizontalScrollBar>
             }
-          </HorizontalScrollBar>
-
-          <br />
-
+          </div>
+          
           <BusinessPanel
             hasMore={this.state.hasMore}
             loadMore={this.loadMore} 

@@ -87,8 +87,7 @@ class FavorPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div>
-          <Typography variant="display1">My Favorite Business</Typography>
-          <br />
+          <Typography variant="title" gutterBottom>My Favorite Business</Typography>
 
           <BusinessPanel 
             hasMore={this.state.hasMore}

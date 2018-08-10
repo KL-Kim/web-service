@@ -21,7 +21,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 
 // Custom Components
 import Container from '../layout/Container';
-import ConfirmationDialog from '../utils/ConfirmationDialog';
+import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 
 // Actions
 import { addNewPost, getSinglePost, updatePost, deletePost } from 'js/actions/blog.actions';
@@ -186,7 +186,7 @@ class SinglePostPage extends Component {
       <Container>
         <div>
           <Typography
-            variant="display1"
+            variant="title"
             className={classes.title}
             gutterBottom
           >

@@ -26,7 +26,7 @@ import ClearAll from '@material-ui/icons/ClearAll';
 // Custom Components
 import Container from '../layout/Container';
 import MessageContent from '../utils/MessageContent';
-import ConfirmationDialog from '../utils/ConfirmationDialog';
+import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import getElapsedTime from 'js/helpers/ElapsedTime';
 
 // Actions
@@ -173,7 +173,7 @@ class NotificationPage extends Component {
         <div className={classes.root}>
           <Grid container className={classes.root} justify="space-between" alignItems="flex-end">
             <Grid item>
-              <Typography variant="display1">Notifications</Typography>
+              <Typography variant="title">Notifications</Typography>
             </Grid>
             <Grid item>
               <Button

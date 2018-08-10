@@ -33,31 +33,29 @@ class PostCard extends Component {
     const { classes } = this.props;
 
     return (
-      <div>
-        <Card>
-          <CardMedia
-            image={image}
-            style={{ height: 180 }}
-          />
-          <CardContent>
-            <Typography variant="title">
-              {this.props.title}
-            </Typography>
-            <Typography variant="subheading" gutterBottom>
-              {_.toLower(this.props.status)}
-            </Typography>
-            <Typography variant="body1" gutterBottom>{this.props.summary}</Typography>
-          </CardContent>
+      <Card>
+        <CardMedia
+          image={image}
+          style={{ height: 180 }}
+        />
+        <CardContent>
+          <Typography variant="title">
+            {this.props.title}
+          </Typography>
+          <Typography variant="subheading" gutterBottom>
+            {_.toLower(this.props.status)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>{this.props.summary}</Typography>
+        </CardContent>
 
-          <CardActions>
-            <Link to={"/setting/post/s/" + this.props.id}>
-              <IconButton color="primary">
-                <Edit />
-              </IconButton>
-            </Link>
-          </CardActions>
-        </Card>
-      </div>
+        <CardActions>
+          <Link to={"/setting/post/s/" + this.props.id}>
+            <IconButton color="primary">
+              <Edit />
+            </IconButton>
+          </Link>
+        </CardActions>
+      </Card>
     );
   }
 }

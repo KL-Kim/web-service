@@ -14,7 +14,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
 // Actions
-import { alertClear } from '../../actions/alert.actions'
+import { alertClear } from 'js/actions/alert.actions'
 
 const styles = theme => ({
   error: {
@@ -69,15 +69,15 @@ class Alert extends Component {
 
     if (error) {
       style = classes.error;
-      messageContent =  (<div id={"message-" + this.props.id}>
+      messageContent =  <div id={"message-" + this.props.id}>
                           <ErrorIcon className={classes.icon} />
                           <span>{message}</span>
-                        </div>);
+                        </div>;
     } else {
-      messageContent =  (<div id={"message-" + this.props.id}>
+      messageContent =  <div id={"message-" + this.props.id}>
                           <CheckCircle className={classes.icon} />
                           <span>{message}</span>
-                        </div>);
+                        </div>;
     }
 
     return (

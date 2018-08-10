@@ -34,14 +34,17 @@ import { getCategoriesList } from 'js/actions/category.actions.js';
 import { getAreas } from 'js/actions/pca.actions.js';
 
 const styles = theme => ({
+  "chipBar": {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
+  },
   "chip": {
-    marginRight: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
-    fontSize: '1rem',
+    fontSize: theme.typography.pxToRem(16),
     width: 'auto',
     display: 'inline-block',
   },
@@ -393,39 +396,37 @@ class BusinessListPage extends Component {
               </Button>
             </Grid>
           </Grid>
-
-          {
-            this.props.isFetching
-              ? <LinearProgress style={{ height: 1 }} />
-              : <Divider />
-          }
-          <br />
-
+          <Divider />
           
-          <HorizontalScrollBar>
-            <CustomButton
-              round
-              color={!this.state.tagSlug ? "primary" : "white"}
-              className={classes.chip}
-              onClick={this.handleSelectTag()}
-            >
-              All
-            </CustomButton>
+          <div className={classes.chipBar}>
             {
-              this.state.tags.map(item => (
-                <CustomButton
-                  key={item._id}
-                  round
-                  color={this.state.tagSlug === item.enName ? "primary" : "white"}
-                  className={classes.chip}
-                  onClick={this.handleSelectTag(item.enName)}
-                >
-                  #{item.krName}
-                </CustomButton>
-              ))
+              _.isEmpty(this.state.tags) 
+                ? null
+                : <HorizontalScrollBar>
+                    <CustomButton
+                      round
+                      color={!this.state.tagSlug ? "primary" : "white"}
+                      className={classes.chip}
+                      onClick={this.handleSelectTag()}
+                    >
+                      All
+                    </CustomButton>
+                    {
+                      this.state.tags.map(item => (
+                          <CustomButton
+                            key={item._id}
+                            round
+                            color={this.state.tagSlug === item.enName ? "primary" : "white"}
+                            className={classes.chip}
+                            onClick={this.handleSelectTag(item.enName)}
+                          >
+                            #{item.krName}
+                          </CustomButton>
+                      ))
+                    }
+                  </HorizontalScrollBar>
             }
-          </HorizontalScrollBar>
-          <br />
+          </div>
 
           <BusinessPanel
             hasMore={this.state.hasMore}
@@ -493,7 +494,6 @@ class BusinessListPage extends Component {
                     <Typography variant="body2">Order by</Typography>
                   </Grid>
 
-                  
                   <Grid item>
                     <Button
                       fullWidth

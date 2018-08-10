@@ -3,24 +3,34 @@ import PropTypes from 'prop-types';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
+import Hidden from '@material-ui/core/Hidden';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+
+// Material UI Icons
+import Close from '@material-ui/icons/Close';
 
 const styles = theme => ({
-  "button": {
-    marginRight: theme.spacing.unit,
-  }
+  "appBar": {
+    position: 'relative',
+  },
+  "flex": {
+    flex: 1,
+  },
 });
 
 class ReportDialog extends Component {
@@ -62,19 +72,43 @@ class ReportDialog extends Component {
     const { classes } = this.props;
 
     return (
-      <Dialog fullWidth
+      <Dialog 
+        fullWidth
+        fullScreen={this.props.fullScreen}
+        scroll="paper"
         open={this.props.open}
         onClose={this.handleClose}
         aria-labelledby="report-dialog-title"
         aria-describedby="report-dialog-description"
       >
+        <Hidden smUp>
+          <AppBar className={classes.appBar} color="inherit">
+            <Toolbar>
+              <div className={classes.flex}>
+                <IconButton color="inherit" onClick={this.handleClose} >
+                  <Close />
+                </IconButton>
+              </div>
+              <Button
+                color="primary"
+                size="small"
+                disabled={!this.state.type}
+                onClick={this.hanldeSubmit}
+              >
+                Send
+              </Button>
+            </Toolbar>
+          </AppBar>
+        </Hidden>
+
         <DialogTitle id="report-dialog-title">
           Report
         </DialogTitle>
+
         <DialogContent>
           <Grid container>
             <Grid item xs={12}>
-              <FormControl fullWidth required>
+              <FormControl fullWidth required margin="normal">
                 <InputLabel htmlFor="contact">Problem (required)</InputLabel>
                 <Select
                   value={this.state.type}
@@ -95,7 +129,7 @@ class ReportDialog extends Component {
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl fullWidth required>
+              <FormControl fullWidth required margin="normal">
                 <InputLabel htmlFor="content">Detail</InputLabel>
                 <Input
                   type="text"
@@ -111,7 +145,7 @@ class ReportDialog extends Component {
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl fullWidth >
+              <FormControl fullWidth margin="normal">
                 <InputLabel htmlFor="contact">Contact</InputLabel>
                 <Input
                   type="text"
@@ -125,18 +159,22 @@ class ReportDialog extends Component {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button
-            variant="raised"
-            color="primary"
-            disabled={!this.state.type}
-            onClick={this.hanldeSubmit}>
-            Send
-          </Button>
-          <Button color="primary" onClick={this.handleClose}>
-            Cancel
-          </Button>
-        </DialogActions>
+
+        <Hidden xsDown>
+          <DialogActions>
+            <Button size="small" onClick={this.handleClose}>
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              size="small"
+              disabled={!this.state.type}
+              onClick={this.hanldeSubmit}
+            >
+              Send
+            </Button>
+          </DialogActions>
+        </Hidden>
       </Dialog>
     );
   }
@@ -149,4 +187,4 @@ ReportDialog.propTypes = {
   "handleClose": PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(ReportDialog);
+export default withMobileDialog()(withStyles(styles)(ReportDialog));

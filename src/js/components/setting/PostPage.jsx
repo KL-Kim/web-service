@@ -130,7 +130,7 @@ class PostPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div>
-          <Typography variant="display1" >My Posts</Typography>
+          <Typography variant="title" >My Posts</Typography>
           <br />
 
           <Grid container justify="space-between" alignItems="flex-end">

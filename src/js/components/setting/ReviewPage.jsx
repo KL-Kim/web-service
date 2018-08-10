@@ -89,7 +89,7 @@ class ReviewPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div>
-          <Typography variant="display1" gutterBottom>My Reviews</Typography>
+          <Typography variant="title" gutterBottom>My Reviews</Typography>
           
           <ReviewPanel
             reviews={reviews}

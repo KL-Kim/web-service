@@ -33,7 +33,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // Custom Components
 import Container from './layout/Container';
 import CommentPanel from './sections/CommentPanel';
-import ReportDialog from './utils/ReportDialog';
+import ReportDialog from 'js/components/dialogs/ReportDialog';
 import ProperName from './utils/ProperName';
 import ThumbButton from './utils/ThumbButton';
 

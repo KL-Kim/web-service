@@ -24,6 +24,7 @@ const styles = (theme) => ({
     bottom: -1,
     left: 0,
     right: 0,
+    zIndex: 1200,
   },
 });
 

@@ -55,14 +55,19 @@ const queries = [
   '삼계탕',
   '병원',
   '수리',
-]
+  '이따바',
+];
 
 const styles = theme => ({
+  "section": {
+    marginBottom: theme.spacing.unit * 4,
+  },
   "paper": {
     padding: theme.spacing.unit * 2,
   },
-  "section": {
-    marginBottom: theme.spacing.unit * 4,
+  "chipBar": {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
   },
   "chip": {
     marginRight: theme.spacing.unit,
@@ -70,8 +75,9 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 3,
     paddingRight: theme.spacing.unit * 3,
-    fontSize: '1rem',
-    minWidth: 100,
+    fontSize: theme.typography.pxToRem(16),
+    width: 'auto',
+    display: 'inline-block',
   },
   "popoverContainer": {
     maxWidth: 400,
@@ -377,54 +383,60 @@ class SearchPage extends Component {
           }
 
           {
-            _.isEmpty(this.state.searchCategoryResponse)
+            _.isEmpty(this.state.searchCategoryResponse) || _.isEmpty(this.state.search)
               ? null
               : <div className={classes.section}>
-                  <Typography variant="title" gutterBottom>Category: '{this.state.search}'</Typography>
-                  <Divider />
-                  {
-                    this.state.searchCategoryResponse.map((item) => (
-                      <Link to={"/business/category/" + item.enName} key={item._id}>
-                        <CustomButton
-                          round
-                          className={classes.chip}
-                        >
-                          {item.krName}
-                        </CustomButton>
-                      </Link>
-                    ))
-                  }
+                  <Paper className={classes.paper}>
+                    <Typography variant="title" gutterBottom>Category: '{this.state.search}'</Typography>
+                    <div>
+                      {
+                        this.state.searchCategoryResponse.map((item) => (
+                          <Link to={"/business/category/" + item.enName} key={item._id}>
+                            <CustomButton
+                              round
+                              className={classes.chip}
+                            >
+                              {item.krName}
+                            </CustomButton>
+                          </Link>
+                        ))
+                      }
+                    </div>
+                  </Paper>
                 </div>
           }
 
           {
-            _.isEmpty(this.state.searchTagResponse)
+            _.isEmpty(this.state.searchTagResponse) || _.isEmpty(this.state.search)
               ? null
               : <div className={classes.section}>
-                  <Typography variant="title" gutterBottom>Tag: '{this.state.search}'</Typography>
-                  <Divider />
-                  {
-                    this.state.searchTagResponse.map((item) => (
-                      <Link to={"/business/tag/" + item.enName} key={item._id}>
-                        <CustomButton
-                          round
-                          className={classes.chip}
-                        >
-                          #{item.krName}
-                        </CustomButton>
-                      </Link>
-                    ))
-                  }
+                  <Paper className={classes.paper}>
+                    <Typography variant="title" gutterBottom>Tag: '{this.state.search}'</Typography>
+                    <div>
+                      {
+                        this.state.searchTagResponse.map((item) => (
+                          <Link to={"/business/tag/" + item.enName} key={item._id}>
+                            <CustomButton
+                              round
+                              className={classes.chip}
+                            >
+                              #{item.krName}
+                            </CustomButton>
+                          </Link>
+                        ))
+                      }
+                    </div>
+                  </Paper>
                 </div>
           }
 
           {
-            _.isEmpty(businessList) || !this.state.search
+            _.isEmpty(businessList) || _.isEmpty(this.state.search)
               ? null
               : <div>
                   <Grid container justify="space-between" alignItems="flex-end">
                     <Grid item>
-                      <Typography variant="title">
+                      <Typography variant="title" gutterBottom>
                         Business: "{this.state.searchedQuery}"
                       </Typography>
                     </Grid>
@@ -446,43 +458,36 @@ class SearchPage extends Component {
                       </Button>
                     </Grid>
                   </Grid>
+                  <Divider />
+                  
+                  <div className={classes.chipBar}>
+                    <HorizontalScrollBar>
+                      <CustomButton
+                        color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
+                        round
+                        className={classes.chip}
+                        onClick={this.handleSelectCategory('')}
+                      >
+                        All
+                      </CustomButton>
 
-                  <br />
-                  {
-                    this.props.isFetching
-                      ? <LinearProgress style={{ height: 1 }} />
-                      : <Divider />
-                  }
-                  <br />
-
-                  <HorizontalScrollBar>
-                    <CustomButton
-                      color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
-                      round
-                      className={classes.chip}
-                      onClick={this.handleSelectCategory('')}
-                    >
-                      All
-                    </CustomButton>
-
-                    {
-                      _.isEmpty(this.state.categories)
-                        ? null
-                        : this.state.categories.map(item => (
-                          <CustomButton
-                            key={item._id}
-                            color={this.state.selectedCategory === item.enName ? "primary" : 'white'}
-                            round
-                            className={classes.chip}
-                            onClick={this.handleSelectCategory(item.enName)}
-                          >
-                            {item.krName}
-                          </CustomButton>
-                        ))
-                    }
-                  </HorizontalScrollBar>
-
-                  <br />
+                      {
+                        _.isEmpty(this.state.categories)
+                          ? null
+                          : this.state.categories.map(item => (
+                            <CustomButton
+                              key={item._id}
+                              color={this.state.selectedCategory === item.enName ? "primary" : 'white'}
+                              round
+                              className={classes.chip}
+                              onClick={this.handleSelectCategory(item.enName)}
+                            >
+                              {item.krName}
+                            </CustomButton>
+                          ))
+                      }
+                    </HorizontalScrollBar>
+                  </div>
 
                   <BusinessPanel
                     hasMore={this.state.hasMore}

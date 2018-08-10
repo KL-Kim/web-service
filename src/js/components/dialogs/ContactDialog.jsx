@@ -61,7 +61,8 @@ class ContactDialog extends Component {
     const { classes } = this.props;
 
     return (
-      <Dialog fullWidth
+      <Dialog 
+        fullWidth
         open={this.props.open}
         onClose={this.handleClose}
         aria-labelledby="contact-dialog-title"

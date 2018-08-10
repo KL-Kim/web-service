@@ -33,7 +33,7 @@ import Delete from '@material-ui/icons/Delete';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
 import ElapsedTime from 'js/helpers/ElapsedTime';
-import ConfirmationDialog from 'js/components/utils/ConfirmationDialog';
+import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import ThumbButton from 'js/components/utils/ThumbButton';
 
 const styles = theme => ({

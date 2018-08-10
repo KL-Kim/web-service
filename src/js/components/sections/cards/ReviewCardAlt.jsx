@@ -21,7 +21,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
-import ConfirmationDialog from 'js/components/utils/ConfirmationDialog';
+import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import ProperName from 'js/components/utils/ProperName';
 import Avatar from 'js/components/utils/Avatar';
 import ThumbButton from 'js/components/utils/ThumbButton';
