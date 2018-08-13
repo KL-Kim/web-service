@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 // Custom Components
 import Container from './layout/Container';
@@ -25,8 +25,7 @@ import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
 import { favorOperation } from 'js/actions/user.actions';
-import { getBusinessList, clearBusinessList } from '../actions/business.actions.js';
-import { Button } from '../../../node_modules/@material-ui/core';
+import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 
 const styles = theme => ({
   root: {
@@ -106,6 +105,7 @@ class HomePage extends Component {
             </Typography>
             <BusinessPanel
               businessList={this.props.businessList}
+              isFetching={this.props.isFetching}
               totalCount={this.props.totalCount}
               isLoggedIn={this.props.isLoggedIn}
               userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
@@ -115,6 +115,7 @@ class HomePage extends Component {
           </div>
         </main>
         <BottomNav />
+        <Footer />
         <DevTools />
         <Alert />
       </div>

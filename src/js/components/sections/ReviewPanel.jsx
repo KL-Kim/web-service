@@ -9,10 +9,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -59,12 +57,6 @@ const styles = theme => ({
 });
 
 class ReviewPanel extends Component {
-    constructor(props) {
-        super(props);
-
-        this.handleFocus = this.handleFocus.bind(this)
-    }
-
     componentWillUnmount() {
         this.props.clearReviewsList();
     }
@@ -103,7 +95,7 @@ class ReviewPanel extends Component {
                                                                     name="new"
                                                                     placeholder="Any ideas?"
                                                                     autoComplete="off"
-                                                                    onFocus={this.handleFocus}
+                                                                    onFocus={this.handleFocus.bind(this)}
                                                                     startAdornment={
                                                                         <InputAdornment position="start">
                                                                             <Edit />

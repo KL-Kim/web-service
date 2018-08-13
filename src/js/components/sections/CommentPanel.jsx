@@ -6,9 +6,16 @@ import InfiniteScroll from 'react-infinite-scroller';
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+
+// Material UI Icons
+import Edit from '@material-ui/icons/Edit'
 
 // Custom Components
 import CommentCard from './cards/CommentCard';
@@ -32,6 +39,13 @@ class CommentPanel extends Component {
         }
     }
 
+    handleFocus(e) {
+        if (this.props.onFocusAddNew) {
+            this.props.onFocusAddNew();
+            e.target.blur();
+        }
+    }
+ 
     render() {
         const { classes } = this.props;
 
@@ -39,6 +53,31 @@ class CommentPanel extends Component {
             ? <Typography align="center">None</Typography> 
             : (
                 <div>
+                    {
+                        this.props.addNew
+                            ?   <div className={classes.itemWrapper}>
+                                    <Card>
+                                        <CardContent>
+                                            <FormControl fullWidth>
+                                                <Input
+                                                    id="add-new"
+                                                    type="text"
+                                                    name="new"
+                                                    placeholder="Any ideas?"
+                                                    autoComplete="off"
+                                                    onFocus={this.handleFocus.bind(this)}
+                                                    startAdornment={
+                                                        <InputAdornment position="start">
+                                                            <Edit />
+                                                        </InputAdornment>
+                                                    }
+                                                />
+                                            </FormControl>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            :   null
+                    }
                     <InfiniteScroll
                         pageStart={0}
                         loadMore={this.props.loadMore}
@@ -66,6 +105,7 @@ class CommentPanel extends Component {
 
                                             isLoggedIn={this.props.isLoggedIn}
                                             userId={this.props.userId}
+                                            isVerified={this.props.isVerified}
                                             isOwn={comment.userId._id === this.props.userId}
                                             showReplyIcon={this.props.showReplyIcon}
                                             showDeleteIcon={this.props.showDeleteIcon}
@@ -103,7 +143,8 @@ CommentPanel.defaultProps = {
 CommentPanel.propTypes = {
     "classes": PropTypes.object.isRequired,
     "isLoggedIn": PropTypes.bool.isRequired,
-    "userId": PropTypes.string,
+    "userId": PropTypes.string.isRequired,
+    "isVerified": PropTypes.bool.isRequired,
     "hasMore": PropTypes.bool.isRequired,
     "commentsList": PropTypes.array.isRequired,
     "totalCount": PropTypes.number,

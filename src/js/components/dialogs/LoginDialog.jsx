@@ -7,9 +7,11 @@ import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -19,14 +21,17 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
+import Hidden from '@material-ui/core/Hidden';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 // Material UI Icons
 import Error from '@material-ui/icons/Error';
+import Close from '@material-ui/icons/Close';
 
 // Actions
-import { closeLoginDialog } from 'js/actions/app.actions';
 import { login } from 'js/actions/user.actions';
+
 
 // WebStorage
 import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
@@ -35,6 +40,12 @@ import webStorageTypes from 'js/constants/webStorage.types';
 import config from 'js/config/config';
 
 const styles = (theme) => ({
+  "appBar": {
+    position: 'relative',
+  },
+  "flex": {
+    flex: 1,
+  },
   "container": {
     padding: theme.spacing.unit * 8,
 
@@ -73,10 +84,7 @@ class LoginDialog extends Component {
     this.isValidEmail = this.isValidEmail.bind(this);
     this.isValidPassword = this.isValidPassword.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
-  }
-
-  componentWillUnmount() {
-    this.props.closeLoginDialog();
+    this.handleClose = this.handleClose.bind(this);
   }
 
   handleChange(e) {
@@ -163,7 +171,7 @@ class LoginDialog extends Component {
       this.props.login(this.state.email, this.state.password)
         .then(response => {
           if (response) {
-            this.props.closeLoginDialog();
+            this.props.onClose();
           }
           else if (this.props.error) {
             this.setState({
@@ -175,20 +183,45 @@ class LoginDialog extends Component {
     }
   }
 
+  handleClose() {
+    this.setState({
+      "email": '',
+      "emailError": false,
+      "emailErrorMessage": '',
+
+      "password": '',
+      "passwordError": false,
+      "passwordErrorMessage": '',
+    });
+
+    this.props.onClose();
+  }
+
   render() {
     const { classes } = this.props;
 
-    if (!this.props.dialogOpen) {
-      return null;
-    }
-
     return (
-      <Dialog fullWidth
-        open={this.props.dialogOpen}
-        onClose={this.props.closeLoginDialog}
+      <Dialog 
+        fullWidth
+        fullScreen={this.props.fullScreen}
+        open={this.props.open}
+        onClose={this.handleClose}
         aria-labelledby="login-dialog-title"
         aria-describedby="login-dialog-description"
       >
+        
+        <Hidden smUp>
+          <AppBar className={classes.appBar} color="inherit">
+            <Toolbar>
+              <div className={classes.flex}>
+                <IconButton color="inherit" onClick={this.handleClose} >
+                  <Close />
+                </IconButton>
+              </div>
+            </Toolbar>
+          </AppBar>
+        </Hidden>
+
         <DialogContent>
           <div className={classes.container}>
             <Typography variant="display1" align="center">Sign In</Typography>
@@ -254,7 +287,7 @@ class LoginDialog extends Component {
                   {
                     this.props.isFetching
                       ? (<CircularProgress size={20} />)
-                      : this.state.waitUntil ? "Wait " + this.state.waitUntil : ('Sign in')
+                      : this.state.waitUntil ? "Wait " + this.state.waitUntil : 'Sign in'
                   }
                 </Button>
               </div>
@@ -263,7 +296,7 @@ class LoginDialog extends Component {
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <Link to="/forget-password">
-                  <Button size="small" color="primary">Forget your password?</Button>
+                  <Button size="small" color="primary">Forget password?</Button>
                 </Link>
               </Grid>
               <Grid item>
@@ -280,7 +313,10 @@ class LoginDialog extends Component {
 }
 
 LoginDialog.propTypes = {
+  "fullScreen": PropTypes.bool.isRequired,
   "classes": PropTypes.object.isRequired,
+  "open": PropTypes.bool.isRequired,
+  "onClose": PropTypes.func.isRequired,
   "isFetching": PropTypes.bool.isRequired,
   "error": PropTypes.object,
   "errorMessage": PropTypes.string,
@@ -288,11 +324,10 @@ LoginDialog.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    dialogOpen: state.appReducer.loginDialogOpen,
     isFetching: state.userReducer.isFetching,
     error: state.userReducer.error,
     errorMessage: state.alertReducer.message,
   };
 };
 
-export default connect(mapStateToProps, { closeLoginDialog, login })(withStyles(styles)(LoginDialog));
+export default connect(mapStateToProps, { login })((withStyles(styles)(withMobileDialog()(LoginDialog))));

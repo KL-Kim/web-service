@@ -18,10 +18,15 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+
+// Custom Components
+import LoginDialog from './LoginDialog';
+import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
 import AddPhoto from '@material-ui/icons/AddAPhoto';
@@ -106,7 +111,7 @@ class WriteReviewDialog extends Component {
 
   onDropImages(acceptedFiles) {
     this.setState({
-      images:  this.state.images.concat(acceptedFiles)
+      images:  this.state.images.concat(acceptedFiles),
     });
   }
 
@@ -119,22 +124,21 @@ class WriteReviewDialog extends Component {
       "envGood": false,
       "comeback": false,
     });
-    this.props.handleClose();
+    this.props.onClose();
   }
 
   handleSubmit() {
-    if (this.props.user && !this.props.readOnly) {
-
+    if (this.props.addNewReview && !_.isEmpety(this.props.business) && this.props.userId && !this.props.readOnly) {
       this.props.addNewReview({
-        uid: this.props.user._id,
+        bid: this.props.business._id,
+        uid: this.props.userId,
         rating: this.state.rating,
         content: this.state.content,
         serviceGood: this.state.serviceGood,
         envGood: this.state.envGood,
         comeback: this.state.comeback,
-        bid: this.props.business._id,
       })
-      .then(response => {
+      .then(() => {
         this.handleClose();
         this.props.getNewReviews();
       });
@@ -144,29 +148,173 @@ class WriteReviewDialog extends Component {
   render() {
     const { classes, business } = this.props;
 
-    return (
-      <Dialog 
-        fullWidth
-        fullScreen={this.props.fullScreen}
-        scroll="paper"
-        open={this.props.open}
-        onClose={this.handleClose}
-        aria-labelledby="review-dialog-title"
-        aria-describedby="review-dialog-description"
-      >
-        <Hidden smUp>
-          <AppBar className={classes.appBar} color="inherit">
-            <Toolbar>
-              <div className={classes.flex}>
-                <IconButton color="inherit" onClick={this.handleClose} >
-                  <Close />
-                </IconButton>
-              </div>
+    if (!this.props.isLoggedIn) {
+      return <LoginDialog open={this.props.open} onClose={this.props.onClose} />;
+    } 
+    else if (!this.props.isVerified) {
+      return <VerifyDialog open={this.props.open} onClose={this.props.onClose} />; 
+    } 
+    else {
+      return (
+        <Dialog 
+          fullWidth
+          fullScreen={this.props.fullScreen}
+          scroll="paper"
+          open={this.props.open}
+          onClose={this.handleClose}
+          aria-labelledby="review-dialog-title"
+          aria-describedby="review-dialog-description"
+        >
+          <Hidden smUp>
+            <AppBar className={classes.appBar} color="inherit">
+              <Toolbar>
+                <div className={classes.flex}>
+                  <IconButton color="inherit" onClick={this.handleClose} >
+                    <Close />
+                  </IconButton>
+                </div>
+                {
+                  this.props.readOnly 
+                    ? null
+                    : <Button 
+                        color="primary"
+                        size="small"
+                        disabled={!this.state.rating} 
+                        onClick={this.handleSubmit}
+                      >
+                        Save
+                      </Button>
+                }
+              </Toolbar>
+            </AppBar>
+          </Hidden>
+
+          <DialogTitle id="review-dialog-title">
+            <Link to={"/business/s/" + this.props.business.enName}>
+              "{business.krName}"
+            </Link>
+            에 대한 리뷰
+          </DialogTitle>
+
+          <DialogContent>
+            <div className={classes.section}>
+              <Stars count={5} size={24} half={false} value={this.state.rating} onChange={this.handleStarChange} edit={!this.props.readOnly} />
+            </div>
+            
+            <Grid container spacing={16} className={classes.section}>
+              <Grid item xs="auto" sm={3}>
+                <Tooltip id="tooltip-service" title="서비스가 좋은가요?" placement="bottom">
+                  <Button 
+                    fullWidth
+                    size="small"
+                    color="primary"
+                    disabled={this.props.readOnly}
+                    className={classes.button}
+                    variant={this.state.serviceGood ? 'raised' : 'outlined'}
+                    onClick={this.handleClick("serviceGood")}
+                  >
+                    서비스 {this.state.serviceGood ? '+1' : ''}
+                  </Button>
+                </Tooltip>
+              </Grid>
+
+              <Grid item xs="auto" sm={3}>
+                <Tooltip id="tooltip-env" title="환경이 좋은가요?" placement="bottom">
+                  <Button size="small"
+                    fullWidth
+                    disabled={this.props.readOnly}
+                    color="primary"
+                    className={classes.button}
+                    variant={this.state.envGood ? 'raised' : 'outlined'}
+                    onClick={this.handleClick("envGood")}
+                  >
+                    환경 {this.state.envGood ? '+1' : ''}
+                  </Button>
+                </Tooltip>
+              </Grid>
+
+              <Grid item xs="auto" sm={3}>
+                <Tooltip id="tooltip-back" title="다시 오실 건가요?" placement="bottom">
+                  <Button 
+                    size="small"
+                    fullWidth
+                    disabled={this.props.readOnly}
+                    color="primary"
+                    className={classes.button}
+                    variant={this.state.comeback ? 'raised' : 'outlined'}
+                    onClick={this.handleClick("comeback")}
+                  >
+                    다시 오고 싶다 {this.state.comeback ? '+1' : ''}
+                  </Button>
+                </Tooltip>
+              </Grid>
+            </Grid>
+
+            <div className={classes.section}>
+              <FormControl fullWidth>
+                <Input
+                  type="text"
+                  id="content"
+                  disabled={this.props.readOnly}
+                  placeholder="Did you have a good time?"
+                  multiline
+                  rows={7}
+                  name="content"
+                  value={this.state.content}
+                  onChange={this.handleChange}
+                />
+              </FormControl>
+            </div>
+
+            <br />
+              
+            <Grid container spacing={16}>
+              {
+                _.isEmpty(this.state.images) 
+                  ? null
+                  : this.state.images.map(image =>
+                      <Grid item xs={4} sm={3}>
+                        <Img className={classes.image} src={image.preview} />
+                      </Grid>
+                  )
+              }
+              {
+                this.props.readOnly 
+                  ? null
+                  : <Grid item xs={4} sm={3}>
+                      <Dropzone
+                        multiple={true}
+                        accept="image/*"
+                        onDrop={this.onDropImages}
+                        className={classes.dropZone}
+                      >
+                        <AddPhoto style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          width: 50,
+                          height: 50,
+                          transform: 'translate(-50%, -50%)',
+                          opacity: 0.5,
+                          }}
+                        />
+                      </Dropzone>
+                    </Grid>
+              }
+
+            </Grid>
+          </DialogContent>
+
+          <Hidden xsDown>
+            <DialogActions>
+              <Button size="small" onClick={this.handleClose}>
+                {this.props.readOnly ? 'Ok' : 'Cancel'}
+              </Button>
               {
                 this.props.readOnly 
                   ? null
                   : <Button 
-                      color="primary"
+                      color="primary" 
                       size="small"
                       disabled={!this.state.rating} 
                       onClick={this.handleSubmit}
@@ -174,162 +322,28 @@ class WriteReviewDialog extends Component {
                       Save
                     </Button>
               }
-            </Toolbar>
-          </AppBar>
-        </Hidden>
-
-        <DialogTitle id="review-dialog-title">
-          <Link to={"/business/s/" + this.props.business.enName}>
-            "{business.krName}"
-          </Link>
-          에 대한 리뷰
-        </DialogTitle>
-
-        <DialogContent>
-          <div className={classes.section}>
-            <Stars count={5} size={24} half={false} value={this.state.rating} onChange={this.handleStarChange} edit={!this.props.readOnly} />
-          </div>
-          
-          <Grid container spacing={16} className={classes.section}>
-            <Grid item xs="auto" sm={3}>
-              <Tooltip id="tooltip-service" title="서비스가 좋은가요?" placement="bottom">
-                <Button 
-                  fullWidth
-                  size="small"
-                  color="primary"
-                  disabled={this.props.readOnly}
-                  className={classes.button}
-                  variant={this.state.serviceGood ? 'raised' : 'outlined'}
-                  onClick={this.handleClick("serviceGood")}
-                >
-                  서비스 {this.state.serviceGood ? '+1' : ''}
-                </Button>
-              </Tooltip>
-            </Grid>
-
-            <Grid item xs="auto" sm={3}>
-              <Tooltip id="tooltip-env" title="환경이 좋은가요?" placement="bottom">
-                <Button size="small"
-                  fullWidth
-                  disabled={this.props.readOnly}
-                  color="primary"
-                  className={classes.button}
-                  variant={this.state.envGood ? 'raised' : 'outlined'}
-                  onClick={this.handleClick("envGood")}
-                >
-                  환경 {this.state.envGood ? '+1' : ''}
-                </Button>
-              </Tooltip>
-            </Grid>
-
-            <Grid item xs="auto" sm={3}>
-              <Tooltip id="tooltip-back" title="다시 오실 건가요?" placement="bottom">
-                <Button 
-                  size="small"
-                  fullWidth
-                  disabled={this.props.readOnly}
-                  color="primary"
-                  className={classes.button}
-                  variant={this.state.comeback ? 'raised' : 'outlined'}
-                  onClick={this.handleClick("comeback")}
-                >
-                  다시 오고 싶다 {this.state.comeback ? '+1' : ''}
-                </Button>
-              </Tooltip>
-            </Grid>
-          </Grid>
-
-          <div className={classes.section}>
-            <FormControl fullWidth>
-              <Input
-                type="text"
-                id="content"
-                disabled={this.props.readOnly}
-                placeholder="Did you have a good time?"
-                multiline
-                rows={7}
-                name="content"
-                value={this.state.content}
-                onChange={this.handleChange}
-              />
-            </FormControl>
-          </div>
-
-          <br />
-            
-          <Grid container spacing={16}>
-            {
-              _.isEmpty(this.state.images) 
-                ? null
-                : this.state.images.map(image =>
-                    <Grid item xs={4} sm={3}>
-                      <Img className={classes.image} src={image.preview} />
-                    </Grid>
-                )
-            }
-            {
-              this.props.readOnly 
-                ? null
-                : <Grid item xs={4} sm={3}>
-                    <Dropzone
-                      multiple={true}
-                      accept="image/*"
-                      onDrop={this.onDropImages}
-                      className={classes.dropZone}
-                    >
-                      <AddPhoto style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        width: 50,
-                        height: 50,
-                        transform: 'translate(-50%, -50%)',
-                        opacity: 0.5,
-                        }}
-                      />
-                    </Dropzone>
-                  </Grid>
-            }
-
-          </Grid>
-        </DialogContent>
-
-        <Hidden xsDown>
-          <DialogActions>
-            <Button size="small" onClick={this.handleClose}>
-              {this.props.readOnly ? 'Done' : 'Cancel'}
-            </Button>
-            {
-              this.props.readOnly 
-                ? null
-                : <Button 
-                    color="primary" 
-                    size="small"
-                    disabled={!this.state.rating} 
-                    onClick={this.handleSubmit}
-                  >
-                    Save
-                  </Button>
-            }
-          </DialogActions>
-        </Hidden>
-      </Dialog>
-    );
+            </DialogActions>
+          </Hidden>
+        </Dialog>
+      );
+    }
   }
 }
 
 WriteReviewDialog.propTypes = {
+  "fullScreen": PropTypes.bool.isRequired,
   "classes": PropTypes.object.isRequired,
-  "readOnly": PropTypes.bool,
   "open": PropTypes.bool.isRequired,
+  "onClose": PropTypes.func.isRequired,
+
+  "isLoggedIn": PropTypes.object.isRequired,
+  "userId": PropTypes.string.isRequired,
+  "readOnly": PropTypes.bool,
   "business": PropTypes.object.isRequired,
-  "user": PropTypes.object.isRequired,
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
-  "handleClose": PropTypes.func.isRequired,
-  "handleSubmit": PropTypes.func,
-  "getNewReviews": PropTypes.func,
-}
+  "getNewReviews": PropTypes.func.isRequired,
+};
 
-export default withMobileDialog()(withStyles(styles)(WriteReviewDialog));
+export default withStyles(styles)(withMobileDialog()(WriteReviewDialog));

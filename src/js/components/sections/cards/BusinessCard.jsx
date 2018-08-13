@@ -181,4 +181,4 @@ BusinessCard.propTypes = {
   "favorOperation": PropTypes.func,
 };
 
-export default withRouter(withStyles(styles)(BusinessCard));
+export default withStyles(styles)(BusinessCard);

@@ -25,11 +25,10 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardHeader from '@material-ui/core/CardHeader';
 
 // Material UI Icons
-import ThumbUp from '@material-ui/icons/ThumbUp';
-import ThumbDown from '@material-ui/icons/ThumbDown';
 import Delete from '@material-ui/icons/Delete';
 
 // Custom Components
+import WriteCommentDialog from 'js/components/dialogs/WriteCommentDialog';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
 import ElapsedTime from 'js/helpers/ElapsedTime';
@@ -59,7 +58,6 @@ class CommentCard extends Component {
     this.handleCloseReplyDialog = this.handleCloseReplyDialog.bind(this);
     this.handleOpenDeleteDialog = this.handleOpenDeleteDialog.bind(this);
     this.handleCloseDeleteDialog = this.handleCloseDeleteDialog.bind(this);
-    this.handleSubmitComment = this.handleSubmitComment.bind(this);
     this.handleDeleteComment = this.handleDeleteComment.bind(this);
     this.handleVoteComment = this.handleVoteComment.bind(this);
   }
@@ -73,12 +71,6 @@ class CommentCard extends Component {
   }
 
   handleOpenReplyDialog() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-    }
-
     this.setState({
       "replyDialogOpen": true,
     });
@@ -91,12 +83,6 @@ class CommentCard extends Component {
   }
 
   handleOpenDeleteDialog() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-    }
-
     this.setState({
       "deleteDialogOpen": true,
     });
@@ -108,45 +94,11 @@ class CommentCard extends Component {
     });
   }
 
-  handleSubmitComment() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-    }
-
-    if (this.props.addNewComment && this.props.userId && this.props.postId) {
-      this.props.addNewComment({
-        userId: this.props.userId,
-        postId: this.props.postId,
-        parentId: this.props.commentId,
-        content: this.state.content,
-        replyToUser: this.props.owner._id,
-      })
-      .then(response => {
-        if (response) {
-          return this.props.getNewComments();
-        }
-
-        return ;
-      })
-      .then(response => {
-        this.setState({
-          "replyDialogOpen": false,
-          "content": "",
-        })
-      });
-    }
-  }
-
   handleVoteComment = (vote) => e => {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-    }
-
-    if (this.props.voteComment && this.props.userId && this.props.commentId) {
+    if (!this.props.isLoggedIn || !this.props.isVerified) {
+      this.handleOpenReplyDialog();
+    } 
+    else if (this.props.voteComment && this.props.userId && this.props.commentId) {
       this.props.voteComment(this.props.commentId, {
         uid: this.props.userId,
         postTitle: this.props.postTitle,
@@ -164,13 +116,10 @@ class CommentCard extends Component {
   }
 
   handleDeleteComment() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
+    if (!this.props.isLoggedIn || !this.props.isVerified) {
+      this.handleOpenReplyDialog();
     }
-
-    if (this.props.deleteComment && this.props.commentId && this.props.userId) {
+    else if (this.props.deleteComment && this.props.commentId && this.props.userId) {
       this.props.deleteComment(this.props.commentId, this.props.userId)
         .then(response => {
           if (response) {
@@ -267,38 +216,19 @@ class CommentCard extends Component {
                   operation={this.handleDeleteComment}
                   handleClose={this.handleCloseDeleteDialog}
                 />
-              : <Dialog fullWidth
-                  open={this.state.replyDialogOpen}
-                  onClose={this.handleCloseReplyDialog}
-                  aria-labelledby="reply-dialog-title"
-                  aria-describedby="reply-dialog-description"
-                >
-                  <DialogTitle id="reply-dialog-title">
-                    Reply to <ProperName user={this.props.owner} />
-                  </DialogTitle>
-                  <DialogContent id="reply-dialog-description">
-                    <FormControl fullWidth required>
-                      <InputLabel htmlFor="content">Content</InputLabel>
-                      <Input
-                        type="text"
-                        id="content"
-                        multiline
-                        rows={10}
-                        name="content"
-                        value={this.state.content}
-                        onChange={this.handleChange}
-                      />
-                    </FormControl>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                      Save
-                    </Button>
-                    <Button color="primary" onClick={this.handleCloseReplyDialog}>
-                      Cancel
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+              : <WriteCommentDialog 
+                  open={this.state.replyDialogOpen} 
+                  onClose={this.handleCloseReplyDialog} 
+
+                  isLoggedIn={this.props.isLoggedIn}
+                  userId={this.props.userId}
+                  isVerified={this.props.isVerified}
+                  postId={this.props.postId}
+                  parentId={this.props.commentId}
+                  replyToUser={this.props.owner._id}
+                  addNewComment={this.props.addNewComment}
+                  getNewComments={this.props.getNewComments}
+                />
           }
         </div>
       </div>
@@ -312,7 +242,7 @@ CommentCard.defaultProps = {
   "isOwn": false,
   "showReplyIcon": false,
   "showDeleteIcon": false,
-}
+};
 
 CommentCard.propTypes = {
   "classes": PropTypes.object.isRequired,
@@ -329,7 +259,8 @@ CommentCard.propTypes = {
   "createdAt": PropTypes.string.isRequired,
 
   "isLoggedIn": PropTypes.bool.isRequired,
-  "userId": PropTypes.string,
+  "userId": PropTypes.string.isRequired,
+  "isVerified": PropTypes.bool.isRequired,
   "isOwn": PropTypes.bool.isRequired,
   "showDeleteIcon": PropTypes.bool,
   "showReplyIcon": PropTypes.bool,
@@ -341,4 +272,4 @@ CommentCard.propTypes = {
   "deleteCommment": PropTypes.func,
 };
 
-export default withRouter(withStyles(styles)(CommentCard));
+export default withStyles(styles)(CommentCard);

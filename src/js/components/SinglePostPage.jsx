@@ -28,7 +28,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 // Material UI Icons
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
 import Container from './layout/Container';
@@ -36,6 +37,7 @@ import CommentPanel from './sections/CommentPanel';
 import ReportDialog from 'js/components/dialogs/ReportDialog';
 import ProperName from './utils/ProperName';
 import ThumbButton from './utils/ThumbButton';
+import WriteCommentDialog from 'js/components/dialogs/WriteCommentDialog';
 
 // Actions
 import { getSinglePost, votePost, reportPost } from 'js/actions/blog.actions';
@@ -59,9 +61,6 @@ const styles = theme => ({
   },
   "paper": {
     padding: theme.spacing.unit * 4,
-  },
-  "rightIcon": {
-    marginLeft: theme.spacing.unit,
   },
   "image": {
     width: '100%',
@@ -93,12 +92,10 @@ class SinglePostPage extends Component {
 
     this.state.id = props.match.params.id;
 
-    this.handleChange = this.handleChange.bind(this);
     this.handleToggleSortPopover = this.handleToggleSortPopover.bind(this);
     this.handleSortPopoverClose = this.handleSortPopoverClose.bind(this);
-    this.handleOpenWriteCommentDialog = this.handleOpenWriteCommentDialog.bind(this);
-    this.handleCloseWriteCommentDialog = this.handleCloseWriteCommentDialog.bind(this);
-    this.handleSubmitComment = this.handleSubmitComment.bind(this);
+    this.handleWriteCommentDialogOpen = this.handleWriteCommentDialogOpen.bind(this);
+    this.handleWriteCommentDialogClose = this.handleWriteCommentDialogClose.bind(this);
     this.getNewComments = this.getNewComments.bind(this);
     this.handleVoteComment = this.handleVoteComment.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
@@ -125,7 +122,8 @@ class SinglePostPage extends Component {
           limit: this.state.limit,
           pid: this.state.id,
           orderBy: this.state.orderBy,
-        }).then(response => {
+        })
+        .then(response => {
           if (response) {
             this.setState({
               count: response.list.length,
@@ -134,14 +132,6 @@ class SinglePostPage extends Component {
           }
         });
       });
-  }
-
-  handleChange(e) {
-    const { name, value } = e.target;
-
-    this.setState({
-      [name]: value
-    });
   }
 
   handleToggleSortPopover() {
@@ -160,77 +150,31 @@ class SinglePostPage extends Component {
     this.props.getComments({
       pid: this.state.id,
       orderBy: sort
-    }).then(response => {
-      if (response) {
-        this.setState({
-          orderBy: sort,
-          sortPopoverOpen: false,
-        });
-      }
+    });
+
+    this.setState({
+      orderBy: sort,
+      sortPopoverOpen: false,
     });
   }
 
-  handleOpenWriteCommentDialog() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-
-      return ;
-    }
-
+  handleWriteCommentDialogOpen() {
     this.setState({
       writeCommentDialogOpen: true,
     });
   }
 
-  handleCloseWriteCommentDialog() {
+  handleWriteCommentDialogClose() {
     this.setState({
       writeCommentDialogOpen: false,
-      content: '',
     });
-  }
-
-  handleSubmitComment() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-
-      return ;
-    }
-
-    if (!_.isEmpty(this.props.user) && this.state.id && this.state.content) {
-      this.props.addNewComment({
-        userId: this.props.user._id,
-        postId: this.state.id,
-        content: this.state.content,
-      })
-      .then(response => {
-        if (response) {
-          return this.props.getComments({
-            pid: this.state.id,
-            orderBy: 'new',
-          })
-        }
-
-        return ;
-      })
-      .then(response => {
-        this.setState({
-          writeCommentDialogOpen: false,
-          content: '',
-          orderBy: 'new'
-        });
-      });
-    }
   }
 
   getNewComments() {
     if (this.state.id) {
       this.props.getComments({
         pid: this.state.id,
-        limit: this.state.count,
+        limit: this.state.limit,
         orderBy: 'new',
       }).then(response => {
         if (response) {
@@ -245,14 +189,6 @@ class SinglePostPage extends Component {
   }
 
   handleVoteComment = vote => e => {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-
-      return ;
-    }
-
     if (this.state.id && !_.isEmpty(this.props.user)) {
       this.props.votePost(this.state.id, {
         uid: this.props.user._id,
@@ -357,37 +293,32 @@ class SinglePostPage extends Component {
             </Grid>
           </Grid>
 
-          <Grid container justify="center">
-            <Grid item xs={12}>
-              <Typography variant="display1" align="center" gutterBottom>Comments</Typography>
-            </Grid>
-
-            <Grid item xs={12} >
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    onClick={this.handleToggleSortPopover}
-                    buttonRef={node => {
-                      this.sortAnchorEl = node;
-                    }}
-                  >
-                    {
-                      this.state.orderBy ? this.state.orderBy : "Sort By"
-                    }
-                    <ExpandMoreIcon className={classes.rightIcon} />
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button variant="raised" color="primary" onClick={this.handleOpenWriteCommentDialog}>
-                    Write Comment
-                  </Button>
-                </Grid>
+          
+          <div>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="title" gutterBottom>Comments</Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  color="primary"
+                  onClick={this.handleToggleSortPopover}
+                  buttonRef={node => {
+                    this.sortAnchorEl = node;
+                  }}
+                >
+                  
+                  Sort By
+                  {
+                    this.state.sortPopoverOpen
+                      ? <ArrowDropUp />
+                      : <ArrowDropDown />
+                  }
+                </Button>
               </Grid>
             </Grid>
-          </Grid>
-
+          </div>
+          
           <CommentPanel
             hasMore={this.state.hasMore}
             loadMore={this.loadMore}
@@ -395,11 +326,14 @@ class SinglePostPage extends Component {
             totalCount={this.props.totalCount}
             isLoggedIn={this.props.isLoggedIn}
             userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+            isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
             showReplyIcon
             addNewComment={this.props.addNewComment}
             voteComment={this.props.voteComment}
             deleteComment={this.props.deleteComment}
             getNewComments={this.getNewComments}
+            addNew
+            onFocusAddNew={this.handleWriteCommentDialogOpen}
           />
 
           <div id="modal-container">
@@ -409,15 +343,15 @@ class SinglePostPage extends Component {
               onClose={this.handleSortPopoverClose}
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'left',
+                horizontal: 'right',
               }}
             >
               <div>
-                <MenuList role="menu">
+                <MenuList role="menu" style={{ width: 150 }}>
                   <MenuItem selected={this.state.orderBy === 'useful'} onClick={this.handleSelectSort('useful')}>
                     <ListItemText primary="Useful" />
                   </MenuItem>
@@ -428,38 +362,16 @@ class SinglePostPage extends Component {
               </div>
             </Popover>
 
-            <Dialog fullWidth
-              open={this.state.writeCommentDialogOpen}
-              onClose={this.handleCloseWriteCommentDialog}
-              aria-labelledby="comment-dialog-title"
-              aria-describedby="comment-dialog-description"
-            >
-              <DialogTitle id="comment-dialog-title">
-                Write Comment
-              </DialogTitle>
-              <DialogContent id="comment-dialog-description">
-                <FormControl fullWidth required>
-                  <InputLabel htmlFor="content">Content</InputLabel>
-                  <Input
-                    type="text"
-                    id="content"
-                    multiline
-                    rows={10}
-                    name="content"
-                    value={this.state.content}
-                    onChange={this.handleChange}
-                  />
-                </FormControl>
-              </DialogContent>
-              <DialogActions>
-                <Button variant="raised" color="primary" disabled={!this.state.content} onClick={this.handleSubmitComment}>
-                  Save
-                </Button>
-                <Button color="primary" onClick={this.handleCloseWriteCommentDialog}>
-                  Cancel
-                </Button>
-              </DialogActions>
-            </Dialog>
+            <WriteCommentDialog 
+              open={this.state.writeCommentDialogOpen} 
+              onClose={this.handleWriteCommentDialogClose} 
+              isLoggedIn={this.props.isLoggedIn}
+              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+              isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
+              postId={this.state.id}
+              addNewComment={this.props.addNewComment}
+              getNewComments={this.getNewComments}
+            />
 
             <ReportDialog
               open={this.state.reportDialogOpen}
@@ -479,8 +391,8 @@ SinglePostPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "user": state.userReducer.user,
     "comments": state.commentReducer.comments,
     "totalCount": state.commentReducer.totalCount,
   };

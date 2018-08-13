@@ -28,56 +28,66 @@ class Footer extends Component{
 
     return (
       <Hidden smDown>
-      <footer className={classes.footer}>
-        <Grid container justify="space-between" alignItems="center" >
-          <Grid item>
-            <Grid container>
-              <Grid item>
-                <Link to="/about">
-                  <Button>
-                    About us
-                  </Button>
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link to="/license">
-                  <Button>
-                    Licenses
-                  </Button>
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link to="/terms-policy">
-                  <Button>
-                    Terms & Policy
-                  </Button>
-                </Link>
-              </Grid>
+        <footer className={classes.footer}>
+          <Grid container justify="space-between" alignItems="center" >
+            <Grid item>
+              <Grid container>
+                <Grid item>
+                  <Link to="/about">
+                    <Button>
+                      About us
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/license">
+                    <Button>
+                      Licenses
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/terms-policy">
+                    <Button>
+                      Terms & Policy
+                    </Button>
+                  </Link>
+                </Grid>
 
-              <Grid item>
-                <Link to="/verify/123">
-                  <Button>
-                    Verify
-                  </Button>
-                </Link>
-              </Grid>
+                <Grid item>
+                  <Link to="/blog">
+                    <Button>
+                      Blog
+                    </Button>
+                  </Link>
+                </Grid>
 
-              <Grid item>
-                <Link to="/change-password/123">
-                  <Button>
-                    Change Password
-                  </Button>
-                </Link>
+                <Grid item>
+                  <Link to="/verify/123">
+                    <Button>
+                      Verify
+                    </Button>
+                  </Link>
+                </Grid>
+
+                <Grid item>
+                  <Link to="/change-password/123">
+                    <Button>
+                      Change Password
+                    </Button>
+                  </Link>
+                </Grid>
+
               </Grid>
             </Grid>
+
+            <Grid item>
+              <Typography variant="caption" align="right">
+                Copyright 2018 iKoreaTown
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography variant="caption" align="right">
-              Copyright 2018 iKoreaTown
-            </Typography>
-          </Grid>
-        </Grid>
-      </footer>
+        </footer>
       </Hidden>
     );
   }

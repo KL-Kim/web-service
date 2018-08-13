@@ -36,6 +36,7 @@ import RateReview from '@material-ui/icons/RateReview';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
+import LoginDialog from 'js/components/dialogs/LoginDialog';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
 import Explore from '@material-ui/icons/Explore';
@@ -93,14 +94,15 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
-    const parsed = qs.parse(props.location.search.slice(1));
 
     this.state = {
       "drawerOpen": false,
-      "search": parsed.s || '',
+      "loginDialogOpen": false,
     };
 
     this.handleLogout = this.handleLogout.bind(this);
+    this.handleLoginDialogOpen = this.handleLoginDialogOpen.bind(this);
+    this.handleLoginDialogClose = this.handleLoginDialogClose.bind(this);
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
     this.handleClickListItem = this.handleClickListItem.bind(this);
   }
@@ -111,15 +113,24 @@ class Header extends Component {
     });
   }
 
+  handleLoginDialogOpen() {
+    this.setState({
+      "loginDialogOpen": true,
+    });
+  }
+
+  handleLoginDialogClose() {
+    this.setState({
+      "loginDialogOpen": false,
+    });
+  }
+
   handleLogout() {
     this.props.logout()
-      .then(response => {
-        if (response) {
-          this.setState({
-            drawerOpen: false,
-          });
-        }
-
+      .then(()=> {
+        this.setState({
+          drawerOpen: false,
+        });
         this.props.history.push('/');
       });
   }
@@ -177,25 +188,20 @@ class Header extends Component {
 
               {
                 isLoggedIn
-                  ? 
-                    <Button
+                  ? <Button
                       className={classes.button}
                       onClick={this.handleDrawerToggle}
                     >
                       <Avatar user={user} updatedAt={updatedAt} />
                     </Button>
                     
-                  : <LinkContainer to={{
-                      pathname: "/signin",
-                      hash: "#",
-                      state: {
-                        from: this.props.location.pathname
-                      },
-                    }}>
-                      <IconButton color="inherit" className={classes.button}>
-                        <AccountCircle />
-                      </IconButton>
-                    </LinkContainer>
+                  : <IconButton 
+                      color="inherit" 
+                      className={classes.button} 
+                      onClick={this.handleLoginDialogOpen}
+                    >
+                      <AccountCircle />
+                    </IconButton>
               }
             </Toolbar>
           </div>
@@ -303,7 +309,7 @@ class Header extends Component {
                     </MenuList>
                   </div>
                 </Drawer>
-              : null
+              : <LoginDialog open={this.state.loginDialogOpen} onClose={this.handleLoginDialogClose} />
           }
           
         </div>

@@ -4,14 +4,29 @@ import { withRouter } from 'react-router';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Hidden from '@material-ui/core/Hidden';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+
+// Material UI Icons
+import Error from '@material-ui/icons/Error';
+import Close from '@material-ui/icons/Close';
 
 const styles = (theme) => ({
+  "appBar": {
+    position: 'relative',
+  },
+  "flex": {
+    flex: 1,
+  },
 });
 
 class ConfirmationDialog extends Component {
@@ -31,12 +46,31 @@ class ConfirmationDialog extends Component {
     return (
       <Dialog 
         fullWidth
-        maxWidth="sm"
+        fullScreen={this.props.fullScreen}
         open={this.props.open}
         onClose={this.props.handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
+         <Hidden smUp>
+          <AppBar className={classes.appBar} color="inherit">
+            <Toolbar>
+                <div className={classes.flex}>
+                  <IconButton color="inherit" onClick={this.props.handleClose} >
+                    <Close />
+                  </IconButton>
+                </div>
+                <Button 
+                  color="primary"
+                  size="small"
+                  onClick={this.handleSubmit}
+                >
+                  Delete
+                </Button>
+            </Toolbar>
+          </AppBar>
+        </Hidden>
+
         <DialogTitle id="alert-dialog-title">
           {this.props.title}
         </DialogTitle>
@@ -47,14 +81,16 @@ class ConfirmationDialog extends Component {
           </DialogContentText>
         </DialogContent>
 
-        <DialogActions>
-          <Button size="small" onClick={this.props.handleClose}>
-            Cancel
-          </Button>
-          <Button color="primary" size="small" onClick={this.handleSubmit}>
-            Ok
-          </Button>
-        </DialogActions>
+        <Hidden xsDown>
+          <DialogActions>
+            <Button size="small" onClick={this.props.handleClose}>
+              Cancel
+            </Button>
+            <Button color="primary" size="small" onClick={this.handleSubmit}>
+              Ok
+            </Button>
+          </DialogActions>
+        </Hidden>
       </Dialog>
     );
   }
@@ -69,4 +105,4 @@ ConfirmationDialog.propTypes = {
   "operation": PropTypes.func.isRequired,
 }
 
-export default withRouter(withStyles(styles)(ConfirmationDialog));
+export default withRouter(withStyles(styles)(withMobileDialog()(ConfirmationDialog)));

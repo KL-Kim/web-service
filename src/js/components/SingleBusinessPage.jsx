@@ -270,13 +270,13 @@ class SingleBusinessPage extends Component {
 
   // Review Related Methods
   handleAddNewReviewDialogOpen() {
-    if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
+    // if (!this.props.isLoggedIn) {
+    //   this.props.history.push("/signin", {
+    //     from: this.props.location.pathname,
+    //   });
 
-      return ;
-    }
+    //   return ;
+    // }
 
     this.setState({
       "addNewDialogOpen": true,
@@ -758,32 +758,31 @@ class SingleBusinessPage extends Component {
           </Grid>
 
           <div>
-            
-              
-                <ReviewPanel
-                    reviews={reviews}
-                    totalCount={this.props.totalCount}
-                    hasMore={this.state.hasMore}
-                    loadMore={this.loadMore}
-                    clearReviewsList={this.props.clearReviewsList}
-                    isLoggedIn={this.props.isLoggedIn}
-                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                    voteReview={this.props.voteReview}
+            <ReviewPanel
+              reviews={reviews}
+              totalCount={this.props.totalCount}
+              hasMore={this.state.hasMore}
+              loadMore={this.loadMore}
+              clearReviewsList={this.props.clearReviewsList}
+              isLoggedIn={this.props.isLoggedIn}
+              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+              voteReview={this.props.voteReview}
 
-                    addNew
-                    onFocusAddNew={this.handleAddNewReviewDialogOpen}
-                  />
-            
+              addNew
+              onFocusAddNew={this.handleAddNewReviewDialogOpen}
+            />
           </div>
 
           <div id="modal-container">
             <WriteReviewDialog
-              user={this.props.user}
+              isLoggedIn={this.props.isLoggedIn}
+              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+              isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
               business={business}
               open={this.state.addNewDialogOpen}
               addNewReview={this.props.addNewReview}
               getNewReviews={this.getNewReviews}
-              handleClose={this.handleAddNewReviewDialogClose}
+              onClose={this.handleAddNewReviewDialogClose}
             />
 
             <ReportDialog
@@ -822,16 +821,18 @@ class SingleBusinessPage extends Component {
               _.isEmpty(review)
                 ? null
                 : <WriteReviewDialog
+                    open={this.state.reviewDialogOpen}
+                    onClose={this.handleReviewDialogClose}
                     readOnly
-                    user={this.props.user}
+                    isLoggedIn={this.props.isLoggedIn}
+                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                    isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
                     rating={review.rating}
                     content={review.content}
                     serviceGood={review.serviceGood}
                     envGood={review.envGood}
                     comeback={review.comeback}
                     business={business}
-                    open={this.state.reviewDialogOpen}
-                    handleClose={this.handleReviewDialogClose}
                   />
             }
           </div>
