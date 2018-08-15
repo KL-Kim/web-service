@@ -38,6 +38,7 @@ export const fetchPCA = (type, code) => {
 
     case 'area':
       url = pcaSerivceUri.apiUrl + '/areas/' + code;
+      break;
   
     default:
       return Promise.reject(new Error("Type is missing"));

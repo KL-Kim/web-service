@@ -61,6 +61,10 @@ class HomePage extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.props.clearBusinessList();
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -103,15 +107,7 @@ class HomePage extends Component {
             <Typography variant="title" gutterBottom>
               Popular Event
             </Typography>
-            <BusinessPanel
-              businessList={this.props.businessList}
-              isFetching={this.props.isFetching}
-              totalCount={this.props.totalCount}
-              isLoggedIn={this.props.isLoggedIn}
-              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-              favorOperation={this.props.favorOperation}
-              clearBusinessList={this.props.clearBusinessList}
-            />
+            <BusinessPanel />
           </div>
         </main>
         <BottomNav />

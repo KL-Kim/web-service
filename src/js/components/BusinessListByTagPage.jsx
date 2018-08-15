@@ -25,7 +25,6 @@ import BusinessPanel from './sections/BusinessPanel';
 import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 import { getTagsList } from 'js/actions/tag.actions';
 
@@ -199,6 +198,10 @@ class BusinessListByTag extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearBusinessList();
+  }
+
   handleSubmitFilter() {
     this.props.getBusinessList({
       limit: this.state.limit,
@@ -364,12 +367,7 @@ class BusinessListByTag extends Component {
           <BusinessPanel
             hasMore={this.state.hasMore}
             loadMore={this.loadMore} 
-            businessList={this.props.businessList}
-            totalCount={this.props.totalCount}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-            favorOperation={this.props.favorOperation}
-            clearBusinessList={this.props.clearBusinessList}
+            showNoMore
           />
 
           <div id="modal-container">
@@ -509,28 +507,15 @@ class BusinessListByTag extends Component {
 
 BusinessListByTag.propTypes = {
   "classes": PropTypes.object.isRequired,
-  "user": PropTypes.object,
-  "isLoggedIn": PropTypes.bool.isRequired,
-  "businessList": PropTypes.array.isRequired,
-  "totalCount": PropTypes.number.isRequired,
-  "isFetching": PropTypes.bool,
-  "tags": PropTypes.array.isRequired,
 
   // Methods
   "getTagsList": PropTypes.func.isRequired,
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
-  "favorOperation": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
-    "businessList": state.businessReducer.businessList,
-    "totalCount": state.businessReducer.totalCount,
-    "isFetching": state.businessReducer.isFetching,
-    "tags": state.tagReducer.tagsList,
   };
 };
 
@@ -538,5 +523,4 @@ export default connect(mapStateToProps, {
   getBusinessList, 
   clearBusinessList,
   getTagsList,
-  favorOperation, 
 })(withStyles(styles)(BusinessListByTag));

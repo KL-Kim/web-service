@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Stars from 'react-stars';
 
 // Material UI Components
@@ -41,6 +41,7 @@ class ReviewCardAlt extends PureComponent {
     super(props);
 
     this.state = {
+      "isRemoved": false,
       "deleteDialogOpen": false,
       "upvoteCount": props.upvoteCount,
     };
@@ -65,9 +66,7 @@ class ReviewCardAlt extends PureComponent {
 
   handleClickUpvoteIcon() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
+      this.props.openLoginDialog();
 
       return ;
     }
@@ -89,15 +88,16 @@ class ReviewCardAlt extends PureComponent {
   }
 
   handleDelete() {
-    if (this.props.deleteReview && this.props.id && this.props.isOwn) {
+    if (this.props.deleteReview && this.props.isLoggedIn && this.props.id && this.props.isOwn) {
       this.props.deleteReview({
         _id: this.props.id,
         uid: this.props.owner._id,
       })
       .then(response => {
         if (response) {
-          this.props.getNewReviews();
+          
           this.setState({
+            isRemoved: true,
             deleteDialogOpen: false,
           });
         }
@@ -108,7 +108,7 @@ class ReviewCardAlt extends PureComponent {
   render() {
     const { classes } = this.props;
 
-    return (
+    return this.state.isRemoved ? null : (
       <div>
         <Card>
           <CardHeader
@@ -167,7 +167,7 @@ class ReviewCardAlt extends PureComponent {
 
               <Grid item>
                 {
-                  this.props.deleteReview
+                  this.props.showDeleteIcon
                     ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
                         <Delete />
                       </IconButton>
@@ -187,8 +187,8 @@ class ReviewCardAlt extends PureComponent {
                   open={this.state.deleteDialogOpen}
                   title="Warning"
                   content="Are you sure to delete the review?"
-                  operation={this.handleDelete}
-                  handleClose={this.handleDeleteDialogClose}
+                  onSubmit={this.handleDelete}
+                  onClose={this.handleDeleteDialogClose}
                 />
               : null
           }
@@ -202,29 +202,33 @@ ReviewCardAlt.defaultProps = {
   "isLoggedIn": false,
   "userId": '',
   "isOwn": false,
-  
+  "showBusinessName": false,
+  "showDeleteIcon": false,
 };
 
 ReviewCardAlt.propTypes = {
   "classes": PropTypes.object.isRequired,
+  
   "id": PropTypes.string.isRequired,
-  "isOwn": PropTypes.bool.isRequired,
-  "owner": PropTypes.object.isRequired,
-  "userId": PropTypes.string,
-  "isLoggedIn": PropTypes.bool.isRequired,
   "business": PropTypes.object.isRequired,
-  "showBusinessName": PropTypes.bool,
   "rating": PropTypes.number.isRequired,
   "content": PropTypes.string,
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "upvoteCount": PropTypes.number,
+  "owner": PropTypes.object.isRequired,
 
-  // Fuctions
-  "voteReview": PropTypes.func,
-  "deleteReview": PropTypes.func,
-  "getNewReviews": PropTypes.func,
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "userId": PropTypes.string,
+  "isOwn": PropTypes.bool.isRequired,
+  "showBusinessName": PropTypes.bool,
+  "showDeleteIcon": PropTypes.bool,
+
+  // Methods
+  "openLoginDialog": PropTypes.func.isRequired,
+  "voteReview": PropTypes.func.isRequired,
+  "deleteReview": PropTypes.func.isRequired,
 };
 
-export default withRouter(withStyles(styles)(ReviewCardAlt));
+export default withStyles(styles)(ReviewCardAlt);

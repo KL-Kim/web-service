@@ -43,6 +43,7 @@ import Explore from '@material-ui/icons/Explore';
 import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions';
 import { logout } from 'js/actions/user.actions';
 import { getUnreadCount } from 'js/actions/notification.actions';
 
@@ -102,7 +103,6 @@ class Header extends Component {
 
     this.handleLogout = this.handleLogout.bind(this);
     this.handleLoginDialogOpen = this.handleLoginDialogOpen.bind(this);
-    this.handleLoginDialogClose = this.handleLoginDialogClose.bind(this);
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
     this.handleClickListItem = this.handleClickListItem.bind(this);
   }
@@ -114,15 +114,7 @@ class Header extends Component {
   }
 
   handleLoginDialogOpen() {
-    this.setState({
-      "loginDialogOpen": true,
-    });
-  }
-
-  handleLoginDialogClose() {
-    this.setState({
-      "loginDialogOpen": false,
-    });
+    this.props.openLoginDialog();
   }
 
   handleLogout() {
@@ -309,7 +301,7 @@ class Header extends Component {
                     </MenuList>
                   </div>
                 </Drawer>
-              : <LoginDialog open={this.state.loginDialogOpen} onClose={this.handleLoginDialogClose} />
+              : <LoginDialog />
           }
           
         </div>
@@ -331,6 +323,7 @@ Header.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   newNotificationCount: PropTypes.number.isRequired,
   logout: PropTypes.func.isRequired,
+  openLoginDialog: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -345,6 +338,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 export default withRouter(connect(mapStateToProps, {
+  openLoginDialog,
   logout,
   getUnreadCount,
 })(withStyles(styles)(Header)));

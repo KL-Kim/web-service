@@ -11,11 +11,7 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Switch from '@material-ui/core/Switch';
 import Popover from '@material-ui/core/Popover';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
-
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -28,7 +24,6 @@ import BusinessPanel from './sections/BusinessPanel';
 import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 import { getCategoriesList } from 'js/actions/category.actions.js';
 import { getAreas } from 'js/actions/pca.actions.js';
@@ -88,6 +83,19 @@ class BusinessListPage extends Component {
 
   componentDidMount() {
     if (this.props.match.params.slug) {
+      this.props.getCategoriesList()
+        .then(response => {
+          if (response) {
+            _.find(response, item => {
+              if (item.enName === this.props.match.params.slug) {
+                this.setState({
+                  category: item
+                });
+              }
+            });
+          }
+        });
+
       this.props.getBusinessList({
         'limit': this.state.limit,
         'category': this.props.match.params.slug,
@@ -133,24 +141,24 @@ class BusinessListPage extends Component {
           });
         }
       });
-
-      this.props.getCategoriesList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  category: item
-                });
-              }
-            });
-          }
-        });
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
+      this.props.getCategoriesList()
+        .then(response => {
+          if (response) {
+            _.find(response, item => {
+              if (item.enName === this.props.match.params.slug) {
+                this.setState({
+                  category: item
+                });
+              }
+            });
+          }
+        });
+
       this.props.getBusinessList({
         'limit': this.state.limit,
         'category': this.props.match.params.slug,
@@ -196,22 +204,11 @@ class BusinessListPage extends Component {
           });
         }
       });
-
-      this.props.getCategoriesList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  category: item
-                });
-
-                return item;
-              }
-            });
-          }
-        });
     }
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   handleSelectTag = slug => e => {
@@ -430,14 +427,7 @@ class BusinessListPage extends Component {
 
           <BusinessPanel
             hasMore={this.state.hasMore}
-            loadMore={this.loadMore} 
-            businessList={this.props.businessList}
-            isFetching={this.props.isFetching}
-            totalCount={this.props.totalCount}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-            favorOperation={this.props.favorOperation}
-            clearBusinessList={this.props.clearBusinessList}
+            loadMore={this.loadMore}
             showNoMore
           />
           
@@ -576,33 +566,20 @@ class BusinessListPage extends Component {
 
 BusinessListPage.propTypes = {
   "classes": PropTypes.object.isRequired,
-  "businessList": PropTypes.array.isRequired,
-  "totalCount": PropTypes.number.isRequired,
-  "isFetching": PropTypes.bool,
-  "user": PropTypes.object,
-  "isLoggedIn": PropTypes.bool.isRequired,
 
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
   "getCategoriesList": PropTypes.func.isRequired,
-  "favorOperation": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-    "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
-    "businessList": state.businessReducer.businessList,
-    "totalCount": state.businessReducer.totalCount,
-    "isFetching": state.businessReducer.isFetching,
-  };
+  return {};
 };
 
 export default connect(mapStateToProps, { 
   getBusinessList, 
   clearBusinessList,
   getCategoriesList, 
-  favorOperation,
   getAreas,
 })(withStyles(styles)(BusinessListPage));

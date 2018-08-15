@@ -14,7 +14,7 @@ import Container from '../layout/Container';
 import CommentPanel from '../sections/CommentPanel';
 
 // Actions
-import { getComments, deleteComment } from 'js/actions/comment.actions';
+import { getComments, clearCommentsList } from 'js/actions/comment.actions';
 
 const styles = (theme) => ({
   "root": {
@@ -57,6 +57,10 @@ class CommentsPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearCommentsList();
+  }
+
   loadMore() {
     this.props.getComments({
       limit: this.state.limit,
@@ -70,7 +74,7 @@ class CommentsPage extends Component {
           hasMore: response.list.length < response.totalCount,
         })
       }
-    })
+    });
   }
 
   getNewComments() {
@@ -91,7 +95,7 @@ class CommentsPage extends Component {
   }
 
   render() {
-    const { classes, comments } = this.props;
+    const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
       <Container>
@@ -101,13 +105,7 @@ class CommentsPage extends Component {
           <CommentPanel
             hasMore={this.state.hasMore}
             loadMore={this.loadMore}
-            commentsList={this.props.comments}
-            totalCount={this.props.totalCount}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={this.props.user._id}
             showDeleteIcon
-            deleteComment={this.props.deleteComment}
-            getNewComments={this.getNewComments}
           />
         </div>
       </Container>
@@ -117,15 +115,21 @@ class CommentsPage extends Component {
 
 CommentsPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "userId": PropTypes.string.isRequired,
+  "user": PropTypes.object.isRequired,
+
+  // Methods
+  "getComments": PropTypes.func.isRequired,
+  "clearCommentsList": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "isLoggedIn": state.userReducer.isLoggedIn,
     "user": state.userReducer.user,
-    "comments": state.commentReducer.comments,
-    "totalCount": state.commentReducer.totalCount,
   };
 };
 
-export default connect(mapStateToProps, { getComments, deleteComment })(withStyles(styles)(CommentsPage));
+export default connect(mapStateToProps, { 
+  getComments, 
+  clearCommentsList, 
+})(withStyles(styles)(CommentsPage));

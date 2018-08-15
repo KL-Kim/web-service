@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import Img from 'react-image';
-import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -12,10 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import FormControl from '@material-ui/core/FormControl';
 import Popover from '@material-ui/core/Popover';
 import Input from '@material-ui/core/Input';
@@ -35,11 +30,13 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Container from './layout/Container';
 import CommentPanel from './sections/CommentPanel';
 import ReportDialog from 'js/components/dialogs/ReportDialog';
+import VerifyDialog from 'js/components/dialogs/VerifyDialog';
 import ProperName from './utils/ProperName';
 import ThumbButton from './utils/ThumbButton';
 import WriteCommentDialog from 'js/components/dialogs/WriteCommentDialog';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions'; 
 import { getSinglePost, votePost, reportPost } from 'js/actions/blog.actions';
 import { getComments,
   addNewComment,
@@ -79,6 +76,7 @@ class SinglePostPage extends Component {
     this.state = {
       sortPopoverOpen: false,
       reportDialogOpen: false,
+
       orderBy: 'useful',
       writeCommentDialogOpen: false,
       content: '',
@@ -96,12 +94,12 @@ class SinglePostPage extends Component {
     this.handleSortPopoverClose = this.handleSortPopoverClose.bind(this);
     this.handleWriteCommentDialogOpen = this.handleWriteCommentDialogOpen.bind(this);
     this.handleWriteCommentDialogClose = this.handleWriteCommentDialogClose.bind(this);
-    this.getNewComments = this.getNewComments.bind(this);
-    this.handleVoteComment = this.handleVoteComment.bind(this);
+    this.handleVotePost = this.handleVotePost.bind(this);
     this.handleReportDialogOpen = this.handleReportDialogOpen.bind(this);
     this.handleReportDialogClose = this.handleReportDialogClose.bind(this);
     this.handleSubmitReport = this.handleSubmitReport.bind(this);
     this.loadMore = this.loadMore.bind(this);
+    this.getNewComments = this.getNewComments.bind(this);
   }
 
   componentDidMount() {
@@ -109,7 +107,7 @@ class SinglePostPage extends Component {
 
     this.props.getSinglePost(this.state.id)
       .then(response => {
-        if (response && response.post.status === 'PUBLISHED') {
+        if (response) {
           this.setState({
             post: response.post
           });
@@ -159,6 +157,12 @@ class SinglePostPage extends Component {
   }
 
   handleWriteCommentDialogOpen() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return ;
+    }
+
     this.setState({
       writeCommentDialogOpen: true,
     });
@@ -188,7 +192,15 @@ class SinglePostPage extends Component {
     }
   }
 
-  handleVoteComment = vote => e => {
+  
+
+  handleVotePost = vote => e => {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+
+      return ;
+    }
+    
     if (this.state.id && !_.isEmpty(this.props.user)) {
       this.props.votePost(this.state.id, {
         uid: this.props.user._id,
@@ -217,17 +229,16 @@ class SinglePostPage extends Component {
   }
 
   handleSubmitReport(type, content, contact) {
-    if (this.state.post) {
+    if (!_.isEmpty(this.state.post)) {
       this.props.reportPost(this.state.post._id, {
         type,
         content,
         contact,
-      })
-      .then(response => {
-        this.setState({
-          "reportDialogOpen": false
-        });
-      })
+      });
+      
+      this.setState({
+        "reportDialogOpen": false
+      });
     }
   }
 
@@ -248,7 +259,7 @@ class SinglePostPage extends Component {
   }
 
   render() {
-    const { classes, comments } = this.props;
+    const { classes } = this.props;
     const { post } = this.state;
 
     return _.isEmpty(post) ? null : (
@@ -271,11 +282,11 @@ class SinglePostPage extends Component {
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
                   <span className={classes.iconButton}>
-                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVoteComment("UPVOTE")} />
+                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVotePost("UPVOTE")} />
                   </span>
 
                   <span className={classes.iconButton}>
-                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVoteComment("DOWNVOTE")} />
+                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVotePost("DOWNVOTE")} />
                   </span>
 
                   <span>
@@ -322,16 +333,10 @@ class SinglePostPage extends Component {
           <CommentPanel
             hasMore={this.state.hasMore}
             loadMore={this.loadMore}
-            commentsList={this.props.comments}
-            totalCount={this.props.totalCount}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-            isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
+            
             showReplyIcon
-            addNewComment={this.props.addNewComment}
-            voteComment={this.props.voteComment}
-            deleteComment={this.props.deleteComment}
             getNewComments={this.getNewComments}
+
             addNew
             onFocusAddNew={this.handleWriteCommentDialogOpen}
           />
@@ -367,7 +372,7 @@ class SinglePostPage extends Component {
               onClose={this.handleWriteCommentDialogClose} 
               isLoggedIn={this.props.isLoggedIn}
               userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-              isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
+              isVerified={this.props.isVerified}
               postId={this.state.id}
               addNewComment={this.props.addNewComment}
               getNewComments={this.getNewComments}
@@ -375,9 +380,10 @@ class SinglePostPage extends Component {
 
             <ReportDialog
               open={this.state.reportDialogOpen}
-              handleSubmit={this.handleSubmitReport}
-              handleClose={this.handleReportDialogClose}
+              onSubmit={this.handleSubmitReport}
+              onClose={this.handleReportDialogClose}
             />
+
           </div>
         </div>
       </Container>
@@ -392,9 +398,8 @@ SinglePostPage.propTypes = {
 const mapStateToProps = (state, ownProps) => {
   return {
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "isVerified": state.userReducer.isUserVerified,
     "user": state.userReducer.user,
-    "comments": state.commentReducer.comments,
-    "totalCount": state.commentReducer.totalCount,
   };
 };
 
@@ -407,4 +412,5 @@ export default connect(mapStateToProps, {
   voteComment,
   deleteComment,
   clearCommentsList,
+  openLoginDialog,
 })(withStyles(styles)(SinglePostPage));

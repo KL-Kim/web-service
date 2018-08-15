@@ -45,7 +45,7 @@ class ReportDialog extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.hanldeSubmit = this.hanldeSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleChange(e) {
@@ -58,14 +58,15 @@ class ReportDialog extends Component {
 
   handleClose() {
     this.setState({
+      type: '',
       content: '',
       contact: '',
     });
-    this.props.handleClose();
+    this.props.onClose();
   }
 
-  hanldeSubmit() {
-    this.props.handleSubmit(this.state.content, this.state.contact);
+  handleSubmit() {
+    this.props.onSubmit(this.state.type, this.state.content, this.state.contact);
   }
 
   render() {
@@ -93,7 +94,7 @@ class ReportDialog extends Component {
                 color="primary"
                 size="small"
                 disabled={!this.state.type}
-                onClick={this.hanldeSubmit}
+                onClick={this.handleSubmit}
               >
                 Send
               </Button>
@@ -130,13 +131,13 @@ class ReportDialog extends Component {
 
             <Grid item xs={12}>
               <FormControl fullWidth required margin="normal">
-                <InputLabel htmlFor="content">Detail</InputLabel>
                 <Input
                   type="text"
                   id="content"
                   multiline
                   rows={5}
                   name="content"
+                  placeholder="What problem do you meet? (Required)*"
                   value={this.state.content}
                   onChange={this.handleChange}
                 />
@@ -168,8 +169,8 @@ class ReportDialog extends Component {
             <Button
               color="primary"
               size="small"
-              disabled={!this.state.type}
-              onClick={this.hanldeSubmit}
+              disabled={!this.state.type || !this.state.content}
+              onClick={this.handleSubmit}
             >
               Send
             </Button>
@@ -183,8 +184,8 @@ class ReportDialog extends Component {
 ReportDialog.propTypes = {
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
-  "handleSubmit": PropTypes.func.isRequired,
-  "handleClose": PropTypes.func.isRequired,
+  "onSubmit": PropTypes.func.isRequired,
+  "onClose": PropTypes.func.isRequired,
 };
 
 export default withMobileDialog()(withStyles(styles)(ReportDialog));

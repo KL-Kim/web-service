@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 
+import appReducer from './app.reducer';
 import userReducer from './user.reducer';
 import alertReducer from './alert.reducer';
 import businessReducer from './business.reducer';
@@ -12,8 +13,9 @@ import blogReducer from './blog.reducer';
 import commentReducer from './comment.reducer';
 
 const reducer = combineReducers({
-  userReducer,
+  appReducer,
   alertReducer,
+  userReducer,
   pcaReducer,
   businessReducer,
   categoryReducer,

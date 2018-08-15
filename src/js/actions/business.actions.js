@@ -162,7 +162,7 @@ export const reportBusiness = (id, {type, content, contact} = {}) => {
     return reportBusinessFetch(id, { type, content, contact })
       .then(response => {
         dispatch(_reportBusinessSuccess());
-        dispatch(AlertActions.alertSuccess("Thank you for your kindness"));
+        dispatch(AlertActions.alertSuccess("Thank you for your information"));
 
         return response;
       })

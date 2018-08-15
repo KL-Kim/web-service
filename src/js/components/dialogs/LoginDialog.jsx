@@ -31,7 +31,7 @@ import Close from '@material-ui/icons/Close';
 
 // Actions
 import { login } from 'js/actions/user.actions';
-
+import { closeLoginDialog } from 'js/actions/app.actions';
 
 // WebStorage
 import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
@@ -85,6 +85,10 @@ class LoginDialog extends Component {
     this.isValidPassword = this.isValidPassword.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleClose = this.handleClose.bind(this);
+  }
+
+  componentWillUnmount() {
+    this.props.closeLoginDialog();
   }
 
   handleChange(e) {
@@ -171,7 +175,7 @@ class LoginDialog extends Component {
       this.props.login(this.state.email, this.state.password)
         .then(response => {
           if (response) {
-            this.props.onClose();
+            this.props.closeLoginDialog();
           }
           else if (this.props.error) {
             this.setState({
@@ -194,7 +198,7 @@ class LoginDialog extends Component {
       "passwordErrorMessage": '',
     });
 
-    this.props.onClose();
+    this.props.closeLoginDialog();
   }
 
   render() {
@@ -209,7 +213,6 @@ class LoginDialog extends Component {
         aria-labelledby="login-dialog-title"
         aria-describedby="login-dialog-description"
       >
-        
         <Hidden smUp>
           <AppBar className={classes.appBar} color="inherit">
             <Toolbar>
@@ -316,7 +319,7 @@ LoginDialog.propTypes = {
   "fullScreen": PropTypes.bool.isRequired,
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
-  "onClose": PropTypes.func.isRequired,
+  "closeLoginDialog": PropTypes.func.isRequired,
   "isFetching": PropTypes.bool.isRequired,
   "error": PropTypes.object,
   "errorMessage": PropTypes.string,
@@ -324,10 +327,11 @@ LoginDialog.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    open: state.appReducer.isLoginDialogOpen,
     isFetching: state.userReducer.isFetching,
     error: state.userReducer.error,
     errorMessage: state.alertReducer.message,
   };
 };
 
-export default connect(mapStateToProps, { login })((withStyles(styles)(withMobileDialog()(LoginDialog))));
+export default connect(mapStateToProps, { login, closeLoginDialog })((withStyles(styles)(withMobileDialog()(LoginDialog))));

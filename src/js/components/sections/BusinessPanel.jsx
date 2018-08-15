@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
@@ -15,6 +16,11 @@ import BusinessCard from './cards/BusinessCard';
 // WebStorage
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
+
+
+// Actions
+import { openLoginDialog } from 'js/actions/app.actions'; 
+import { favorOperation } from 'js/actions/user.actions';
 
 const styles = theme => ({
 
@@ -53,16 +59,16 @@ class BusinessPanel extends Component {
         }
     }
 
-    componentWillUnmount() {
-        if (this.props.clearBusinessList) {
-            this.props.clearBusinessList();
-        }   
-    }
-
     render() {
         const { classes, businessList } = this.props;
         let index;
 
+        if (this.props.isFetching) {
+            return  <div style={{ textAlign: 'center' }}>
+                        <CircularProgress size={50} />
+                    </div>;
+        }
+        
         return _.isEmpty(businessList) 
             ? <Typography align="center">None</Typography> 
             : (
@@ -94,7 +100,9 @@ class BusinessPanel extends Component {
 
                                                 isFavor={index > -1 ? true : false}
                                                 isLoggedIn={this.props.isLoggedIn}
-                                                userId={this.props.userId}
+                                                userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+
+                                                openLoginDialog={this.props.openLoginDialog}
                                                 favorOperation={this.props.favorOperation}
                                             />
                                         </Grid>
@@ -117,11 +125,9 @@ class BusinessPanel extends Component {
 
 BusinessPanel.defaultProps = {
     "isLoggedIn": false,
-    "userId": '',
-    "businessList": [],
     "hasMore": false,
     "loadMore": () => {},
-}
+};
 
 BusinessPanel.propTypes = {
     "classes": PropTypes.object.isRequired,
@@ -129,9 +135,24 @@ BusinessPanel.propTypes = {
     "isFetching": PropTypes.bool.isRequired,
     "hasMore": PropTypes.bool,
     "loadMore": PropTypes.func,
-    "userId": PropTypes.string,
-    "isLoggedIn": PropTypes.bool.isRequired,
-    "favorOperation": PropTypes.func.isRequired,
-}
 
-export default withStyles(styles)(BusinessPanel);
+    "isLoggedIn": PropTypes.bool.isRequired,
+    "user": PropTypes.object.isRequired,
+    "favorOperation": PropTypes.func.isRequired,
+    "openLoginDialog": PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state, ownProps) => {
+    return {
+        "isLoggedIn": state.userReducer.isLoggedIn,
+        "user": state.userReducer.user,
+        "businessList": state.businessReducer.businessList,
+        "totalCount": state.businessReducer.totalCount,
+        "isFetching": state.businessReducer.isFetching,
+    };
+};
+
+export default connect(mapStateToProps, {
+    openLoginDialog,
+    favorOperation,
+})(withStyles(styles)(BusinessPanel));

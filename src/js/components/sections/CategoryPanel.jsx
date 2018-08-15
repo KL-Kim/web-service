@@ -60,13 +60,7 @@ class CategoryPanel extends PureComponent {
           </Grid>
         </Grid>
 
-        <BusinessPanel
-          businessList={this.state.list}
-          isLoggedIn={this.props.isLoggedIn}
-          userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-          favorOperation={this.props.favorOperation}
-          clearBusinessList={this.props.clearBusinessList}
-        />
+        <BusinessPanel />
       </div>
     );
   }

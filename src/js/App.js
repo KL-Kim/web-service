@@ -43,8 +43,12 @@ import webStorageTypes from 'js/constants/webStorage.types';
 
 // Actions
 import { getMyself } from 'js/actions/user.actions';
-import { getCategoriesList } from 'js/actions/category.actions.js';
-import { getTagsList } from 'js/actions/tag.actions.js';
+import { getCategoriesList } from 'js/actions/category.actions';
+import { getTagsList } from 'js/actions/tag.actions';
+import { getAreas } from 'js/actions/pca.actions';
+
+// Config
+import config from './config/config';
 
 const App = () => {
   const store = configureStore();
@@ -56,6 +60,7 @@ const App = () => {
 
   store.dispatch(getCategoriesList());
   store.dispatch(getTagsList());
+  store.dispatch(getAreas(config.CITY_CODE));
 
   return (
     <Provider store={store}>

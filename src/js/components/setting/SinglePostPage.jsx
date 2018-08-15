@@ -289,17 +289,18 @@ class SinglePostPage extends Component {
           <div>
             <ConfirmationDialog
               open={this.state.confirmationDialogOpen}
-              handleClose={this.handleCloseConfirmationDialog}
-              operation={this.handleCancel}
               title="Warning"
               content="Are your sure to leave?"
+              onClose={this.handleCloseConfirmationDialog}
+              onSubmit={this.handleCancel}
             />
+
             <ConfirmationDialog
               open={this.state.deleteDialogOpen}
-              handleClose={this.handleDeleteConfirmationDialogClose}
-              operation={this.handleDelete}
               title="Warning"
               content="Are your sure to delete?"
+              onClose={this.handleDeleteConfirmationDialogClose}
+              onSubmit={this.handleDelete}
             />
           </div>
         </div>

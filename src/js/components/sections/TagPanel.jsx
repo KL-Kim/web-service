@@ -11,11 +11,11 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 // Custom Components
-import BusinessPanel from './BusinessPanel';
 import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 import BusinessCard from './cards/BusinessCard';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions'; 
 import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 
@@ -114,6 +114,7 @@ class TagPanel extends PureComponent {
                       isLoggedIn={this.props.isLoggedIn}
                       userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
                       favorOperation={this.props.favorOperation}
+                      openLoginDialog={this.props.openLoginDialog}
                   />
                 </div>
               );
@@ -135,6 +136,7 @@ TagPanel.propTypes = {
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
   "favorOperation": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -149,4 +151,5 @@ export default connect(mapStateToProps, {
   getBusinessList, 
   favorOperation, 
   clearBusinessList,
+  openLoginDialog,
 })(withStyles(styles)(TagPanel));

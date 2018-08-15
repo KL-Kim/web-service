@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
-import Img from 'react-image';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -125,8 +123,6 @@ class CategoryCard extends Component {
     );
   }
 }
-
-CategoryCard.defaultProps = {};
 
 CategoryCard.propTypes = {
   classes: PropTypes.object.isRequired,

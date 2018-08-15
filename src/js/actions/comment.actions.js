@@ -170,7 +170,7 @@ export const deleteComment = (id, uid) => {
       })
       .then(response => {
         dispatch(_deleteCommentSuccess(response));
-        dispatch(AlertActions.alertSuccess("Delete successfully!"));
+        dispatch(AlertActions.alertSuccess("Delete the comment successfully!"));
 
         return response;
       })
@@ -222,7 +222,6 @@ export const voteComment = (id, { uid, vote, postTitle } = {}) => {
       })
       .then(response => {
         dispatch(_voteCommentSuccess());
-        dispatch(AlertActions.alertSuccess("Vote successfully!"));
 
         return response;
       })

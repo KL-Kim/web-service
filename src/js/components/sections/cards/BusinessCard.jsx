@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
 
@@ -68,10 +68,7 @@ class BusinessCard extends PureComponent {
 
   handleToggleFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
-
+      this.props.openLoginDialog();
       return ;
     }
 
@@ -126,7 +123,7 @@ class BusinessCard extends PureComponent {
           </Link>
 
           <CardActions>
-            <Grid container justify="space-between" alignItems="center" className={classes.actionContainer}>
+            <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 {
                   _.isEmpty(this.props.tags)
@@ -171,14 +168,17 @@ BusinessCard.propTypes = {
   "classes": PropTypes.object.isRequired,
   "bid": PropTypes.string.isRequired,
   "enName": PropTypes.string.isRequired,
-  "rating": PropTypes.number,
+  "rating": PropTypes.number.isRequired,
   "thumbnail": PropTypes.object,
   "myFavors": PropTypes.array,
   "category": PropTypes.object.isRequired,
   "tags": PropTypes.array,
   "isLoggedIn": PropTypes.bool.isRequired,
   "userId": PropTypes.string.isRequired,
-  "favorOperation": PropTypes.func,
+
+  // Methods
+  "favorOperation": PropTypes.func.isRequired,
+  "openLoginDialog": PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(BusinessCard);

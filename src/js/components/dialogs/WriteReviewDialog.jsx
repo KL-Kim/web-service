@@ -25,7 +25,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
 // Custom Components
-import LoginDialog from './LoginDialog';
 import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
@@ -128,7 +127,7 @@ class WriteReviewDialog extends Component {
   }
 
   handleSubmit() {
-    if (this.props.addNewReview && !_.isEmpety(this.props.business) && this.props.userId && !this.props.readOnly) {
+    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {
       this.props.addNewReview({
         bid: this.props.business._id,
         uid: this.props.userId,
@@ -148,10 +147,7 @@ class WriteReviewDialog extends Component {
   render() {
     const { classes, business } = this.props;
 
-    if (!this.props.isLoggedIn) {
-      return <LoginDialog open={this.props.open} onClose={this.props.onClose} />;
-    } 
-    else if (!this.props.isVerified) {
+    if (this.props.isLoggedIn && !this.props.isVerified) {
       return <VerifyDialog open={this.props.open} onClose={this.props.onClose} />; 
     } 
     else {
@@ -330,20 +326,30 @@ class WriteReviewDialog extends Component {
   }
 }
 
+WriteReviewDialog.defaultProps = {
+  "fullScreen": false,
+  "open": false,
+  "isLoggedIn": false,
+  "userId": '',
+  "isVerified": false,
+  "readOnly": false,
+};
+
 WriteReviewDialog.propTypes = {
   "fullScreen": PropTypes.bool.isRequired,
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
   "onClose": PropTypes.func.isRequired,
 
-  "isLoggedIn": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
   "userId": PropTypes.string.isRequired,
-  "readOnly": PropTypes.bool,
+  "isVerified": PropTypes.bool.isRequired,
   "business": PropTypes.object.isRequired,
   "serviceGood": PropTypes.bool,
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "getNewReviews": PropTypes.func.isRequired,
+  "readOnly": PropTypes.bool,
 };
 
 export default withStyles(styles)(withMobileDialog()(WriteReviewDialog));

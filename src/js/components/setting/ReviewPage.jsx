@@ -22,7 +22,7 @@ import Container from 'js/components/layout/Container';
 import ReviewPanel from 'js/components/sections/ReviewPanel';
 
 // Actions
-import { getReviews, deleteReview, clearReviewsList } from 'js/actions/review.actions';
+import { getReviews, clearReviewsList } from 'js/actions/review.actions';
 
 const styles = theme => ({
 });
@@ -38,7 +38,6 @@ class ReviewPage extends Component {
     };
 
     this.loadMore = this.loadMore.bind(this);
-    this.getNewReviews = this.getNewReviews.bind(this);
   }
 
   componentDidMount() {
@@ -58,6 +57,10 @@ class ReviewPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearReviewsList();
+  }
+
   loadMore() {
     if (this.state.hasMore) {
       this.props.getReviews({
@@ -73,18 +76,8 @@ class ReviewPage extends Component {
     }
   }
 
-  getNewReviews() {
-    if (this.props.userId) {
-      this.props.getReviews({
-        'limit': this.state.count,
-        'uid': this.props.userId,
-        'orderBy': 'new',
-      });
-    }
-  }
-
   render() {
-    const { classes, reviews } = this.props;
+    const { classes } = this.props;
 
     return _.isEmpty(this.props.user) ? null : (
       <Container>
@@ -92,16 +85,10 @@ class ReviewPage extends Component {
           <Typography variant="title" gutterBottom>My Reviews</Typography>
           
           <ReviewPanel
-            reviews={reviews}
-            totalCount={this.props.totalCount}
             hasMore={this.state.hasMore}
             loadMore={this.loadMore}
-            clearReviewsList={this.props.clearReviewsList}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={this.props.user._id}
-            deleteReview={this.props.deleteReview}
-            getNewReviews={this.getNewReviews}
             showBusinessName
+            showDeleteIcon
           />
         </div>
       </Container>
@@ -111,22 +98,21 @@ class ReviewPage extends Component {
 
 ReviewPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "userId": PropTypes.string.isRequired,
   "user": PropTypes.object.isRequired,
-  "isLoggedIn": PropTypes.bool.isRequired,
-  "reviews": PropTypes.array.isRequired,
 
   // Methods
   "getReviews": PropTypes.func.isRequired,
-  "deleteReview": PropTypes.func.isRequired,
   "clearReviewsList": PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
-    "reviews": state.reviewReducer.reviews,
   };
 };
 
-export default connect(mapStateToProps, { getReviews, deleteReview, clearReviewsList })(withStyles(styles)(ReviewPage));
+export default connect(mapStateToProps, { 
+  getReviews, 
+  clearReviewsList,
+})(withStyles(styles)(ReviewPage));

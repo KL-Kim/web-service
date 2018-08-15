@@ -257,8 +257,8 @@ class NotificationPage extends Component {
               open={this.state.dialogOpen}
               title="Warning"
               content="Are you sure to clear all?"
-              operation={this.handleClearNotifications}
-              handleClose={this.handleConfirmationDialogClose}
+              onSubmit={this.handleClearNotifications}
+              onClose={this.handleConfirmationDialogClose}
             />
           </div>
         </div>
@@ -269,6 +269,7 @@ class NotificationPage extends Component {
 
 NotificationPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "userId": PropTypes.string.isRequired,
   "user": PropTypes.object.isRequired,
 };
 

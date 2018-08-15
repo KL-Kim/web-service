@@ -42,7 +42,6 @@ import Place from '@material-ui/icons/Place';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import AddCircleOutlined from '@material-ui/icons/AddCircleOutlined';
 
 // Custom Components
 import Container from './layout/Container'
@@ -53,6 +52,7 @@ import ReviewPanel from './sections/ReviewPanel';
 import Badge from 'js/components/utils/Badge';
 
 // Actions
+import { openLoginDialog } from 'js/actions/app.actions'; 
 import { favorOperation } from 'js/actions/user.actions';
 import { getSingleBusiness, reportBusiness } from 'js/actions/business.actions';
 import {
@@ -249,9 +249,7 @@ class SingleBusinessPage extends Component {
 
   handleAddToFavor() {
     if (!this.props.isLoggedIn) {
-      this.props.history.push("/signin", {
-        from: this.props.location.pathname,
-      });
+      this.props.openLoginDialog();
 
       return ;
     }
@@ -270,13 +268,11 @@ class SingleBusinessPage extends Component {
 
   // Review Related Methods
   handleAddNewReviewDialogOpen() {
-    // if (!this.props.isLoggedIn) {
-    //   this.props.history.push("/signin", {
-    //     from: this.props.location.pathname,
-    //   });
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
 
-    //   return ;
-    // }
+      return ;
+    }
 
     this.setState({
       "addNewDialogOpen": true,
@@ -759,15 +755,8 @@ class SingleBusinessPage extends Component {
 
           <div>
             <ReviewPanel
-              reviews={reviews}
-              totalCount={this.props.totalCount}
               hasMore={this.state.hasMore}
               loadMore={this.loadMore}
-              clearReviewsList={this.props.clearReviewsList}
-              isLoggedIn={this.props.isLoggedIn}
-              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-              voteReview={this.props.voteReview}
-
               addNew
               onFocusAddNew={this.handleAddNewReviewDialogOpen}
             />
@@ -775,20 +764,20 @@ class SingleBusinessPage extends Component {
 
           <div id="modal-container">
             <WriteReviewDialog
+              open={this.state.addNewDialogOpen}
+              onClose={this.handleAddNewReviewDialogClose}
               isLoggedIn={this.props.isLoggedIn}
               userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-              isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
+              isVerified={this.props.isVerified}
               business={business}
-              open={this.state.addNewDialogOpen}
               addNewReview={this.props.addNewReview}
               getNewReviews={this.getNewReviews}
-              onClose={this.handleAddNewReviewDialogClose}
             />
 
             <ReportDialog
               open={this.state.reportDialogOpen}
-              handleSubmit={this.handleSubmitReport}
-              handleClose={this.handleReportDialogClose}
+              onSubmit={this.handleSubmitReport}
+              onClose={this.handleReportDialogClose}
             />
 
             <Popover
@@ -826,7 +815,7 @@ class SingleBusinessPage extends Component {
                     readOnly
                     isLoggedIn={this.props.isLoggedIn}
                     userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                    isVerified={_.isEmpty(this.props.user) ? false : this.props.user.isVerified}
+                    isVerified={this.props.isVerified}
                     rating={review.rating}
                     content={review.content}
                     serviceGood={review.serviceGood}
@@ -844,6 +833,8 @@ class SingleBusinessPage extends Component {
 
 SingleBusinessPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "isLoggedIn": PropTypes.bool.isRequired,
+  "isVerified": PropTypes.bool.isRequired,
   "user": PropTypes.object,
   "isFetching": PropTypes.bool.isRequired,
   "reviews": PropTypes.array.isRequired,
@@ -854,6 +845,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
+    "isVerified": state.userReducer.isUserVerified,
     "reviews": state.reviewReducer.reviews,
     "totalCount": state.reviewReducer.totalCount,
     "isFetching": state.businessReducer.isFetching,
@@ -868,5 +860,6 @@ export default connect(mapStateToProps, {
   voteReview,
   clearReviewsList,
   getSingleReview,
+  openLoginDialog,
   favorOperation,
 })(withStyles(styles)(SingleBusinessPage));

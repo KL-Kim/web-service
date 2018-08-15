@@ -5,9 +5,10 @@ import userTypes from '../constants/user.types.js';
 import emailTypes from '../constants/email.types.js';
 
 const initialState = {
-  "user": {},
   "isFetching": false,
+  "user": {},
   "isLoggedIn": false,
+  "isUserVerified": false,
   "error": null,
   "updatedAt": null,
 };
@@ -62,6 +63,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "isLoggedIn": true,
+        "isUserVerified": action.payload.user.isVerified,
         "user": action.payload.user,
         "updatedAt": Date.now(),
       };
@@ -72,6 +74,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "isLoggedIn": true,
+        "isUserVerified": action.payload.user.isVerified,
         "user": action.payload.user,
         "updatedAt": Date.now(),
       };
@@ -81,6 +84,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
+        "isUserVerified": action.payload.user.isVerified,
         "user": action.payload.user,
         "updatedAt": Date.now(),
       };
@@ -98,6 +102,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "isLoggedIn": true,
+        "isUserVerified": action.payload.user.isVerified,
         "user": action.payload.user,
         "updatedAt": Date.now(),
       };
@@ -111,6 +116,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
+        "isUserVerified": action.payload.user.isVerified,
         "user": action.payload.user,
         "updatedAt": Date.now(),
       };

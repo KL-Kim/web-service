@@ -34,7 +34,12 @@ export const getCategoriesList = () => {
   });
 
   return (dispatch, getState) => {
-    dispatch(_getCategoriesRequest());
+
+    const state = getState();
+
+    if (!_.isEmpty(state.categoryReducer.categoriesList)) {
+      return Promise.resolve(state.categoryReducer.categoriesList);
+    }
 
     // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
     // const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
@@ -44,6 +49,8 @@ export const getCategoriesList = () => {
 
     //   return Promise.resolve(categories);
     // }
+  
+    dispatch(_getCategoriesRequest());
 
     return fetchCategoriesOrTags("CATAGORY")
       .then(response => {

@@ -92,14 +92,8 @@ class FavorPage extends Component {
           <BusinessPanel 
             hasMore={this.state.hasMore}
             loadMore={this.loadMore}
-            businessList={this.props.businessList}
-            totalCount={this.props.totalCount}
-            isLoggedIn={this.props.isLoggedIn}
-            userId={this.props.user._id}
-            favorOperation={this.props.favorOperation}
             showNoMore
           />
-          
         </div>
       </Container>
     );

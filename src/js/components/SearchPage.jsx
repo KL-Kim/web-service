@@ -113,6 +113,7 @@ class SearchPage extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleClickQuery = this.handleClickQuery.bind(this);
     this.handleSelectCategory = this.handleSelectCategory.bind(this);
     this.handleSelectArea = this.handleSelectArea.bind(this);
     this.handleSelectOrder = this.handleSelectOrder.bind(this);
@@ -263,6 +264,59 @@ class SearchPage extends Component {
     }
   }
 
+  handleClickQuery = query => e => {
+    if (query) {
+      const categories = searchCategoryOrTag('category', query);
+      const tags = searchCategoryOrTag('tag', query);
+
+      this.setState({
+        searchCategoryResponse: categories.slice(),
+        searchTagResponse: tags.slice(),
+      });
+    }
+
+    this.props.getBusinessList({
+      limit: this.state.limit,
+      search: query,
+    })
+    .then(response => {
+      if (response) {
+        const categories = [];
+        const categoryIds = [];
+        const areas = [];
+        const areaIds = [];
+        let cIndex, aIndex;
+
+        response.list.map(business => {
+          cIndex = categoryIds.indexOf(business.category._id);
+
+          if (cIndex < 0) {
+            categories.push(business.category);
+            categoryIds.push(business.category._id);
+          }
+
+          aIndex = areaIds.indexOf(business.address.area.code)
+
+          if (aIndex < 0) {
+            areaIds.push(business.address.area.code);
+            areas.push(business.address.area);
+          }
+
+          return ;
+        });
+
+        this.setState({
+          searchedQuery: query,
+          search: query,
+          categories: categories.slice(),
+          areas: areas.slice(),
+          count: response.list.length,
+          hasMore: response.list.length < response.totalCount,
+        });
+      }
+    });
+  }
+
   loadMore() {
     if (this.state.hasMore) {
       this.props.getBusinessList({
@@ -324,6 +378,7 @@ class SearchPage extends Component {
                     disableUnderline
                     autoComplete="off"
                     placeholder="Search..."
+                    value={this.state.search}
                     onChange={this.handleChange}
                     startAdornment={
                       <InputAdornment position="start" classes={{ root: classes.adornmentRoot }}>
@@ -352,7 +407,7 @@ class SearchPage extends Component {
                         <List subheader={<ListSubheader component="div">Popular Searches</ListSubheader> }>
                           {
                             queries.map((item, index) => (
-                              <ListItem key={index} button>
+                              <ListItem key={index} button onClick={this.handleClickQuery(item)}>
                                 <ListItemText primary={item} />
                               </ListItem>
                             ))
@@ -370,7 +425,7 @@ class SearchPage extends Component {
                                     <ListItemText primary={'None'} />
                                   </ListItem>
                                 : this.state.searchHistory.map((item, index) => (
-                                  <ListItem key={index} button>
+                                  <ListItem key={index} button onClick={this.handleClickQuery(item)}>
                                     <ListItemText primary={item} />
                                   </ListItem>
                                 ))
@@ -386,22 +441,18 @@ class SearchPage extends Component {
             _.isEmpty(this.state.searchCategoryResponse) || _.isEmpty(this.state.search)
               ? null
               : <div className={classes.section}>
-                  <Paper className={classes.paper}>
-                    <Typography variant="title" gutterBottom>Category: '{this.state.search}'</Typography>
-                    <div>
+                  <Paper>
+                    <List subheader={<ListSubheader component="div">Category</ListSubheader> }>
                       {
-                        this.state.searchCategoryResponse.map((item) => (
+                        this.state.searchCategoryResponse.map(item => (
                           <Link to={"/business/category/" + item.enName} key={item._id}>
-                            <CustomButton
-                              round
-                              className={classes.chip}
-                            >
-                              {item.krName}
-                            </CustomButton>
+                            <ListItem button>
+                              <ListItemText primary={item.krName} />
+                            </ListItem>
                           </Link>
                         ))
                       }
-                    </div>
+                    </List>
                   </Paper>
                 </div>
           }
@@ -410,22 +461,18 @@ class SearchPage extends Component {
             _.isEmpty(this.state.searchTagResponse) || _.isEmpty(this.state.search)
               ? null
               : <div className={classes.section}>
-                  <Paper className={classes.paper}>
-                    <Typography variant="title" gutterBottom>Tag: '{this.state.search}'</Typography>
-                    <div>
+                  <Paper>
+                    <List subheader={<ListSubheader component="div">Tag</ListSubheader> }>
                       {
                         this.state.searchTagResponse.map((item) => (
                           <Link to={"/business/tag/" + item.enName} key={item._id}>
-                            <CustomButton
-                              round
-                              className={classes.chip}
-                            >
-                              #{item.krName}
-                            </CustomButton>
+                            <ListItem button>
+                              <ListItemText primary={"#" + item.krName} />
+                            </ListItem>
                           </Link>
                         ))
                       }
-                    </div>
+                    </List>
                   </Paper>
                 </div>
           }
@@ -437,7 +484,7 @@ class SearchPage extends Component {
                   <Grid container justify="space-between" alignItems="flex-end">
                     <Grid item>
                       <Typography variant="title" gutterBottom>
-                        Business: "{this.state.searchedQuery}"
+                        Business
                       </Typography>
                     </Grid>
 

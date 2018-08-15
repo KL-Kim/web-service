@@ -37,7 +37,7 @@ class ConfirmationDialog extends Component {
   }
 
   handleSubmit() {
-    this.props.operation();
+    this.props.onSubmit();
   }
 
   render() {
@@ -48,7 +48,7 @@ class ConfirmationDialog extends Component {
         fullWidth
         fullScreen={this.props.fullScreen}
         open={this.props.open}
-        onClose={this.props.handleClose}
+        onClose={this.props.onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -56,7 +56,7 @@ class ConfirmationDialog extends Component {
           <AppBar className={classes.appBar} color="inherit">
             <Toolbar>
                 <div className={classes.flex}>
-                  <IconButton color="inherit" onClick={this.props.handleClose} >
+                  <IconButton color="inherit" onClick={this.props.onClose} >
                     <Close />
                   </IconButton>
                 </div>
@@ -83,7 +83,7 @@ class ConfirmationDialog extends Component {
 
         <Hidden xsDown>
           <DialogActions>
-            <Button size="small" onClick={this.props.handleClose}>
+            <Button size="small" onClick={this.props.onClose}>
               Cancel
             </Button>
             <Button color="primary" size="small" onClick={this.handleSubmit}>
@@ -97,12 +97,13 @@ class ConfirmationDialog extends Component {
 }
 
 ConfirmationDialog.propTypes = {
+  "fullScreen": PropTypes.bool.isRequired,
   "classes": PropTypes.object.isRequired,
   "open": PropTypes.bool.isRequired,
   "title": PropTypes.string.isRequired,
   "content": PropTypes.string.isRequired,
-  "handleClose": PropTypes.func.isRequired,
-  "operation": PropTypes.func.isRequired,
+  "onSubmit": PropTypes.func.isRequired,
+  "onClose": PropTypes.func.isRequired,
 }
 
 export default withRouter(withStyles(styles)(withMobileDialog()(ConfirmationDialog)));

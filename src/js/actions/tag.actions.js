@@ -37,7 +37,11 @@ export const getTagsList = () => {
   });
 
   return (dispatch, getState) => {
-    dispatch(_getTagsRequest());
+    const state = getState();
+
+    if (!_.isEmpty(state.tagReducer.tagsList)) {
+      return Promise.resolve(state.tagReducer.tagsList);
+    }
 
     // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
     // const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
@@ -47,6 +51,8 @@ export const getTagsList = () => {
 
     //   return Promise.resolve(tags);
     // }
+
+    dispatch(_getTagsRequest());
 
     return fetchCategoriesOrTags("TAG")
       .then(response => {

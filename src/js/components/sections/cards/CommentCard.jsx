@@ -46,6 +46,7 @@ class CommentCard extends Component {
     super(props);
 
     this.state = {
+      "isRemoved": false,
       "replyDialogOpen": false,
       "deleteDialogOpen": false,
       "content": '',
@@ -71,6 +72,12 @@ class CommentCard extends Component {
   }
 
   handleOpenReplyDialog() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+      
+      return ;
+    } 
+
     this.setState({
       "replyDialogOpen": true,
     });
@@ -83,6 +90,12 @@ class CommentCard extends Component {
   }
 
   handleOpenDeleteDialog() {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+      
+      return ;
+    } 
+
     this.setState({
       "deleteDialogOpen": true,
     });
@@ -95,10 +108,13 @@ class CommentCard extends Component {
   }
 
   handleVoteComment = (vote) => e => {
-    if (!this.props.isLoggedIn || !this.props.isVerified) {
-      this.handleOpenReplyDialog();
-    } 
-    else if (this.props.voteComment && this.props.userId && this.props.commentId) {
+    if (!this.props.isLoggedIn) {
+      this.props.openLoginDialog();
+      
+      return ;
+    }
+
+    if (this.props.voteComment && this.props.isLoggedIn && this.props.userId && this.props.commentId) {
       this.props.voteComment(this.props.commentId, {
         uid: this.props.userId,
         postTitle: this.props.postTitle,
@@ -116,18 +132,14 @@ class CommentCard extends Component {
   }
 
   handleDeleteComment() {
-    if (!this.props.isLoggedIn || !this.props.isVerified) {
-      this.handleOpenReplyDialog();
-    }
-    else if (this.props.deleteComment && this.props.commentId && this.props.userId) {
+    if (this.props.deleteComment && this.props.isLoggedIn && this.props.isOwn && this.props.commentId && this.props.userId ) {
       this.props.deleteComment(this.props.commentId, this.props.userId)
         .then(response => {
           if (response) {
             this.setState({
-              "deleteDialogOpen": false
+              "isRemoved": true,
+              "deleteDialogOpen": false,
             });
-
-            this.props.getNewComments();
           }
         });
     }
@@ -136,7 +148,7 @@ class CommentCard extends Component {
   render() {
     const { classes } = this.props;
 
-    return (
+    return this.state.isRemoved ? null : (
       <div>
         <Card>
           <CardHeader
@@ -147,6 +159,7 @@ class CommentCard extends Component {
                     <ProperName user={this.props.owner} />
                   </Link>}
           />
+
           <CardContent>
               <Typography variant="body1" gutterBottom>
                 {
@@ -169,6 +182,7 @@ class CommentCard extends Component {
                   : null
               }
           </CardContent>
+
           <CardActions>
             {
                 this.props.status === 'NORMAL'
@@ -213,8 +227,8 @@ class CommentCard extends Component {
                   open={this.state.deleteDialogOpen}
                   title="Warning"
                   content="Are you sure to delete the comment?"
-                  operation={this.handleDeleteComment}
-                  handleClose={this.handleCloseDeleteDialog}
+                  onSubmit={this.handleDeleteComment}
+                  onClose={this.handleCloseDeleteDialog}
                 />
               : <WriteCommentDialog 
                   open={this.state.replyDialogOpen} 
@@ -239,6 +253,7 @@ class CommentCard extends Component {
 CommentCard.defaultProps = {
   "isLoggedIn": false,
   "userId": '',
+  "isVerified": false,
   "isOwn": false,
   "showReplyIcon": false,
   "showDeleteIcon": false,

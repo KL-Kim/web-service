@@ -27,7 +27,6 @@ import { getBusinessList, clearBusinessList } from 'js/actions/business.actions'
 import { getReviews, voteReview, clearReviewsList } from 'js/actions/review.actions';
 import { 
     getComments,
-    addNewComment,
     voteComment,
     deleteComment,
     clearCommentsList,
@@ -91,6 +90,8 @@ class ProfilePage extends Component {
 
     componentWillUnmount() {
         this.props.clearBusinessList();
+        this.props.clearReviewsList();
+        this.props.clearCommentsList();
     }
 
     handleChange(e, value) {
@@ -147,14 +148,8 @@ class ProfilePage extends Component {
             case 1:
                 return (
                     <ReviewPanel
-                        reviews={this.props.reviews}
-                        totalCount={this.props.totalCount}
                         hasMore={this.state.reviewsHasMore}
                         loadMore={this.loadMoreReviews}
-                        clearReviewsList={this.props.clearReviewsList}
-                        isLoggedIn={this.props.isLoggedIn}
-                        userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                        voteReview={this.props.voteReview}
                         showBusinessName
                     />
                 );
@@ -165,23 +160,12 @@ class ProfilePage extends Component {
                         <CommentPanel
                             hasMore={this.state.commentsHasMore}
                             loadMore={this.commentLoadMore}
-                            commentsList={this.props.comments}
-                            totalCount={this.props.totalCount}
-                            isLoggedIn={this.props.isLoggedIn}
-                            userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                            voteComment={this.props.voteComment}
                         />
                     </div>
                 );
             default: 
                 return (
-                    <BusinessPanel 
-                        businessList={this.props.businessList}
-                        totalCount={this.props.totalCount}
-                        isLoggedIn={this.props.isLoggedIn}
-                        userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                        favorOperation={this.props.favorOperation}
-                    />
+                    <BusinessPanel />
                 );
         }
     }
@@ -194,7 +178,7 @@ class ProfilePage extends Component {
             <Container>
                 <div>
                     {
-                        user
+                        !_.isEmpty(user)
                             ?  <div>
                                     <section className={classes.section}>
                                         <Grid container spacing={40} justify="center" alignItems="center">
@@ -239,25 +223,23 @@ ProfilePage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        "user": state.userReducer.user,
-        "isLoggedIn": state.userReducer.isLoggedIn,
-        "businessList": state.businessReducer.businessList,
-        "reviews": state.reviewReducer.reviews,
-        "comments": state.commentReducer.comments,
-    };
+    return {};
 };
 
 export default connect(mapStateToProps, { 
+    // User Actions
     getUserByUsername, 
-    getBusinessList, 
     favorOperation,
+
+    // Business Actions
+    getBusinessList, 
     clearBusinessList,
+
+    // Review Actions
     getReviews,
-    voteReview,
     clearReviewsList,
+
+    // Comment Actions
     getComments,
-    voteComment,
-    deleteComment,
     clearCommentsList,
 })(withStyles(styles)(ProfilePage));

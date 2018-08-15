@@ -84,7 +84,7 @@ class WriteCommentDialog extends Component {
     handleSubmit() {
         const { parentId, replyToUser } = this.props;
 
-        if (this.props.addNewComment && this.props.userId && this.props.postId && this.state.content) {
+        if (this.props.addNewComment && this.props.isLoggedIn && this.props.userId && this.props.postId && this.state.content) {
             this.props.addNewComment({
                 userId: this.props.userId,
                 postId: this.props.postId,
@@ -94,18 +94,13 @@ class WriteCommentDialog extends Component {
             })
             .then(response => {
                 if (response) {
-                    return this.props.getNewComments();
+                    if (this.props.getNewComments) {
+                        this.props.getNewComments();
+                    }
                 }
             });
 
             this.handleClose();
-
-            this.setState({
-                content: '',
-                parentId: '',
-                replyToComment: '',
-                replyToUser: '',
-            });
         }
     }
 
@@ -123,10 +118,7 @@ class WriteCommentDialog extends Component {
     render() {
         const { classes } = this.props;
 
-        if (!this.props.isLoggedIn) {
-            return <LoginDialog open={this.props.open} onClose={this.props.onClose} />;
-        } 
-        else if (!this.props.isVerified) {
+        if (!this.props.isVerified) {
             return <VerifyDialog open={this.props.open} onClose={this.props.onClose} />; 
         }  
         else  {
@@ -173,6 +165,16 @@ class WriteCommentDialog extends Component {
     }
 }
 
+WriteCommentDialog.defaultProps = {
+    "fullScreen": false,
+    "open": false,
+    "isLoggedIn": false,
+    "userId": '',
+    "postId": '',
+    "isVerified": false,
+    "readOnly": false,
+};
+
 WriteCommentDialog.propTypes = {
     "classes": PropTypes.object.isRequired,
     "readOnly": PropTypes.bool,
@@ -180,6 +182,7 @@ WriteCommentDialog.propTypes = {
     "onClose": PropTypes.func.isRequired,
 
     "isLoggedIn": PropTypes.bool.isRequired,
+    "isVerified": PropTypes.bool.isRequired,
     "userId": PropTypes.string.isRequired,
     "postId": PropTypes.string.isRequired,
     "getNewComments": PropTypes.func.isRequired,

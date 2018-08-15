@@ -146,8 +146,6 @@ export const getAreas = (code) => {
       .then(res => {
         dispatch(_getAreasSuccess(res));
 
-
-
         return res;
       }).catch(err => {
         dispatch(AlertActions.alertFailure(err.message));
