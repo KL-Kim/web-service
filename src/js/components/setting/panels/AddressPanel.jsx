@@ -43,6 +43,9 @@ class AddressPanel extends Component {
       "cityCode": '',
       "areaCode": '',
       "street": '',
+      "provinces": [],
+      "cities": [],
+      "areas": [],
     };
 
     this.handlePanelChange = this.handlePanelChange.bind(this);
@@ -51,7 +54,14 @@ class AddressPanel extends Component {
   }
 
   componentDidMount() {
-    this.props.getProvinces();
+    this.props.getProvinces()
+      .then(response => {
+        if (response) {
+          this.setState({
+            provinces: [...response],
+          });
+        }
+      });
   }
 
   handlePanelChange = panel => (event, expanded) => {
@@ -68,14 +78,27 @@ class AddressPanel extends Component {
         this.setState({
           "provinceCode": value,
         });
-        this.props.getCities(value);
+        this.props.getCities(value)
+          .then(response => {
+            if (response) {
+              this.setState({
+                cities: [...response],
+              });
+            }
+          });
         break;
 
       case 'city':
         this.setState({
           "cityCode": value
         });
-        this.props.getAreas(value);
+        this.props.getAreas(value).then(response => {
+          if (response) {
+            this.setState({
+              areas: [...response],
+            });
+          }
+        });
         break;
 
       case 'area':
@@ -94,11 +117,9 @@ class AddressPanel extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const id = this.props.user._id;
-
-    const province = _.find(this.props.provinces, { 'code': this.state.provinceCode });
-    const city = _.find(this.props.cities, { 'code': this.state.cityCode });
-    const area = _.find(this.props.areas, { 'code': this.state.areaCode });
+    const province = _.find(this.state.provinces, { 'code': this.state.provinceCode });
+    const city = _.find(this.state.cities, { 'code': this.state.cityCode });
+    const area = _.find(this.state.areas, { 'code': this.state.areaCode });
 
     const data = {
       "address": {
@@ -115,14 +136,17 @@ class AddressPanel extends Component {
           "code": area.code
         },
         "street": this.state.street,
-      }
+      },
     };
 
-    this.props.updateUserProfile(id, data);
+    if (!_.isEmpty(this.props.user)) {
+      this.props.updateUserProfile(this.props.user._id, data);
+    }
   }
 
   render() {
-    const { classes, user, cities, areas, isFetching } = this.props;
+    const { classes, user, isFetching } = this.props;
+    const { cities, areas } = this.state;
 
     const area = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
     const street = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.street) ? user.address.street : '') : '';
@@ -155,9 +179,9 @@ class AddressPanel extends Component {
                 >
                   <option value="" />
                   {
-                    _.isEmpty(this.props.provinces)
+                    _.isEmpty(this.state.provinces)
                       ? null
-                      : this.props.provinces.map(p => (
+                      : this.state.provinces.map(p => (
                           <option key={p.code} value={p.code}>{p.cnName + ' ' + p.pinyin}</option>
                         ))
                   }
@@ -254,8 +278,7 @@ AddressPanel.propTypes = {
   "classes": PropTypes.object.isRequired,
   "user": PropTypes.object.isRequired,
   "error": PropTypes.bool,
-  "citis": PropTypes.array,
-  "areas": PropTypes.array,
+  
   "isFetching": PropTypes.bool,
   "updateUserProfile": PropTypes.func.isRequired,
   "getCities" : PropTypes.func.isRequired,
@@ -264,9 +287,6 @@ AddressPanel.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "provinces": state.pcaReducer.provinces,
-    "cities": state.pcaReducer.cities,
-    "areas": state.pcaReducer.areas,
   };
 };
 

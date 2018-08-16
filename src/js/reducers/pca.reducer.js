@@ -1,11 +1,9 @@
 /**
  * Pca Reducer
  */
-import pcaTypes from '../constants/pca.types';
+import pcaTypes from 'js/constants/pca.types';
 
 const initialState = {
-  provinces: [],
-  cities: [],
   areas: [],
   isFetching: false,
   error: null,
@@ -16,6 +14,7 @@ const pcaReducer = (state = initialState, action) => {
     case pcaTypes.GET_PROVINCES_REQUEST:
     case pcaTypes.GET_CITIES_REQUEST:
     case pcaTypes.GET_AREAS_REQUEST:
+    case pcaTypes.GET_GENERAL_AREAS_REQUEST:
       return {
         ...state,
         isFetching: true,
@@ -24,6 +23,7 @@ const pcaReducer = (state = initialState, action) => {
     case pcaTypes.GET_PROVINCES_FAILURE:
     case pcaTypes.GET_CITIES_FAILURE:
     case pcaTypes.GET_AREAS_FAILURE:
+    case pcaTypes.GET_GENERAL_AREAS_FAILURE:
       return {
         ...state,
         isFetching: false,
@@ -31,20 +31,14 @@ const pcaReducer = (state = initialState, action) => {
       };
 
     case pcaTypes.GET_PROVINCES_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        provinces: [...action.payload.provinces],
-      };
-
     case pcaTypes.GET_CITIES_SUCCESS:
+    case pcaTypes.GET_AREAS_SUCCESS:
       return {
         ...state,
         isFetching: false,
-        cities: [...action.payload.cities],
       };
-
-    case pcaTypes.GET_AREAS_SUCCESS:
+          
+    case pcaTypes.GET_GENERAL_AREAS_SUCCESS:
       return {
         ...state,
         isFetching: false,

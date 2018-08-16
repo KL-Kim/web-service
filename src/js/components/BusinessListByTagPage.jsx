@@ -58,11 +58,10 @@ class BusinessListByTag extends Component {
     super(props);
 
     this.state = {
-      "limit": 12,
+      "limit": 48,
       "count": 0,
       "categories": [],
       "categorySlug": '',
-      "areas": [],
       "area": '',
       "orderBy": '',
       "event": false,
@@ -71,9 +70,10 @@ class BusinessListByTag extends Component {
       "tag": {},
     };
 
+    this.getTag = this.getTag.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.handleClickCategory = this.handleClickCategory.bind(this);
-    this.handleClickArea = this.handleClickArea.bind(this);
+    this.handleSelectArea = this.handleSelectArea.bind(this);
     this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
     this.handleToggleEventSwtich = this.handleToggleEventSwtich.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
@@ -83,6 +83,8 @@ class BusinessListByTag extends Component {
 
   componentDidMount() {
     if (this.props.match.params.slug) {
+      this.getTag();
+
       this.props.getBusinessList({
         limit: this.state.limit,
         tag: this.props.match.params.slug,
@@ -91,9 +93,7 @@ class BusinessListByTag extends Component {
         if (response) {
           const categories = [];
           const categoryIds = [];
-          const areas = [];
-          const areaIds = [];
-          let cIndex, aIndex;
+          let cIndex;
   
           response.list.map(business => {
             cIndex = categoryIds.indexOf(business.category._id);
@@ -103,43 +103,23 @@ class BusinessListByTag extends Component {
               categoryIds.push(business.category._id);
             }
   
-            aIndex = areaIds.indexOf(business.address.area.code)
-  
-            if (aIndex < 0) {
-              areaIds.push(business.address.area.code);
-              areas.push(business.address.area);
-            }
-  
-  
-            return '';
+            return ;
           });
   
           this.setState({
-            categories: categories.slice(),
-            areas: areas.slice(),
+            categories: [...categories],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
         }
       });
-  
-      this.props.getTagsList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  tag: item
-                });
-              }
-            });
-          }
-        });
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
+      this.getTag();
+
       this.props.getBusinessList({
         limit: this.state.limit,
         tag: this.props.match.params.slug,
@@ -148,9 +128,8 @@ class BusinessListByTag extends Component {
         if (response) {
           const categories = [];
           const categoryIds = [];
-          const areas = [];
-          const areaIds = [];
-          let cIndex, aIndex;
+          
+          let cIndex;
 
           response.list.map(business => {
             cIndex = categoryIds.indexOf(business.category._id);
@@ -160,21 +139,13 @@ class BusinessListByTag extends Component {
               categoryIds.push(business.category._id);
             }
 
-            aIndex = areaIds.indexOf(business.address.area.code)
-
-            if (aIndex < 0) {
-              areaIds.push(business.address.area.code);
-              areas.push(business.address.area);
-            }
-
-
+  
             return null;
           });
 
           this.setState({
-            categories: categories.slice(),
-            areas: areas.slice(),
-            area: '',
+            categories: [...categories],
+            "area": '',
             "orderBy": '',
             "event": false,
             count: response.list.length,
@@ -182,24 +153,26 @@ class BusinessListByTag extends Component {
           });
         }
       });
-
-      this.props.getTagsList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  tag: item
-                });
-              }
-            });
-          }
-        });
     }
   }
 
   componentWillUnmount() {
     this.props.clearBusinessList();
+  }
+
+  getTag() {
+    this.props.getTagsList()
+      .then(response => {
+        if (response) {
+          _.find(response, item => {
+            if (item.enName === this.props.match.params.slug) {
+              this.setState({
+                tag: item
+              });
+            }
+          });
+        }
+      });
   }
 
   handleSubmitFilter() {
@@ -213,9 +186,25 @@ class BusinessListByTag extends Component {
     })
     .then(response => {
       if (response) {
+        const categories = [];
+        const categoryIds = [];
+        let cIndex;
+
+        response.list.map(business => {
+          cIndex = categoryIds.indexOf(business.category._id);
+
+          if (cIndex < 0) {
+            categories.push(business.category);
+            categoryIds.push(business.category._id);
+          }
+
+          return ;
+        });
+
         this.setState({
+          categories: [...categories],
           count: response.list.length,
-          hasMore: response.list.length < response.totalCount
+          hasMore: response.list.length < response.totalCount,
         });
       }
     });
@@ -248,7 +237,7 @@ class BusinessListByTag extends Component {
     }
   }
 
-  handleClickArea = area => e => {
+  handleSelectArea = area => e => {
     if (this.state.area.code !== area.code) {
       this.setState({
         area: area,
@@ -295,9 +284,25 @@ class BusinessListByTag extends Component {
       })
       .then(response => {
         if (response) {
+          const categories = [];
+          const categoryIds = [];
+          let cIndex;
+  
+          response.list.map(business => {
+            cIndex = categoryIds.indexOf(business.category._id);
+  
+            if (cIndex < 0) {
+              categories.push(business.category);
+              categoryIds.push(business.category._id);
+            }
+  
+            return ;
+          });
+  
           this.setState({
+            categories: [...categories],
             count: response.list.length,
-            hasMore: response.list.length < response.totalCount
+            hasMore: response.list.length < response.totalCount,
           });
         }
       });
@@ -396,23 +401,23 @@ class BusinessListByTag extends Component {
                       size="small"
                       color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
                       variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
-                      onClick={this.handleClickArea('')}
+                      onClick={this.handleSelectArea('')}
                     >
                       All
                     </Button>
                   </Grid>
 
                   {
-                    this.state.areas.map((item, index) =>
+                    this.props.areas.map(item =>
                       <Grid item key={item.code}>
                         <Button
                           fullWidth
                           size="small"
                           color={this.state.area.code === item.code ? 'primary' : 'default'}
                           variant={this.state.area.code === item.code ? 'outlined' : 'text'}
-                          onClick={this.handleClickArea(item)}
+                          onClick={this.handleSelectArea(item)}
                         >
-                          {item.name}
+                          {item.cnName}
                         </Button>
                       </Grid>
                     )
@@ -516,6 +521,7 @@ BusinessListByTag.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    areas: state.pcaReducer.areas,
   };
 };
 

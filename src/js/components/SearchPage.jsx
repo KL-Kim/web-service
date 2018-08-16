@@ -39,7 +39,6 @@ import BusinessPanel from './sections/BusinessPanel';
 import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
-import { favorOperation } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
 // WebStorage
@@ -96,15 +95,12 @@ class SearchPage extends Component {
     this.state = {
       "search": '',
       "searchedQuery": '',
-      "limit": 24,
-      "count": 0,
       "categories": [],
       "selectedCategory": '',
       "areas": [],
       "area": '',
       "orderBy": '',
       "event": false,
-      "hasMore": false,
       "filterPopoverOpen": false,
       "searchCategoryResponse": [],
       "searchTagResponse": [],
@@ -120,16 +116,21 @@ class SearchPage extends Component {
     this.handleToggleEvent = this.handleToggleEvent.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
-    this.loadMore = this.loadMore.bind(this);
     this.handleSubmitFilter = this.handleSubmitFilter.bind(this);
   }
 
   componentDidMount() {
     const searchHistory = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY) || [];
 
-    this.setState({
-      searchHistory: searchHistory.reverse().slice(),
-    });
+    if (!_.isEmpty(searchHistory)) {
+      this.setState({
+        searchHistory: searchHistory.reverse().slice(),
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   handleChange(e) {
@@ -163,7 +164,6 @@ class SearchPage extends Component {
   handleSelectCategory = slug => e => {
     if (this.state.selectedCategory !== slug) {
       this.props.getBusinessList({
-        limit: this.state.limit,
         category: slug,
         area: this.state.area.code,
         event: this.state.event,
@@ -221,7 +221,6 @@ class SearchPage extends Component {
 
     if (this.state.search) {
       this.props.getBusinessList({
-        limit: this.state.limit,
         search: this.state.search,
       })
       .then(response => {
@@ -276,7 +275,6 @@ class SearchPage extends Component {
     }
 
     this.props.getBusinessList({
-      limit: this.state.limit,
       search: query,
     })
     .then(response => {
@@ -317,30 +315,8 @@ class SearchPage extends Component {
     });
   }
 
-  loadMore() {
-    if (this.state.hasMore) {
-      this.props.getBusinessList({
-        limit: this.state.count + this.state.limit,
-        category: this.state.selectedCategory,
-        area: this.state.area.code,
-        event: this.state.event,
-        search: this.state.search,
-        orderBy: this.state.orderBy,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            count: response.list.length,
-            hasMore: response.list.length < response.totalCount
-          });
-        }
-      });
-    }
-  }
-
   handleSubmitFilter() {
     this.props.getBusinessList({
-      limit: this.state.limit,
       category: this.state.selectedCategory,
       area: this.state.area.code,
       event: this.state.event,
@@ -484,7 +460,7 @@ class SearchPage extends Component {
                   <Grid container justify="space-between" alignItems="flex-end">
                     <Grid item>
                       <Typography variant="title" gutterBottom>
-                        Business
+                        Business ({this.props.totalCount}) 
                       </Typography>
                     </Grid>
 
@@ -536,17 +512,7 @@ class SearchPage extends Component {
                     </HorizontalScrollBar>
                   </div>
 
-                  <BusinessPanel
-                    hasMore={this.state.hasMore}
-                    loadMore={this.loadMore} 
-                    businessList={businessList}
-                    totalCount={this.props.totalCount}
-                    isLoggedIn={this.props.isLoggedIn}
-                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                    favorOperation={this.props.favorOperation}
-                    clearBusinessList={this.props.clearBusinessList}
-                    showNoMore
-                  />
+                  <BusinessPanel showNoMore />
                 </div>
           }
 
@@ -678,37 +644,28 @@ class SearchPage extends Component {
           </div>
         </div>
       </Container>
-    )
+    );
   }
-
 }
 
 SearchPage.propTypes = {
   "classes": PropTypes.object.isRequired,
   "businessList": PropTypes.array.isRequired,
   "totalCount": PropTypes.number.isRequired,
-  "isFetching": PropTypes.bool,
-  "user": PropTypes.object,
-  "isLoggedIn": PropTypes.bool.isRequired,
 
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
   "clearBusinessList": PropTypes.func.isRequired,
-  "favorOperation": PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
     "businessList": state.businessReducer.businessList,
     "totalCount": state.businessReducer.totalCount,
-    "isFetching": state.businessReducer.isFetching,
   };
 };
 
 export default connect(mapStateToProps, {
   getBusinessList,
   clearBusinessList,
-  favorOperation,
 })(withStyles(styles)(SearchPage));

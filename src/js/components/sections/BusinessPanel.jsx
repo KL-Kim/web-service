@@ -62,12 +62,6 @@ class BusinessPanel extends Component {
     render() {
         const { classes, businessList } = this.props;
         let index;
-
-        if (this.props.isFetching) {
-            return  <div style={{ textAlign: 'center' }}>
-                        <CircularProgress size={50} />
-                    </div>;
-        }
         
         return _.isEmpty(businessList) 
             ? <Typography align="center">None</Typography> 

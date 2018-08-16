@@ -6,6 +6,8 @@ import _ from 'lodash';
 import tagTypes from '../constants/tag.types';
 import * as AlertActions from './alert.actions';
 import { fetchCategoriesOrTags } from '../api/business.service';
+
+// WebStorage
 import webStorageTypes from '../constants/webStorage.types.js';
 import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
 

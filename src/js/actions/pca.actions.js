@@ -7,6 +7,8 @@ import * as AlertActions from './alert.actions';
 import pcaTypes from 'js/constants/pca.types';
 import { fetchPCA } from 'js/api/pca.service';
 
+import config from 'js/config/config';
+
 // WebStorage Related
 import { saveToStorage, loadFromStorage, removeFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types.js';
@@ -22,13 +24,11 @@ export const getProvinces = (code) => {
     "payload": {}
   });
 
-  const _getProvincesSuccess = (res) => ({
+  const _getProvincesSuccess = () => ({
     "type": pcaTypes.GET_PROVINCES_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      provinces: res,
-    }
+    "payload": {},
   });
 
   const _getProvincesFailure = (error) => ({
@@ -68,13 +68,11 @@ export const getCities = (code) => {
     "payload": {}
   });
 
-  const _getCitiesSuccess = (cities) => ({
+  const _getCitiesSuccess = () => ({
     "type": pcaTypes.GET_CITIES_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      "cities": cities
-    },
+    "payload": {},
   });
 
   const _getCitiesFailure = (error) => ({
@@ -118,13 +116,11 @@ export const getAreas = (code) => {
     "payload": {}
   });
 
-  const _getAreasSuccess = (areas) => ({
+  const _getAreasSuccess = () => ({
     "type": pcaTypes.GET_AREAS_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {
-      "areas": areas
-    },
+    "payload": {},
   });
 
   const _getAreasFailure = (error) => ({
@@ -144,7 +140,11 @@ export const getAreas = (code) => {
 
     return fetchPCA('area', code)
       .then(res => {
-        dispatch(_getAreasSuccess(res));
+        if (code === config.CITY_CODE) {
+          dispatch(_getAreasSuccess(res));
+        } else {
+          dispatch(_getAreasSuccess([]));
+        }
 
         return res;
       }).catch(err => {
@@ -153,5 +153,63 @@ export const getAreas = (code) => {
 
         return ;
       });
+  };
+}
+
+/**
+ * Get general areas
+ */
+export const getGeneralAreas = () => {
+  const _getGeneralAreasRequest = () => ({
+    "type": pcaTypes.GET_GENERAL_AREAS_REQUEST,
+    "meta": {},
+    "error": null,
+    "payload": {}
+  });
+
+  const _getGeneralAreasSuccess = (areas) => ({
+    "type": pcaTypes.GET_GENERAL_AREAS_SUCCESS,
+    "meta": {},
+    "error": null,
+    "payload": {
+      "areas": areas
+    },
+  });
+
+  const _getGeneralAreasFailure = (error) => ({
+    "type": pcaTypes.GET_GENERAL_AREAS_REQUEST,
+    "meta": {},
+    "error": error,
+    "payload": {}
+  });
+
+  return (dispatch, getState) => {
+    const areas = loadFromStorage(webStorageTypes.WEB_STORAGE_GENERAL_AREAS);
+    const state = getState();
+
+    if (!_.isEmpty(state.pcaReducer.areas)) {
+      return Promise.resolve(state.pcaReducer.areas);
+    }
+    else if (!_.isEmpty(areas)) {
+      dispatch(_getGeneralAreasSuccess(areas));
+      return Promise.resolve(areas);
+    } 
+    else {
+      dispatch(_getGeneralAreasRequest());
+
+      return fetchPCA('area', config.CITY_CODE)
+        .then(res => {
+          saveToStorage(webStorageTypes.WEB_STORAGE_GENERAL_AREAS, res);
+          dispatch(_getGeneralAreasSuccess(res));
+
+          return res;
+        }).catch(err => {
+          removeFromStorage(webStorageTypes.WEB_STORAGE_GENERAL_AREAS);
+          dispatch(AlertActions.alertFailure(err.message));
+          dispatch(_getGeneralAreasFailure(err));
+
+          return ;
+        });
+    }
   };
 }

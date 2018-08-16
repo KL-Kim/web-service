@@ -4,12 +4,12 @@ const webStorageTypes = {
   "WEB_STORAGE_LOGIN_FAILED": 'lft',
   "WEB_STORAGE_USER_FAVOR": 'favors',
   "WEB_STORAGE_CATEGORIES_LIST": 'categories',
-  "WEB_STORAGE_CATEGORIES_UPDATED_AT": 'categoriesUpdatedAt',
-  "WEB_STORAGE_SEARCH_HISTORY": 'searchHistory',
+  "WEB_STORAGE_CATEGORIES_UPDATED_AT": 'categories_updated_at',
+  "WEB_STORAGE_SEARCH_HISTORY": 'search_history',
   "WEB_STORAGE_TAGS_LIST": "tags",
-  "WEB_STORAGE_TAGS_UPDATED_AT": 'tagsUpdatedAt',
-  "WEB_STORAGE_CITY": 'city',
-  "WEB_STORAGE_AREAS_LIST": 'areas',
+  "WEB_STORAGE_TAGS_UPDATED_AT": 'tags_updated_at',
+  "WEB_STORAGE_GENERAL_CITY": 'city',
+  "WEB_STORAGE_GENERAL_AREAS": 'general_areas',
 };
 
 export default webStorageTypes;

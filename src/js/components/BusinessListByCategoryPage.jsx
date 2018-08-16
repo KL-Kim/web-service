@@ -64,7 +64,6 @@ class BusinessListPage extends Component {
       "hasMore": false,
       "count": 0,
       "area": {},
-      "areas": [],
       "tagSlug": '',
       "tags": [],
       "category": {},
@@ -79,22 +78,12 @@ class BusinessListPage extends Component {
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
     this.handleSubmitFilter = this.handleSubmitFilter.bind(this);
+    this.getCategory = this.getCategory.bind(this);
   }
 
   componentDidMount() {
     if (this.props.match.params.slug) {
-      this.props.getCategoriesList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  category: item
-                });
-              }
-            });
-          }
-        });
+      this.getCategory();
 
       this.props.getBusinessList({
         'limit': this.state.limit,
@@ -102,40 +91,7 @@ class BusinessListPage extends Component {
       })
       .then(response => {
         if (response) {
-          const areas = [];
-          const areaIds = [];
-          let aIndex, tIndex;
-
-          const tags = [];
-          const tagsIds = [];
-
-          response.list.map(business => {
-            if (_.isEmpty(business)) return ;
-
-            aIndex = areaIds.indexOf(business.address.area.code);
-
-            if (aIndex < 0) {
-              areaIds.push(business.address.area.code);
-              areas.push(business.address.area);
-            }
-
-            business.tags.map(tag => {
-              if (_.isEmpty(tag)) return ;
-
-              tIndex = tagsIds.indexOf(tag.code);
-
-              if (tIndex < 0) {
-                tagsIds.push(tag.code);
-                tags.push(tag);
-              }
-            });
-
-            return null;
-          });
-
           this.setState({
-            areas: [...areas],
-            tags: [...tags],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -146,18 +102,7 @@ class BusinessListPage extends Component {
 
   componentDidUpdate(prevProps) {
     if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
-      this.props.getCategoriesList()
-        .then(response => {
-          if (response) {
-            _.find(response, item => {
-              if (item.enName === this.props.match.params.slug) {
-                this.setState({
-                  category: item
-                });
-              }
-            });
-          }
-        });
+      this.getCategory();
 
       this.props.getBusinessList({
         'limit': this.state.limit,
@@ -165,40 +110,10 @@ class BusinessListPage extends Component {
       })
       .then(response => {
         if (response) {
-          const areas = [];
-          const areaIds = [];
-          let aIndex, tIndex;
-
-          const tags = [];
-          const tagsIds = [];
-
-          response.list.map(business => {
-            if (_.isEmpty(business)) return ;
-
-            aIndex = areaIds.indexOf(business.address.area.code);
-
-            if (aIndex < 0) {
-              areaIds.push(business.address.area.code);
-              areas.push(business.address.area);
-            }
-
-            business.tags.map(tag => {
-              if (_.isEmpty(tag)) return ;
-
-              tIndex = tagsIds.indexOf(tag.code);
-
-              if (tIndex < 0) {
-                tagsIds.push(tag.code);
-                tags.push(tag);
-              }
-            });
-
-            return null;
-          });
-
           this.setState({
-            areas: [...areas],
-            tags: [...tags],
+            "area": '',
+            "orderBy": '',
+            "event": false,
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -209,6 +124,21 @@ class BusinessListPage extends Component {
 
   componentWillUnmount() {
     this.props.clearBusinessList();
+  }
+
+  getCategory() {
+    this.props.getCategoriesList()
+      .then(response => {
+        if (response) {
+          _.find(response, item => {
+            if (item.enName === this.props.match.params.slug) {
+              this.setState({
+                category: item
+              });
+            }
+          });
+        }
+      });
   }
 
   handleSelectTag = slug => e => {
@@ -289,28 +219,9 @@ class BusinessListPage extends Component {
     })
     .then(response => {
       if (response) {
-        let tIndex;
-
-        const tags = [];
-        const tagsIds = [];
-
-        response.list.map(business => {
-          business.tags.map(tag => {
-            tIndex = tagsIds.indexOf(tag.code);
-
-            if (tIndex < 0) {
-              tagsIds.push(tag.code);
-              tags.push(tag);
-            }
-          });
-
-          return null;
-        });
-
         this.setState({
-          tags: [...tags],
           count: response.list.length,
-          //hasMore: response.list.length < response.totalCount
+          hasMore: response.list.length < response.totalCount
         });
       }
     });
@@ -332,26 +243,7 @@ class BusinessListPage extends Component {
       })
       .then(response => {
         if (response) {
-          let tIndex;
-  
-          const tags = [];
-          const tagsIds = [];
-  
-          response.list.map(business => {
-            business.tags.map(tag => {
-              tIndex = tagsIds.indexOf(tag.code);
-  
-              if (tIndex < 0) {
-                tagsIds.push(tag.code);
-                tags.push(tag);
-              }
-            });
-  
-            return null;
-          });
-  
           this.setState({
-            tags: [...tags],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount
           });
@@ -464,7 +356,7 @@ class BusinessListPage extends Component {
                   </Grid>
 
                   {
-                    this.state.areas.map(item =>
+                    this.props.areas.map(item =>
                       <Grid item key={item.code}>
                         <Button
                           fullWidth
@@ -473,7 +365,7 @@ class BusinessListPage extends Component {
                           variant={this.state.area.code === item.code ? 'outlined' : 'text'}
                           onClick={this.handleSelectArea(item)}
                         >
-                          {item.name}
+                          {item.cnName}
                         </Button>
                       </Grid>
                     )
@@ -522,7 +414,6 @@ class BusinessListPage extends Component {
 
                   <Grid item xs={12}>
                     <Divider className={classes.divider} />
-                    
                   </Grid>
 
                   <Grid item>
@@ -574,12 +465,14 @@ BusinessListPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-  return {};
+  return {
+    areas: state.pcaReducer.areas,
+  };
 };
 
 export default connect(mapStateToProps, { 
   getBusinessList, 
   clearBusinessList,
-  getCategoriesList, 
+  getCategoriesList,
   getAreas,
 })(withStyles(styles)(BusinessListPage));

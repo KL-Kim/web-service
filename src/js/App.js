@@ -45,10 +45,7 @@ import webStorageTypes from 'js/constants/webStorage.types';
 import { getMyself } from 'js/actions/user.actions';
 import { getCategoriesList } from 'js/actions/category.actions';
 import { getTagsList } from 'js/actions/tag.actions';
-import { getAreas } from 'js/actions/pca.actions';
-
-// Config
-import config from './config/config';
+import { getGeneralAreas } from 'js/actions/pca.actions';
 
 const App = () => {
   const store = configureStore();
@@ -60,14 +57,16 @@ const App = () => {
 
   store.dispatch(getCategoriesList());
   store.dispatch(getTagsList());
-  store.dispatch(getAreas(config.CITY_CODE));
+  store.dispatch(getGeneralAreas());
 
   return (
     <Provider store={store}>
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route path="/explore" component={ExplorePage} />
           <Route path="/search" component={SearchPage} />
+          <Route path="/profile/:username" component={ProfilePage} />
           <Route path="/signup" component={SignUpPage} />
           <Route path="/signin" component={SignInPage} />
           <Route path="/about" component={AboutPage} />
@@ -81,9 +80,7 @@ const App = () => {
           <Route path="/business/s/:slug" component={SingleBusinessPage} />
           <Route exact path="/blog" component={BlogListPage} />
           <Route path="/post/s/:id" component={SinglePostPage} />
-          <Route path="/explore" component={ExplorePage} />
-          <Route path="/profile/:username" component={ProfilePage} />
-
+          
           {/*  Setting Routes */}
           <PrivateRoute path="/setting/account" component={SettingAccount} />
           <PrivateRoute path="/setting/review" component={SettingReview} />
