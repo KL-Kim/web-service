@@ -97,12 +97,13 @@ class BusinessCard extends PureComponent {
             />
 
             <CardContent className={classes.content}>
-              <Grid container justify="space-between" alignItems="flex-start">
+              <Grid container justify="space-between" alignItems="center">
                 <Grid item>
                   <Grid container spacing={8} alignItems="center">
                     <Grid item>
-                      <Typography variant="title">{this.props.title}</Typography>
+                      <Typography variant="headline" component="h3">{this.props.title}</Typography>
                     </Grid>
+
                     <Grid item>
                       {
                         this.props.event

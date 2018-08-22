@@ -72,7 +72,11 @@ class TagPanel extends PureComponent {
           });
         }
     }
-}
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
+  }
 
   render() {
     const { classes } = this.props;

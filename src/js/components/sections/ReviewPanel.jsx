@@ -152,10 +152,10 @@ class ReviewPanel extends Component {
                 </InfiniteScroll>
                 {
                     this.props.hasMore
-                        ? null
-                        : <Typography variant="caption" align="center">
-                            --- No more reviews---
-                        </Typography>
+                        ?   null
+                        :   <Typography variant="caption" align="center">
+                                --- No More Reviews ---
+                            </Typography>
                 }
             </div>
         )

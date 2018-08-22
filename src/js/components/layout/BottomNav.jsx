@@ -13,6 +13,7 @@ import Home from '@material-ui/icons/Home';
 import Explore from '@material-ui/icons/Explore';
 import Search from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
@@ -62,12 +63,6 @@ class BottomNav extends Component {
           index: 2,
         });
         break;
-      
-      case '/setting/*':
-        this.setState({
-          index: 3,
-        });
-        break;
 
       default:
         this.setState({
@@ -91,7 +86,6 @@ class BottomNav extends Component {
             <BottomNavigationAction icon={<LinkContainer to="/"><Home /></LinkContainer>} />
             <BottomNavigationAction icon={<LinkContainer to="/explore"><Explore /></LinkContainer>} />
             <BottomNavigationAction icon={<LinkContainer to="/search"><Search /></LinkContainer>} />
-            <BottomNavigationAction icon={<LinkContainer to="/setting/account"><AccountCircle /></LinkContainer>} />
           </BottomNavigation>
         </div>
       </Hidden>

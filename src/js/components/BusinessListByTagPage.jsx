@@ -60,8 +60,6 @@ class BusinessListByTag extends Component {
     this.state = {
       "limit": 48,
       "count": 0,
-      "categories": [],
-      "categorySlug": '',
       "area": '',
       "orderBy": '',
       "event": false,
@@ -72,9 +70,8 @@ class BusinessListByTag extends Component {
 
     this.getTag = this.getTag.bind(this);
     this.loadMore = this.loadMore.bind(this);
-    this.handleClickCategory = this.handleClickCategory.bind(this);
     this.handleSelectArea = this.handleSelectArea.bind(this);
-    this.handleClickOrderBy = this.handleClickOrderBy.bind(this);
+    this.handleSelectOrderBy = this.handleSelectOrderBy.bind(this);
     this.handleToggleEventSwtich = this.handleToggleEventSwtich.bind(this);
     this.handleOpenFilterPopover = this.handleOpenFilterPopover.bind(this);
     this.handleCloseFilterPopover = this.handleCloseFilterPopover.bind(this);
@@ -91,23 +88,7 @@ class BusinessListByTag extends Component {
       })
       .then(response => {
         if (response) {
-          const categories = [];
-          const categoryIds = [];
-          let cIndex;
-  
-          response.list.map(business => {
-            cIndex = categoryIds.indexOf(business.category._id);
-  
-            if (cIndex < 0) {
-              categories.push(business.category);
-              categoryIds.push(business.category._id);
-            }
-  
-            return ;
-          });
-  
           this.setState({
-            categories: [...categories],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -126,25 +107,7 @@ class BusinessListByTag extends Component {
       })
       .then(response => {
         if (response) {
-          const categories = [];
-          const categoryIds = [];
-          
-          let cIndex;
-
-          response.list.map(business => {
-            cIndex = categoryIds.indexOf(business.category._id);
-
-            if (cIndex < 0) {
-              categories.push(business.category);
-              categoryIds.push(business.category._id);
-            }
-
-  
-            return null;
-          });
-
           this.setState({
-            categories: [...categories],
             "area": '',
             "orderBy": '',
             "event": false,
@@ -186,23 +149,7 @@ class BusinessListByTag extends Component {
     })
     .then(response => {
       if (response) {
-        const categories = [];
-        const categoryIds = [];
-        let cIndex;
-
-        response.list.map(business => {
-          cIndex = categoryIds.indexOf(business.category._id);
-
-          if (cIndex < 0) {
-            categories.push(business.category);
-            categoryIds.push(business.category._id);
-          }
-
-          return ;
-        });
-
         this.setState({
-          categories: [...categories],
           count: response.list.length,
           hasMore: response.list.length < response.totalCount,
         });
@@ -214,29 +161,6 @@ class BusinessListByTag extends Component {
     });
   }
 
-  handleClickCategory = slug => e => {
-    if (this.state.categorySlug !== slug) {
-      this.props.getBusinessList({
-        limit: this.state.limit,
-        tag: this.props.match.params.slug,
-        category: slug,
-        area: this.state.area.code,
-        event: this.state.event,
-        orderBy: this.state.orderBy,
-        search: this.state.s,
-      })
-      .then(response => {
-        if (response) {
-          this.setState({
-            categorySlug: slug,
-            count: response.list.length,
-            hasMore: response.list.length < this.props.totalCount
-          });
-        }
-      });
-    }
-  }
-
   handleSelectArea = area => e => {
     if (this.state.area.code !== area.code) {
       this.setState({
@@ -245,7 +169,7 @@ class BusinessListByTag extends Component {
     }
   }
 
-  handleClickOrderBy = item => e => {
+  handleSelectOrderBy = item => e => {
     if (this.state.orderBy !== item) {
       this.setState({
         orderBy: item,
@@ -284,23 +208,7 @@ class BusinessListByTag extends Component {
       })
       .then(response => {
         if (response) {
-          const categories = [];
-          const categoryIds = [];
-          let cIndex;
-  
-          response.list.map(business => {
-            cIndex = categoryIds.indexOf(business.category._id);
-  
-            if (cIndex < 0) {
-              categories.push(business.category);
-              categoryIds.push(business.category._id);
-            }
-  
-            return ;
-          });
-  
           this.setState({
-            categories: [...categories],
             count: response.list.length,
             hasMore: response.list.length < response.totalCount,
           });
@@ -310,7 +218,7 @@ class BusinessListByTag extends Component {
   }
 
   render() {
-    const { classes, businessList } = this.props;
+    const { classes } = this.props;
 
     return (
       <Container>
@@ -338,36 +246,7 @@ class BusinessListByTag extends Component {
             </Grid>
           </Grid>
           <Divider />
-          
-          <div className={classes.chipBar}>
-            {
-              _.isEmpty(this.state.categories) 
-                ? null
-                : <HorizontalScrollBar>
-                    <CustomButton
-                      color={_.isEmpty(this.state.categorySlug) ? "primary" : 'white'}
-                      round
-                      className={classes.chip}
-                      onClick={this.handleClickCategory('')}
-                    >
-                      All
-                    </CustomButton>
-                    {
-                      this.state.categories.map((item) => (
-                          <CustomButton
-                            key={item._id}
-                            color={this.state.categorySlug === item.enName ? "primary" : 'white'}
-                            round
-                            className={classes.chip}
-                            onClick={this.handleClickCategory(item.enName)}
-                          >
-                            {item.krName}
-                          </CustomButton>
-                        ))
-                    }
-                  </HorizontalScrollBar>
-            }
-          </div>
+          <br />
           
           <BusinessPanel
             hasMore={this.state.hasMore}
@@ -435,7 +314,7 @@ class BusinessListByTag extends Component {
                       size="small"
                       color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
                       variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('')}
+                      onClick={this.handleSelectOrderBy('')}
                     >
                       Recommend
                     </Button>
@@ -447,7 +326,7 @@ class BusinessListByTag extends Component {
                       size="small"
                       color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
                       variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('rating')}
+                      onClick={this.handleSelectOrderBy('rating')}
                     >
                       Rating
                     </Button>
@@ -459,7 +338,7 @@ class BusinessListByTag extends Component {
                       size="small"
                       color={this.state.orderBy === 'new' ? 'primary' : 'default'}
                       variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
-                      onClick={this.handleClickOrderBy('new')}
+                      onClick={this.handleSelectOrderBy('new')}
                     >
                       New
                     </Button>
@@ -512,6 +391,7 @@ class BusinessListByTag extends Component {
 
 BusinessListByTag.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "areas": PropTypes.array.isRequired,
 
   // Methods
   "getTagsList": PropTypes.func.isRequired,

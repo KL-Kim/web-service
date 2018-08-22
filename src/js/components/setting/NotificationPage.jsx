@@ -171,10 +171,12 @@ class NotificationPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
-          <Grid container className={classes.root} justify="space-between" alignItems="flex-end">
+          <Grid container className={classes.root} justify="space-between" alignItems="center">
             <Grid item>
               <Typography variant="title">Notifications</Typography>
             </Grid>
+
+
             <Grid item>
               <Button
                 color="primary"
@@ -185,8 +187,6 @@ class NotificationPage extends Component {
               </Button>
             </Grid>
           </Grid>
-
-          <br />
 
           {
             _.isEmpty(this.props.list)

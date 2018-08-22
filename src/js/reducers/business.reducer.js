@@ -7,6 +7,7 @@ const initialState = {
   businessList: [],
   totalCount: 0,
   isFetching: false,
+  getEmptyList: false, 
   error: null,
 };
 
@@ -18,6 +19,13 @@ const businessReducer = (state = initialState, action) => {
 
     // Resquest
     case businessTypes.GET_BUSINESS_LIST_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        getEmptyList: false,
+        error: null,
+      };
+
     case businessTypes.GET_SINGLE_BUSINESS_REQUEST:
     case businessTypes.REPORT_BUSINESS_REQUEST:
       return {
@@ -39,6 +47,7 @@ const businessReducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
+        getEmptyList: action.payload.totalCount > 0 ? false : true,
         businessList: [...action.payload.list],
         totalCount: action.payload.totalCount,
       };

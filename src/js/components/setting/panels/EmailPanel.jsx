@@ -79,8 +79,14 @@ class EmailPanel extends Component {
         <ExpansionPanelActions>
           {
             user.isVerified
-              ? ''
-              : (<div>
+              ? <Button
+                  size="small"
+                  color="primary"
+                  onClick={this.handlePanelChange('panel')}
+                >
+                  Ok
+                </Button>
+              : <div>
                   <Button
                     size="small"
                     onClick={this.handlePanelChange('panel')}
@@ -97,7 +103,7 @@ class EmailPanel extends Component {
                       isFetching ? (<CircularProgress size={20} />) : 'Verify Email'
                     }
                   </Button>
-                </div>)
+                </div>
           }
         </ExpansionPanelActions>
       </ExpansionPanel>

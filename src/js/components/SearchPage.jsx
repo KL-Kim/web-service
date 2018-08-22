@@ -260,6 +260,18 @@ class SearchPage extends Component {
       });
 
       saveSearchHistory(this.state.search);
+
+      const history = this.state.searchHistory;
+
+      history.unshift(this.state.search);
+
+      if (history.length > 5) {
+        history.pop();
+      }
+      
+      this.setState({
+        searchHistory: [...history],
+      });
     }
   }
 
@@ -370,6 +382,45 @@ class SearchPage extends Component {
                   />
                 </FormControl>
               </form>
+
+              {
+                _.isEmpty(this.state.searchCategoryResponse) || _.isEmpty(this.state.search)
+                  ? null
+                  : <div>
+                      <Divider className={classes.divider} />
+                      <List>
+                        {
+                          this.state.searchCategoryResponse.map(item => (
+                            <Link to={"/business/category/" + item.enName} key={item._id}>
+                              <ListItem button>
+                                <ListItemText primary={item.krName + " (Category)"} />
+                              </ListItem>
+                            </Link>
+                          ))
+                        }
+                      </List>
+                      
+                    </div>
+              }
+
+              {
+                _.isEmpty(this.state.searchTagResponse) || _.isEmpty(this.state.search)
+                  ? null
+                  : <div>
+                      <Divider className={classes.divider} />
+                      <List>
+                        {
+                          this.state.searchTagResponse.map((item) => (
+                            <Link to={"/business/tag/" + item.enName} key={item._id}>
+                              <ListItem button>
+                                <ListItemText primary={"#" + item.krName} />
+                              </ListItem>
+                            </Link>
+                          ))
+                        }
+                      </List>
+                    </div>
+              }
             </Paper>
           </div>
 
@@ -414,47 +465,23 @@ class SearchPage extends Component {
           }
 
           {
-            _.isEmpty(this.state.searchCategoryResponse) || _.isEmpty(this.state.search)
-              ? null
-              : <div className={classes.section}>
-                  <Paper>
-                    <List subheader={<ListSubheader component="div">Category</ListSubheader> }>
-                      {
-                        this.state.searchCategoryResponse.map(item => (
-                          <Link to={"/business/category/" + item.enName} key={item._id}>
-                            <ListItem button>
-                              <ListItemText primary={item.krName} />
-                            </ListItem>
-                          </Link>
-                        ))
-                      }
-                    </List>
-                  </Paper>
+            this.props.totalCount === 0 && this.props.isFetching
+              ? <div style={{ textAlign: 'center' }} key={0}>
+                  <CircularProgress size={30} />
                 </div>
+              : null
           }
 
           {
-            _.isEmpty(this.state.searchTagResponse) || _.isEmpty(this.state.search)
-              ? null
-              : <div className={classes.section}>
-                  <Paper>
-                    <List subheader={<ListSubheader component="div">Tag</ListSubheader> }>
-                      {
-                        this.state.searchTagResponse.map((item) => (
-                          <Link to={"/business/tag/" + item.enName} key={item._id}>
-                            <ListItem button>
-                              <ListItemText primary={"#" + item.krName} />
-                            </ListItem>
-                          </Link>
-                        ))
-                      }
-                    </List>
-                  </Paper>
-                </div>
+            this.props.getEmptyList
+              ? <Paper className={classes.paper}>
+                  <Typography align="center">Sorry, you can search another word</Typography>
+                </Paper>
+              : null
           }
 
           {
-            _.isEmpty(businessList) || _.isEmpty(this.state.search)
+            this.props.totalCount === 0 || _.isEmpty(this.state.searchedQuery)
               ? null
               : <div>
                   <Grid container justify="space-between" alignItems="flex-end">
@@ -650,8 +677,8 @@ class SearchPage extends Component {
 
 SearchPage.propTypes = {
   "classes": PropTypes.object.isRequired,
-  "businessList": PropTypes.array.isRequired,
   "totalCount": PropTypes.number.isRequired,
+  "getEmptyList": PropTypes.bool.isRequired,
 
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
@@ -660,8 +687,9 @@ SearchPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    "businessList": state.businessReducer.businessList,
+    "isFetching": state.businessReducer.isFetching,
     "totalCount": state.businessReducer.totalCount,
+    "getEmptyList": state.businessReducer.getEmptyList,
   };
 };
 

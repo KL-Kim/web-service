@@ -52,12 +52,6 @@ class CommentPanel extends Component {
     render() {
         const { classes } = this.props;
 
-        if (this.props.isFetching) {
-            return  <div style={{ textAlign: 'center' }}>
-                        <CircularProgress size={50} />
-                    </div>;
-        }
-
         return (
             <div>
                 {
@@ -134,11 +128,11 @@ class CommentPanel extends Component {
                             </InfiniteScroll>
                 }
                 {
-                this.props.hasMore
-                    ? null
-                    : <Typography variant="caption" align="center">
-                        --- No more comments---
-                    </Typography>
+                    this.props.hasMore || _.isEmpty(this.props.comments) 
+                        ?   null
+                        :   <Typography variant="caption" align="center">
+                                --- No More Comments ---
+                            </Typography>
                 }
             </div>
         );

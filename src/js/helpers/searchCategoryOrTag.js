@@ -31,7 +31,7 @@ const search = (type, query) => {
   if (query === 'ALL') {
     return list;
   } else {
-    const regex = new RegExp(query);
+    const regex = new RegExp(_.escapeRegExp(query));
 
     const match = list.filter(item => {
       return regex.exec(item.krName);

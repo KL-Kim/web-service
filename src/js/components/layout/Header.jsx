@@ -33,14 +33,15 @@ import Search from '@material-ui/icons/Search';
 import Favorite from '@material-ui/icons/Favorite';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import RateReview from '@material-ui/icons/RateReview';
+import Explore from '@material-ui/icons/Explore';
+import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
 import LoginDialog from 'js/components/dialogs/LoginDialog';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
-import Explore from '@material-ui/icons/Explore';
-import SettingsApplications from '@material-ui/icons/SettingsApplications';
+
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';

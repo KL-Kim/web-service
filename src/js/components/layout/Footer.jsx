@@ -11,15 +11,18 @@ import Button from '@material-ui/core/Button';
 
 const styles = (theme) => ({
   footer: {
-    maxWidth: 960,
-    width: '100%',
-    margin: 'auto',
-    paddingBottom: theme.spacing.unit,
+    padding: theme.spacing.unit,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: theme.palette.background.paper,
   },
+  container: {
+    maxWidth: 960,
+    width: '100%',
+    margin: 'auto',
+  }
 });
 
 class Footer extends Component{
@@ -27,9 +30,9 @@ class Footer extends Component{
     const { classes } = this.props;
 
     return (
-      <Hidden smDown>
+      <Hidden xsDown>
         <footer className={classes.footer}>
-          <Grid container justify="space-between" alignItems="center" >
+          <Grid container justify="space-between" alignItems="center" className={classes.container}>
             <Grid item>
               <Grid container>
                 <Grid item>
@@ -61,23 +64,6 @@ class Footer extends Component{
                     </Button>
                   </Link>
                 </Grid>
-
-                <Grid item>
-                  <Link to="/verify/123">
-                    <Button>
-                      Verify
-                    </Button>
-                  </Link>
-                </Grid>
-
-                <Grid item>
-                  <Link to="/change-password/123">
-                    <Button>
-                      Change Password
-                    </Button>
-                  </Link>
-                </Grid>
-
               </Grid>
             </Grid>
 
@@ -87,6 +73,35 @@ class Footer extends Component{
               </Typography>
             </Grid>
           </Grid>
+
+          {
+            // <Grid container>
+            //   <Grid item>
+            //     <Link to="/verify/123">
+            //       <Button>
+            //         Verify
+            //       </Button>
+            //     </Link>
+            //   </Grid>
+
+            //   <Grid item>
+            //     <Link to="/change-password/123">
+            //       <Button>
+            //         Change Password
+            //       </Button>
+            //     </Link>
+            //   </Grid>
+
+            //  <Grid item>
+            //     <Link to="/forget-password">
+            //       <Button>
+            //         Forget Password
+            //       </Button>
+            //     </Link>
+            //   </Grid>
+            // </Grid>
+          }
+
         </footer>
       </Hidden>
     );

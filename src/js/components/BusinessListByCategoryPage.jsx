@@ -26,7 +26,7 @@ import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 // Actions
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 import { getCategoriesList } from 'js/actions/category.actions.js';
-import { getAreas } from 'js/actions/pca.actions.js';
+import { getTagsList } from 'js/actions/tag.actions.js';
 
 const styles = theme => ({
   "chipBar": {
@@ -84,6 +84,23 @@ class BusinessListPage extends Component {
   componentDidMount() {
     if (this.props.match.params.slug) {
       this.getCategory();
+
+      this.props.getTagsList()
+        .then(tags => {
+          if (!_.isEmpty(tags)) {
+            const targets = [];
+
+            tags.map(item => {
+              if (!_.isEmpty(item.category) && item.category.enName === this.props.match.params.slug) {
+                targets.push(item);
+              } 
+            })
+
+            this.setState({
+              tags: [...targets]
+            });
+          }
+        })
 
       this.props.getBusinessList({
         'limit': this.state.limit,
@@ -457,6 +474,7 @@ class BusinessListPage extends Component {
 
 BusinessListPage.propTypes = {
   "classes": PropTypes.object.isRequired,
+  "areas": PropTypes.array.isRequired,
 
   // Methods
   "getBusinessList": PropTypes.func.isRequired,
@@ -474,5 +492,5 @@ export default connect(mapStateToProps, {
   getBusinessList, 
   clearBusinessList,
   getCategoriesList,
-  getAreas,
+  getTagsList,
 })(withStyles(styles)(BusinessListPage));

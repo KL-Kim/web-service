@@ -23,7 +23,6 @@ import { openLoginDialog } from 'js/actions/app.actions';
 import { favorOperation } from 'js/actions/user.actions';
 
 const styles = theme => ({
-
 });
 
 class BusinessPanel extends Component {
@@ -61,10 +60,14 @@ class BusinessPanel extends Component {
 
     render() {
         const { classes, businessList } = this.props;
-        let index;
+        let index = -1;
+
+        if (this.props.getEmptyList) {
+            return <Typography align="center">None</Typography>
+        }
         
         return _.isEmpty(businessList) 
-            ? <Typography align="center">None</Typography> 
+            ? null 
             : (
                 <div>
                     <InfiniteScroll
@@ -78,7 +81,9 @@ class BusinessPanel extends Component {
                         <Grid container spacing={16} style={{ marginBottom: 12 }}>
                             {
                                 businessList.map(item => {
-                                    index = this.state.myFavors.indexOf(item._id);
+                                    if (!_.isEmpty(this.state.myFavors)) {
+                                        index = this.state.myFavors.indexOf(item._id);
+                                    }
 
                                     return (
                                         <Grid item xs={12} sm={4} key={item._id}>
@@ -120,6 +125,7 @@ class BusinessPanel extends Component {
 BusinessPanel.defaultProps = {
     "isLoggedIn": false,
     "hasMore": false,
+    "getEmptyList": false,
     "loadMore": () => {},
 };
 
@@ -127,6 +133,7 @@ BusinessPanel.propTypes = {
     "classes": PropTypes.object.isRequired,
     "businessList": PropTypes.array.isRequired,
     "isFetching": PropTypes.bool.isRequired,
+    "getEmptyList": PropTypes.bool.isRequired,
     "hasMore": PropTypes.bool,
     "loadMore": PropTypes.func,
 
@@ -143,6 +150,7 @@ const mapStateToProps = (state, ownProps) => {
         "businessList": state.businessReducer.businessList,
         "totalCount": state.businessReducer.totalCount,
         "isFetching": state.businessReducer.isFetching,
+        "getEmptyList": state.businessReducer.getEmptyList,
     };
 };
 
