@@ -3,28 +3,37 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Img from 'react-image';
 
-
-
-import config from '../../config/config';
-
 // Default image
-import image from '../../../css/ikt-icon.gif';
-
+import image from 'css/ikt-icon.gif';
 
 class Thumbnail extends Component {
   render() {
-    const thumbnail = _.isEmpty(this.props.image)
-                        ? image
-                        : config.API_GATEWAY_ROOT + '/' + image.hd;
+    const { type } = this.props;
+
+    let src;
+
+    switch (type) {
+      case 'thumbnail':
+        src = this.props.src + '-thumbnail';
+        break;
+    
+      default:
+        src = this.props.src + '-business';
+        break;
+    }
 
     return (
-      <Img src={thumbnail} style={{ width: '100%' }} />
+      <Img
+        style={{ width: '100%' }} 
+        unloader={<img src={image} />}
+        src={src} 
+      />
     );
   }
 }
 
 Thumbnail.propTypes = {
-  "image": PropTypes.object,
+  "src": PropTypes.string,
 };
 
 export default Thumbnail;

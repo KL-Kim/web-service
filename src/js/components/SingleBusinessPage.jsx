@@ -357,14 +357,8 @@ class SingleBusinessPage extends Component {
   }
 
   render() {
-    const { classes, reviews } = this.props;
+    const { classes } = this.props;
     const { business, review } = this.state;
-
-    const thumbnail = _.isEmpty(business)
-                        ? null
-                        : _.isEmpty(business.thumbnailUri) 
-                            ? image 
-                            : config.API_GATEWAY_ROOT + '/' + business.thumbnailUri.hd;
 
     return _.isEmpty(business) ? null : (
       <Container>
@@ -702,7 +696,7 @@ class SingleBusinessPage extends Component {
 
             <Grid item xs={12} sm={6}>
               <div className={classes.wrapper}>
-                <Thumbnail image={business.thumbnail} />
+                <Thumbnail src={_.isEmpty(business) || _.isEmpty(business.mainImage)? null : business.mainImage.url} />
               </div>
 
               <div className={classes.mapWrapper}>
@@ -837,8 +831,6 @@ SingleBusinessPage.propTypes = {
   "isVerified": PropTypes.bool.isRequired,
   "user": PropTypes.object,
   "isFetching": PropTypes.bool.isRequired,
-  "reviews": PropTypes.array.isRequired,
-  "totalCount": PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -846,8 +838,6 @@ const mapStateToProps = (state, ownProps) => {
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "isVerified": state.userReducer.isUserVerified,
-    "reviews": state.reviewReducer.reviews,
-    "totalCount": state.reviewReducer.totalCount,
     "isFetching": state.businessReducer.isFetching,
   };
 };

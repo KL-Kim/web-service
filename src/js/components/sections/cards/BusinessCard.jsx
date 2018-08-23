@@ -25,9 +25,6 @@ import Favorite from '@material-ui/icons/Favorite';
 // Custom Components
 import Badge from 'js/components/utils/Badge';
 
-// Config
-import config from 'js/config/config';
-
 // Default Image
 import image from 'css/ikt-icon.gif';
 
@@ -85,15 +82,16 @@ class BusinessCard extends PureComponent {
   }
 
   render() {
-    const { classes, thumbnailUri } = this.props;
+    const { classes } = this.props;
 
     return (
       <div>
         <Card className={classes.root}>
-          <Link to={"/business/s/" + this.props.enName}>
+          <Link to={"/business/s/" + this.props.slug}>
             <CardMedia
               style={{ height: 180 }}
-              image={_.isEmpty(thumbnailUri) ? image : (config.API_GATEWAY_ROOT + '/' + thumbnailUri.hd)}
+              image={_.isEmpty(this.props.image) ? image : this.props.image + '-thumbnail'}
+              title={this.props.title}
             />
 
             <CardContent className={classes.content}>
@@ -130,9 +128,9 @@ class BusinessCard extends PureComponent {
                   _.isEmpty(this.props.tags)
                     ? null
                     : this.props.tags.map(item => (
-                        <Link to={"/business/tag/" +item.enName} key={item._id} className={classes.chip}>
+                        <Link to={"/business/tag/" +item.slug} key={item._id} className={classes.chip}>
                           <Badge color="info">
-                            {item.krName}
+                            #{item.krName}
                           </Badge>
                         </Link>
                     ))
@@ -168,14 +166,15 @@ BusinessCard.defaultProps = {
 BusinessCard.propTypes = {
   "classes": PropTypes.object.isRequired,
   "bid": PropTypes.string.isRequired,
-  "enName": PropTypes.string.isRequired,
+  "title": PropTypes.string.isRequired,
+  "slug": PropTypes.string.isRequired,
   "rating": PropTypes.number.isRequired,
-  "thumbnail": PropTypes.object,
-  "myFavors": PropTypes.array,
+  "image": PropTypes.string,
   "category": PropTypes.object.isRequired,
   "tags": PropTypes.array,
   "isLoggedIn": PropTypes.bool.isRequired,
   "userId": PropTypes.string.isRequired,
+  "isFavor": PropTypes.bool.isRequired,
 
   // Methods
   "favorOperation": PropTypes.func.isRequired,

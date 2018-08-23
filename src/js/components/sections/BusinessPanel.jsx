@@ -90,9 +90,9 @@ class BusinessPanel extends Component {
                                             <BusinessCard
                                                 bid={item._id}
                                                 title={item.krName}
-                                                enName={item.enName}
+                                                slug={item.enName}
                                                 rating={item.ratingAverage}
-                                                thumbnailUri={item.thumbnailUri}
+                                                image={_.isEmpty(item.mainImage) ? '' : item.mainImage.url}
                                                 category={item.category}
                                                 tags={item.tags}
                                                 event={!!(item.event)}

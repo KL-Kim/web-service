@@ -235,7 +235,6 @@ class LoginDialog extends Component {
                   type="email"
                   id="email"
                   name="email"
-                  autoFocus
                   error={this.state.emailError}
                   onBlur={this.isValidEmail}
                   onChange={this.handleChange}

@@ -183,7 +183,7 @@ class ProfilePage extends Component {
                                     <section className={classes.section}>
                                         <Grid container spacing={40} justify="center" alignItems="center">
                                             <Grid item xs={12} sm="auto">
-                                                <Avatar type="BIG" user={user} />
+                                                <Avatar type="BIG" user={user} updatedAt={Date.now()}/>
                                             </Grid>
 
                                             <Grid item xs={12} sm="auto">
@@ -223,7 +223,9 @@ ProfilePage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    return {};
+    return {
+
+    };
 };
 
 export default connect(mapStateToProps, { 

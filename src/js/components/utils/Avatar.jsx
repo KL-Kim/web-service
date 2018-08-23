@@ -6,10 +6,10 @@ import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 
-import config from '../../config/config';
+import config from 'js/config/config';
 
 const styles = theme => ({
-  "avatar": {
+  "normal": {
     "margin": 0,
   },
   "small": {
@@ -33,49 +33,40 @@ const styles = theme => ({
 });
 
 class AvatarModule extends Component {
-
   render() {
     if (_.isEmpty(this.props.user)) return null;
 
     const { classes, type, user, updatedAt } = this.props;
 
-    let avatar;
-    const avatarSrc = _.isEmpty(user) ? '' : config.API_GATEWAY_ROOT + '/' + user.profilePhotoUri + '?t=' + updatedAt;
-    const initialLetter = _.isEmpty(user) ? '' : _.upperCase(user.username[0]);
+    let className;
 
     switch (type) {
       case "BIG":
-        avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.big}>{initialLetter}</Avatar>)
-          : (<Avatar className={classes.big} alt={user.username[0]} src={avatarSrc} />);
+        className = classes.big;
         break;
 
       case "MEDIUM":
-        avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.medium}>{initialLetter}</Avatar>)
-          : (<Avatar className={classes.medium} alt={user.username[0]} src={avatarSrc} />);
+        className = classes.medium;
         break;
 
       case "SMALL":
-        avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.small}>{initialLetter}</Avatar>)
-          : (<Avatar className={classes.small} alt={user.username[0]} src={avatarSrc} />);
+        className = classes.small;
         break;
 
       default:
-        avatar = _.isEmpty(user.profilePhotoUri)
-          ? (<Avatar className={classes.avatar}>{initialLetter}</Avatar>)
-          : (<Avatar className={classes.avatar} alt={user.username[0]} src={avatarSrc} />);
+        className = classes.normal;
     }
 
-    return avatar;
+    return _.isEmpty(user.avatarUrl) 
+      ? <Avatar className={className}>{_.upperCase(user.username[0])}</Avatar>
+      : <Avatar className={className} alt={user.username[0]} src={user.avatarUrl + '?t=' + updatedAt} />
+    ;
   }
 }
 
 AvatarModule.propTypes = {
   classes: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  updatedAt: PropTypes.number,
   type: PropTypes.string,
 };
 
