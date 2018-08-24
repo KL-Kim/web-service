@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import Img from 'react-image';
 import Stars from 'react-stars';
-import Masonry from 'react-masonry-component';
-import InfiniteScroll from 'react-infinite-scroller';
 import { Map, Marker, Circle } from 'react-amap';
 
 // Material UI Components
@@ -24,6 +21,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Popover from '@material-ui/core/Popover';
+import List from '@material-ui/core/List';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -48,6 +46,7 @@ import Container from './layout/Container'
 import WriteReviewDialog from 'js/components/dialogs/WriteReviewDialog';
 import ReportDialog from 'js/components/dialogs/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
+import Gallery from './utils/Gallery';
 import ReviewPanel from './sections/ReviewPanel';
 import Badge from 'js/components/utils/Badge';
 
@@ -66,9 +65,7 @@ import {
 import config from 'js/config/config';
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
-
-// Mock image
-import image from 'css/ikt-icon.gif';
+import { ListItem } from '@material-ui/core';
 
 const styles = theme => ({
   "wrapper": {
@@ -92,18 +89,8 @@ const styles = theme => ({
    fontSize: theme.typography.pxToRem(15),
    fontWeight: theme.typography.fontWeightRegular,
  },
-  "mansoryItem": {
-    width: "33.33%",
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    marginBottom: theme.spacing.unit * 2,
-  },
-  "masonryWrapper": {
-    width: 976,
-    position: 'relative',
-    top: 0,
-    left: -theme.spacing.unit,
-  },
+
+  
 });
 
 class SingleBusinessPage extends Component {
@@ -464,7 +451,7 @@ class SingleBusinessPage extends Component {
                     <div>
                       <Grid container justify="space-between" alignItems="center">
                         <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>가격:</strong></Typography>
+                          <Typography variant="body2" gutterBottom><strong>평균소비:</strong></Typography>
                         </Grid>
 
                         <Grid item>
@@ -521,15 +508,19 @@ class SingleBusinessPage extends Component {
                       <Typography className={classes.heading}>체인점</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
+                      <List style={{ width: '100%' }}>
                       {
                         _.isEmpty(business.chains)
-                          ? ''
+                          ? null
                           : business.chains.map(item => (
                             <Link to={item.enName} key={item.enName}>
-                              <Button color="primary" variant="outlined">{item.krName}</Button>
+                              <ListItem button>
+                                <ListItemText primary={item.krName} secondary={item.cnName} />
+                              </ListItem>
                             </Link>
                           ))
                       }
+                      </List>
                     </ExpansionPanelDetails>
                   </ExpansionPanel>
 
@@ -647,6 +638,33 @@ class SingleBusinessPage extends Component {
                     </ExpansionPanelDetails>
                   </ExpansionPanel>
 
+                  <ExpansionPanel disabled={_.isEmpty(business.description)}>
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography className={classes.heading}>지도</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                      <div className={classes.mapWrapper}>
+                        <Map
+                          amapkey={config.AMAP_KEY}
+                          zoom={16}
+                          center={{
+                            longitude: business.geo.coordinates[0],
+                            latitude: business.geo.coordinates[1],
+                          }}
+                          plugins={[
+                            'ToolBar',
+                          ]}
+                        >
+                          <Marker position={{
+                              longitude: business.geo.coordinates[0],
+                              latitude: business.geo.coordinates[1],
+                            }}
+                          />
+                        </Map>
+                      </div>
+                    </ExpansionPanelDetails>
+                  </ExpansionPanel>
+
                   <ExpansionPanel disabled={_.isEmpty(business.menu)}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                       <Typography className={classes.heading}>메뉴</Typography>
@@ -696,27 +714,15 @@ class SingleBusinessPage extends Component {
 
             <Grid item xs={12} sm={6}>
               <div className={classes.wrapper}>
-                <Thumbnail src={_.isEmpty(business) || _.isEmpty(business.mainImage)? null : business.mainImage.url} />
+                <Thumbnail src={_.isEmpty(business) || _.isEmpty(business.mainImage) ? null : business.mainImage.url} />
               </div>
 
-              <div className={classes.mapWrapper}>
-                <Map
-                  amapkey={config.AMAP_KEY}
-                  zoom={16}
-                  center={{
-                    longitude: business.geo.coordinates[0],
-                    latitude: business.geo.coordinates[1],
-                  }}
-                  plugins={[
-                    'ToolBar',
-                  ]}
-                >
-                  <Marker position={{
-                      longitude: business.geo.coordinates[0],
-                      latitude: business.geo.coordinates[1],
-                    }}
-                  />
-                </Map>
+              <div className={classes.wrapper}>
+                {
+                  _.isEmpty(business) || _.isEmpty(business.gallery) 
+                    ? null
+                    : <Gallery gallery={business.gallery} />
+                }
               </div>
             </Grid>
           </Grid>

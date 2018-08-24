@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Stars from 'react-stars';
+import Lightbox from 'react-images';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -26,14 +27,23 @@ import ProperName from 'js/components/utils/ProperName';
 import Avatar from 'js/components/utils/Avatar';
 import ThumbButton from 'js/components/utils/ThumbButton';
 
-// Mock Image
-import image from 'css/ikt-icon.gif';
-
 const styles = theme => ({
-  "chip":{
+  "chip": {
     marginRight: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
   },
+  "imageInfoWrapper": {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+  "imageInfo": {
+    backgroundColor: '#fff',
+    position: 'relative',
+    opacity: 0.7,
+    display: 'inline-block',
+    padding: theme.spacing.unit / 2,
+  }
 });
 
 class ReviewCardAlt extends PureComponent {
@@ -120,12 +130,20 @@ class ReviewCardAlt extends PureComponent {
                   </Link>}
           />
 
-          <Link to={"/business/s/" + this.props.business.enName}>
-            <CardMedia
-              image={image}
-              style={{ height: 180 }}
-            />
-          </Link>
+          {
+            _.isEmpty(this.props.images)
+              ? null
+              : <CardMedia
+                  image={this.props.images[0].url}
+                  style={{ height: 180 }}
+                  onClick={}
+                >
+                  <div className={classes.imageInfoWrapper}>
+                    <Typography className={classes.imageInfo}>1 / {this.props.images.length}</Typography>
+                  </div>
+                </CardMedia>
+          }
+           
 
           <CardContent>
             {
@@ -138,6 +156,7 @@ class ReviewCardAlt extends PureComponent {
                 : null
             }
             <Stars count={5} size={20} value={this.props.rating} edit={false} />
+
             <div>
               {
                 this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : null
@@ -192,6 +211,19 @@ class ReviewCardAlt extends PureComponent {
                 />
               : null
           }
+
+          <Lightbox
+            currentImage={this.state.currentImage}
+            images={this.state.gallery}
+            showThumbnails={true}
+            showImageCount={false}
+            isOpen={this.state.isLightboxOpen}
+            onClickPrev={this.gotoPrevLightboxImage}
+            onClickNext={this.gotoNextLightboxImage}
+            onClickThumbnail={this.gotoImage}
+            onClose={this.handleCloseLightbox}
+            backdropClosesModal={true}
+          />
         </div>
       </div>
     );
@@ -217,6 +249,8 @@ ReviewCardAlt.propTypes = {
   "envGood": PropTypes.bool,
   "comeback": PropTypes.bool,
   "upvoteCount": PropTypes.number,
+  "images": PropTypes.array,
+  
   "owner": PropTypes.object.isRequired,
 
   "isLoggedIn": PropTypes.bool.isRequired,

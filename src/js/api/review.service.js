@@ -108,7 +108,7 @@ export const reviewOperationFetch = (type, token, data) => {
       'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
-    body: JSON.stringify(data),
+    body: data,
   };
 
   switch (type) {

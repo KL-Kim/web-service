@@ -132,6 +132,7 @@ class ReviewPanel extends Component {
                                                     envGood={review.envGood}
                                                     comeback={review.comeback}
                                                     upvoteCount={review.upvote.length}
+                                                    images={review.images}
 
                                                     showBusinessName={this.props.showBusinessName}
                                                     showDeleteIcon={this.props.showDeleteIcon}

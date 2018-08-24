@@ -107,12 +107,12 @@ class TagPanel extends PureComponent {
                   <BusinessCard
                       bid={item._id}
                       title={item.krName}
-                      enName={item.enName}
+                      slug={item.enName}
                       rating={item.ratingAverage}
-                      thumbnailUri={item.thumbnailUri}
+                      image={_.isEmpty(item.mainImage) ? '' : item.mainImage.url}
                       category={item.category}
                       tags={item.tags}
-                      event={!!(item.event)}
+                      event={!_.isEmpty(item.event)}
 
                       isFavor={index > -1 ? true : false}
                       isLoggedIn={this.props.isLoggedIn}

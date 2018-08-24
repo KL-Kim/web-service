@@ -112,9 +112,11 @@ export const addNewReview = (data) => {
 
 
   return (dispatch, getState) => {
-    if (_.isEmpty(data)) {
-      return dispatch(AlertActions.alertFailure("Bad request"));
-    }
+    // if (_.isEmpty(data)) {
+    //   dispatch(AlertActions.alertFailure("Bad request"));
+
+    //   return ;
+    // }
 
     dispatch(_addNewReviewRequest());
 

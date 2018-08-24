@@ -5,6 +5,7 @@ import _ from 'lodash';
 import Stars from 'react-stars';
 import Dropzone from 'react-dropzone';
 import Img from 'react-image';
+import FormData from 'form-data';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -63,16 +64,17 @@ class WriteReviewDialog extends Component {
     this.state = {
       rating: props.rating || null,
       content: props.content || '',
-      images: [],
       "serviceGood": props.serviceGood || false,
       "envGood": props.envGood || false,
       "comeback": props.comeback || false,
+      images: [],
+      errorMessage: '',
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleStarChange = this.handleStarChange.bind(this);
-    this.onDropImages = this.onDropImages.bind(this);
+    this.handleDropImages = this.handleDropImages.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 
@@ -108,10 +110,12 @@ class WriteReviewDialog extends Component {
     });
   }
 
-  onDropImages(acceptedFiles) {
-    this.setState({
-      images:  this.state.images.concat(acceptedFiles),
-    });
+  handleDropImages(acceptedFiles, rejectedFiles) {
+    if (acceptedFiles) {
+      this.setState({
+        images: this.state.images.concat(acceptedFiles),
+      });
+    } 
   }
 
   handleClose() {
@@ -127,20 +131,26 @@ class WriteReviewDialog extends Component {
   }
 
   handleSubmit() {
-    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {
-      this.props.addNewReview({
-        bid: this.props.business._id,
-        uid: this.props.userId,
-        rating: this.state.rating,
-        content: this.state.content,
-        serviceGood: this.state.serviceGood,
-        envGood: this.state.envGood,
-        comeback: this.state.comeback,
-      })
-      .then(() => {
-        this.handleClose();
-        this.props.getNewReviews();
-      });
+    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {      
+      const formData = new FormData();
+
+      formData.append("bid", this.props.business._id);
+      formData.append("uid", this.props.userId);
+      formData.append("rating", this.state.rating);
+      formData.append("content", this.state.content);
+      formData.append("serviceGood", this.state.serviceGood);
+      formData.append("envGood", this.state.envGood);
+      formData.append("comeback", this.state.comeback);
+
+      if (!_.isEmpty(this.state.images)) {
+        formData.append("images", this.state.images, this.props.userId);
+      }
+
+      this.props.addNewReview(formData)
+        .then(() => {
+          this.handleClose();
+          this.props.getNewReviews();
+        });
     }
   }
 
@@ -268,8 +278,8 @@ class WriteReviewDialog extends Component {
               {
                 _.isEmpty(this.state.images) 
                   ? null
-                  : this.state.images.map(image =>
-                      <Grid item xs={4} sm={3}>
+                  : this.state.images.map((image, index) =>
+                      <Grid item xs={4} sm={3} key={index}>
                         <Img className={classes.image} src={image.preview} />
                       </Grid>
                   )
@@ -279,10 +289,11 @@ class WriteReviewDialog extends Component {
                   ? null
                   : <Grid item xs={4} sm={3}>
                       <Dropzone
-                        multiple={true}
+                        multiple
                         accept="image/*"
-                        onDrop={this.onDropImages}
+                        onDrop={this.handleDropImages}
                         className={classes.dropZone}
+                        maxSize={1024 * 1024}
                       >
                         <AddPhoto style={{
                           position: 'absolute',
