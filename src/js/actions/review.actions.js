@@ -6,7 +6,7 @@ import _ from 'lodash';
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
 import reviewTypes from '../constants/review.types';
-import { fetchReviews, reviewOperationFetch, voteReviewFetch, fetchSingleReview } from '../api/review.service';
+import { fetchReviews, addNewReviewFetch, deleteReviewFetch, voteReviewFetch, fetchSingleReview } from '../api/review.service';
 
 /**
  * Clear review reducer
@@ -112,17 +112,11 @@ export const addNewReview = (data) => {
 
 
   return (dispatch, getState) => {
-    // if (_.isEmpty(data)) {
-    //   dispatch(AlertActions.alertFailure("Bad request"));
-
-    //   return ;
-    // }
-
     dispatch(_addNewReviewRequest());
 
     return getToken()
       .then(token => {
-        return reviewOperationFetch("ADD", token, data);
+        return addNewReviewFetch(token, data);
       })
       .then(response => {
         dispatch(_addNewReviewSuccess());
@@ -132,57 +126,6 @@ export const addNewReview = (data) => {
       })
       .catch(err => {
         dispatch(_addNewReviewFailure(err));
-        dispatch(AlertActions.alertFailure(err.message));
-
-        return ;
-      });
-  }
-}
-
-/**
- * Update review
- */
-export const updateReview = (data) => {
-  const _updateReviewRequest = () => ({
-    "type": reviewTypes.UPDATE_REVIEW_REQUEST,
-    "meta": {},
-    "error": null,
-    "payload": {}
-  });
-
-  const _updateReviewSuccess = () => ({
-    "type": reviewTypes.UPDATE_REVIEW_SUCCESS,
-    "meta": {},
-    "error": null,
-    "payload": {},
-  });
-
-  const _updateReviewFailure = (error) => ({
-    "type": reviewTypes.UPDATE_REVIEW_FAILURE,
-    "meta": {},
-    "error": error,
-    "payload": {}
-  });
-
-  return (dispatch, getState) => {
-    if (_.isEmpty(data)) {
-      return dispatch(AlertActions.alertFailure("Bad request"));
-    }
-
-    dispatch(_updateReviewRequest());
-
-    return getToken()
-      .then(token => {
-        return reviewOperationFetch("UPDATE", token, data)
-      })
-      .then(response => {
-        dispatch(_updateReviewSuccess());
-        dispatch(AlertActions.alertSuccess("Update review successfully"));
-
-        return response;
-      })
-      .catch(err => {
-        dispatch(_updateReviewFailure(err));
         dispatch(AlertActions.alertFailure(err.message));
 
         return ;
@@ -224,7 +167,7 @@ export const deleteReview = (data) => {
 
     return getToken()
       .then(token => {
-        return reviewOperationFetch("DELETE", token, data)
+        return deleteReviewFetch(token, data)
       })
       .then(response => {
         dispatch(_deleteReviewSuccess());

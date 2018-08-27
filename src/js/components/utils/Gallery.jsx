@@ -9,6 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 
+// Custom Component
+import LightBox from 'js/components/utils/LightBox';
+
 const styles = theme => ({
     root: {
         display: 'flex',
@@ -38,17 +41,14 @@ class Gallery extends Component {
             gallery: [],
         };
 
-        this.gotoPrevLightboxImage = this.gotoPrevLightboxImage.bind(this);
-        this.gotoNextLightboxImage = this.gotoNextLightboxImage.bind(this);
         this.handleSelectImage = this.handleSelectImage.bind(this);
-        this.handleCloseLightbox = this.handleCloseLightbox.bind(this);
-        this.gotoImage = this.gotoImage.bind(this);
+        this.handleLightboxClose = this.handleLightboxClose.bind(this);
     }
 
     componentDidMount() {
-        const gallery = [];
-
         if (!_.isEmpty(this.props.gallery)) {
+            const gallery = [];
+
             this.props.gallery.map(image => {
                 gallery.push({
                     src: image.url + '-business',
@@ -62,24 +62,6 @@ class Gallery extends Component {
         }
     }
 
-    gotoPrevLightboxImage() {
-        this.setState({
-            currentImage: this.state.currentImage - 1,
-        });
-    }
-
-    gotoNextLightboxImage() {
-        this.setState({
-            currentImage: this.state.currentImage + 1,
-        });
-    }
-
-    gotoImage(index) {
-        this.setState({
-            currentImage: index
-        });
-    }
-
     handleSelectImage = index => e => {
         this.setState({
             currentImage: index,
@@ -87,7 +69,7 @@ class Gallery extends Component {
         });
     }
 
-    handleCloseLightbox() {
+    handleLightboxClose() {
         this.setState({
             isLightboxOpen: false
         });
@@ -113,17 +95,11 @@ class Gallery extends Component {
                     }
                 </GridList>
 
-                <Lightbox
-                    currentImage={this.state.currentImage}
+                <LightBox
+                    open={this.state.isLightboxOpen}
                     images={this.state.gallery}
-                    showThumbnails={true}
-                    showImageCount={false}
-                    isOpen={this.state.isLightboxOpen}
-                    onClickPrev={this.gotoPrevLightboxImage}
-                    onClickNext={this.gotoNextLightboxImage}
-                    onClickThumbnail={this.gotoImage}
-                    onClose={this.handleCloseLightbox}
-                    backdropClosesModal={true}
+                    currentImage={this.state.currentImage}
+                    onClose={this.handleLightboxClose}
                 />
             </div>
         );

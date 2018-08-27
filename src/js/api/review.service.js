@@ -96,33 +96,47 @@ export const fetchSingleReview = id => {
 }
 
 /**
- * Add, update, delete review
- * @param {String} type - ADD, UPDATE OR DELETE
+ * Add review
  * @param {String} token - Verification token
  * @param {Object} data - Review data
  */
-export const reviewOperationFetch = (type, token, data) => {
+export const addNewReviewFetch = (token, data) => {
   const options = {
-    method: '',
+    method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       "Authorization": 'Bearer ' + token,
     },
     body: data,
   };
+  return fetch(reviewSerivceUri.commonUrl, options)
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        return Promise.reject(responseErrorHandler(response));
+      }
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
+}
 
-  switch (type) {
-    case "ADD":
-      options.method = 'POST';
-      break;
-
-    case "DELETE":
-      options.method = 'DELETE';
-      break;
-
-    default:
-      options.method = 'GET';
-  }
+/**
+ * Delete review
+ * @param {String} token - Verification token
+ * @param {String} id - Review Id
+ */
+export const deleteReviewFetch = (token, data) => {
+  const options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": 'Bearer ' + token,
+    },
+    body: JSON.stringify({
+      ...data
+    }),
+  };
 
   return fetch(reviewSerivceUri.commonUrl, options)
     .then(response => {

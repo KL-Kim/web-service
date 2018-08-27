@@ -1,8 +1,8 @@
 /**
  * User Reducer
  */
-import userTypes from '../constants/user.types.js';
-import emailTypes from '../constants/email.types.js';
+import userTypes from 'js/constants/user.types.js';
+import emailTypes from 'js/constants/email.types.js';
 
 const initialState = {
   "isFetching": false,

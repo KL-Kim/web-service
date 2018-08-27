@@ -11,6 +11,7 @@ import FormData from 'form-data';
 import { withStyles } from '@material-ui/core/styles';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import FormControl from '@material-ui/core/FormControl';
@@ -25,12 +26,15 @@ import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
+
+
 // Custom Components
 import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
 import AddPhoto from '@material-ui/icons/AddAPhoto';
 import Close from '@material-ui/icons/Close';
+
 
 const styles = theme => ({
   "appBar": {
@@ -68,6 +72,7 @@ class WriteReviewDialog extends Component {
       "envGood": props.envGood || false,
       "comeback": props.comeback || false,
       images: [],
+      rejectedImages: [],
       errorMessage: '',
     };
 
@@ -112,10 +117,28 @@ class WriteReviewDialog extends Component {
 
   handleDropImages(acceptedFiles, rejectedFiles) {
     if (acceptedFiles) {
+      const acceptedImages = this.state.images.slice();
+      const images = acceptedImages.concat(acceptedFiles);
+
+      -----
+      if (images.length > 9) {
+        while(images.length <= 9) {
+          images.pop();
+        }
+      }
+
+
+
       this.setState({
-        images: this.state.images.concat(acceptedFiles),
+        images: [...images],
       });
-    } 
+    }
+
+    if (rejectedFiles) {
+      this.setState({
+        rejectedImages: [...rejectedFiles],
+      });
+    }
   }
 
   handleClose() {
@@ -131,7 +154,7 @@ class WriteReviewDialog extends Component {
   }
 
   handleSubmit() {
-    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {      
+    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {
       const formData = new FormData();
 
       formData.append("bid", this.props.business._id);
@@ -143,7 +166,9 @@ class WriteReviewDialog extends Component {
       formData.append("comeback", this.state.comeback);
 
       if (!_.isEmpty(this.state.images)) {
-        formData.append("images", this.state.images, this.props.userId);
+        this.state.images.map(file => {
+          formData.append("images", file);
+        });
       }
 
       this.props.addNewReview(formData)
@@ -275,6 +300,17 @@ class WriteReviewDialog extends Component {
             <br />
               
             <Grid container spacing={16}>
+              <Grid item xs={12}>
+                <Typography variant="caption">Max 9</Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                {
+                  this.state.rejectedImages.map(item => (
+                    <Typography>{item.name} - {item.size / (1024 * 1024)} MB</Typography>
+                  ))
+                }
+              </Grid>
               {
                 _.isEmpty(this.state.images) 
                   ? null
@@ -285,7 +321,7 @@ class WriteReviewDialog extends Component {
                   )
               }
               {
-                this.props.readOnly 
+                this.props.readOnly
                   ? null
                   : <Grid item xs={4} sm={3}>
                       <Dropzone
@@ -293,16 +329,16 @@ class WriteReviewDialog extends Component {
                         accept="image/*"
                         onDrop={this.handleDropImages}
                         className={classes.dropZone}
-                        maxSize={1024 * 1024}
+                        maxSize={5242880}
                       >
                         <AddPhoto style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          width: 50,
-                          height: 50,
-                          transform: 'translate(-50%, -50%)',
-                          opacity: 0.5,
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            width: 50,
+                            height: 50,
+                            transform: 'translate(-50%, -50%)',
+                            opacity: 0.5,
                           }}
                         />
                       </Dropzone>

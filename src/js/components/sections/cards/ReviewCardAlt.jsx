@@ -1,9 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import Stars from 'react-stars';
-import Lightbox from 'react-images';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -26,6 +25,7 @@ import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import ProperName from 'js/components/utils/ProperName';
 import Avatar from 'js/components/utils/Avatar';
 import ThumbButton from 'js/components/utils/ThumbButton';
+import LightBox from 'js/components/utils/LightBox';
 
 const styles = theme => ({
   "chip": {
@@ -46,20 +46,42 @@ const styles = theme => ({
   }
 });
 
-class ReviewCardAlt extends PureComponent {
+class ReviewCardAlt extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       "isRemoved": false,
       "deleteDialogOpen": false,
+      "isLightboxOpen": false,
+      "currentImage": 0,
       "upvoteCount": props.upvoteCount,
+      "images": [],
     };
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
     this.handleClickUpvoteIcon = this.handleClickUpvoteIcon.bind(this);
+    this.handleLightboxOpen = this.handleLightboxOpen.bind(this);
+    this.handleLightboxClose = this.handleLightboxClose.bind(this);
+  }
+
+  componentDidMount() {
+    if (!_.isEmpty(this.props.images)) {
+      const images = [];
+
+      this.props.images.map(image => {
+        images.push({
+          src: image.url + '-business',
+          alt: image.name
+        });
+      })
+
+      this.setState({
+        images: [...images],
+      });
+    }
   }
 
   handleDeleteDialogOpen() {
@@ -71,6 +93,18 @@ class ReviewCardAlt extends PureComponent {
   handleDeleteDialogClose() {
     this.setState({
       deleteDialogOpen: false,
+    });
+  }
+
+  handleLightboxOpen() {
+    this.setState({
+      isLightboxOpen: true
+    });
+  }
+
+  handleLightboxClose() {
+    this.setState({
+      isLightboxOpen: false
     });
   }
 
@@ -102,10 +136,8 @@ class ReviewCardAlt extends PureComponent {
       this.props.deleteReview({
         _id: this.props.id,
         uid: this.props.owner._id,
-      })
-      .then(response => {
+      }).then(response => {
         if (response) {
-          
           this.setState({
             isRemoved: true,
             deleteDialogOpen: false,
@@ -135,8 +167,8 @@ class ReviewCardAlt extends PureComponent {
               ? null
               : <CardMedia
                   image={this.props.images[0].url}
-                  style={{ height: 180 }}
-                  onClick={}
+                  style={{ height: 180, cursor: 'zoom-in' }}
+                  onClick={this.handleLightboxOpen}
                 >
                   <div className={classes.imageInfoWrapper}>
                     <Typography className={classes.imageInfo}>1 / {this.props.images.length}</Typography>
@@ -211,19 +243,15 @@ class ReviewCardAlt extends PureComponent {
                 />
               : null
           }
-
-          <Lightbox
-            currentImage={this.state.currentImage}
-            images={this.state.gallery}
-            showThumbnails={true}
-            showImageCount={false}
-            isOpen={this.state.isLightboxOpen}
-            onClickPrev={this.gotoPrevLightboxImage}
-            onClickNext={this.gotoNextLightboxImage}
-            onClickThumbnail={this.gotoImage}
-            onClose={this.handleCloseLightbox}
-            backdropClosesModal={true}
-          />
+          {
+            _.isEmpty(this.props.images)
+              ? null
+              : <LightBox
+                  images={this.state.images}
+                  open={this.state.isLightboxOpen}
+                  onClose={this.handleLightboxClose}
+                />
+          }
         </div>
       </div>
     );

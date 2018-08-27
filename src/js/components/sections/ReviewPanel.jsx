@@ -74,11 +74,11 @@ class ReviewPanel extends Component {
     render() {
         const { classes, reviews } = this.props;
 
-        if (this.props.isFetching) {
-            return  <div style={{ textAlign: 'center' }}>
-                        <CircularProgress size={50} />
-                    </div>;
-        }
+        // if (this.props.isFetching) {
+        //     return  <div style={{ textAlign: 'center' }}>
+        //                 <CircularProgress size={50} />
+        //             </div>;
+        // }
 
         return (
             <div>
