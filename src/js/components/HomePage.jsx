@@ -19,9 +19,8 @@ import DevTools from './layout/DevTools';
 import BottomNav from './layout/BottomNav';
 
 import SectionCarousel from './sections/SectionCarousel';
-import CategoryCard from './sections/cards/CategoryCard';
 import BusinessPanel from './sections/BusinessPanel';
-import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
+import PopularCategorySection from './sections/PopularCategorySection';
 
 // Actions
 import { favorOperation } from 'js/actions/user.actions';
@@ -47,9 +46,6 @@ const styles = theme => ({
   section: {
     marginBottom: theme.spacing.unit * 4,
   },
-  card: {
-    marginRight: theme.spacing.unit * 2,
-  },
 });
 
 class HomePage extends Component {
@@ -74,33 +70,7 @@ class HomePage extends Component {
         <SectionCarousel />
         <main className={classes.appFrame}>
           <div className={classes.section}>
-            <Grid container justify="space-between" alignItems="flex-end">
-              <Grid item>
-                <Typography variant="title" gutterBottom>Popular Categories</Typography>
-              </Grid>
-
-              <Grid item>
-                <Link to="/explore">
-                  <Button>More</Button>
-                </Link>
-              </Grid>
-            </Grid>
-            
-            <HorizontalScrollBar>
-              {
-                this.props.categories.map(item => {
-                    if (item.priority > 7) {
-                      return (
-                        <div className={classes.card} key={item._id}>
-                          <CategoryCard name={item.krName} url={"/business/category/" + item.enName} />
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })
-              }
-            </HorizontalScrollBar>
+            <PopularCategorySection categories={this.props.categories} />
           </div>
 
           <div className={classes.section}>

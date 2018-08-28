@@ -18,3 +18,7 @@ img {
 #root {
   height: 100%;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+}

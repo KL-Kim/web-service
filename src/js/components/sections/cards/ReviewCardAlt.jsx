@@ -167,7 +167,11 @@ class ReviewCardAlt extends Component {
               ? null
               : <CardMedia
                   image={this.props.images[0].url}
-                  style={{ height: 180, cursor: 'zoom-in' }}
+                  style={{ 
+                    height: 180,
+                    cursor: 'zoom-in', 
+                    objectFit: 'cover' 
+                  }}
                   onClick={this.handleLightboxOpen}
                 >
                   <div className={classes.imageInfoWrapper}>

@@ -26,7 +26,9 @@ import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
-
+// Material UI Icons
+import DeleteForever from '@material-ui/icons/DeleteForever';
+import CancelPresentation from '@material-ui/icons/CancelPresentation';
 
 // Custom Components
 import VerifyDialog from './VerifyDialog';
@@ -34,7 +36,6 @@ import VerifyDialog from './VerifyDialog';
 // Material UI Icons
 import AddPhoto from '@material-ui/icons/AddAPhoto';
 import Close from '@material-ui/icons/Close';
-
 
 const styles = theme => ({
   "appBar": {
@@ -46,19 +47,39 @@ const styles = theme => ({
   "section": {
     marginBottom: theme.spacing.unit,
   },
-  "image": {
-    width: '100%',
-  },
   "dropZone": {
     width: '100%',
-    height: '100%',
-    minHeight: 100,
+    minHeight: 70,
+    paddingTop: '30%',
     border: 2,
     borderStyle: 'dashed',
     display: 'inline-block',
     position: 'relative',
     cursor: 'pointer',
   },
+  "imageWrapper": {
+    'position': "relative",   
+  },
+  "imageButton": {
+    zIndex: 1,
+    color: '#fff',
+    position: "absolute",
+    top: 0,
+    right: 0,
+    opacity: 0.5,
+    '&:hover': {
+      opacity: 1,
+    }
+  },
+  "dropIcon": {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 50,
+    height: 50,
+    transform: 'translate(-50%, -50%)',
+    opacity: 0.7,
+  }
 });
 
 class WriteReviewDialog extends Component {
@@ -80,6 +101,7 @@ class WriteReviewDialog extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleStarChange = this.handleStarChange.bind(this);
     this.handleDropImages = this.handleDropImages.bind(this);
+    this.handleDeleteImage = this.handleDeleteImage.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 
@@ -120,15 +142,9 @@ class WriteReviewDialog extends Component {
       const acceptedImages = this.state.images.slice();
       const images = acceptedImages.concat(acceptedFiles);
 
-      -----
-      if (images.length > 9) {
-        while(images.length <= 9) {
-          images.pop();
-        }
+      while( images.length > 9 ) {
+        images.pop();
       }
-
-
-
       this.setState({
         images: [...images],
       });
@@ -141,11 +157,22 @@ class WriteReviewDialog extends Component {
     }
   }
 
+  handleDeleteImage = index => e => {
+    const images = this.state.images.slice();
+
+    images.splice(index, 1);
+
+    this.setState({
+      images: [...images],
+    });
+  }
+
   handleClose() {
     this.setState({
       rating: null,
       content: '',
       images: [],
+      rejectedImages: [],
       "serviceGood": false,
       "envGood": false,
       "comeback": false,
@@ -240,7 +267,6 @@ class WriteReviewDialog extends Component {
                     size="small"
                     color="primary"
                     disabled={this.props.readOnly}
-                    className={classes.button}
                     variant={this.state.serviceGood ? 'raised' : 'outlined'}
                     onClick={this.handleClick("serviceGood")}
                   >
@@ -255,7 +281,6 @@ class WriteReviewDialog extends Component {
                     fullWidth
                     disabled={this.props.readOnly}
                     color="primary"
-                    className={classes.button}
                     variant={this.state.envGood ? 'raised' : 'outlined'}
                     onClick={this.handleClick("envGood")}
                   >
@@ -271,7 +296,6 @@ class WriteReviewDialog extends Component {
                     fullWidth
                     disabled={this.props.readOnly}
                     color="primary"
-                    className={classes.button}
                     variant={this.state.comeback ? 'raised' : 'outlined'}
                     onClick={this.handleClick("comeback")}
                   >
@@ -300,51 +324,57 @@ class WriteReviewDialog extends Component {
             <br />
               
             <Grid container spacing={16}>
-              <Grid item xs={12}>
-                <Typography variant="caption">Max 9</Typography>
-              </Grid>
+              
 
-              <Grid item xs={12}>
-                {
-                  this.state.rejectedImages.map(item => (
-                    <Typography>{item.name} - {item.size / (1024 * 1024)} MB</Typography>
-                  ))
-                }
-              </Grid>
               {
                 _.isEmpty(this.state.images) 
                   ? null
                   : this.state.images.map((image, index) =>
-                      <Grid item xs={4} sm={3} key={index}>
-                        <Img className={classes.image} src={image.preview} />
+                      <Grid item xs={4} key={index}>
+                        <div className={classes.imageWrapper}>
+                          <IconButton className={classes.imageButton} onClick={this.handleDeleteImage(index)}>
+                            <DeleteForever />
+                          </IconButton>
+                          <Img className={classes.image} src={image.preview} />
+                        </div>
                       </Grid>
                   )
               }
               {
                 this.props.readOnly
                   ? null
-                  : <Grid item xs={4} sm={3}>
+                  : <Grid item xs={12}>
                       <Dropzone
                         multiple
                         accept="image/*"
                         onDrop={this.handleDropImages}
                         className={classes.dropZone}
-                        maxSize={5242880}
+                        maxSize={5242880 / 2.5}
+                        disabled={this.state.images.length >= 9}
                       >
-                        <AddPhoto style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            width: 50,
-                            height: 50,
-                            transform: 'translate(-50%, -50%)',
-                            opacity: 0.5,
-                          }}
-                        />
+                        {
+                          this.state.images.length >= 9 
+                            ? <CancelPresentation className={classes.dropIcon} />
+                            : <AddPhoto className={classes.dropIcon} />
+                        }
                       </Dropzone>
+                      <Typography variant="caption" color={this.state.images.length >= 9 ? 'error' : 'default'}>Max Nubmer: 9</Typography>
+                      <Typography variant="caption">Max Size: 5 MB</Typography>
                     </Grid>
               }
 
+              {
+                _.isEmpty(this.state.rejectedImages)
+                  ? null
+                  : <Grid item xs={12}>
+                      <Typography variant="title" gutterBottom>Rejected Files</Typography>
+                      {
+                        this.state.rejectedImages.map(item => (
+                          <Typography>{item.name} (Reason: Too big size)</Typography>
+                        ))
+                      }
+                    </Grid>
+              }
             </Grid>
           </DialogContent>
 

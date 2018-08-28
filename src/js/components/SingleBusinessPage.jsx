@@ -509,17 +509,17 @@ class SingleBusinessPage extends Component {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                       <List style={{ width: '100%' }}>
-                      {
-                        _.isEmpty(business.chains)
-                          ? null
-                          : business.chains.map(item => (
-                            <Link to={item.enName} key={item.enName}>
-                              <ListItem button>
-                                <ListItemText primary={item.krName} secondary={item.cnName} />
-                              </ListItem>
-                            </Link>
-                          ))
-                      }
+                        {
+                          _.isEmpty(business.chains)
+                            ? null
+                            : business.chains.map(item => (
+                              <Link to={item.enName} key={item.enName}>
+                                <ListItem button>
+                                  <ListItemText primary={item.krName} secondary={item.cnName} />
+                                </ListItem>
+                              </Link>
+                            ))
+                        }
                       </List>
                     </ExpansionPanelDetails>
                   </ExpansionPanel>

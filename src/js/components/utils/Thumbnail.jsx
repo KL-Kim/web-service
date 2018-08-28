@@ -23,11 +23,48 @@ class Thumbnail extends Component {
     }
 
     return (
-      <Img
-        style={{ width: '100%' }} 
-        unloader={<img src={image} />}
-        src={src} 
-      />
+      <div style={{ 
+        position: 'relative', 
+        width: '100%', 
+        paddingTop: '75%', 
+      }}>
+        <Img
+          style={{ 
+            width: '100%',
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }} 
+          loader={<div 
+                    style={{
+                      backgroundColor: '#fff',
+                      width: '100%',
+                      height:'100%',
+                      position: "absolute",
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      animation: 'fadeIn 0.5s Infinite alternate',
+                    }}
+                  />
+          }
+          unloader={<img 
+                      style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0, 
+                      }} 
+                      src={image}
+                    />
+          }
+          src={src} 
+        />
+      </div>
     );
   }
 }

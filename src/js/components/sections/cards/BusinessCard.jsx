@@ -89,7 +89,7 @@ class BusinessCard extends PureComponent {
         <Card className={classes.root}>
           <Link to={"/business/s/" + this.props.slug}>
             <CardMedia
-              style={{ height: 200 }}
+              style={{ paddingTop: '56.25%' }}
               image={_.isEmpty(this.props.image) ? image : this.props.image + '-thumbnail'}
               title={this.props.title}
             />

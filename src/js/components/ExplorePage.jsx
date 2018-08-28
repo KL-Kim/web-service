@@ -12,9 +12,9 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 
 // Custom Components
-import Container from './layout/Container';
-import TagSection from './sections/TagSection';
-import CategorySection from './sections/CategorySection';
+import Container from 'js/components/layout/Container';
+import ExploreTagSection from 'js/components/sections/ExploreTagSection';
+import ExploreCategorySection from 'js/components/sections/ExploreCategorySection';
 
 const styles = theme => ({
   "section": {
@@ -30,11 +30,11 @@ class ExplorePage extends Component {
     return (
       <Container>
         <div>
-          <CategorySection />
+          <ExploreCategorySection />
 
           <Divider className={classes.section} />
           
-          <TagSection />
+          <ExploreTagSection />
         </div>
       </Container>
     );
