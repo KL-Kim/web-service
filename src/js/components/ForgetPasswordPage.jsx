@@ -6,49 +6,25 @@ import { connect } from 'react-redux';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import Container from './layout/Container';
+import SmallContainer from './layout/SmallContainer';
+
+// Constants
 import emailTypes from 'js/constants/email.types';
 
 // Actions
 import { sendEmail } from 'js/actions/auth.actions';
 
 const styles = theme => ({
-  "root": {
-    maxWidth: 600,
-    margin: 'auto',
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    transform: 'translateY(-50%)',
-  },
-  "paper": {
-    "paddingTop": theme.spacing.unit * 8,
-    "paddingBottom": theme.spacing.unit * 8,
-    "paddingLeft": theme.spacing.unit * 12,
-    "paddingRight": theme.spacing.unit * 12,
-    "color": theme.palette.text.secondary,
-
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing.unit,
-      marginRight: theme.spacing.unit,
-      "padding": theme.spacing.unit * 4,
-    }
-  },
   "button": {
-    "marginTop": theme.spacing.unit * 4,
+    "marginTop": theme.spacing.unit * 2,
   },
-  "input": {
-    "margin": theme.spacing.unit * 2
-  }
 });
 
 class ForgetPasswordPage extends Component {
@@ -107,37 +83,35 @@ class ForgetPasswordPage extends Component {
 
     return (
       <Container>
-        <div className={classes.root}>
-          <Paper className={classes.paper}>
-            <Typography variant="display1" align="center">Forget Password</Typography>
+        <SmallContainer>
+          <Typography variant="display1" align="center">Forget Password</Typography>
 
-            <form onSubmit={this.handleSubmit}>
-              <TextField fullWidth
-                autoComplete="off"
-                type="email"
-                name="email"
-                label="Email"
-                margin="normal"
-                error={this.state.showError}
-                helperText={this.state.showError ? this.state.errorMessage : ' '}
-                onChange={this.handleChange}
-                onBlur={this.isValidEmail}
-              />
-              <br />
+          <form onSubmit={this.handleSubmit}>
+            <TextField fullWidth
+              autoComplete="off"
+              type="email"
+              name="email"
+              label="Email"
+              margin="normal"
+              error={this.state.showError}
+              helperText={this.state.showError ? this.state.errorMessage : ' '}
+              onChange={this.handleChange}
+              onBlur={this.isValidEmail}
+            />
+            <br />
 
-              <Button fullWidth
-                type="submit"
-                name="signin"
-                variant="raised"
-                color="primary"
-                className={classes.button}
-                disabled={this.state.showError || isFetching}
-              >
-                {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
-              </Button>
-            </form>
-          </Paper>
-        </div>
+            <Button fullWidth
+              type="submit"
+              name="signin"
+              variant="raised"
+              color="primary"
+              className={classes.button}
+              disabled={this.state.showError || isFetching}
+            >
+              {isFetching ? <CircularProgress size={20} /> : 'Send Email'}
+            </Button>
+          </form>
+        </SmallContainer>
       </Container>
     );
   }

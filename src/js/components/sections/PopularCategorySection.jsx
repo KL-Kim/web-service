@@ -8,15 +8,20 @@ import _ from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 
+// Material UI Icons
 import Restaurant from '@material-ui/icons/Restaurant';
-
-const icon = "Restaurant"
+import LocalBar from '@material-ui/icons/LocalBar';
+import LocalHospital from '@material-ui/icons/LocalHospital';
+import Dashboard from '@material-ui/icons/Dashboard';
+import GolfCourse from '@material-ui/icons/GolfCourse';
+import Terrain from '@material-ui/icons/Terrain';
 
 const styles = theme => ({
-    card: {
-        marginRight: theme.spacing.unit * 2,
+    item: {
+        width: '100%', 
+        color: theme.palette.text.secondary, 
+        textAlign: "center",
     },
 });
 
@@ -29,31 +34,57 @@ class PopularCategorySection extends Component {
                 <Typography variant="title" gutterBottom>Popular Categories</Typography>
                     
                 <Grid container spacing={16} justify="space-around">
-                    {
-                        this.props.categories.map(item => {
-                            if (item.priority > 7) {
-                                return (
-                                    <Grid item xs={4} sm='auto' key={item._id}>
-                                        <Link to={"/business/category/" + item.enName}>
-                                            <div style={{ width: '100%', color: '#111'}}>
-                                                
-                                                <Restaurant style={{ fontSize: 50 }} />
-                                                
-                                                <div> 
-                                                    <Typography align="center">{item.krName}</Typography>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </Grid>
-                                );
-                            } else {
-                                return null;
-                            }
-                        })
-                    }
+                     <Grid item xs={4} sm='auto'> 
+                        <Link to="/business/category/restaurant">
+                            <div className={classes.item}>
+                                <Restaurant style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">맛집</Typography>
+                            </div>
+                        </Link>
+                    </Grid>
+
+                    <Grid item xs={4} sm='auto'> 
+                        <Link to="/business/category/nightbar">
+                            <div className={classes.item}>
+                                <LocalBar style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">호프</Typography>
+                            </div>
+                        </Link>
+                    </Grid>
+
+                    <Grid item xs={4} sm='auto'> 
+                        <Link to="/business/category/hospital">
+                            <div className={classes.item}>
+                                <LocalHospital style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">병원</Typography>
+                            </div>
+                        </Link>
+                    </Grid>
+
+                    <Grid item xs={4} sm='auto'> 
+                        <Link to="/business/category/golf">
+                            <div className={classes.item}>
+                                <GolfCourse style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">골프</Typography>
+                            </div>
+                        </Link>
+                    </Grid>
+
+                    <Grid item xs={4} sm='auto'> 
+                        <Link to="/business/category/scenic_area">
+                            <div className={classes.item}>
+                                <Terrain style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">관광명소</Typography>
+                            </div>
+                        </Link>
+                    </Grid>
+                    
                     <Grid item xs={4} sm='auto'> 
                         <Link to="/explore">
-                            <Button fullWidth>All</Button>
+                            <div className={classes.item}>
+                                <Dashboard style={{ fontSize: 30 }} />
+                                <Typography variant="caption" align="center">ALL</Typography>
+                            </div>
                         </Link>
                     </Grid>
                 </Grid>

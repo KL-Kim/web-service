@@ -22,8 +22,11 @@ import { getBusinessList, clearBusinessList } from 'js/actions/business.actions'
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
-const styles = (theme) => ({
+// Common Style
+import { root } from 'assets/jss/common.style';
 
+const styles = (theme) => ({
+  "root": root(theme),
 });
 
 class FavorPage extends Component {
@@ -86,7 +89,7 @@ class FavorPage extends Component {
 
     return _.isEmpty(this.props.user) ? null : (
       <Container>
-        <div>
+        <div className={classes.root}>
           <Typography variant="title" gutterBottom>My Favorite Business</Typography>
 
           <BusinessPanel 

@@ -22,10 +22,10 @@ const styles = (theme) => ({
   root: {
     width: '100%',
     position: 'fixed',
-    bottom: -1,
+    bottom: -5,
     left: 0,
     right: 0,
-    zIndex: 1201,
+    zIndex: theme.zIndex.appBar,
   },
 });
 
@@ -83,9 +83,18 @@ class BottomNav extends Component {
             value={this.state.index}
             onChange={this.handleChange}
           >
-            <BottomNavigationAction icon={<LinkContainer to="/"><Home /></LinkContainer>} />
-            <BottomNavigationAction icon={<LinkContainer to="/explore"><Explore /></LinkContainer>} />
-            <BottomNavigationAction icon={<LinkContainer to="/search"><Search /></LinkContainer>} />
+            <LinkContainer to="/">
+              <BottomNavigationAction icon={<Home />} />
+            </LinkContainer>
+            
+            <LinkContainer to="/explore">
+              <BottomNavigationAction icon={<Explore />} />
+            </LinkContainer>
+
+            <LinkContainer to="/search">
+              <BottomNavigationAction icon={<Search />} />
+            </LinkContainer>
+            
           </BottomNavigation>
         </div>
       </Hidden>

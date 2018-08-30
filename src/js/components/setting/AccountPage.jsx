@@ -24,12 +24,15 @@ import AvatarPanel from './panels/AvatarPanel';
 import { updateUserProfile, uploadProfilePhoto, updateMobilePhone } from 'js/actions/user.actions';
 import { sendPhoneVerificationCode, sendEmail } from 'js/actions/auth.actions';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = (theme) => ({
   "root": {
+    ...root(theme),
     maxWidth: 720,
-    margin: 'auto'
   },
-  "container": {
+  "section": {
     marginBottom: theme.spacing.unit * 4
   },
 });
@@ -42,7 +45,7 @@ class AccountPage extends Component {
     return _.isEmpty(user) ? null : (
       <Container>
         <div className={classes.root}>
-          <div className={classes.container}>
+          <div className={classes.section}>
             <Typography variant="title" gutterBottom>Account</Typography>
           
             <UsernamePanel
@@ -105,7 +108,7 @@ class AccountPage extends Component {
             />
           </div>
 
-          <div className={classes.container}>  
+          <div className={classes.section}>  
             <Typography variant="title" gutterBottom>
               Photo
             </Typography>

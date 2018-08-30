@@ -22,45 +22,21 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Error from '@material-ui/icons/Error';
 
 // Custom Components
-import config from 'js/config/config';
 import Container from './layout/Container';
+import SmallContainer from './layout/SmallContainer';
 
 // Actions
 import { register } from 'js/actions/user.actions';
 
-const styles = theme => ({
-  "root": {
-    maxWidth: 600,
-    margin: 'auto',
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    transform: 'translateY(-50%)',
-  },
-  "container": {
-    "paddingTop": theme.spacing.unit * 8,
-    "paddingBottom": theme.spacing.unit * 8,
-    "paddingLeft": theme.spacing.unit * 12,
-    "paddingRight": theme.spacing.unit * 12,
-    "marginBottom": theme.spacing.unit,
-    "color": theme.palette.text.secondary,
+import config from 'js/config/config';
 
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing.unit,
-      marginRight: theme.spacing.unit,
-      "padding": theme.spacing.unit * 4,
-    }
-  },
-  "section": {
-    marginBottom: theme.spacing.unit * 2,
-  },
+const styles = theme => ({
   "button": {
     "marginTop": theme.spacing.unit * 2,
   },
 });
 
-const passwordMinLength = config.passwordMinLength;
+const passwordMinLength = config.PASSWORD_MIN_LENGTH;
 
 class UserSignup extends Component {
   constructor(props) {
@@ -201,108 +177,105 @@ class UserSignup extends Component {
 
     return (
       <Container>
-        <div className={classes.root}>
-          <Paper className={classes.container}>
-            <Typography variant="display1" align="center">Sign Up</Typography>
+        <SmallContainer>
+          <Typography variant="display1" align="center" gutterBottom>Sign Up</Typography>
 
-            <form noValidate onSubmit={this.handleRegister}>
-              <FormControl fullWidth className={classes.section}>
-                <InputLabel htmlFor="email">Email</InputLabel>
-                <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    autoFocus
-                    error={this.state.emailError}
-                    onBlur={this.isValidEmail}
-                    onChange={this.handleChange}
-                    endAdornment={
-                      this.state.emailError
-                        ? <InputAdornment position="end">
-                            <Error color="secondary"/>
-                          </InputAdornment>
-                        : null
-                    }
-                />
-                <FormHelperText id="email-helper-text" error>
-                {
-                  this.state.emailError ? this.state.emailErrorMessage : ' '
-                }
-                </FormHelperText>
-              </FormControl>
+          <form noValidate onSubmit={this.handleRegister}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  autoFocus
+                  error={this.state.emailError}
+                  onBlur={this.isValidEmail}
+                  onChange={this.handleChange}
+                  endAdornment={
+                    this.state.emailError
+                      ? <InputAdornment position="end">
+                          <Error color="secondary"/>
+                        </InputAdornment>
+                      : null
+                  }
+              />
+              <FormHelperText id="email-helper-text" error>
+              {
+                this.state.emailError ? this.state.emailErrorMessage : ' '
+              }
+              </FormHelperText>
+            </FormControl>
 
-              <FormControl fullWidth className={classes.section}>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                    type="password"
-                    id="password"
-                    name="password"
-                    error={this.state.passwordError}
-                    onBlur={this.isValidPassword}
-                    onChange={this.handleChange}
-                    endAdornment={
-                      this.state.passwordError
-                        ? <InputAdornment position="end">
-                            <Error color="secondary" />
-                          </InputAdornment>
-                        : null
-                    }
-                />
-                <FormHelperText id="password-helper-text" error>
-                    {
-                      this.state.passwordError ? this.state.passwordErrorMessage : ' '
-                    }
-                </FormHelperText>
-              </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input
+                  type="password"
+                  id="password"
+                  name="password"
+                  error={this.state.passwordError}
+                  onBlur={this.isValidPassword}
+                  onChange={this.handleChange}
+                  endAdornment={
+                    this.state.passwordError
+                      ? <InputAdornment position="end">
+                          <Error color="secondary" />
+                        </InputAdornment>
+                      : null
+                  }
+              />
+              <FormHelperText id="password-helper-text" error>
+                  {
+                    this.state.passwordError ? this.state.passwordErrorMessage : ' '
+                  }
+              </FormHelperText>
+            </FormControl>
 
-              <FormControl fullWidth className={classes.section}>
-                <InputLabel htmlFor="password">Confirm Password</InputLabel>
-                <Input
-                    type="password"
-                    id="password-confirmation"
-                    name="passwordConfirmation"
-                    error={this.state.passwordConfirmationError}
-                    onBlur={this.isValidPasswordConfirmation}
-                    onChange={this.handleChange}
-                    endAdornment={
-                      this.state.passwordConfirmationError
-                        ? <InputAdornment position="end">
-                            <Error color="secondary" />
-                          </InputAdornment>
-                        : null
-                    }
-                />
-                <FormHelperText id="password-helper-text" error>
-                    {
-                      this.state.passwordConfirmationError ? this.state.passwordConfirmationErrorMessage : ' '
-                    }
-                </FormHelperText>
-              </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="password">Confirm Password</InputLabel>
+              <Input
+                  type="password"
+                  id="password-confirmation"
+                  name="passwordConfirmation"
+                  error={this.state.passwordConfirmationError}
+                  onBlur={this.isValidPasswordConfirmation}
+                  onChange={this.handleChange}
+                  endAdornment={
+                    this.state.passwordConfirmationError
+                      ? <InputAdornment position="end">
+                          <Error color="secondary" />
+                        </InputAdornment>
+                      : null
+                  }
+              />
+              <FormHelperText id="password-helper-text" error>
+                  {
+                    this.state.passwordConfirmationError ? this.state.passwordConfirmationErrorMessage : ' '
+                  }
+              </FormHelperText>
+            </FormControl>
 
-              <Button
-                fullWidth
-                type="submit"
-                variant="raised"
-                color="primary"
-                className={classes.button}
-                disabled={this.state.emailError
-                          || this.state.passwordError
-                          || this.state.passwordConfirmationError
-                          || this.props.isFetching
-                }
-              >
-                {
-                  this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up'
-                }
-              </Button>
-            </form>
-          </Paper>
-        
-         
+            <Button
+              fullWidth
+              type="submit"
+              variant="raised"
+              color="primary"
+              className={classes.button}
+              disabled={this.state.emailError
+                        || this.state.passwordError
+                        || this.state.passwordConfirmationError
+                        || this.props.isFetching
+              }
+            >
+              {
+                this.props.isFetching ? (<CircularProgress size={20} />) : 'Sign up'
+              }
+            </Button>
+          </form>
+          
           <Typography variant="caption" align="center">
-            If you sign up, it means you agree to follow the  <Link to="/terms-policy">TERMS and POLICY</Link>.
+            If you sign up, means you agree to follow the  <Link to="/terms-policy">TERMS and POLICY</Link>.
           </Typography>
-        </div>
+        </SmallContainer>
       </Container>
     );
   }

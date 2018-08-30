@@ -25,12 +25,12 @@ import Search from '@material-ui/icons/Search';
 import Container from '../layout/Container';
 import PostCard from '../utils/PostCard';
 
+// Actions
+import { getPostsList } from 'js/actions/blog.actions';
+
 // Webstorage
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
-
-// Actions
-import { getPostsList } from 'js/actions/blog.actions';
 
 const styles = theme => ({
   "masonryWrapper": {

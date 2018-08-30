@@ -56,12 +56,12 @@ const styles = (theme) => ({
       "paddingRight": theme.spacing.unit,
     }
   },
-  "section": {
-    marginBottom: theme.spacing.unit * 2,
-  },
+  "button": {
+    marginTop: theme.spacing.unit * 2,
+  }
 });
 
-const passwordMinLength = config.passwordMinLength;
+const passwordMinLength = config.PASSWORD_MIN_LENGTH;
 
 class LoginDialog extends Component {
   constructor(props) {
@@ -228,8 +228,9 @@ class LoginDialog extends Component {
         <DialogContent>
           <div className={classes.container}>
             <Typography variant="display1" align="center">Sign In</Typography>
+
             <form onSubmit={this.handleLogin}>
-              <FormControl fullWidth className={classes.section}>
+              <FormControl fullWidth margin="normal">
                 <InputLabel htmlFor="email">Email</InputLabel>
                 <Input
                   type="email"
@@ -253,7 +254,7 @@ class LoginDialog extends Component {
                 </FormHelperText>
               </FormControl>
 
-              <FormControl fullWidth className={classes.section}>
+              <FormControl fullWidth margin="normal">
                 <InputLabel htmlFor="password">Password</InputLabel>
                 <Input
                   type="password"
@@ -277,15 +278,16 @@ class LoginDialog extends Component {
                 </FormHelperText>
               </FormControl>
 
-              <div className={classes.section}>
+              <div>
                 <Button
+                  fullWidth
                   type="submit"
                   size="large"
                   name="signin"
-                  disabled={this.state.emailError || this.state.passwordError || this.props.isFetching || !this.state.goodToGo}
                   variant="raised"
                   color="primary"
-                  fullWidth
+                  className={classes.button}
+                  disabled={this.state.emailError || this.state.passwordError || this.props.isFetching || !this.state.goodToGo}
                 >
                   {
                     this.props.isFetching

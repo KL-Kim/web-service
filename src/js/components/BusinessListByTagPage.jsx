@@ -28,21 +28,13 @@ import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 import { getTagsList } from 'js/actions/tag.actions';
 
+// Common Style
+import { root, chip, chipBar } from 'assets/jss/common.style';
+
 const styles = theme => ({
-  "chipBar": {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-  },
-  "chip": {
-    marginRight: theme.spacing.unit,
-    paddingTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
-    fontSize: theme.typography.pxToRem(16),
-    width: 'auto',
-    display: 'inline-block',
-  },
+  "root": root(theme),
+  "chip": chip(theme),
+  "chipBar": chipBar(theme),
   "popoverContainer": {
     maxWidth: 400,
     padding: theme.spacing.unit * 2,
@@ -222,7 +214,7 @@ class BusinessListByTag extends Component {
 
     return (
       <Container>
-        <div>
+        <div className={classes.root}>
           <Grid container justify="space-between" alignItems="flex-end">
             <Grid item>
               <Typography variant="display1">#{this.state.tag.krName}</Typography>

@@ -25,7 +25,7 @@ import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = theme => ({
   card: { 
-    marginRight: 16,
+    marginRight: theme.spacing.unit * 2,
   }
 });
 

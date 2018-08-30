@@ -16,8 +16,12 @@ import Container from 'js/components/layout/Container';
 import ExploreTagSection from 'js/components/sections/ExploreTagSection';
 import ExploreCategorySection from 'js/components/sections/ExploreCategorySection';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = theme => ({
-  "section": {
+  "root": root(theme),
+  "divider": {
     marginTop: theme.spacing.unit * 4,
     marginBottom: theme.spacing.unit * 4,
   },
@@ -29,10 +33,10 @@ class ExplorePage extends Component {
 
     return (
       <Container>
-        <div>
+        <div className={classes.root}>
           <ExploreCategorySection />
 
-          <Divider className={classes.section} />
+          <Divider className={classes.divider} />
           
           <ExploreTagSection />
         </div>

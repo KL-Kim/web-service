@@ -16,12 +16,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from './layout/Container';
 
 // Actions
-import { verifyAccount } from '../actions/user.actions.js';
+import { verifyAccount } from 'js/actions/user.actions.js';
+
+// Common Style
+import { root } from 'assets/jss/common.style';
 
 const styles = theme => ({
-  root: {
-    marginTop: theme.spacing.unit * 10,
-  },
+  root: root(theme),
   paper: {
     marginTop: theme.spacing.unit * 5,
     paddingTop: theme.spacing.unit * 5,
@@ -67,20 +68,19 @@ class AccountVerificationPage extends Component {
 
     return (
       <Container>
-        <div>
+        <div className={classes.root}>
+          <Typography variant="display1" align="center" gutterBottom>
+            Account Verification
+          </Typography>
           <Paper className={classes.paper}>
-            <Typography variant="display1" align="center" gutterBottom>
-              Account Verification
-            </Typography>
-
             <div className={classes.paragraph}>
-            {
-              this.props.isFetching
-              ? <CircularProgress size={40} />
-              : <Typography variant="body1" align="center" className={classes.paragraph}>
-                {this.state.message}
-              </Typography>
-            }
+              {
+                this.props.isFetching
+                  ? <CircularProgress size={40} />
+                  : <Typography variant="body1" align="center" className={classes.paragraph}>
+                      {this.state.message}
+                    </Typography>
+              }
             </div>
 
             <div>

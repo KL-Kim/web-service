@@ -36,11 +36,13 @@ import {
   clearReadNotifications
 } from 'js/actions/notification.actions';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
 
 const styles = (theme) => ({
   "root": {
+    ...root(theme),
     maxWidth: 720,
-    margin: 'auto'
   },
   "itemWrapper": {
     marginBottom: theme.spacing.unit * 2,
@@ -171,7 +173,7 @@ class NotificationPage extends Component {
     return _.isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
-          <Grid container className={classes.root} justify="space-between" alignItems="center">
+          <Grid container justify="space-between" alignItems="center">
             <Grid item>
               <Typography variant="title">Notifications</Typography>
             </Grid>

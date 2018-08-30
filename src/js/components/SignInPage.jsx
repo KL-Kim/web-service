@@ -65,7 +65,7 @@ const styles = theme => ({
     },
 });
 
-const passwordMinLength = config.passwordMinLength;
+const passwordMinLength = config.PASSWORD_MIN_LENGTH;
 
 class SignInPage extends Component {
     constructor(props) {

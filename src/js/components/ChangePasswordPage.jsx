@@ -5,9 +5,7 @@ import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,40 +13,18 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 // Custom Components
 import config from 'js/config/config';
 import Container from './layout/Container';
+import SmallContainer from './layout/SmallContainer';
 
 // Actions
 import { changePassword } from 'js/actions/user.actions';
 
 const styles = theme => ({
-  root: {
-    maxWidth: 600,
-    margin: 'auto',
-    position: 'absolute',
-    top: '50%',
-    left: 0,
-    right: 0,
-    transform: 'translateY(-50%)',
-  },
-  paper: {
-    "paddingTop": theme.spacing.unit * 8,
-    "paddingBottom": theme.spacing.unit * 8,
-    "paddingLeft": theme.spacing.unit * 12,
-    "paddingRight": theme.spacing.unit * 12,
-    "color": theme.palette.text.secondary,
-
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing.unit,
-      marginRight: theme.spacing.unit,
-      "padding": theme.spacing.unit * 4,
-    }
-  },
   button: {
     marginTop: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
   },
 });
 
-const passwordMinLength = config.passwordMinLength;
+const passwordMinLength = config.PASSWORD_MIN_LENGTH;
 
 class ChangePasswordPage extends Component {
   constructor(props) {
@@ -148,8 +124,8 @@ class ChangePasswordPage extends Component {
 
     return (
       <Container>
-        <div className={classes.root}>
-          <Paper className={classes.paper}>
+        <SmallContainer>
+          <div>
             <Typography variant="display1" align="center">Change Password</Typography>
             <form onSubmit={this.handleSubmit}>
               <TextField
@@ -207,8 +183,8 @@ class ChangePasswordPage extends Component {
                 </Typography>
               </div>
             </form>
-          </Paper>
-        </div>
+          </div>
+        </SmallContainer>
       </Container>
     );
   }

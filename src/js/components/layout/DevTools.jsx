@@ -5,10 +5,13 @@ import SliderMonitor from 'redux-slider-monitor';
 import DockMonitor from 'redux-devtools-dock-monitor';
 
 export default createDevTools(
-  <DockMonitor toggleVisibilityKey='ctrl-h'
-               changePositionKey='ctrl-q'
-               changeMonitorKey='ctrl-m'
-               defaultIsVisible={false} >
+  <DockMonitor
+    defaultPosition="bottom" 
+    toggleVisibilityKey='ctrl-h'
+    changePositionKey='ctrl-q'
+    changeMonitorKey='ctrl-m'
+    defaultIsVisible={false} 
+  >
     <LogMonitor />
     <SliderMonitor />
   </DockMonitor>

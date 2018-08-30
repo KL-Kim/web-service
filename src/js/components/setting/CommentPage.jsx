@@ -16,10 +16,13 @@ import CommentPanel from '../sections/CommentPanel';
 // Actions
 import { getComments, clearCommentsList } from 'js/actions/comment.actions';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = (theme) => ({
   "root": {
+    ...root(theme),
     maxWidth: 720,
-    margin: 'auto'
   },
   "itemWrapper": {
     marginBottom: theme.spacing.unit * 2,

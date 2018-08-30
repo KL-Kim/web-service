@@ -15,12 +15,15 @@ import Container from './layout/Container';
 import PostPanel from './utils/PostPanel';
 
 // Actions
-import { getPostsList } from '../actions/blog.actions.js';
+import { getPostsList } from 'js/actions/blog.actions.js';
+
+// Common Style
+import { root } from 'assets/jss/common.style';
 
 const styles = theme => ({
   "root": {
+    ...root(theme),
     maxWidth: 760,
-    margin: 'auto',
   },
   "section": {
     marginBottom: theme.spacing.unit * 8

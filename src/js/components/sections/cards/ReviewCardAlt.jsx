@@ -33,9 +33,9 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit,
   },
   "imageInfoWrapper": {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    position: 'relative',
+    top: 0,
+    left: 0,
   },
   "imageInfo": {
     backgroundColor: '#fff',
@@ -185,7 +185,7 @@ class ReviewCardAlt extends Component {
             {
               this.props.showBusinessName
                 ? <Link to={"/business/s/" + this.props.business.enName}>
-                    <Typography variant="title" gutterBottom>
+                    <Typography variant="title" gutterBottom style={{ display: 'inline-block' }}>
                       {this.props.business.krName}
                     </Typography>
                   </Link>
@@ -195,16 +195,15 @@ class ReviewCardAlt extends Component {
 
             <div>
               {
-                this.props.serviceGood ? <Chip className={classes.chip} label="서비스 + 1" /> : null
+                this.props.serviceGood && <Chip className={classes.chip} label="서비스 + 1" />
               }
               {
-                this.props.envGood ? <Chip className={classes.chip} label="환경 + 1" /> : null
+                this.props.envGood && <Chip className={classes.chip} label="환경 + 1" />
               }
               {
-                this.props.comeback ? <Chip className={classes.chip} label="다시 오고 싶다 + 1" /> : null
+                this.props.comeback && <Chip className={classes.chip} label="다시 오고 싶다 + 1" />
               }
             </div>
-            <br />
 
             <Typography variant="body1" gutterBottom>{this.props.content}</Typography>
           </CardContent>
@@ -220,41 +219,36 @@ class ReviewCardAlt extends Component {
                 />
               </Grid>
 
-              <Grid item>
-                {
-                  this.props.showDeleteIcon
-                    ? <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
-                        <Delete />
-                      </IconButton>
-                    : null
-                }
-              </Grid>
+              {
+                this.props.showDeleteIcon 
+                  &&  <Grid item> 
+                        <IconButton color="secondary" onClick={this.handleDeleteDialogOpen}>
+                          <Delete />
+                        </IconButton>
+                      </Grid>
+              }
             </Grid>
-            
-            
           </CardActions>
         </Card>
 
         <div>
           {
             this.props.isOwn
-              ? <ConfirmationDialog
-                  open={this.state.deleteDialogOpen}
-                  title="Warning"
-                  content="Are you sure to delete the review?"
-                  onSubmit={this.handleDelete}
-                  onClose={this.handleDeleteDialogClose}
-                />
-              : null
+              &&  <ConfirmationDialog
+                    open={this.state.deleteDialogOpen}
+                    title="Warning"
+                    content="Are you sure to delete the review?"
+                    onSubmit={this.handleDelete}
+                    onClose={this.handleDeleteDialogClose}
+                  />
           }
           {
-            _.isEmpty(this.props.images)
-              ? null
-              : <LightBox
-                  images={this.state.images}
-                  open={this.state.isLightboxOpen}
-                  onClose={this.handleLightboxClose}
-                />
+            !_.isEmpty(this.props.images)
+              &&  <LightBox
+                    images={this.state.images}
+                    open={this.state.isLightboxOpen}
+                    onClose={this.handleLightboxClose}
+                  />
           }
         </div>
       </div>

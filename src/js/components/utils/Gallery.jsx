@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Lightbox from 'react-images';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -80,7 +79,7 @@ class Gallery extends Component {
 
         return _.isEmpty(gallery) ? null : (
             <div className={classes.root}>
-                <GridList cols={2} cellHeight={180} spacing={1} className={classes.gridList}>
+                <GridList cols={2} cellHeight={150} spacing={1} className={classes.gridList}>
                     {
                         gallery.map((image, index) => (
                             <GridListTile key={image._id} cols={1}>

@@ -28,21 +28,13 @@ import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.
 import { getCategoriesList } from 'js/actions/category.actions.js';
 import { getTagsList } from 'js/actions/tag.actions.js';
 
+// Common Style
+import { root, chip, chipBar } from 'assets/jss/common.style';
+
 const styles = theme => ({
-  "chipBar": {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-  },
-  "chip": {
-    marginRight: theme.spacing.unit,
-    paddingTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
-    fontSize: theme.typography.pxToRem(16),
-    width: 'auto',
-    display: 'inline-block',
-  },
+  "root": root(theme),
+  "chip": chip(theme),
+  "chipBar": chipBar(theme),
   "popoverContainer": {
     maxWidth: 400,
     padding: theme.spacing.unit * 2,
@@ -58,7 +50,7 @@ class BusinessListPage extends Component {
     super(props);
 
     this.state = {
-      "limit": 24,
+      "limit": 48,
       "orderBy": '',
       "event": false,
       "hasMore": false,
@@ -274,7 +266,7 @@ class BusinessListPage extends Component {
 
     return (
       <Container>
-        <div>
+        <div className={classes.root}>
           <Grid container justify="space-between" alignItems="flex-end">
             <Grid item>
               <Typography variant="display1">

@@ -22,26 +22,18 @@ import CommentPanel from './sections/CommentPanel';
 import ProperName from './utils/ProperName';
 
 // Actions
-import { getUserByUsername, favorOperation } from 'js/actions/user.actions';
+import { getUserByUsername } from 'js/actions/user.actions';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
-import { getReviews, voteReview, clearReviewsList } from 'js/actions/review.actions';
-import { 
-    getComments,
-    voteComment,
-    deleteComment,
-    clearCommentsList,
-} from 'js/actions/comment.actions';
+import { getReviews , clearReviewsList } from 'js/actions/review.actions';
+import { getComments, clearCommentsList } from 'js/actions/comment.actions';
 
-// Webstorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
+// Common Style
+import { root } from 'assets/jss/common.style';
 
 const styles = theme => ({
+    "root": root(theme),
     "section": {
         marginBottom: theme.spacing.unit * 4,
-    },
-    "paper": {
-        padding: theme.spacing.unit * 2,
     },
 });
 
@@ -176,7 +168,7 @@ class ProfilePage extends Component {
 
         return (
             <Container>
-                <div>
+                <div className={classes.root}>
                     {
                         !_.isEmpty(user)
                             ?  <div>
@@ -223,15 +215,12 @@ ProfilePage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-
-    };
+    return {};
 };
 
 export default connect(mapStateToProps, { 
     // User Actions
-    getUserByUsername, 
-    favorOperation,
+    getUserByUsername,
 
     // Business Actions
     getBusinessList, 

@@ -48,13 +48,16 @@ import { getComments,
 // Mock image
 import image from 'img/background_1.jpg';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = theme => ({
   "root": {
+    ...root(theme),
     maxWidth: 760,
-    margin: 'auto',
   },
   "section": {
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 4
   },
   "paper": {
     padding: theme.spacing.unit * 4,

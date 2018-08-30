@@ -56,7 +56,7 @@ const styles = theme => ({
   },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.dark,
   },
   "transparentAppBar": {
     backgroundColor: 'transparent',
@@ -68,6 +68,10 @@ const styles = theme => ({
     margin: 'auto',
     paddingLeft: theme.spacing.unit,
     paddingRight: theme.spacing.unit, 
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing.unit,
+      paddingRight: theme.spacing.unit, 
+    }
   },
   "logo": {
     display: 'inline-block',
@@ -105,7 +109,6 @@ class Header extends Component {
     this.handleLogout = this.handleLogout.bind(this);
     this.handleLoginDialogOpen = this.handleLoginDialogOpen.bind(this);
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
-    this.handleClickListItem = this.handleClickListItem.bind(this);
   }
 
   handleDrawerToggle() {
@@ -128,27 +131,8 @@ class Header extends Component {
       });
   }
 
-  handleClickListItem = item => e => {
-    switch (item.type) {
-      case "BUSINESS":
-        this.props.history.push('/business/s/' + item.subjectUrl);
-        break;
-
-      case "REVIEW":
-        this.props.history.push('/business/s/' + item.subjectUrl, { reviewId: item.commentId });
-        break;
-
-      case "COMMENT":
-        this.props.history.push('/post/s/' + item.subjectUrl, { commentId: item.commentId });
-        break;
-
-      default:
-        return ;
-    }
-  }
-
   render() {
-    const { classes, user, isLoggedIn, updatedAt, newNotificationCount, categories, match } = this.props;
+    const { classes, user, isLoggedIn, updatedAt, match } = this.props;
 
     return (
       <div className={classes.root}>
@@ -160,8 +144,7 @@ class Header extends Component {
             <Toolbar disableGutters>
               <div style={{ flex: 1 }}>
                 <Link to="/">
-                  {/* <Img src={Logo} className={classes.logo} />*/}
-                  <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown | Nanjing</Typography>
+                  <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown</Typography>
                 </Link>
               </div>
 

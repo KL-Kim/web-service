@@ -49,6 +49,9 @@ import webStorageTypes from 'js/constants/webStorage.types';
 import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
 import saveSearchHistory from 'js/helpers/saveSearchHistory';
 
+// Common Style
+import { root, chip, chipBar } from 'assets/jss/common.style';
+
 const queries = [
   '꼬치',
   '삼계탕',
@@ -58,25 +61,14 @@ const queries = [
 ];
 
 const styles = theme => ({
+  "root": root(theme),
+  "chip": chip(theme),
+  "chipBar": chipBar(theme),
   "section": {
     marginBottom: theme.spacing.unit * 4,
   },
   "paper": {
     padding: theme.spacing.unit * 2,
-  },
-  "chipBar": {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-  },
-  "chip": {
-    marginRight: theme.spacing.unit,
-    paddingTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 3,
-    paddingRight: theme.spacing.unit * 3,
-    fontSize: theme.typography.pxToRem(16),
-    width: 'auto',
-    display: 'inline-block',
   },
   "popoverContainer": {
     maxWidth: 400,
@@ -354,7 +346,7 @@ class SearchPage extends Component {
 
     return (
       <Container>
-        <div>
+        <div className={classes.root}>
           <div className={classes.section}>
             <Paper className={classes.paper}>
               <form onSubmit={this.handleSearch}>
@@ -443,23 +435,23 @@ class SearchPage extends Component {
                       </Paper>
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
-                      <Paper>
-                          <List subheader={<ListSubheader component="div">Recent Searches</ListSubheader> }>
-                            {
-                              _.isEmpty(this.state.searchHistory)
-                                ? <ListItem>
-                                    <ListItemText primary={'None'} />
-                                  </ListItem>
-                                : this.state.searchHistory.map((item, index) => (
-                                  <ListItem key={index} button onClick={this.handleClickQuery(item)}>
-                                    <ListItemText primary={item} />
-                                  </ListItem>
-                                ))
-                            }
-                          </List>
-                        </Paper>
-                    </Grid>
+                    {
+                      _.isEmpty(this.state.searchHistory)
+                        ? null
+                        : <Grid item xs={12} sm={6}>
+                            <Paper>
+                                <List subheader={<ListSubheader component="div">Recent Searches</ListSubheader> }>
+                                  {
+                                    this.state.searchHistory.map((item, index) => (
+                                      <ListItem key={index} button onClick={this.handleClickQuery(item)}>
+                                        <ListItemText primary={item} />
+                                      </ListItem>
+                                    ))
+                                  }
+                                </List>
+                              </Paper>
+                          </Grid>
+                    }
                   </Grid>
                 </div>
           }

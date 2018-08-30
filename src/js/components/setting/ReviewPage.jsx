@@ -24,7 +24,11 @@ import ReviewPanel from 'js/components/sections/ReviewPanel';
 // Actions
 import { getReviews, clearReviewsList } from 'js/actions/review.actions';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = theme => ({
+  root: root(theme),
 });
 
 class ReviewPage extends Component {
@@ -81,7 +85,7 @@ class ReviewPage extends Component {
 
     return _.isEmpty(this.props.user) ? null : (
       <Container>
-        <div>
+        <div className={classes.root}>
           <Typography variant="title" gutterBottom>My Reviews</Typography>
           
           <ReviewPanel

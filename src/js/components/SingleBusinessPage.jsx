@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import Stars from 'react-stars';
-import { Map, Marker, Circle } from 'react-amap';
+import { Map, Marker } from 'react-amap';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -26,7 +27,6 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -46,9 +46,9 @@ import Container from './layout/Container'
 import WriteReviewDialog from 'js/components/dialogs/WriteReviewDialog';
 import ReportDialog from 'js/components/dialogs/ReportDialog';
 import Thumbnail from './utils/Thumbnail';
-import Gallery from './utils/Gallery';
 import ReviewPanel from './sections/ReviewPanel';
 import Badge from 'js/components/utils/Badge';
+import LightBox from 'js/components/utils/LightBox';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions'; 
@@ -67,9 +67,35 @@ import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 import { ListItem } from '@material-ui/core';
 
+// Common Style
+import { root } from 'assets/jss/common.style';
+
 const styles = theme => ({
-  "wrapper": {
+  "root": {
+    maxWidth: 976,
+    margin: 'auto',
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    marginTop: theme.spacing.unit * 8,
+    marginBottom: theme.spacing.unit * 8,
+    paddingTop: theme.spacing.unit * 4,
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing.unit * 7,
+      marginBottom: theme.spacing.unit * 7,
+      padding: 0,
+    }
+  },
+  "main": {
+    maxWidth: 976,
+    margin: 'auto',
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing.unit,
+      paddingRight: theme.spacing.unit,
+    }
+  },
+  "thumbnailWrapper": {
     marginBottom: theme.spacing.unit * 2,
+    cursor: 'pointer',
   },
   "paper": {
     padding: theme.spacing.unit * 4,
@@ -78,10 +104,6 @@ const styles = theme => ({
   "badgeContent": {
     paddingRight: theme.spacing.unit * 2,
   },
-  "mapWrapper": {
-    width: '100%',
-    height: 400,
-  },
   "chip": {
     marginRight: theme.spacing.unit,
   },
@@ -89,8 +111,6 @@ const styles = theme => ({
    fontSize: theme.typography.pxToRem(15),
    fontWeight: theme.typography.fontWeightRegular,
  },
-
-  
 });
 
 class SingleBusinessPage extends Component {
@@ -100,15 +120,17 @@ class SingleBusinessPage extends Component {
     this.state = {
       "business": null,
       "addNewDialogOpen": false,
-      "limit": 12,
+      "limit": 24,
       'count': 0,
       "hasMore": false,
       "orderBy": 'recommended',
       "review": {},
+      "images": [],
       "reviewDialogOpen": false,
       "reportDialogOpen": false,
       "isMyFavor": false,
       "sortMenuPopoverOpen": false,
+      "isLightboxOpen": false,
     };
 
     if (props.location.state && !_.isEmpty(props.location.state.reviewId)) {
@@ -129,6 +151,8 @@ class SingleBusinessPage extends Component {
     this.handleSortMenuPopoverOpen = this.handleSortMenuPopoverOpen.bind(this);
     this.handleSortMenuPopoverClose = this.handleSortMenuPopoverClose.bind(this);
     this.getNewReviews = this.getNewReviews.bind(this);
+    this.handleLightboxOpen = this.handleLightboxOpen.bind(this);
+    this.handleLightboxClose = this.handleLightboxClose.bind(this);
   }
 
   componentDidMount() {
@@ -136,20 +160,41 @@ class SingleBusinessPage extends Component {
       .then(business => {
         if (_.isEmpty(business) || business.status !== 'PUBLISHED') {
           this.props.history.push('/404');
-        } else {
+
+          return ;
+        } 
+        else {
           const index = this.state.myFavors.indexOf(business._id);
+          const images = [];
+
+          if (!_.isEmpty(business.mainImage)) {
+            images.push({
+              src: business.mainImage.url + '-business',
+              alt: business.mainImage.name
+            })
+          }
+
+          if (!_.isEmpty(business.gallery)) {
+            business.gallery.map(image => {
+              images.push({
+                src: image.url + '-business',
+                alt: image.name
+              });
+            });
+          }
+
           this.setState({
             business: Object.assign({}, business),
+            images: [...images],
             isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
           });
+
 
           return this.props.getReviews({
             limit: this.state.limit,
             bid: business._id,
           });
         }
-
-        return ;
       })
       .then(response => {
         if (response) {
@@ -185,9 +230,21 @@ class SingleBusinessPage extends Component {
           }
 
           const index = this.state.myFavors.indexOf(business._id);
+          const images = [];
+
+          if (!_.isEmpty(business.mainImage)) {
+            images.push(business.mainImage.url);
+          }
+
+          if (!_.isEmpty(business.gallery)) {
+            business.gallery.map(image => {
+              images.push(image.url);
+            });
+          }
 
           this.setState({
             business: Object.assign({}, business),
+            images: [...images],
             isMyFavor: (!_.isUndefined(index) && index > -1) ? true : false,
           });
 
@@ -205,6 +262,18 @@ class SingleBusinessPage extends Component {
           }
         });
     }
+  }
+
+  handleLightboxOpen() {
+    this.setState({
+      isLightboxOpen: true
+    })
+  }
+
+  handleLightboxClose() {
+    this.setState({
+        isLightboxOpen: false
+    });
   }
 
   handleReportDialogOpen() {
@@ -349,417 +418,420 @@ class SingleBusinessPage extends Component {
 
     return _.isEmpty(business) ? null : (
       <Container>
-        <div>
-          <Grid container spacing={16} style={{ marginBottom: 80 }}>
-            <Grid item xs={12} sm={6}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                    <Grid container alignItems="center" justify="space-between">
-                      <Grid item>
-                        <Typography variant="display2" >{business.krName}</Typography>
-                        <Typography variant="body2" >{business.cnName}</Typography>
-                      </Grid>
-                      <Grid item>
-                        <div>
-                          <Tooltip id="favor-icon" title="AddCircleOutlined to Favor">
-                            <IconButton
-                              color={this.state.isMyFavor ? "secondary" : 'default'}
-                              onClick={this.handleAddToFavor}
-                            >
-                              {
-                                this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
-                              }
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip id="report-icon" title="Report">
-                            <IconButton onClick={this.handleReportDialogOpen}>
-                              <ErrorOutline />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </Grid>
-                    </Grid>
+        <div className={classes.root}>
+          <div className={classes.thumbnailWrapper} onClick={this.handleLightboxOpen}>
+            <Thumbnail src={_.isEmpty(business) || _.isEmpty(business.mainImage) ? null : business.mainImage.url} />
+          </div>
 
-                    <Stars count={5} size={32} value={business.ratingAverage} edit={false} />
-
-                    <br />
-
-                    <Grid container justify="flex-end" alignItems="center">
-
-                      <Grid item>
-                        <Link to={"/business/category/" + business.category.enName}>
-                          <Typography variant="body2" color="primary" gutterBottom>{business.category.krName}</Typography>
-                        </Link>
-                      </Grid>
-                    </Grid>
-
-                    <Grid container justify="space-between" alignItems="center">
-                      <Grid item>
-                        <LocalPhone style={{ fontSize: 30 }} />
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="body2">
-                          {business.tel}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-
-                    <Grid container justify="space-between" alignItems="center">
-                      <Grid item>
-                        <Place style={{ fontSize: 30 }} />
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="body2">
-                          {business.address.area.name + ' ' + business.address.street}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-
-                    <br />
-
-                    <div>
-                      {
-                        _.isEmpty(business.tags)
-                          ? null
-                          : business.tags.map(item => (
-                            <Chip
-                              key={item._id}
-                              className={classes.chip}
-                              label={'#' + item.krName}
-                              />
-                          ))
-                      }
-                    </div>
-
-                  </Paper>
-                </Grid>
-
-                {
-                  business.event
-                    ? <Grid item xs={12}>
-                        <Paper className={classes.paper}>
-                          <Typography variant="title" gutterBottom>행사 & 할인</Typography>
-                          <div dangerouslySetInnerHTML={{ __html: business.event }} />
-                        </Paper>
-                      </Grid>
-                    : null
-                }
-
-                <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                    <div>
-                      <Grid container justify="space-between" alignItems="center">
+          <div className={classes.main}>
+            <Grid container spacing={16} style={{ marginBottom: 40 }}>
+              <Grid item xs={12} sm={6}>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <Grid container alignItems="center" justify="space-between">
                         <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>평균소비:</strong></Typography>
+                          <Typography variant="display2" >{business.krName}</Typography>
+                          <Typography variant="body2" >{business.cnName}</Typography>
                         </Grid>
-
+                        
                         <Grid item>
-                          <Typography variant="body1" gutterBottom>{business.priceRange}</Typography>
+                          <div>
+                            <Tooltip id="favor-icon" title="AddCircleOutlined to Favor">
+                              <IconButton
+                                color={this.state.isMyFavor ? "secondary" : 'default'}
+                                onClick={this.handleAddToFavor}
+                              >
+                                {
+                                  this.state.isMyFavor ? <Favorite /> : <FavoriteBorder />
+                                }
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip id="report-icon" title="Report">
+                              <IconButton onClick={this.handleReportDialogOpen}>
+                                <ErrorOutline />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        </Grid>
+                      </Grid>
+
+                      <Stars count={5} size={32} value={business.ratingAverage} edit={false} />
+
+                      <br />
+
+                      <Grid container justify="flex-end" alignItems="center">
+                        <Grid item>
+                          <Link to={"/business/category/" + business.category.enName}>
+                            <Typography variant="body2" color="primary" gutterBottom>{business.category.krName}</Typography>
+                          </Link>
                         </Grid>
                       </Grid>
 
                       <Grid container justify="space-between" alignItems="center">
                         <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>배달:</strong></Typography>
+                          <LocalPhone style={{ fontSize: 30 }} />
                         </Grid>
-
                         <Grid item>
-                          <Typography variant="body1" gutterBottom>{business.delivery}</Typography>
+                          <Typography variant="body2">
+                            {business.tel}
+                          </Typography>
                         </Grid>
                       </Grid>
 
                       <Grid container justify="space-between" alignItems="center">
                         <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>언어:</strong></Typography>
+                          <Place style={{ fontSize: 30 }} />
                         </Grid>
-
                         <Grid item>
-                          <Typography variant="body1" gutterBottom>{business.supportedLanguage.toString()}</Typography>
+                          <Typography variant="body2">
+                            {business.address.area.name + ' ' + business.address.street}
+                          </Typography>
                         </Grid>
                       </Grid>
 
-                      <Grid container justify="space-between" alignItems="center">
-                        <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>Payments:</strong></Typography>
-                        </Grid>
+                      <br />
 
-                        <Grid item>
-                          <Typography variant="body1" gutterBottom>{business.payment.toString()}</Typography>
-                        </Grid>
-                      </Grid>
-
-                      <Grid container justify="space-between" alignItems="center">
-                        <Grid item>
-                          <Typography variant="body2" gutterBottom><strong>휴식일:</strong></Typography>
-                        </Grid>
-
-                        <Grid item>
-                          <Typography variant="body1" gutterBottom>{business.rest}</Typography>
-                        </Grid>
-                      </Grid>
-                    </div>
-                  </Paper>
-                </Grid>
-
-                <Grid item xs={12} key={business._id}>
-                  <ExpansionPanel disabled={_.isEmpty(business.chains)}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography className={classes.heading}>체인점</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <List style={{ width: '100%' }}>
+                      <div>
                         {
-                          _.isEmpty(business.chains)
+                          _.isEmpty(business.tags)
                             ? null
-                            : business.chains.map(item => (
-                              <Link to={item.enName} key={item.enName}>
-                                <ListItem button>
-                                  <ListItemText primary={item.krName} secondary={item.cnName} />
-                                </ListItem>
-                              </Link>
+                            : business.tags.map(item => (
+                              <Chip
+                                key={item._id}
+                                className={classes.chip}
+                                label={'#' + item.krName}
+                                />
                             ))
                         }
-                      </List>
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
+                      </div>
 
-                  <ExpansionPanel disabled={_.isEmpty(business.openningHoursSpec)}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography className={classes.heading}>영업시간</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <div style={{ width: '100%'}}>
+                    </Paper>
+                  </Grid>
+
+                  {
+                    business.event
+                      ? <Grid item xs={12}>
+                          <Paper className={classes.paper}>
+                            <Typography variant="title" gutterBottom>행사 & 할인</Typography>
+                            <div dangerouslySetInnerHTML={{ __html: business.event }} />
+                          </Paper>
+                        </Grid>
+                      : null
+                  }
+
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <div>
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
-                            <Typography variant="body2" gutterBottom><strong>월요일:</strong></Typography>
+                            <Typography variant="body2" gutterBottom><strong>평균소비:</strong></Typography>
                           </Grid>
 
                           <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.mon}
-                            </Typography>
+                            <Typography variant="body1" gutterBottom>{business.priceRange}</Typography>
                           </Grid>
                         </Grid>
 
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>화요일:</strong>
-                            </Typography>
+                            <Typography variant="body2" gutterBottom><strong>배달:</strong></Typography>
                           </Grid>
 
                           <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.tue}
-                            </Typography>
+                            <Typography variant="body1" gutterBottom>{business.delivery}</Typography>
                           </Grid>
                         </Grid>
 
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>수요일:</strong>
-                            </Typography>
+                            <Typography variant="body2" gutterBottom><strong>언어:</strong></Typography>
                           </Grid>
 
                           <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.wed}
-                            </Typography>
+                            <Typography variant="body1" gutterBottom>{business.supportedLanguage.toString()}</Typography>
                           </Grid>
                         </Grid>
 
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>목요일:</strong>
-                            </Typography>
+                            <Typography variant="body2" gutterBottom><strong>Payments:</strong></Typography>
                           </Grid>
 
                           <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.thu}
-                            </Typography>
+                            <Typography variant="body1" gutterBottom>{business.payment.toString()}</Typography>
                           </Grid>
                         </Grid>
 
                         <Grid container justify="space-between" alignItems="center">
                           <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>금요일:</strong>
-                            </Typography>
+                            <Typography variant="body2" gutterBottom><strong>휴식일:</strong></Typography>
                           </Grid>
 
                           <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.fri}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-
-                        <Grid container justify="space-between" alignItems="center">
-                          <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>토요일:</strong>
-                            </Typography>
-                          </Grid>
-
-                          <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sat}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-
-                        <Grid container justify="space-between" alignItems="center">
-                          <Grid item>
-                            <Typography variant="body2" gutterBottom>
-                              <strong>일요일:</strong>
-                            </Typography>
-                          </Grid>
-
-                          <Grid item>
-                            <Typography variant="body1" gutterBottom>
-                              {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sun}
-                            </Typography>
+                            <Typography variant="body1" gutterBottom>{business.rest}</Typography>
                           </Grid>
                         </Grid>
                       </div>
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
+                    </Paper>
+                  </Grid>
 
-                  <ExpansionPanel disabled={_.isEmpty(business.description)}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography className={classes.heading}>소개</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <div dangerouslySetInnerHTML={{ __html: business.description }} />
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
+                  <Grid item xs={12} key={business._id}>
+                    
+                   
+                  </Grid>
+                </Grid>
+              </Grid>
 
-                  <ExpansionPanel disabled={_.isEmpty(business.description)}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography className={classes.heading}>지도</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <div className={classes.mapWrapper}>
-                        <Map
-                          amapkey={config.AMAP_KEY}
-                          zoom={16}
-                          center={{
-                            longitude: business.geo.coordinates[0],
-                            latitude: business.geo.coordinates[1],
-                          }}
-                          plugins={[
-                            'ToolBar',
-                          ]}
-                        >
-                          <Marker position={{
+              
+                <Grid item xs={12} sm={6}>
+                    <ExpansionPanel defaultExpanded={!this.props.fullScreen}>
+                      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography className={classes.heading}>지도</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <div style={{ width: '100%', height: 300 }}>
+                          <Map
+                            amapkey={config.AMAP_KEY}
+                            zoom={16}
+                            center={{
                               longitude: business.geo.coordinates[0],
                               latitude: business.geo.coordinates[1],
                             }}
-                          />
-                        </Map>
-                      </div>
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
-
-                  <ExpansionPanel disabled={_.isEmpty(business.menu)}>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography className={classes.heading}>메뉴</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <Table className={classes.table}>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Price</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
+                            plugins={[
+                              'ToolBar',
+                            ]}
+                          >
+                            <Marker position={{
+                                longitude: business.geo.coordinates[0],
+                                latitude: business.geo.coordinates[1],
+                              }}
+                            />
+                          </Map>
+                        </div>
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
+                    
+                    <ExpansionPanel disabled={_.isEmpty(business.chains)}>
+                      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography className={classes.heading}>체인점</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <List style={{ width: '100%' }}>
+                          <Divider />
                           {
-                            _.isEmpty(business.menu) 
-                              ? (<TableRow></TableRow>)
-                              : business.menu.map((item, index) => 
-                                  <TableRow hover key={index}>
-                                    <TableCell>
-                                      <Grid container spacing={8} alignItems="center">
-                                        <Grid item>
-                                          <Typography>{item.name}</Typography>
-                                        </Grid>
-
-                                        <Grid item>
-                                          <div>
-                                            {item.hot ? <Badge color="danger">Hot</Badge>: null}
-                                            {item.new ? <Badge color="info">New</Badge>: null}
-                                          </div>
-                                        </Grid>
-                                      </Grid>
-                                     
-                                    </TableCell>
-                                    <TableCell>
-                                      <Typography>{item.price}</Typography>
-                                    </TableCell>
-                                  </TableRow>
-                              )
+                            _.isEmpty(business.chains)
+                              ? null
+                              : business.chains.map(item => (
+                                <Link to={item.enName} key={item.enName}>
+                                  <ListItem button>
+                                    <ListItemText primary={item.krName} secondary={item.cnName} />
+                                  </ListItem>
+                                  <Divider />
+                                </Link>
+                              ))
                           }
-                        </TableBody>
-                      </Table>
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
+                        </List>
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
+
+                    <ExpansionPanel disabled={_.isEmpty(business.openningHoursSpec)}>
+                      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography className={classes.heading}>영업시간</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <div style={{ width: '100%'}}>
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom><strong>월요일:</strong></Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.mon}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>화요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.tue}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>수요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.wed}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>목요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.thu}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>금요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.fri}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>토요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sat}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container justify="space-between" alignItems="center">
+                            <Grid item>
+                              <Typography variant="body2" gutterBottom>
+                                <strong>일요일:</strong>
+                              </Typography>
+                            </Grid>
+
+                            <Grid item>
+                              <Typography variant="body1" gutterBottom>
+                                {_.isEmpty(business.openningHoursSpec) ? '' : business.openningHoursSpec.sun}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </div>
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
+
+                    <ExpansionPanel disabled={_.isEmpty(business.description)}>
+                      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography className={classes.heading}>소개</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <div dangerouslySetInnerHTML={{ __html: business.description }} />
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
+
+                    
+
+                    <ExpansionPanel disabled={_.isEmpty(business.menu)}>
+                      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography className={classes.heading}>메뉴</Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <Table className={classes.table}>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Name</TableCell>
+                              <TableCell>Price</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {
+                              _.isEmpty(business.menu) 
+                                ? (<TableRow></TableRow>)
+                                : business.menu.map((item, index) => 
+                                    <TableRow hover key={index}>
+                                      <TableCell>
+                                        <Grid container spacing={8} alignItems="center">
+                                          <Grid item>
+                                            <Typography>{item.name}</Typography>
+                                          </Grid>
+
+                                          <Grid item>
+                                            <div>
+                                              {item.hot ? <Badge color="danger">Hot</Badge>: null}
+                                              {item.new ? <Badge color="info">New</Badge>: null}
+                                            </div>
+                                          </Grid>
+                                        </Grid>
+                                      
+                                      </TableCell>
+                                      <TableCell>
+                                        <Typography>{item.price}</Typography>
+                                      </TableCell>
+                                    </TableRow>
+                                )
+                            }
+                          </TableBody>
+                        </Table>
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
                 </Grid>
+              
+            </Grid>
+
+            <Grid container spacing={16} justify="space-between" alignItems="center">
+              <Grid item>
+                <Typography variant="title" align="center" id="reviews">
+                  Reviews
+                </Typography>
+              </Grid>
+
+              <Grid item>
+                <Button
+                  color="primary"
+                  disableRipple
+                  buttonRef={node => {
+                    this.sortMenuAnchorEl = node;
+                  }}
+                  onClick={this.handleSortMenuPopoverOpen}
+                >
+                  Sort By
+                  {
+                    this.state.sortMenuPopoverOpen
+                      ? <ArrowDropUp />
+                      : <ArrowDropDown />
+                  }
+                </Button>
               </Grid>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <div className={classes.wrapper}>
-                <Thumbnail src={_.isEmpty(business) || _.isEmpty(business.mainImage) ? null : business.mainImage.url} />
-              </div>
-
-              <div className={classes.wrapper}>
-                {
-                  _.isEmpty(business) || _.isEmpty(business.gallery) 
-                    ? null
-                    : <Gallery gallery={business.gallery} />
-                }
-              </div>
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={16} justify="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="title" align="center" id="reviews">
-                Reviews
-              </Typography>
-            </Grid>
-
-            <Grid item>
-              <Button
-                color="primary"
-                disableRipple
-                buttonRef={node => {
-                  this.sortMenuAnchorEl = node;
-                }}
-                onClick={this.handleSortMenuPopoverOpen}
-              >
-                Sort By
-                {
-                  this.state.sortMenuPopoverOpen
-                    ? <ArrowDropUp />
-                    : <ArrowDropDown />
-                }
-              </Button>
-            </Grid>
-          </Grid>
-
-          <div>
-            <ReviewPanel
-              hasMore={this.state.hasMore}
-              loadMore={this.loadMore}
-              addNew
-              onFocusAddNew={this.handleAddNewReviewDialogOpen}
-            />
+            <div>
+              <ReviewPanel
+                hasMore={this.state.hasMore}
+                loadMore={this.loadMore}
+                addNew
+                onFocusAddNew={this.handleAddNewReviewDialogOpen}
+              />
+            </div>
           </div>
 
           <div id="modal-container">
@@ -805,6 +877,12 @@ class SingleBusinessPage extends Component {
                 </MenuItem>
               </MenuList>
             </Popover>
+
+             <LightBox
+                open={this.state.isLightboxOpen}
+                images={this.state.images}
+                onClose={this.handleLightboxClose}
+            />
 
             {
               _.isEmpty(review)
@@ -858,4 +936,4 @@ export default connect(mapStateToProps, {
   getSingleReview,
   openLoginDialog,
   favorOperation,
-})(withStyles(styles)(SingleBusinessPage));
+})(withStyles(styles)(withMobileDialog()(SingleBusinessPage)));

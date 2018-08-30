@@ -15,7 +15,7 @@ import image3 from 'img/background_3.jpg';
 const styles = theme => ({
   image: {
     width: '100%',
-    height: 'auto',
+    height: '100%',
     minHeight: 150,
     objectFit: 'cover',
   }
@@ -24,6 +24,7 @@ const styles = theme => ({
 class SectionCarousel extends Component {
   render() {
     const { classes } = this.props;
+
     const sliderSettings = {
       dots: true,
       infinite: true,
