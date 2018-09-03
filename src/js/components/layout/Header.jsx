@@ -34,7 +34,7 @@ import Favorite from '@material-ui/icons/Favorite';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import RateReview from '@material-ui/icons/RateReview';
 import Explore from '@material-ui/icons/Explore';
-import SettingsApplications from '@material-ui/icons/SettingsApplications';
+import Settings from '@material-ui/icons/Settings';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
@@ -42,13 +42,10 @@ import LoginDialog from 'js/components/dialogs/LoginDialog';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
 
-
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions';
 import { logout } from 'js/actions/user.actions';
 import { getUnreadCount } from 'js/actions/notification.actions';
-
-import Logo from 'img/logo.png';
 
 const styles = theme => ({
   "root": {
@@ -231,17 +228,6 @@ class Header extends Component {
                         </MenuItem>
                       </Link>
 
-                      <Link to="/setting/account">
-                        <MenuItem selected={match.path === "/setting/account"} >
-                          <ListItemIcon color={match.path === "/setting/account" ? "primary" : 'inherit'}>
-                            <SettingsApplications />
-                          </ListItemIcon>
-                          <ListItemText primary="Account" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
-                        </MenuItem>
-                      </Link>
-
-                      
-
                       <Link to="/setting/favor">
                         <MenuItem selected={match.path === "/setting/favor"}>
                           <ListItemIcon color={match.path === "/setting/favor" ? "primary" : 'inherit'}>
@@ -269,7 +255,14 @@ class Header extends Component {
                         </MenuItem>
                       </Link>
 
-                     
+                      <Link to="/setting/account">
+                        <MenuItem selected={match.path === "/setting/account"} >
+                          <ListItemIcon color={match.path === "/setting/account" ? "primary" : 'inherit'}>
+                            <Settings />
+                          </ListItemIcon>
+                          <ListItemText primary="Setting" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
+                        </MenuItem>
+                      </Link>
                      
                     </MenuList>
 

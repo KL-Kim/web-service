@@ -26,6 +26,7 @@ const styles = (theme) => ({
     left: 0,
     right: 0,
     zIndex: theme.zIndex.appBar,
+    borderTop: '1px solid #eee'
   },
 });
 

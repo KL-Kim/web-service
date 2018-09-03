@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import SwipeableViews from 'react-swipeable-views';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -16,21 +17,23 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 const styles = theme => ({
     "root": {
         position: 'relative',
+        width: '100%',
+        height: '100%',
     },
     "wrapper": {
         position: 'relative',
         overflowY: 'hidden',
-        overflowX: 'scroll',
+        overflowX: 'auto',
         whiteSpace: 'nowrap',
-        overscrollBehaviorX: "auto",
-
+        overscrollBehaviorX: "none",
+        WebkitOverflowScrolling: "touch",
         [theme.breakpoints.down('xs')]: {
             paddingTop: 0,
             paddingBottom: 0,
-          }
+        }
     },
     "item": {
-        display: 'inline-block'
+        display: 'inline-block',
     },
     "buttonWrapper": {
         position: "absolute",
@@ -42,6 +45,8 @@ const styles = theme => ({
         }
     },
     "button": {
+        backgroundColor: '#fff',
+        border: '1px solid #aaa',
         position: "relative",
         top: '50%',
         transform: 'translateY(-50%)',
@@ -133,21 +138,21 @@ class HorizontalScrollBar extends Component {
         return (
             
             <div className={classes.root}>
-                <SwipeableViews resistance>
-                    <div className={classes.wrapper} ref={this.ref}>
-                        {
-                            this.props.children.map((item, index) => (
-                                <div className={classes.item} key={index}>
-                                    {item} 
-                                </div>
-                            ))
-                        }
-                    </div>
-                </SwipeableViews>
+                
+                <div className={classes.wrapper} ref={this.ref}>
+                    {
+                        this.props.children.map((item, index) => (
+                            <div className={classes.item} key={index}>
+                                {item} 
+                            </div>
+                        ))
+                    }
+                </div>
+                
                 <div>
-                    <div className={classes.buttonWrapper} style={{ left: -48, }}>
+                    <div className={classes.buttonWrapper} style={{ left: -24, }}>
                         {
-                            this.state.showLeftButton && <IconButton 
+                            this.state.showLeftButton && <IconButton
                                 className={classes.button}
                                 onClick={this.handleScrollLeft}
                             >
@@ -155,7 +160,7 @@ class HorizontalScrollBar extends Component {
                             </IconButton>
                         }
                     </div>
-                    <div className={classes.buttonWrapper} style={{ right: -48, }}>
+                    <div className={classes.buttonWrapper} style={{ right: -24, }}>
                         {
                             this.state.showRightButton && <IconButton
                                 className={classes.button}

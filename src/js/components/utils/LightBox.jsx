@@ -32,7 +32,7 @@ class LIghtBoxModule extends Component {
 
     handleGotoNextLightboxImage() {
         this.setState({
-            currentImage: this.state.currentImage + 1,
+            currentImage: (this.state.currentImage + 1) % this.props.images.length,
         });
     }
 

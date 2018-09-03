@@ -24,9 +24,11 @@ import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
 const styles = theme => ({
-  card: { 
+  card: {
+    width: 260,
     marginRight: theme.spacing.unit * 2,
-  }
+    marginBottom: theme.spacing.unit,
+  },
 });
 
 class TagPanel extends PureComponent {

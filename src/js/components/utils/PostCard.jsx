@@ -22,7 +22,7 @@ import Delete from '@material-ui/icons/Delete';
 import ProperName from './ProperName';
 
 // Mock Image
-import image from 'css/ikt-icon.gif';
+
 
 const styles = theme => ({
 
@@ -34,10 +34,7 @@ class PostCard extends Component {
 
     return (
       <Card>
-        <CardMedia
-          image={image}
-          style={{ height: 180 }}
-        />
+        
         <CardContent>
           <Typography variant="title">
             {this.props.title}

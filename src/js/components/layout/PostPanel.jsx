@@ -11,11 +11,11 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 // Custom Components
-import ProperName from './ProperName';
+import ProperName from 'js/components/utils/ProperName';
 import ElapsedTime from 'js/helpers/ElapsedTime';
 
 // Mock image
-import image from 'img/background_1.jpg';
+import config from 'js/config/config.js';
 
 const styles = theme => ({
   "wrapper": {
@@ -38,7 +38,7 @@ class PostPanel extends Component {
         <Grid container justify="center">
           <Grid item xs={12}>
             <Link to={"/post/s/" + this.props.post._id}>
-              <Img src={image} className={classes.thumbnail} />
+              <Img src={config.DEFAULT_HOMEPAGE_IMAGES_URL + 'Homepage_Carousel_1.jpg'} className={classes.thumbnail} />
             </Link>
           </Grid>
 

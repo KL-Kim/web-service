@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 import Stars from 'react-stars';
+import Img from 'react-image';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -13,8 +14,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardHeader from '@material-ui/core/CardHeader';
 import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
@@ -23,25 +22,27 @@ import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
 // Custom Components
+import Skeleton from 'js/components/utils/Skeleton';
 import Badge from 'js/components/utils/Badge';
 
 // Default Image
-import image from 'css/ikt-icon.gif';
+import config from 'js/config/config.js';
 
 const styles = (theme) => ({
   "root": {
     fontFamily: 'sans-serif', 
+    maxWidth: 400,
     minWidth: 220,
-    [theme.breakpoints.up('md')]: {
-      minWidth: 270,
-    }
   },
   "content": {
     paddingBottom: '0px !important',
   },
-  "chip": {
-    marginRight: theme.spacing.unit,
-  },
+  "image": {
+    width: '100%', 
+    height: 180, 
+    objectFit: 'cover',
+    position: 'relative',
+  }
 });
 
 class BusinessCard extends PureComponent {
@@ -88,27 +89,22 @@ class BusinessCard extends PureComponent {
       <div>
         <Card className={classes.root}>
           <Link to={"/business/s/" + this.props.slug}>
-            <CardMedia
-              style={{ paddingTop: '56.25%' }}
-              image={_.isEmpty(this.props.image) ? image : this.props.image + '-thumbnail'}
-              title={this.props.title}
+            <Img 
+              className={classes.image}
+              src={_.isEmpty(this.props.image) ? config.DEFAULTL_CARD_IMAGE_URL : this.props.image + '-thumbnail'}
+              loader={<Skeleton />}
             />
+          </Link>
 
             <CardContent className={classes.content}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Grid container spacing={8} alignItems="center">
+                  <Grid container alignItems="center">
                     <Grid item>
                       <Typography variant="headline" component="h3">{this.props.title}</Typography>
                     </Grid>
 
-                    <Grid item>
-                      {
-                        this.props.event
-                          ? <Badge color="rose">이벤트</Badge>
-                          : null
-                      }
-                    </Grid>
+                    
                   </Grid>
                 </Grid>
 
@@ -119,22 +115,31 @@ class BusinessCard extends PureComponent {
 
               <Stars count={5} size={20} value={this.props.rating} edit={false} />
             </CardContent>
-          </Link>
+          
 
           <CardActions>
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
-                {
-                  _.isEmpty(this.props.tags)
-                    ? null
-                    : this.props.tags.map(item => (
-                        <Link to={"/business/tag/" +item.slug} key={item._id} className={classes.chip}>
-                          <Badge color="info">
-                            #{item.krName}
-                          </Badge>
-                        </Link>
-                    ))
-                }
+                <div>
+                  <Grid container spacing={8}>
+                    {
+                      this.props.event && <Grid item><Badge color="rose">이벤트</Badge></Grid>
+                    }
+                    {
+                      _.isEmpty(this.props.tags)
+                        ? null
+                        : this.props.tags.map(item => (
+                            <Grid item key={item._id} >
+                              <Link to={"/business/tag/" +item.slug} className={classes.chip}>
+                                <Badge color="info">
+                                  #{item.krName}
+                                </Badge>
+                              </Link>
+                            </Grid>
+                        ))
+                    }
+                  </Grid>
+                </div>
               </Grid>
               
               <Grid item>

@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 
 // Custom Components
 import Container from './layout/Container';
-import PostPanel from './utils/PostPanel';
+import PostPanel from './layout/PostPanel';
 
 // Actions
 import { getPostsList } from 'js/actions/blog.actions.js';

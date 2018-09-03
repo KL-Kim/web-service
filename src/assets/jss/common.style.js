@@ -19,11 +19,14 @@ export const root = theme => ({
 });
 
 export const chipBar = theme => ({
-	marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
+	// marginTop: theme.spacing.unit,
+	// marginBottom: theme.spacing.unit,
+	margin: 0,
 });
 
 export const chip = theme => ({
+	marginTop: theme.spacing.unit * 2,
+	marginBottom: theme.spacing.unit * 2,
 	marginRight: theme.spacing.unit,
     paddingTop: theme.spacing.unit,
     paddingBottom: theme.spacing.unit,

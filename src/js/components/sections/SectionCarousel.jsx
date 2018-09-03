@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import Carousel from 'react-slick';
 import Img from 'react-image';
 
+// Carousel CSS Stylesheet
 import "css/slick.css";
+
+import config from 'js/config/config.js';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 
-// Images
-import image2 from 'img/background_2.jpg';
-import image3 from 'img/background_3.jpg';
+// Custom Components
+import Skeleton from 'js/components/utils/Skeleton';
 
 const styles = theme => ({
   image: {
@@ -18,7 +20,14 @@ const styles = theme => ({
     height: '100%',
     minHeight: 150,
     objectFit: 'cover',
-  }
+  },
+  skeleton: {
+    backgroundColor: '#aaa',
+    width: 1450,
+    height: 750,
+    animation: 'fadeIn 0.5s Infinite alternate',
+    boxShadow: "0 5px 15px -8px rgba(0, 0, 0, 0.24), 0 8px 10px -5px rgba(0, 0, 0, 0.2)",
+}
 });
 
 class SectionCarousel extends Component {
@@ -34,7 +43,7 @@ class SectionCarousel extends Component {
       autoplay: true,
       arrows: false,
       draggable: true,
-      fade: true,
+      fade: false,
       pauseOnHover: false,
       accessibility: false,
     };
@@ -42,7 +51,12 @@ class SectionCarousel extends Component {
     return (
       <Carousel {...sliderSettings}>
         <div>
-          <Img src={image2} alt="image2" className={classes.image} />
+          <Img 
+            src={config.DEFAULT_HOMEPAGE_IMAGES_URL + 'Homepage_Carousel_1.jpg'}
+            alt="image1" 
+            className={classes.image}
+            loader={<Skeleton />}
+          />
           <div className="slick-caption">
             <h4>
               Somewhere Beyond, United States
@@ -50,7 +64,12 @@ class SectionCarousel extends Component {
           </div>
         </div>
         <div>
-          <Img src={image3} alt="image3" className={classes.image} />
+          <Img 
+            src={config.DEFAULT_HOMEPAGE_IMAGES_URL + 'Homepage_Carousel_2.jpg'} 
+            alt="image2" 
+            className={classes.image} 
+            loader={<Skeleton />}
+          />
           <div className="slick-caption">
             <h4>
               Yellowstone National Park, United States

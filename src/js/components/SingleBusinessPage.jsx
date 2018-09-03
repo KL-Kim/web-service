@@ -120,7 +120,7 @@ class SingleBusinessPage extends Component {
     this.state = {
       "business": null,
       "addNewDialogOpen": false,
-      "limit": 24,
+      "limit": 12,
       'count': 0,
       "hasMore": false,
       "orderBy": 'recommended',
@@ -878,10 +878,10 @@ class SingleBusinessPage extends Component {
               </MenuList>
             </Popover>
 
-             <LightBox
-                open={this.state.isLightboxOpen}
-                images={this.state.images}
-                onClose={this.handleLightboxClose}
+            <LightBox
+              open={this.state.isLightboxOpen}
+              images={this.state.images}
+              onClose={this.handleLightboxClose}
             />
 
             {

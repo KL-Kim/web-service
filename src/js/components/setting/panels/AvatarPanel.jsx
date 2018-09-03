@@ -12,14 +12,17 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import AddPhoto from '@material-ui/icons/AddAPhoto';
+import RotateLeft from '@material-ui/icons/RotateLeft';
+import RotateRight from '@material-ui/icons/RotateRight';
 
 // Custom Components
-import Avatar from '../../utils/Avatar';
+import Avatar from 'js/components/utils/Avatar';
 
 const styles = (theme) => ({
   "container": {
@@ -35,6 +38,9 @@ const styles = (theme) => ({
   "avatar": {
     "marginBottom": 18,
   },
+  "section": {
+    "marginBottom": theme.spacing.unit * 2,
+  },
 });
 
 class AvatarPanel extends Component {
@@ -44,17 +50,25 @@ class AvatarPanel extends Component {
     this.state = {
       image: null,
       slider: 10,
+      rotate: 0,
     };
 
     this.handleSliderChange = this.handleSliderChange.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.handleRotate = this.handleRotate.bind(this);
     this.handleClear = this.handleClear.bind(this);
   }
 
   handleSliderChange = (value) => {
     this.setState({
       "slider": value,
+    });
+  }
+
+  handleRotate = degree => e => {
+    this.setState({
+      rotate: (this.state.rotate + degree) % 360
     });
   }
 
@@ -105,7 +119,7 @@ class AvatarPanel extends Component {
     return (
       <Paper className={classes.paper}>
         <Grid container justify="center" alignItems="center">
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} className={classes.section}>
             <Grid container justify="center">
               <Grid item>
                 {
@@ -123,9 +137,25 @@ class AvatarPanel extends Component {
                           borderRadius={100}
                           color={[0, 0, 0, 0.5]} // RGBA
                           scale={this.state.slider / 10}
-                          rotate={0}
+                          rotate={this.state.rotate}
                         />
                         <Slider min={5} max={30} value={this.state.slider} onChange={this.handleSliderChange} />
+
+                        <Grid container spacing={8} justify="space-around" alignItems="center">
+                          <Grid item>
+                            <IconButton onClick={this.handleRotate(-90)}>
+                              <RotateLeft />
+                            </IconButton>
+                          </Grid>
+
+                          <Grid item>
+                            <IconButton onClick={this.handleRotate(90)}>
+                              <RotateRight />
+                            </IconButton>
+                          </Grid>
+                        
+                        </Grid>
+                        
                       </div>
                   }
               </Grid>
@@ -149,7 +179,7 @@ class AvatarPanel extends Component {
 
           <Grid item xs={12}>
             <Divider className={classes.bigDivider} />
-            <Grid container spacing={16} justify="center">
+            <Grid container spacing={8} justify="center">
               <Grid item>
                 <Button
                   variant="raised"
@@ -162,6 +192,9 @@ class AvatarPanel extends Component {
                     isFetching ? (<CircularProgress size={20} />) : 'Upload'
                   }
                 </Button>
+              </Grid>
+
+              <Grid item>
                 <Button
                   size="small"
                   onClick={this.handleClear}

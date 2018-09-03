@@ -33,7 +33,6 @@ class Container extends Component {
 }
 
 Container.propTypes = {
-  classes: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   headerPosition: PropTypes.string,
 };

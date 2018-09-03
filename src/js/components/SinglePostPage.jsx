@@ -30,7 +30,6 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import Container from './layout/Container';
 import CommentPanel from './sections/CommentPanel';
 import ReportDialog from 'js/components/dialogs/ReportDialog';
-import VerifyDialog from 'js/components/dialogs/VerifyDialog';
 import ProperName from './utils/ProperName';
 import ThumbButton from './utils/ThumbButton';
 import WriteCommentDialog from 'js/components/dialogs/WriteCommentDialog';
@@ -46,7 +45,7 @@ import { getComments,
 } from 'js/actions/comment.actions';
 
 // Mock image
-import image from 'img/background_1.jpg';
+import config from 'js/config/config.js';
 
 // Common Style
 import { root } from 'assets/jss/common.style';
@@ -277,7 +276,7 @@ class SinglePostPage extends Component {
             </Grid>
 
             <Grid item xs={12} className={classes.section}>
-              <Img src={image} className={classes.image} />
+              <Img src={config.DEFAULT_HOMEPAGE_IMAGES_URL + 'Homepage_Carousel_2.jpg'} className={classes.image} />
             </Grid>
 
             <Grid item xs={12} className={classes.section}>

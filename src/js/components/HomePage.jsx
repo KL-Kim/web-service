@@ -50,7 +50,9 @@ class HomePage extends Component {
     return (
       <Container headerPosition="absolute">
         <div>
-          <SectionCarousel />
+          <div>
+              <SectionCarousel />
+          </div>
           
           <div className={classes.root}>
             <div className={classes.section}>
