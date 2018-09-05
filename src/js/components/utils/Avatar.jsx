@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import upperCase from 'lodash/upperCase';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-
-import config from 'js/config/config';
 
 const styles = theme => ({
   "normal": {
@@ -34,7 +33,7 @@ const styles = theme => ({
 
 class AvatarModule extends Component {
   render() {
-    if (_.isEmpty(this.props.user)) return null;
+    if (isEmpty(this.props.user)) return null;
 
     const { classes, type, user, updatedAt } = this.props;
 
@@ -57,8 +56,8 @@ class AvatarModule extends Component {
         className = classes.normal;
     }
 
-    return _.isEmpty(user.avatarUrl) 
-      ? <Avatar className={className}>{_.upperCase(user.username[0])}</Avatar>
+    return isEmpty(user.avatarUrl) 
+      ? <Avatar className={className}>{upperCase(user.username[0])}</Avatar>
       : <Avatar className={className} alt={user.username[0]} src={user.avatarUrl + '?t=' + updatedAt} />
     ;
   }

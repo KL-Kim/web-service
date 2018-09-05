@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { connect } from 'react-redux';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import Container from '../layout/Container';
@@ -100,7 +98,7 @@ class CommentsPage extends Component {
   render() {
     const { classes } = this.props;
 
-    return _.isEmpty(this.props.user) ? null : (
+    return isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
           <Typography variant="title" gutterBottom>My Comments</Typography>

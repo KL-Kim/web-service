@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import Lightbox from 'react-images';
 
-class LIghtBoxModule extends Component {
+class LigntboxModule extends Component {
     constructor(props) {
         super(props);
 
@@ -48,9 +47,9 @@ class LIghtBoxModule extends Component {
                 <Lightbox
                     currentImage={this.state.currentImage}
                     images={this.props.images}
-                    showThumbnails={true}
-                    showImageCount={false}
-                    backdropClosesModal={true}
+                    showThumbnails
+                    showImageCount
+                    backdropClosesModal
                     isOpen={this.props.open}
                     onClose={this.props.onClose}
                     onClickPrev={this.handleGotoPrevLightboxImage}
@@ -62,16 +61,16 @@ class LIghtBoxModule extends Component {
     }
 }
 
-LIghtBoxModule.defaultProps = {
+LigntboxModule.defaultProps = {
     "open": false,
     "currentImage": 0,
     "images": [],
 }
 
-LIghtBoxModule.prototypes = {
+LigntboxModule.prototypes = {
     "open": PropTypes.bool.isRequired,
     "currentImage": PropTypes.number.isRequired,
     "images": PropTypes.array.isRequired,
 }
 
-export default LIghtBoxModule;
+export default LigntboxModule;

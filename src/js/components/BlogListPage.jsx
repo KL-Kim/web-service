@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 // Custom Components
 import Container from './layout/Container';
-import PostPanel from './layout/PostPanel';
+import PostPanel from './sections/PostPanel';
 
 // Actions
 import { getPostsList } from 'js/actions/blog.actions.js';
@@ -86,7 +85,7 @@ class BlogListPage extends Component {
 
           <Grid container justify="center">
             {
-              _.isEmpty(list) 
+              isEmpty(list) 
                 ? null
                 : list.map(item =>
                     <Grid item xs={12} key={item._id} className={classes.section}>

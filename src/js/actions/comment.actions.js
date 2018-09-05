@@ -1,7 +1,7 @@
 /**
  * Comment actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
@@ -106,7 +106,7 @@ export const addNewComment = ({ content, userId, postId, parentId, replyToUser }
   });
 
   return (dispatch, getState) => {
-    if(_.isUndefined(userId) || _.isUndefined(postId) || _.isUndefined(content)) {
+    if(isEmpty(userId) || isEmpty(postId) || isEmpty(content)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -159,7 +159,7 @@ export const deleteComment = (id, uid) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(id) || _.isUndefined(uid)) {
+    if (isEmpty(id) || isEmpty(uid)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -212,7 +212,7 @@ export const voteComment = (id, { uid, vote, postTitle } = {}) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(id) || _.isUndefined(uid) || _.isUndefined(vote) || _.isUndefined(postTitle))
+    if (isEmpty(id) || isEmpty(uid) || isEmpty(vote) || isEmpty(postTitle))
       return dispatch(AlertActions.alertFailure("Bad request"));
 
     dispatch(_voteCommentRequest());

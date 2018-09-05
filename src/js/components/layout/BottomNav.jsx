@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles'
@@ -12,8 +12,6 @@ import Hidden from '@material-ui/core/Hidden';
 import Home from '@material-ui/icons/Home';
 import Explore from '@material-ui/icons/Explore';
 import Search from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import SettingsApplications from '@material-ui/icons/SettingsApplications';
 
 // Custom Components
 import LinkContainer from 'js/components/utils/LinkContainer';
@@ -22,7 +20,7 @@ const styles = (theme) => ({
   root: {
     width: '100%',
     position: 'fixed',
-    bottom: -5,
+    bottom: 0,
     left: 0,
     right: 0,
     zIndex: theme.zIndex.appBar,
@@ -35,43 +33,15 @@ class BottomNav extends Component {
     super(props);
 
     this.state = {
-      index: null,
+      value: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange = (e, value) => {
-    this.setState({ index: value });
+    this.setState({ value });
   };
-
-  componentDidMount() {
-    switch (this.props.match.path) {
-      case '/':
-        this.setState({
-          index: 0,
-        });
-        break;
-
-      case '/explore':
-        this.setState({
-          index: 1,
-        });
-        break;
-      
-      case '/search':
-        this.setState({
-          index: 2,
-        });
-        break;
-
-      default:
-        this.setState({
-          index: null,
-        });
-        break;
-    }
-  }
 
   render() {
     const { classes } = this.props;
@@ -80,21 +50,22 @@ class BottomNav extends Component {
       <Hidden smUp>
         <div className={classes.root}>
           <BottomNavigation
-            showLabels
-            value={this.state.index}
+            value={this.state.value}
             onChange={this.handleChange}
           >
-            <LinkContainer to="/">
-              <BottomNavigationAction icon={<Home />} />
-            </LinkContainer>
             
-            <LinkContainer to="/explore">
-              <BottomNavigationAction icon={<Explore />} />
-            </LinkContainer>
+              <BottomNavigationAction label="Home" value="" icon={<Home />} />
+            
+              <BottomNavigationAction label="Explore" value="explore" icon={<Explore />} />
+            
+              
+            
 
-            <LinkContainer to="/search">
-              <BottomNavigationAction icon={<Search />} />
-            </LinkContainer>
+            
+              <BottomNavigationAction label="Search" value="search" icon={<Search />} />
+            
+              
+           
             
           </BottomNavigation>
         </div>

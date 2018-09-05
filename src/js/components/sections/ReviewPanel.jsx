@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import Masonry from 'react-masonry-component';
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -118,7 +118,7 @@ class ReviewPanel extends Component {
                                     : null
                             }
                             {
-                                _.isEmpty(reviews) 
+                                isEmpty(reviews) 
                                     ?   null 
                                     :   reviews.map(review => (
                                             <div key={review._id} className={classes.mansoryItem}>
@@ -137,8 +137,8 @@ class ReviewPanel extends Component {
                                                     showBusinessName={this.props.showBusinessName}
                                                     showDeleteIcon={this.props.showDeleteIcon}
                                                     isLoggedIn={this.props.isLoggedIn}
-                                                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
-                                                    isOwn={_.isEmpty(this.props.user) ? false : this.props.user._id === review.userId}
+                                                    userId={isEmpty(this.props.user) ? '' : this.props.user._id}
+                                                    isOwn={isEmpty(this.props.user) ? false : this.props.user._id === review.userId}
 
                                                     voteReview={this.props.voteReview}
                                                     deleteReview={this.props.deleteReview}

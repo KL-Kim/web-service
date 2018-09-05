@@ -1,7 +1,7 @@
 /**
  * Posts actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
@@ -89,7 +89,7 @@ export const getSinglePost = (id) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -138,7 +138,7 @@ export const addNewPost = (params) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(params)) {
+    if (isEmpty(params)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -192,7 +192,7 @@ export const updatePost = (id, params) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(params) || _.isEmpty(id)) {
+    if (isEmpty(params) || isEmpty(id)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -246,7 +246,7 @@ export const deletePost = (id, params) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(params) || _.isEmpty(id)) {
+    if (isEmpty(params) || isEmpty(id)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -300,7 +300,7 @@ export const votePost = (id, { uid, vote } = {}) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(uid) || _.isEmpty(vote)) {
+    if (isEmpty(id) || isEmpty(uid) || isEmpty(vote)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -354,7 +354,7 @@ export const reportPost = (id, { type, content, contact } = {}) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 

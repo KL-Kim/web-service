@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -31,8 +29,6 @@ class PopularCategorySection extends Component {
 
         return (
             <div>
-                <Typography variant="title" gutterBottom>Popular Categories</Typography>
-                    
                 <Grid container spacing={16} justify="space-around">
                      <Grid item xs={4} sm='auto'> 
                         <Link to="/business/category/restaurant">
@@ -92,5 +88,9 @@ class PopularCategorySection extends Component {
         );
     }
 }
+
+PopularCategorySection.prototypes = {
+    "classes": PropTypes.object.isRequired,
+};
 
 export default withStyles(styles)(PopularCategorySection);

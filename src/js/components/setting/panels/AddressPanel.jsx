@@ -1,21 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import find from 'lodash/find';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -117,9 +116,9 @@ class AddressPanel extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const province = _.find(this.state.provinces, { 'code': this.state.provinceCode });
-    const city = _.find(this.state.cities, { 'code': this.state.cityCode });
-    const area = _.find(this.state.areas, { 'code': this.state.areaCode });
+    const province = find(this.state.provinces, { 'code': this.state.provinceCode });
+    const city = find(this.state.cities, { 'code': this.state.cityCode });
+    const area = find(this.state.areas, { 'code': this.state.areaCode });
 
     const data = {
       "address": {
@@ -139,7 +138,7 @@ class AddressPanel extends Component {
       },
     };
 
-    if (!_.isEmpty(this.props.user)) {
+    if (!isEmpty(this.props.user)) {
       this.props.updateUserProfile(this.props.user._id, data);
     }
   }
@@ -148,10 +147,10 @@ class AddressPanel extends Component {
     const { classes, user, isFetching } = this.props;
     const { cities, areas } = this.state;
 
-    const area = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
-    const street = !_.isEmpty(user.address) ? (!_.isEmpty(user.address.street) ? user.address.street : '') : '';
+    const area = !isEmpty(user.address) ? (!isEmpty(user.address.area.name) ? user.address.area.name : '') : '';
+    const street = !isEmpty(user.address) ? (!isEmpty(user.address.street) ? user.address.street : '') : '';
 
-    return _.isEmpty(user) ? '' : (
+    return isEmpty(user) ? '' : (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
            <Grid container justify="space-between" alignItems="center">
@@ -179,7 +178,7 @@ class AddressPanel extends Component {
                 >
                   <option value="" />
                   {
-                    _.isEmpty(this.state.provinces)
+                    isEmpty(this.state.provinces)
                       ? null
                       : this.state.provinces.map(p => (
                           <option key={p.code} value={p.code}>{p.cnName + ' ' + p.pinyin}</option>
@@ -200,7 +199,7 @@ class AddressPanel extends Component {
                 >
                   <option value="" />
                   {
-                    _.isEmpty(cities)
+                    isEmpty(cities)
                       ? null
                       : cities.map(c => (
                           <option key={c.code} value={c.code}>{c.cnName + ' ' + c.pinyin}</option>
@@ -221,7 +220,7 @@ class AddressPanel extends Component {
                 >
                   <option value="" />
                   {
-                    _.isEmpty(areas)
+                    isEmpty(areas)
                     ? null
                     : areas.map(a => (
                         <option key={a.code} value={a.code}>{a.cnName + ' ' + a.pinyin}</option>
@@ -256,10 +255,10 @@ class AddressPanel extends Component {
           <Button
             size="small"
             color="primary"
-            disabled={_.isEmpty(this.state.provinceCode)
-              || _.isEmpty(this.state.cityCode)
-              || _.isEmpty(this.state.areaCode)
-              || _.isEmpty(this.state.street)
+            disabled={isEmpty(this.state.provinceCode)
+              || isEmpty(this.state.cityCode)
+              || isEmpty(this.state.areaCode)
+              || isEmpty(this.state.street)
               || isFetching}
             onClick={this.handleSubmit}
           >

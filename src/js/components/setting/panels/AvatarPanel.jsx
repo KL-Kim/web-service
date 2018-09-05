@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import FormData from 'form-data';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import Dropzone from 'react-dropzone';
 import AvatarEditor from 'react-avatar-editor';
 import Slider from 'rc-slider';
@@ -123,7 +123,7 @@ class AvatarPanel extends Component {
             <Grid container justify="center">
               <Grid item>
                 {
-                  _.isEmpty(this.state.image)
+                  isEmpty(this.state.image)
                     ? <div style={{ marginBottom: 18 }}>
                         <Avatar user={user} type="BIG" updatedAt={this.props.updatedAt} />
                       </div>
@@ -186,7 +186,7 @@ class AvatarPanel extends Component {
                   color="primary"
                   size="small"
                   onClick={this.handleUpload}
-                  disabled={_.isEmpty(this.state.image) || isFetching}
+                  disabled={isEmpty(this.state.image) || isFetching}
                 >
                   {
                     isFetching ? (<CircularProgress size={20} />) : 'Upload'

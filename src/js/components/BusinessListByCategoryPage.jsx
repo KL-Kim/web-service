@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import find from 'lodash/find';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -79,13 +80,15 @@ class BusinessListPage extends Component {
 
       this.props.getTagsList()
         .then(tags => {
-          if (!_.isEmpty(tags)) {
+          if (!isEmpty(tags)) {
             const targets = [];
 
             tags.map(item => {
-              if (!_.isEmpty(item.category) && item.category.enName === this.props.match.params.slug) {
+              if (!isEmpty(item.category) && item.category.enName === this.props.match.params.slug) {
                 targets.push(item);
-              } 
+              }
+
+              return '';
             })
 
             this.setState({
@@ -110,7 +113,7 @@ class BusinessListPage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
+    if (!isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
       this.getCategory();
 
       this.props.getBusinessList({
@@ -139,7 +142,7 @@ class BusinessListPage extends Component {
     this.props.getCategoriesList()
       .then(response => {
         if (response) {
-          _.find(response, item => {
+          find(response, item => {
             if (item.enName === this.props.match.params.slug) {
               this.setState({
                 category: item
@@ -271,7 +274,7 @@ class BusinessListPage extends Component {
             <Grid item>
               <Typography variant="display1">
                 {
-                  _.isEmpty(this.state.category) ? null : this.state.category.krName
+                  isEmpty(this.state.category) ? null : this.state.category.krName
                 }
               </Typography>
             </Grid>
@@ -298,7 +301,7 @@ class BusinessListPage extends Component {
           
           <div className={classes.chipBar}>
             {
-              _.isEmpty(this.state.tags) 
+              isEmpty(this.state.tags) 
                 ? null
                 : <HorizontalScrollBar>
                     <CustomButton
@@ -356,8 +359,8 @@ class BusinessListPage extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.area) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.area) ? 'outlined' : 'text'}
                       onClick={this.handleSelectArea('')}
                     >
                       All
@@ -389,8 +392,8 @@ class BusinessListPage extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
                       onClick={this.handleSelectSort('')}
                     >
                       Recommend

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -80,7 +80,7 @@ class CommentPanel extends Component {
                         :   null
                 }
                 {
-                    _.isEmpty(this.props.comments) 
+                    isEmpty(this.props.comments) 
                         ?   <Typography align="center">None</Typography> 
                         :   <InfiniteScroll
                                 pageStart={0}
@@ -108,9 +108,9 @@ class CommentPanel extends Component {
                                                     postTitle={comment.postId.title}
 
                                                     isLoggedIn={this.props.isLoggedIn}
-                                                    userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                                                    userId={isEmpty(this.props.user) ? '' : this.props.user._id}
                                                     isVerified={this.props.isVerified}
-                                                    isOwn={_.isEmpty(this.props.user) ? false : this.props.user._id === comment.userId._id}
+                                                    isOwn={isEmpty(this.props.user) ? false : this.props.user._id === comment.userId._id}
                                                     showReplyIcon={this.props.showReplyIcon}
                                                     showDeleteIcon={this.props.showDeleteIcon}
 
@@ -128,7 +128,7 @@ class CommentPanel extends Component {
                             </InfiniteScroll>
                 }
                 {
-                    this.props.hasMore || _.isEmpty(this.props.comments) 
+                    this.props.hasMore || isEmpty(this.props.comments) 
                         ?   null
                         :   <Typography variant="caption" align="center">
                                 --- No More Comments ---

@@ -1,4 +1,6 @@
-import _ from 'lodash';
+
+import isEmpty from 'lodash/isEmpty';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
@@ -26,12 +28,12 @@ const search = (type, query) => {
       return [];
   }
 
-  if (_.isEmpty(list)) return [];
+  if (isEmpty(list)) return [];
 
   if (query === 'ALL') {
     return list;
   } else {
-    const regex = new RegExp(_.escapeRegExp(query));
+    const regex = new RegExp(escapeRegExp(query));
 
     const match = list.filter(item => {
       return regex.exec(item.krName);

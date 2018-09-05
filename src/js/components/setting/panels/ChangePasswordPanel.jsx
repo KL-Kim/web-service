@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // Material UI Components
-import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -16,9 +14,6 @@ import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import emailTypes from 'js/constants/email.types';
-
-const styles = (theme) => ({
-});
 
 class ChangePasswordPanel extends Component {
   constructor(props) {
@@ -46,8 +41,6 @@ class ChangePasswordPanel extends Component {
   }
 
   render() {
-    const { classes, isFetching } = this.props;
-
     return (
       <ExpansionPanel expanded={this.state.expanded === 'panel'} onChange={this.handlePanelChange('panel')}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -67,12 +60,12 @@ class ChangePasswordPanel extends Component {
           </Button>
           <Button
             size="small"
-            disabled={isFetching}
+            disabled={this.props.isFetching}
             color="primary"
             onClick={this.handleSubmit}
           >
             {
-              isFetching ? (<CircularProgress size={20} />) : 'Send Email'
+              this.props.isFetching ? (<CircularProgress size={20} />) : 'Send Email'
             }
           </Button>
         </ExpansionPanelActions>
@@ -82,8 +75,7 @@ class ChangePasswordPanel extends Component {
 }
 
 ChangePasswordPanel.propTypes = {
-  "classes": PropTypes.object.isRequired,
   "sendEmail": PropTypes.func.isRequired,
 }
 
-export default withStyles(styles)(ChangePasswordPanel);
+export default (ChangePasswordPanel);

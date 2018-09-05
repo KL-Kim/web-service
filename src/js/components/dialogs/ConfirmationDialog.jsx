@@ -17,7 +17,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
 // Material UI Icons
-import Error from '@material-ui/icons/Error';
 import Close from '@material-ui/icons/Close';
 
 const styles = (theme) => ({

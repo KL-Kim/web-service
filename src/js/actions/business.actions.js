@@ -1,7 +1,7 @@
 /**
  * Business Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import businessTypes from '../constants/business.types';
 import * as AlertActions from './alert.actions';
@@ -104,7 +104,7 @@ export const getSingleBusiness = (slug) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(slug)) {
+    if (isEmpty(slug)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -153,7 +153,7 @@ export const reportBusiness = (id, {type, content, contact} = {}) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(content)) {
+    if (isEmpty(id) || isEmpty(content)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 

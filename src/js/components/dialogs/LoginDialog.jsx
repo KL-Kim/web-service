@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
 import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
@@ -19,7 +18,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
@@ -92,7 +90,7 @@ class LoginDialog extends Component {
   }
 
   handleChange(e) {
-    const { name, value } = e.target;
+    const { value } = e.target;
 
     if (e.target.name === 'email') {
       this.setState({
@@ -147,29 +145,29 @@ class LoginDialog extends Component {
 
     let loginFailedCount = loadFromStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED);
 
-    // if (loginFailedCount >= 5) {
-    //   let time = 30;
-    //   var nInverId = setInterval(() => {
-    //     time = time - 1;
-    //
-    //     this.setState({
-    //       "waitUntil": time,
-    //     });
-    //     console.log("You can try after " + time);
-    //
-    //     if (time < 1) {
-    //       clearInterval(nInverId);
-    //       saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
-    //       this.setState({
-    //         "goodToGo": true
-    //       });
-    //     }
-    //   }, 1000);
-    //
-    //   this.setState({
-    //      "goodToGo": false
-    //   });
-    // }
+    if (loginFailedCount >= 5) {
+      let time = 30;
+      var nInverId = setInterval(() => {
+        time = time - 1;
+    
+        this.setState({
+          "waitUntil": time,
+        });
+        console.log("You can try after " + time);
+    
+        if (time < 1) {
+          clearInterval(nInverId);
+          saveToStorage(webStorageTypes.WEB_STORAGE_LOGIN_FAILED, 0);
+          this.setState({
+            "goodToGo": true
+          });
+        }
+      }, 1000);
+    
+      this.setState({
+         "goodToGo": false
+      });
+    }
 
     if (this.isValidEmail() && this.isValidPassword()) {
       this.props.login(this.state.email, this.state.password)

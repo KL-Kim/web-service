@@ -1,27 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
-import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardHeader from '@material-ui/core/CardHeader';
 
 // Material UI Icons
@@ -31,7 +20,6 @@ import Delete from '@material-ui/icons/Delete';
 import WriteCommentDialog from 'js/components/dialogs/WriteCommentDialog';
 import Avatar from 'js/components/utils/Avatar';
 import ProperName from 'js/components/utils/ProperName';
-import ElapsedTime from 'js/helpers/ElapsedTime';
 import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import ThumbButton from 'js/components/utils/ThumbButton';
 
@@ -156,7 +144,9 @@ class CommentCard extends Component {
                       <Avatar user={this.props.owner} type="small"/>
                     </Link>}
             title={<Link to={"/profile/" + this.props.owner.username}>
-                    <ProperName user={this.props.owner} />
+                    <Typography variant="body2">
+                      <ProperName user={this.props.owner} />
+                    </Typography>
                   </Link>}
           />
 

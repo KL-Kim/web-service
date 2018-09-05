@@ -1,7 +1,7 @@
 /**
  * User Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import * as AlertActions from './alert.actions';
 import * as NotificationActions from './notification.actions';
@@ -54,7 +54,7 @@ export const login = (email, password) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(email) || _.isEmpty(password)) {
+    if (isEmpty(email) || isEmpty(password)) {
       dispatch(AlertActions.alertFailure("Email and passwords should not be empty"));
 
       return ;
@@ -172,9 +172,9 @@ export const register = (user) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(user.email)
-      || _.isEmpty(user.password)
-      || _.isEmpty(user.passwordConfirmation)) {
+    if (isEmpty(user.email)
+      || isEmpty(user.password)
+      || isEmpty(user.passwordConfirmation)) {
         const error = new Error("Requests params missing");
         dispatch(AlertActions.alertFailure(error.message));
         return Promise.reject(error);
@@ -231,7 +231,7 @@ export const verifyAccount = (token) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(token)) {
+    if (isEmpty(token)) {
       const err = new Error("Token missing");
       dispatch(AlertActions.alertFailure(err.message));
       return Promise.reject(err);
@@ -280,12 +280,12 @@ export const changePassword = (token, password, passwordConfirmation) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(token)) {
+    if (isEmpty(token)) {
       dispatch(AlertActions.alertFailure("Token missing"));
       return ;
     }
 
-    if(_.isEmpty(password) || _.isEmpty(passwordConfirmation)) {
+    if(isEmpty(password) || isEmpty(passwordConfirmation)) {
       dispatch(AlertActions.alertFailure("Passwords missing"));
       return ;
     }
@@ -384,14 +384,18 @@ export const getUserByUsername = (username) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(username)) {
+    if (isEmpty(username)) {
       dispatch(AlertActions.alertFailure("Bad Request"));
 
       return null;
     }
 
+    dispatch(_getUserByUsernameRequest());
+    
     return getUsernameFetch(username)
       .then(response => {
+        dispatch(_getUserByUsernameSuccess());
+
         return response;
       })
       .catch(err => {
@@ -434,7 +438,7 @@ export const updateUserProfile = (id, data) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(data)) {
+    if (isEmpty(id) || isEmpty(data)) {
       dispatch(AlertActions.alertFailure("Bad Request"));
       return null;
     }
@@ -442,10 +446,12 @@ export const updateUserProfile = (id, data) => {
     const user = getState().userReducer.user;
     let modified = false;
 
-    _.map(data, (value, name) => {
+    data.map((value, name) => {
       if (value !== user[name]) {
         modified = true;
       }
+
+      return null;
     });
 
     if (!modified) {
@@ -457,7 +463,7 @@ export const updateUserProfile = (id, data) => {
     return getToken()
       .then(token => {
         let type = 'PROFILE';
-        if (!_.isEmpty(data.username)) type = userTypes.UPDATE_USERNAME;
+        if (!isEmpty(data.username)) type = userTypes.UPDATE_USERNAME;
 
         return updateUserFetch(type, token, id, data);
       }).then(user => {
@@ -505,7 +511,7 @@ export const uploadProfilePhoto = (id, formData) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       const error = new Error("Bad Request");
       return Promise.reject(error);
     }
@@ -561,7 +567,7 @@ export const updateMobilePhone = (id, phoneNumber, code) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(phoneNumber) || _.isEmpty(code)) {
+    if (isEmpty(id) || isEmpty(phoneNumber) || isEmpty(code)) {
       const error = new Error("Bad Request");
       return Promise.reject(error);
     }
@@ -615,7 +621,7 @@ export const favorOperation = (id, bid) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(id) || _.isUndefined(bid)) {
+    if (isEmpty(id) || isEmpty(bid)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 

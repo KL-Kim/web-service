@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import isMobilePhone from 'validator/lib/isMobilePhone';
 import isInt from 'validator/lib/isInt';
 
@@ -14,11 +14,9 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 
 // Material UI Icons
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -192,7 +190,7 @@ class PhonePanel extends Component {
   isValidPhoneNumber() {
     const { phoneNumber } = this.state;
 
-    if (_.isEmpty(phoneNumber.value) || !isMobilePhone(phoneNumber.value, 'zh-CN')) {
+    if (isEmpty(phoneNumber.value) || !isMobilePhone(phoneNumber.value, 'zh-CN')) {
       this.setState({
         "phoneNumber": {
           "value": phoneNumber.value,
@@ -210,7 +208,7 @@ class PhonePanel extends Component {
   isValidCode() {
     const { verificationCode } = this.state;
 
-    if (_.isEmpty(verificationCode.value) || !isInt(verificationCode.value, {min: 100000, max: 999999})) {
+    if (isEmpty(verificationCode.value) || !isInt(verificationCode.value, {min: 100000, max: 999999})) {
       this.setState({
         "verificationCode": {
           "value": verificationCode.value,
@@ -239,7 +237,7 @@ class PhonePanel extends Component {
             </Grid>
 
             <Grid item>
-              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
+              <Typography variant="body1" className={classes.secondaryHeading}>{isEmpty(user.phoneNumber) ? '' : user.phoneNumber}</Typography>
             </Grid>
           </Grid>
         </ExpansionPanelSummary>

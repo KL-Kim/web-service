@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
-import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-
-
-// Actions
-import { getSingleReview } from '../../actions/review.actions';
-
-const styles = theme => ({});
 
 class MessageContent extends Component {
   constructor(props) {
@@ -93,36 +85,34 @@ class MessageContent extends Component {
   }
 
   render() {
-    const { classes } = this.props;
-
     return (
       <div>
-        <strong>
-          {_.isEmpty(this.props.sender) ? '' : this.props.sender.username}
-        </strong>
-        {' ' + this.state.message}
+        <div>
+          <span>
+            <strong>
+              {
+                isEmpty(this.props.sender) ? null : this.props.sender.username
+              }
+            </strong>
+          </span>
+          <span>
+            {' ' + this.state.message}
+          </span>
+        </div>
+      
         {
-          this.props.showLess
-            ? <Typography>{this.props.commentContent.substr(0, 100)}...</Typography>
-            : <Typography>{this.props.commentContent}</Typography>
+          this.props.commentContent.length > 100
+            ? <Typography variant="caption">{this.props.commentContent.substr(0, 100)}...</Typography>
+            : <Typography variant="caption">{this.props.commentContent}</Typography>
         }
-        
       </div>
     )
   }
 }
 
 MessageContent.propTypes = {
-  "classes": PropTypes.object.isRequired,
   "type": PropTypes.string.isRequired,
   "content": PropTypes.string,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    "user": state.userReducer.user,
-    "isLoggedIn": state.userReducer.isLoggedIn,
-  };
-};
-
-export default connect(mapStateToProps, { getSingleReview })(withStyles(styles)(MessageContent));
+export default MessageContent;

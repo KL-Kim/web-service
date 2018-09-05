@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import _ from 'lodash';
 import Stars from 'react-stars';
 import Dropzone from 'react-dropzone';
 import Img from 'react-image';
 import FormData from 'form-data';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -20,7 +19,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
@@ -181,7 +179,7 @@ class WriteReviewDialog extends Component {
   }
 
   handleSubmit() {
-    if (this.props.addNewReview && !_.isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {
+    if (this.props.addNewReview && !isEmpty(this.props.business) && this.props.isLoggedIn && this.props.userId && !this.props.readOnly) {
       const formData = new FormData();
 
       formData.append("bid", this.props.business._id);
@@ -192,9 +190,11 @@ class WriteReviewDialog extends Component {
       formData.append("envGood", this.state.envGood);
       formData.append("comeback", this.state.comeback);
 
-      if (!_.isEmpty(this.state.images)) {
+      if (!isEmpty(this.state.images)) {
         this.state.images.map(file => {
           formData.append("images", file);
+
+          return null;
         });
       }
 
@@ -240,7 +240,7 @@ class WriteReviewDialog extends Component {
                         disabled={!this.state.rating} 
                         onClick={this.handleSubmit}
                       >
-                        Save
+                        Submit
                       </Button>
                 }
               </Toolbar>
@@ -248,9 +248,8 @@ class WriteReviewDialog extends Component {
           </Hidden>
 
           <DialogTitle id="review-dialog-title">
-            <Link to={"/business/s/" + this.props.business.enName}>
+            
               "{business.krName}"
-            </Link>
             에 대한 리뷰
           </DialogTitle>
 
@@ -327,7 +326,7 @@ class WriteReviewDialog extends Component {
               
 
               {
-                _.isEmpty(this.state.images) 
+                isEmpty(this.state.images) 
                   ? null
                   : this.state.images.map((image, index) =>
                       <Grid item xs={4} key={index}>
@@ -364,7 +363,7 @@ class WriteReviewDialog extends Component {
               }
 
               {
-                _.isEmpty(this.state.rejectedImages)
+                isEmpty(this.state.rejectedImages)
                   ? null
                   : <Grid item xs={12}>
                       <Typography variant="title" gutterBottom>Rejected Files</Typography>
@@ -392,7 +391,7 @@ class WriteReviewDialog extends Component {
                       disabled={!this.state.rating} 
                       onClick={this.handleSubmit}
                     >
-                      Save
+                      Submit
                     </Button>
               }
             </DialogActions>

@@ -7,12 +7,10 @@ import Img from 'react-image';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 // Custom Components
 import ProperName from 'js/components/utils/ProperName';
-import ElapsedTime from 'js/helpers/ElapsedTime';
 
 // Mock image
 import config from 'js/config/config.js';

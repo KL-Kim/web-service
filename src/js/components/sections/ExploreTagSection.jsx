@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -32,7 +32,7 @@ class TagSection extends Component {
   componentDidMount() {
     const tags = searchCategoryOrTag('tag', 'ALL');
 
-    if (!_.isEmpty(tags)) {
+    if (!isEmpty(tags)) {
       const popular = [];
       const list = [];
 
@@ -47,6 +47,8 @@ class TagSection extends Component {
           popular: [...popular],
           list: [...list],
         });
+
+        return null;
       })
     }
   }

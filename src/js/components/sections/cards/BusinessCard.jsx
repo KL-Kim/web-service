@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import Stars from 'react-stars';
 import Img from 'react-image';
 
@@ -9,15 +9,12 @@ import Img from 'react-image';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
-import Share from '@material-ui/icons/Share';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Favorite from '@material-ui/icons/Favorite';
 
@@ -91,67 +88,70 @@ class BusinessCard extends PureComponent {
           <Link to={"/business/s/" + this.props.slug}>
             <Img 
               className={classes.image}
-              src={_.isEmpty(this.props.image) ? config.DEFAULTL_CARD_IMAGE_URL : this.props.image + '-thumbnail'}
+              src={isEmpty(this.props.image) ? config.DEFAULTL_CARD_IMAGE_URL : this.props.image + '-thumbnail'}
               loader={<Skeleton />}
             />
           </Link>
 
-            <CardContent className={classes.content}>
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Grid container alignItems="center">
+          <CardContent className={classes.content}>
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item xs={8}>
+                <div>
+                  <Grid container spacing={8} alignItems="center">
                     <Grid item>
-                      <Typography variant="headline" component="h3">{this.props.title}</Typography>
+                      <Typography variant="headline" component="h2">{this.props.title}</Typography>  
                     </Grid>
 
-                    
-                  </Grid>
-                </Grid>
-
-                <Grid item>
-                  <Typography variant="subheading">{this.props.category.krName}</Typography>
-                </Grid>
-              </Grid>
-
-              <Stars count={5} size={20} value={this.props.rating} edit={false} />
-            </CardContent>
-          
-
-          <CardActions>
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <div>
-                  <Grid container spacing={8}>
                     {
                       this.props.event && <Grid item><Badge color="rose">이벤트</Badge></Grid>
-                    }
-                    {
-                      _.isEmpty(this.props.tags)
-                        ? null
-                        : this.props.tags.map(item => (
-                            <Grid item key={item._id} >
-                              <Link to={"/business/tag/" +item.slug} className={classes.chip}>
-                                <Badge color="info">
-                                  #{item.krName}
-                                </Badge>
-                              </Link>
-                            </Grid>
-                        ))
                     }
                   </Grid>
                 </div>
               </Grid>
-              
+
               <Grid item>
-                <Tooltip id="favor-icon" title="Add to Favor">
-                  <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.handleToggleFavor}>
-                    {
-                      this.state.isFavor ? <Favorite /> : <FavoriteBorder />
-                    }
-                  </IconButton>
-                </Tooltip>
+                <Typography variant="subheading">{this.props.category.krName}</Typography>
               </Grid>
             </Grid>
+
+            <Grid container spacing={8} alignItems="center">
+              <Grid item>
+                <Stars count={5} size={12} value={this.props.rating} edit={false} />  
+              </Grid>
+
+              <Grid item>
+                {
+                  this.props.ratesCount > 0 && <Typography variant="caption" >{this.props.ratesCount}</Typography>  
+                }
+              </Grid>
+            </Grid>
+            
+            <br />
+            <div>
+              <Grid container>
+                {
+                  isEmpty(this.props.tags)
+                    ? null
+                    : this.props.tags.map(item => (
+                        <Grid item key={item._id} style={{ marginRight: 4}}>
+                          <Link to={"/business/tag/" +item.slug} className={classes.chip}>
+                            <Badge color="info">
+                              #{item.krName}
+                            </Badge>
+                          </Link>
+                        </Grid>
+                    ))
+                }
+              </Grid>
+            </div>
+          </CardContent>
+
+          <CardActions>
+            <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.handleToggleFavor}>
+              {
+                this.state.isFavor ? <Favorite /> : <FavoriteBorder />
+              }
+            </IconButton>
           </CardActions>
         </Card>
       </div>

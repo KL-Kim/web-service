@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -45,7 +45,7 @@ class Gallery extends Component {
     }
 
     componentDidMount() {
-        if (!_.isEmpty(this.props.gallery)) {
+        if (!isEmpty(this.props.gallery)) {
             const gallery = [];
 
             this.props.gallery.map(image => {
@@ -77,7 +77,7 @@ class Gallery extends Component {
     render() {
         const { classes, gallery } = this.props;
 
-        return _.isEmpty(gallery) ? null : (
+        return isEmpty(gallery) ? null : (
             <div className={classes.root}>
                 <GridList cols={2} cellHeight={150} spacing={1} className={classes.gridList}>
                     {

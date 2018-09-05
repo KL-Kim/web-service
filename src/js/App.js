@@ -13,7 +13,6 @@ import NoMatchPage from 'js/components/404';
 import HomePage from 'js/components/HomePage';
 import ExplorePage from 'js/components/ExplorePage';
 import SignUpPage from 'js/components/SignUpPage';
-import SignInPage from 'js/components/SignInPage';
 import AboutPage from 'js/components/AboutPage';
 import TermsPolicyPage from 'js/components/TermsPolicyPage';
 import LicensePage from 'js/components/LicensePage';
@@ -33,8 +32,6 @@ import SettingAccount from 'js/components/setting/AccountPage';
 import SettingReview from 'js/components/setting/ReviewPage';
 import SettingFavor from 'js/components/setting/FavorPage';
 import SettingNotification from 'js/components/setting/NotificationPage';
-import SettingPost from 'js/components/setting/PostPage';
-import SettingSinglePost from 'js/components/setting/SinglePostPage';
 import SettingComment from 'js/components/setting/CommentPage';
 
 // WebStorage
@@ -68,7 +65,6 @@ const App = () => {
           <Route path="/search" component={SearchPage} />
           <Route path="/profile/:username" component={ProfilePage} />
           <Route path="/signup" component={SignUpPage} />
-          <Route path="/signin" component={SignInPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/terms-policy" component={TermsPolicyPage} />
           <Route path="/license" component={LicensePage} />
@@ -86,8 +82,6 @@ const App = () => {
           <PrivateRoute path="/setting/review" component={SettingReview} />
           <PrivateRoute path="/setting/favor" component={SettingFavor} />
           <PrivateRoute path="/setting/notification" component={SettingNotification} />
-          <PrivateRoute exact path="/setting/post" component={SettingPost} />
-          <PrivateRoute path="/setting/post/s/:id" component={SettingSinglePost} />
           <PrivateRoute path="/setting/comment" component={SettingComment} />
 
           {/*  Error Routes */}

@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import isEmail from 'validator/lib/isEmail';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -162,7 +160,7 @@ class UserSignup extends Component {
         "passwordConfirmation": this.state.passwordConfirmation,
       })
       .then(response => {
-        if (_.isEmpty(response) && this.props.error) {
+        if (isEmpty(response) && this.props.error) {
           this.setState({
             emailError: true,
             emailErrorMessage: this.props.errorMessage,

@@ -1,7 +1,9 @@
 /**
  * Auth Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+
+
 import authTypes from '../constants/auth.types';
 import emailTypes from '../constants/email.types';
 import * as AlertActions from './alert.actions';
@@ -35,7 +37,7 @@ export const sendPhoneVerificationCode = (phoneNumber) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(phoneNumber)) {
+    if (isEmpty(phoneNumber)) {
       const err = new Error("Phone number missing");
       dispatch(AlertActions.alertFailure(err.message));
       return Promise.reject(err);
@@ -91,7 +93,7 @@ export const sendEmail = (type, email) => {
   return (dispatch, getState) => {
     let err;
 
-    if (_.isEmpty(type) || _.isEmpty(email)) {
+    if (isEmpty(type) || isEmpty(email)) {
       err = new Error("Bad requset");
       dispatch(AlertActions.alertFailure(err.message));
       return Promise.reject(err);

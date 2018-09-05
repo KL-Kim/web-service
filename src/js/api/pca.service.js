@@ -1,6 +1,5 @@
 import Promise from 'bluebird';
 import fetch from 'cross-fetch';
-import _ from 'lodash';
 
 import config from '../config/config';
 import responseErrorHandler from '../helpers/error-handler.js';

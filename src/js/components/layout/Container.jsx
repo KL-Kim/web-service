@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 // Custom Components
 import Header from './Header';
 import Footer from './Footer';
-import BottomNav from './BottomNav';
 import Alert from '../utils/Alert';
 
 // For dev
@@ -19,11 +18,10 @@ class Container extends Component {
         zIndex: 1,
         overflow: 'hidden',
       }}>
-        <Header position={this.props.headerPosition} />
+        <Header />
         <main>
           {this.props.children}
         </main>
-        <BottomNav />
         <Footer />
         <DevTools />
         <Alert />

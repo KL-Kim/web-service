@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import Stars from 'react-stars';
 
@@ -8,7 +8,6 @@ import Stars from 'react-stars';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Card from '@material-ui/core/Card';
@@ -68,7 +67,7 @@ class ReviewCardAlt extends Component {
   }
 
   componentDidMount() {
-    if (!_.isEmpty(this.props.images)) {
+    if (!isEmpty(this.props.images)) {
       const images = [];
 
       this.props.images.map(image => {
@@ -76,6 +75,8 @@ class ReviewCardAlt extends Component {
           src: image.url + '-business',
           alt: image.name
         });
+
+        return null;
       })
 
       this.setState({
@@ -158,12 +159,14 @@ class ReviewCardAlt extends Component {
                       <Avatar user={this.props.owner} />
                     </Link>}
             title={<Link to={"/profile/" + this.props.owner.username}>
-                    <ProperName user={this.props.owner} />
+                    <Typography variant="body2">
+                      <ProperName user={this.props.owner} />
+                    </Typography>
                   </Link>}
           />
 
           {
-            _.isEmpty(this.props.images)
+            isEmpty(this.props.images)
               ? null
               : <CardMedia
                   image={this.props.images[0].url}
@@ -243,7 +246,7 @@ class ReviewCardAlt extends Component {
                   />
           }
           {
-            !_.isEmpty(this.props.images)
+            !isEmpty(this.props.images)
               &&  <LightBox
                     images={this.state.images}
                     open={this.state.isLightboxOpen}

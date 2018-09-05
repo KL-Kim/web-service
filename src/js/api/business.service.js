@@ -1,6 +1,5 @@
-import Promise from 'bluebird';
 import fetch from 'cross-fetch';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import config from '../config/config';
 import responseErrorHandler from '../helpers/error-handler.js';
@@ -29,7 +28,7 @@ const businessSerivceUri = {
  * @property {Boolean} event - Business event filter
  * @property {Array} ids - Busines ids
  */
-export const fetchBusinessList = ({ skip, limit, filter, search, orderBy, category, tag, area, event, ids } = {}) => {
+export const fetchBusinessList = ({ skip, limit, search, orderBy, category, tag, area, event, ids } = {}) => {
   const options = {
     method: 'GET',
     headers: {
@@ -39,8 +38,8 @@ export const fetchBusinessList = ({ skip, limit, filter, search, orderBy, catego
 
   let url = businessSerivceUri.commonUrl;
 
-  if (_.isNumber(skip)) url = url + '&skip=' + skip;
-  if (_.isNumber(limit)) url = url + '&limit=' + limit;
+  if (skip) url = url + '&skip=' + skip;
+  if (limit) url = url + '&limit=' + limit;
 
   if (category) url = url + '&category=' + category;
   if (tag) url = url + '&tag=' + tag;
@@ -52,7 +51,7 @@ export const fetchBusinessList = ({ skip, limit, filter, search, orderBy, catego
     url = url + '&orderBy=' + orderBy;
   }
 
-  if (!_.isEmpty(search)) url = url+ '&search=' + search;
+  if (!isEmpty(search)) url = url+ '&search=' + search;
 
   return fetch(url, options)
     .then(response => {
@@ -156,8 +155,8 @@ export const fetchCategoriesOrTags = (type, { skip, limit, search, orderBy } = {
       return Promise.reject(new Error("Type is missing"));
   }
 
-  if (_.isNumber(skip)) url = url + '&skip=' + skip;
-  if (_.isNumber(limit)) url = url + '&limit=' + limit;
+  if (skip) url = url + '&skip=' + skip;
+  if (limit) url = url + '&limit=' + limit;
 
   if (search)
     url = url + '&search=' + search;

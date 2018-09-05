@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -32,7 +32,7 @@ class CategorySection extends Component {
   componentDidMount() {
     const categories = searchCategoryOrTag('category', 'ALL');
     
-    if (!_.isEmpty(categories)) {
+    if (!isEmpty(categories)) {
       const life = [];
       const sports = [];
       const tour = [];
@@ -45,6 +45,8 @@ class CategorySection extends Component {
         } else {
           tour.push(item);
         }
+
+        return null;
       });
 
       this.setState({

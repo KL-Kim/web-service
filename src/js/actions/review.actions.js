@@ -1,7 +1,7 @@
 /**
  * Reviews actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import * as AlertActions from './alert.actions';
 import { getToken } from '../api/auth.service';
@@ -159,7 +159,7 @@ export const deleteReview = (data) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(data)) {
+    if (isEmpty(data)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -217,7 +217,7 @@ export const voteReview = (id, { uid, vote, businessName, businessSlug } = {}) =
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(id) || _.isEmpty(uid) || _.isEmpty(vote) || _.isEmpty(businessName) || _.isEmpty(businessSlug)) {
+    if (isEmpty(id) || isEmpty(uid) || isEmpty(vote) || isEmpty(businessName) || isEmpty(businessSlug)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 

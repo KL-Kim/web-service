@@ -1,7 +1,7 @@
 /**
  * Business Category Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import categoryTypes from '../constants/category.types';
 import * as AlertActions from './alert.actions';
@@ -37,18 +37,18 @@ export const getCategoriesList = () => {
 
     const state = getState();
 
-    if (!_.isEmpty(state.categoryReducer.categoriesList)) {
+    if (!isEmpty(state.categoryReducer.categoriesList)) {
       return Promise.resolve(state.categoryReducer.categoriesList);
     }
 
-    // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
-    // const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
+    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
+    const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
 
-    // if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-    //   dispatch(_getCategoriesSuccess(categories));
+    if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+      dispatch(_getCategoriesSuccess(categories));
 
-    //   return Promise.resolve(categories);
-    // }
+      return Promise.resolve(categories);
+    }
   
     dispatch(_getCategoriesRequest());
 

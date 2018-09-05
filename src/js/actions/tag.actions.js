@@ -1,7 +1,7 @@
 /**
  * Business Tag Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import tagTypes from '../constants/tag.types';
 import * as AlertActions from './alert.actions';
@@ -41,18 +41,18 @@ export const getTagsList = () => {
   return (dispatch, getState) => {
     const state = getState();
 
-    if (!_.isEmpty(state.tagReducer.tagsList)) {
+    if (!isEmpty(state.tagReducer.tagsList)) {
       return Promise.resolve(state.tagReducer.tagsList);
     }
 
-    // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
-    // const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
+    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
+    const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
 
-    // if (!_.isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-    //   dispatch(_getTagsSuccess(tags));
+    if (!isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+      dispatch(_getTagsSuccess(tags));
 
-    //   return Promise.resolve(tags);
-    // }
+      return Promise.resolve(tags);
+    }
 
     dispatch(_getTagsRequest());
 

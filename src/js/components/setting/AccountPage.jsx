@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 // Custom Components
@@ -42,7 +41,7 @@ class AccountPage extends Component {
   render() {
     const { classes, user, error, isFetching, errorMessage, updateUserProfile } = this.props;
 
-    return _.isEmpty(user) ? null : (
+    return isEmpty(user) ? null : (
       <Container>
         <div className={classes.root}>
           <div className={classes.section}>

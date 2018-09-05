@@ -13,6 +13,7 @@ a {
 
 #root {
   height: 100%;
+  font-family: sans-serif;
 }
 
 @keyframes fadeIn {

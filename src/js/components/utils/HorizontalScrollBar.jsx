@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import SwipeableViews from 'react-swipeable-views';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import animate from '@material-ui/core/internal/animate';
 
+// Material UI Icons
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
@@ -75,18 +71,6 @@ class HorizontalScrollBar extends Component {
                 showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth
             });
             this.ref.current.addEventListener("scroll", this.handleScroll);
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (!_.isEqual(prevProps.children, this.props.children)) {
-            if (this.ref.current) {
-                if (prevState.showRightButton !== this.ref.current.clientWidth < this.ref.current.scrollWidth) {
-                    this.setState({
-                        showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth
-                    });
-                }
-            }
         }
     }
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -170,7 +170,7 @@ class NotificationPage extends Component {
   render() {
     const { classes } = this.props;
 
-    return _.isEmpty(this.props.user) ? null : (
+    return isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
           <Grid container justify="space-between" alignItems="center">
@@ -191,7 +191,7 @@ class NotificationPage extends Component {
           </Grid>
 
           {
-            _.isEmpty(this.props.list)
+            isEmpty(this.props.list)
               ? <Typography align="center">None</Typography>
               : <div>
                   <List>
@@ -227,7 +227,6 @@ class NotificationPage extends Component {
                                     subjectUrl={item.subjectUrl}
                                     commentId={item.commentId}
                                     content={item.content}
-                                    showLess
                                   />
                                 }
                                 secondary={getElapsedTime(item.createdAt)}

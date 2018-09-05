@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -82,7 +80,7 @@ class GenderPanel extends Component {
             </Grid>
 
             <Grid item>
-              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.gender) ? '' : user.gender}</Typography>
+              <Typography variant="body1" className={classes.secondaryHeading}>{isEmpty(user.gender) ? '' : user.gender}</Typography>
             </Grid>
           </Grid>
         </ExpansionPanelSummary>

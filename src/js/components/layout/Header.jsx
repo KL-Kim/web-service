@@ -2,28 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import _ from 'lodash';
-import Img from 'react-image';
-import qs from 'querystring';
-import classNames from 'classnames';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Drawer from '@material-ui/core/Drawer';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -53,11 +45,7 @@ const styles = theme => ({
   },
   "appBar": {
     zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: theme.palette.primary.dark,
-  },
-  "transparentAppBar": {
-    backgroundColor: 'transparent',
-    boxShadow: 'unset',
+    backgroundColor: theme.palette.background.paper,
   },
   "toolbarWrapper": {
     width: '100%',
@@ -74,10 +62,15 @@ const styles = theme => ({
     display: 'inline-block',
     margin: 0,
     height: '100%',
-    color: 'white',
+    cursor: 'pointer',
+    fontFamily: 'Arial',
+    fontWeight: 800,
   },
   "button": {
     marginLeft: theme.spacing.unit * 2,
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: theme.spacing.unit,
+    }
   },
   "account": {
     "margin": "auto",
@@ -134,47 +127,53 @@ class Header extends Component {
     return (
       <div className={classes.root}>
         <AppBar
-          position={this.props.position}
-          className={this.props.position === 'fixed' ? classes.appBar : classNames(classes.appBar, classes.transparentAppBar)}
+          position='fixed'
+          className={classes.appBar}
         >
           <div className={classes.toolbarWrapper}>
             <Toolbar disableGutters>
               <div style={{ flex: 1 }}>
-                <Link to="/">
-                  <Typography variant="title" color="inherit" className={classes.logo}>iKoreaTown</Typography>
-                </Link>
+                <LinkContainer to="/">
+                  <Typography variant="title"  color="default" className={classes.logo}>
+                    <span style={{ color: '#ff0000' }}>i</span>KoreaTown
+                  </Typography>
+                </LinkContainer>
               </div>
 
-              <Hidden smDown>
-                <LinkContainer to="/search">
-                  <IconButton color="inherit" className={classes.button}>
-                    <Search />
-                  </IconButton>
-                </LinkContainer>
+              <LinkContainer to="/search">
+                <IconButton className={classes.button} color="default">
+                  <Search />
+                </IconButton>
+              </LinkContainer>
 
-                <LinkContainer to="/explore">
-                  <IconButton color="inherit" className={classes.button}>
-                    <Explore />
-                  </IconButton>
-                </LinkContainer>
-              </Hidden>
+              <LinkContainer to="/explore">
+                <IconButton className={classes.button} color="default">
+                  <Explore />
+                </IconButton>
+              </LinkContainer>
 
-              {
-                isLoggedIn
-                  ? <Button
+              { 
+                this.props.isFetching
+                  ? <IconButton
                       className={classes.button}
-                      onClick={this.handleDrawerToggle}
                     >
-                      <Avatar user={user} updatedAt={updatedAt} />
-                    </Button>
-                    
-                  : <IconButton 
-                      color="inherit" 
-                      className={classes.button} 
-                      onClick={this.handleLoginDialogOpen}
-                    >
-                      <AccountCircle />
+                      <CircularProgress size={24} />
                     </IconButton>
+                  : this.props.isLoggedIn
+                      ? <IconButton
+                          className={classes.button}
+                          onClick={this.handleDrawerToggle}
+                        >
+                          <Avatar user={user} updatedAt={updatedAt} />
+                        </IconButton>
+                      : <IconButton 
+                          color='default'
+                          className={classes.button} 
+                          onClick={this.handleLoginDialogOpen}
+                        >
+                          <AccountCircle />
+                        </IconButton>
+                
               }
             </Toolbar>
           </div>
@@ -185,11 +184,11 @@ class Header extends Component {
             isLoggedIn
               ? <Drawer
                   anchor="right"
+                  variant="temporary"
                   open={this.state.drawerOpen}
                   onClose={this.handleDrawerToggle}
-                  variant="temporary"
                 >
-                  <div style={{ width: 230 }}>
+                  <div style={{ width: 240, overflow: 'hidden' }}>
                     <div className={classes.account}>
                       <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
                       <Typography variant="body1" className={classes.avatarName}>
@@ -202,10 +201,10 @@ class Header extends Component {
                     <MenuList>
                       <Link to="/setting/notification">
                         <MenuItem selected={match.path === "/setting/notification"}>
-                          <ListItemIcon color={match.path === "/setting/notification" ? "primary" : 'inherit'}>
-                            <Notifications />
+                          <ListItemIcon>
+                            <Notifications color="secondary" />
                           </ListItemIcon>
-                          <ListItemText classes={match.path === "/setting/notification" ? { primary: classes.selected } : {}}>
+                          <ListItemText classes={this.props.newNotificationCount > 0 ? { primary: classes.selected } : {}}>
                             {
                               this.props.newNotificationCount > 0
                                 ? this.props.newNotificationCount + " New"
@@ -230,7 +229,7 @@ class Header extends Component {
 
                       <Link to="/setting/favor">
                         <MenuItem selected={match.path === "/setting/favor"}>
-                          <ListItemIcon color={match.path === "/setting/favor" ? "primary" : 'inherit'}>
+                          <ListItemIcon>
                             <Favorite />
                           </ListItemIcon>
                           <ListItemText primary="Favor" classes={match.path === "/setting/favor" ? { primary: classes.selected } : {}} />
@@ -239,7 +238,7 @@ class Header extends Component {
 
                       <Link to="/setting/review">
                         <MenuItem selected={match.path === "/setting/review"}>
-                          <ListItemIcon color={match.path === "/setting/review" ? "primary" : 'inherit'}>
+                          <ListItemIcon>
                             <RateReview />
                           </ListItemIcon>
                           <ListItemText primary="Reviews" classes={match.path === "/setting/review" ? { primary: classes.selected } : {}} />
@@ -248,7 +247,7 @@ class Header extends Component {
 
                       <Link to="/setting/comment">
                         <MenuItem selected={match.path === "/setting/comment"}>
-                          <ListItemIcon color={match.path === "/setting/comment" ? "primary" : 'inherit'}>
+                          <ListItemIcon>
                             <QuestionAnswer />
                           </ListItemIcon>
                           <ListItemText primary="Comments" classes={match.path === "/setting/comment" ? { primary: classes.selected } : {}} />
@@ -257,7 +256,7 @@ class Header extends Component {
 
                       <Link to="/setting/account">
                         <MenuItem selected={match.path === "/setting/account"} >
-                          <ListItemIcon color={match.path === "/setting/account" ? "primary" : 'inherit'}>
+                          <ListItemIcon>
                             <Settings />
                           </ListItemIcon>
                           <ListItemText primary="Setting" classes={match.path === "/setting/account" ? { primary: classes.selected } : {}} />
@@ -287,13 +286,8 @@ class Header extends Component {
   }
 }
 
-Header.defaultProps = {
-  position: "fixed"
-};
-
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
-  position: PropTypes.string.isRequired,
   isFetching: PropTypes.bool.isRequired,
   user: PropTypes.object.isRequired,
   updatedAt: PropTypes.number,
@@ -303,14 +297,13 @@ Header.propTypes = {
   openLoginDialog: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   return {
     "isFetching": state.userReducer.isFetching,
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
     "updatedAt": state.userReducer.updatedAt,
     "newNotificationCount": state.notificationReducer.unreadCount,
-    "categories": state.categoryReducer.categoriesList,
   };
 };
 

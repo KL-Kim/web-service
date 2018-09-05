@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 class ProperName extends Component {
   render() {
     const { user } = this.props;
 
-    if (_.isEmpty(user)) return <span>Empty user</span>;
+    if (isEmpty(user)) return <span>Empty user</span>;
 
     let name;
 

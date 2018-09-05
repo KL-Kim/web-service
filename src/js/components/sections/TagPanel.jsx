@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -85,7 +85,7 @@ class TagPanel extends PureComponent {
 
     let index;
 
-    return _.isEmpty(this.state.list) ? null : (
+    return isEmpty(this.state.list) ? null : (
       <div>
         <Grid container justify="space-between" alignItems="flex-end">
           <Grid item>
@@ -111,14 +111,15 @@ class TagPanel extends PureComponent {
                       title={item.krName}
                       slug={item.enName}
                       rating={item.ratingAverage}
-                      image={_.isEmpty(item.mainImage) ? '' : item.mainImage.url}
+                      ratesCount={item.reviewsList.length}
+                      image={isEmpty(item.mainImage) ? '' : item.mainImage.url}
                       category={item.category}
                       tags={item.tags}
-                      event={!_.isEmpty(item.event)}
+                      event={!isEmpty(item.event)}
 
                       isFavor={index > -1 ? true : false}
                       isLoggedIn={this.props.isLoggedIn}
-                      userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                      userId={isEmpty(this.props.user) ? '' : this.props.user._id}
                       favorOperation={this.props.favorOperation}
                       openLoginDialog={this.props.openLoginDialog}
                   />

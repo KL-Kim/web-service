@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -72,7 +69,7 @@ class ProfilePage extends Component {
                 }
             })
             .then(user => {
-                if (!_.isEmpty(user.favors)) {
+                if (!isEmpty(user.favors)) {
                     this.props.getBusinessList({
                         ids: user.favors,
                     });
@@ -104,7 +101,7 @@ class ProfilePage extends Component {
                   });
                 }
             });
-        } else if (value == 2) {
+        } else if (value === 2) {
             this.props.getComments({
                 limit: this.state.commentsLimit,
                 uid: this.state.user._id,
@@ -170,7 +167,7 @@ class ProfilePage extends Component {
             <Container>
                 <div className={classes.root}>
                     {
-                        !_.isEmpty(user)
+                        !isEmpty(user)
                             ?  <div>
                                     <section className={classes.section}>
                                         <Grid container spacing={40} justify="center" alignItems="center">

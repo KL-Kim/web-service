@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import find from 'lodash/find';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -10,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
 import Popover from '@material-ui/core/Popover';
 
@@ -20,9 +20,7 @@ import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 // Custom Components
 import Container from './layout/Container';
-import CustomButton from './utils/Button';
 import BusinessPanel from './sections/BusinessPanel';
-import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
 // Actions
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
@@ -90,7 +88,7 @@ class BusinessListByTag extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!_.isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
+    if (!isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
       this.getTag();
 
       this.props.getBusinessList({
@@ -119,7 +117,7 @@ class BusinessListByTag extends Component {
     this.props.getTagsList()
       .then(response => {
         if (response) {
-          _.find(response, item => {
+          find(response, item => {
             if (item.enName === this.props.match.params.slug) {
               this.setState({
                 tag: item
@@ -270,8 +268,8 @@ class BusinessListByTag extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.area) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.area) ? 'outlined' : 'text'}
                       onClick={this.handleSelectArea('')}
                     >
                       All
@@ -304,8 +302,8 @@ class BusinessListByTag extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
                       onClick={this.handleSelectOrderBy('')}
                     >
                       Recommend

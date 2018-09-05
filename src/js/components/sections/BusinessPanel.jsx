@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 
 // Material UI Components
-import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -17,13 +16,10 @@ import BusinessCard from './cards/BusinessCard';
 import { loadFromStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
-
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions'; 
 import { favorOperation } from 'js/actions/user.actions';
 
-const styles = theme => ({
-});
 
 class BusinessPanel extends Component {
     constructor(props) {
@@ -59,14 +55,14 @@ class BusinessPanel extends Component {
     }
 
     render() {
-        const { classes, businessList } = this.props;
+        const { businessList } = this.props;
         let index = -1;
 
         if (this.props.getEmptyList) {
             return <Typography align="center">None</Typography>
         }
         
-        return _.isEmpty(businessList) 
+        return isEmpty(businessList) 
             ? null 
             : (
                 <div>
@@ -81,7 +77,7 @@ class BusinessPanel extends Component {
                         <Grid container spacing={16} style={{ marginBottom: 12 }}>
                             {
                                 businessList.map(item => {
-                                    if (!_.isEmpty(this.state.myFavors)) {
+                                    if (!isEmpty(this.state.myFavors)) {
                                         index = this.state.myFavors.indexOf(item._id);
                                     }
 
@@ -92,14 +88,14 @@ class BusinessPanel extends Component {
                                                 title={item.krName}
                                                 slug={item.enName}
                                                 rating={item.ratingAverage}
-                                                image={_.isEmpty(item.mainImage) ? '' : item.mainImage.url}
+                                                image={isEmpty(item.mainImage) ? '' : item.mainImage.url}
                                                 category={item.category}
                                                 tags={item.tags}
                                                 event={!!(item.event)}
 
                                                 isFavor={index > -1 ? true : false}
                                                 isLoggedIn={this.props.isLoggedIn}
-                                                userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+                                                userId={isEmpty(this.props.user) ? '' : this.props.user._id}
 
                                                 openLoginDialog={this.props.openLoginDialog}
                                                 favorOperation={this.props.favorOperation}
@@ -130,7 +126,6 @@ BusinessPanel.defaultProps = {
 };
 
 BusinessPanel.propTypes = {
-    "classes": PropTypes.object.isRequired,
     "businessList": PropTypes.array.isRequired,
     "isFetching": PropTypes.bool.isRequired,
     "getEmptyList": PropTypes.bool.isRequired,
@@ -157,4 +152,4 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, {
     openLoginDialog,
     favorOperation,
-})(withStyles(styles)(BusinessPanel));
+})(BusinessPanel);

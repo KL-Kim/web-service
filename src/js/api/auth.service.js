@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import jwt from 'jsonwebtoken';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import config from '../config/config';
 import emailTypes from '../constants/email.types';
@@ -56,10 +56,9 @@ export const getToken = () => {
   return new Promise((resolve, reject) => {
     // Get token form webStorage
     const token = loadFromStorage(webStorageTypes.WEB_STORAGE_TOKEN_KEY);
-    const decoded = _.isEmpty(token) ? null : jwt.decode(token, {});
-    const now = _.now();
+    const decoded = isEmpty(token) ? null : jwt.decode(token, {});
 
-    if (_.isEmpty(decoded) || decoded.exp * 1000 < now) {
+    if (isEmpty(decoded) || decoded.exp * 1000 < Date.now()) {
       fetchNewToken()
         .then(accessToken => {
           return resolve(accessToken);

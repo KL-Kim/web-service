@@ -1,7 +1,7 @@
 /**
  * Notification Actions
  */
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import notificationTypes from '../constants/notification.types';
 import * as AlertActions from './alert.actions';
@@ -46,7 +46,7 @@ export const getNotification = (data) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(data.uid)) {
+    if (isEmpty(data.uid)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -98,7 +98,7 @@ export const getUnreadCount = (uid) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(uid)) {
+    if (isEmpty(uid)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -151,7 +151,7 @@ export const deleteNotification = (id) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(id)) {
+    if (isEmpty(id)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 
@@ -201,7 +201,7 @@ export const clearReadNotifications = (uid) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isUndefined(uid)) {
+    if (isEmpty(uid)) {
       return dispatch(AlertActions.alertFailure("Bad request"));
     }
 

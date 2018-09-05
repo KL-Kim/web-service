@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import validator from 'validator';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -9,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -80,7 +78,7 @@ class NamePanel extends Component {
 
             <Grid item>
               <Typography variant="body1" className={classes.secondaryHeading}>
-                {(_.isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (_.isEmpty(user.lastName) ? '' : user.lastName)}
+                {(isEmpty(user.firstName) ? '' : user.firstName) + ' ' + (isEmpty(user.lastName) ? '' : user.lastName)}
               </Typography>
             </Grid>
           </Grid>
@@ -121,7 +119,7 @@ class NamePanel extends Component {
           <Button
             size="small"
             color="primary"
-            disabled={_.isEmpty(this.state.firstName) || _.isEmpty(this.state.lastName)}
+            disabled={isEmpty(this.state.firstName) || isEmpty(this.state.lastName)}
             onClick={this.handleSubmit}
           >
             {

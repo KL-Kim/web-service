@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import _ from 'lodash';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -18,13 +16,19 @@ import PopularCategorySection from './sections/PopularCategorySection';
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
 
 const styles = theme => ({
-  root: {
+  carousel: {
+    marginTop: theme.spacing.unit * 8,
+    [theme.breakpoints.down('xs')]: {
+      marginTop: theme.spacing.unit * 7,
+    }
+  },
+  container: {
     maxWidth: 976,
     margin: 'auto',
     marginBottom: theme.spacing.unit * 8,
+    paddingTop: theme.spacing.unit * 4,
     paddingLeft: theme.spacing.unit,
 	  paddingRight: theme.spacing.unit,
-	  paddingTop: theme.spacing.unit * 4,
   },
   section: {
     marginBottom: theme.spacing.unit * 4,
@@ -48,13 +52,13 @@ class HomePage extends Component {
     const { classes } = this.props;
 
     return (
-      <Container headerPosition="absolute">
+      <Container>
         <div>
-          <div>
+          <div className={classes.carousel}>
               <SectionCarousel />
           </div>
           
-          <div className={classes.root}>
+          <div className={classes.container}>
             <div className={classes.section}>
               <PopularCategorySection />
             </div>

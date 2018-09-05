@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import _ from 'lodash';
+import { Link } from 'react-router-dom'
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';

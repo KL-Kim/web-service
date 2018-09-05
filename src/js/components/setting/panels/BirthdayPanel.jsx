@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -77,7 +76,7 @@ class BirthdayPanel extends Component {
             </Grid>
 
             <Grid item>
-              <Typography variant="body1" className={classes.secondaryHeading}>{_.isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
+              <Typography variant="body1" className={classes.secondaryHeading}>{isEmpty(user.birthday) ? 'None' : user.birthday}</Typography>
             </Grid>
           </Grid>
         </ExpansionPanelSummary>
@@ -106,7 +105,7 @@ class BirthdayPanel extends Component {
           <Button
             size="small"
             color="primary"
-            disabled={_.isEmpty(this.state.date)}
+            disabled={isEmpty(this.state.date)}
             onClick={this.handleSubmit}
           >
             {

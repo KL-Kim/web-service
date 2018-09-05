@@ -1,21 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
-import Masonry from 'react-masonry-component';
-import InfiniteScroll from 'react-infinite-scroller';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Divider from '@material-ui/core/Divider';
-import Popover from '@material-ui/core/Popover';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 // Custom Components
 import Container from 'js/components/layout/Container';
@@ -83,7 +73,7 @@ class ReviewPage extends Component {
   render() {
     const { classes } = this.props;
 
-    return _.isEmpty(this.props.user) ? null : (
+    return isEmpty(this.props.user) ? null : (
       <Container>
         <div className={classes.root}>
           <Typography variant="title" gutterBottom>My Reviews</Typography>

@@ -1,35 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import _ from 'lodash';
-import Stars from 'react-stars';
-import Dropzone from 'react-dropzone';
-import Img from 'react-image';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
 // Custom Components
-import LoginDialog from './LoginDialog';
 import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
-import AddPhoto from '@material-ui/icons/AddAPhoto';
 import Close from '@material-ui/icons/Close';
 
 const styles = theme => ({
@@ -38,22 +28,6 @@ const styles = theme => ({
   },
   "flex": {
     flex: 1,
-  },
-  "section": {
-    marginBottom: theme.spacing.unit,
-  },
-  "image": {
-    width: '100%',
-  },
-  "dropZone": {
-    width: '100%',
-    height: '100%',
-    minHeight: 100,
-    border: 2,
-    borderStyle: 'dashed',
-    display: 'inline-block',
-    position: 'relative',
-    cursor: 'pointer',
   },
 });
 
@@ -131,6 +105,28 @@ class WriteCommentDialog extends Component {
                     aria-labelledby="comment-dialog-title"
                     aria-describedby="comment-dialog-description"
                 >
+                    <Hidden smUp>
+                        <AppBar className={classes.appBar} color="inherit">
+                        <Toolbar>
+                            <div className={classes.flex}>
+                                <IconButton color="inherit" onClick={this.handleClose} >
+                                    <Close />
+                                </IconButton>
+                            </div>
+                            
+                            <Button 
+                                color="primary"
+                                size="small"
+                                disabled={!this.state.content} 
+                                onClick={this.handleSubmit}
+                            >
+                                Submit
+                            </Button>
+                            
+                        </Toolbar>
+                        </AppBar>
+                    </Hidden>
+
                     <DialogTitle id="comment-dialog-title">
                         Write Comment
                     </DialogTitle>
@@ -141,7 +137,7 @@ class WriteCommentDialog extends Component {
                                 type="text"
                                 id="content"
                                 multiline
-                                rows={7}
+                                rows={10}
                                 name="content"
                                 placeholder="Any ideas?"
                                 value={this.state.content}
@@ -150,15 +146,17 @@ class WriteCommentDialog extends Component {
                         </FormControl>
                     </DialogContent>
     
-                    <DialogActions>
-                        <Button size="small" onClick={this.handleClose}>
-                            Cancel
-                        </Button>
-    
-                        <Button color="primary" size="small" disabled={!this.state.content} onClick={this.handleSubmit}>
-                            Save
-                        </Button>
-                    </DialogActions>
+                    <Hidden xsDown>
+                        <DialogActions>
+                            <Button size="small" onClick={this.handleClose}>
+                                Cancel
+                            </Button>
+        
+                            <Button color="primary" size="small" disabled={!this.state.content} onClick={this.handleSubmit}>
+                                Submit
+                            </Button>
+                        </DialogActions>
+                    </Hidden>
                 </Dialog>
             );
         }

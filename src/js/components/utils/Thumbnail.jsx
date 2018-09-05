@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import Img from 'react-image';
-import ContentLoader from 'react-content-loader';
+import Img from 'react-image'
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 
+// Custom Components
 import Skeleton from './Skeleton';
 
 const styles = theme => ({

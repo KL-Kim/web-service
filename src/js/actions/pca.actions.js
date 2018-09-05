@@ -1,8 +1,8 @@
 /**
  * Pca Actions
  */
-import _ from 'lodash';
-import Promise from 'bluebird';
+import isEmpty from 'lodash/isEmpty';
+
 import * as AlertActions from './alert.actions';
 import pcaTypes from 'js/constants/pca.types';
 import { fetchPCA } from 'js/api/pca.service';
@@ -83,7 +83,7 @@ export const getCities = (code) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(code)) {
+    if (isEmpty(code)) {
       const error = new Error("Code missing");
       return Promise.reject(error);
     }
@@ -131,7 +131,7 @@ export const getAreas = (code) => {
   });
 
   return (dispatch, getState) => {
-    if (_.isEmpty(code)) {
+    if (isEmpty(code)) {
       const error = new Error("Code missing");
       return Promise.reject(error);
     }
@@ -187,10 +187,10 @@ export const getGeneralAreas = () => {
     const areas = loadFromStorage(webStorageTypes.WEB_STORAGE_GENERAL_AREAS);
     const state = getState();
 
-    if (!_.isEmpty(state.pcaReducer.areas)) {
+    if (!isEmpty(state.pcaReducer.areas)) {
       return Promise.resolve(state.pcaReducer.areas);
     }
-    else if (!_.isEmpty(areas)) {
+    else if (!isEmpty(areas)) {
       dispatch(_getGeneralAreasSuccess(areas));
       return Promise.resolve(areas);
     } 

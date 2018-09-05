@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import Img from 'react-image';
 
 // Material UI Components
@@ -11,14 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import FormControl from '@material-ui/core/FormControl';
 import Popover from '@material-ui/core/Popover';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 
 // Material UI Icons
@@ -105,7 +101,7 @@ class SinglePostPage extends Component {
   }
 
   componentDidMount() {
-    if (_.isEmpty(this.state.id)) this.props.history.push('/404');
+    if (isEmpty(this.state.id)) this.props.history.push('/404');
 
     this.props.getSinglePost(this.state.id)
       .then(response => {
@@ -203,7 +199,7 @@ class SinglePostPage extends Component {
       return ;
     }
     
-    if (this.state.id && !_.isEmpty(this.props.user)) {
+    if (this.state.id && !isEmpty(this.props.user)) {
       this.props.votePost(this.state.id, {
         uid: this.props.user._id,
         vote: vote,
@@ -231,7 +227,7 @@ class SinglePostPage extends Component {
   }
 
   handleSubmitReport(type, content, contact) {
-    if (!_.isEmpty(this.state.post)) {
+    if (!isEmpty(this.state.post)) {
       this.props.reportPost(this.state.post._id, {
         type,
         content,
@@ -264,7 +260,7 @@ class SinglePostPage extends Component {
     const { classes } = this.props;
     const { post } = this.state;
 
-    return _.isEmpty(post) ? null : (
+    return isEmpty(post) ? null : (
       <Container>
         <div className={classes.root}>
           <Grid container justify="center">
@@ -284,11 +280,11 @@ class SinglePostPage extends Component {
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
                   <span className={classes.iconButton}>
-                    <ThumbButton type="up" count={_.isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVotePost("UPVOTE")} />
+                    <ThumbButton type="up" count={isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVotePost("UPVOTE")} />
                   </span>
 
                   <span className={classes.iconButton}>
-                    <ThumbButton type="down" count={_.isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVotePost("DOWNVOTE")} />
+                    <ThumbButton type="down" count={isEmpty(post.downvote) ? 0 :post.downvote.length} handleSubmit={this.handleVotePost("DOWNVOTE")} />
                   </span>
 
                   <span>
@@ -373,7 +369,7 @@ class SinglePostPage extends Component {
               open={this.state.writeCommentDialogOpen} 
               onClose={this.handleWriteCommentDialogClose} 
               isLoggedIn={this.props.isLoggedIn}
-              userId={_.isEmpty(this.props.user) ? '' : this.props.user._id}
+              userId={isEmpty(this.props.user) ? '' : this.props.user._id}
               isVerified={this.props.isVerified}
               postId={this.state.id}
               addNewComment={this.props.addNewComment}

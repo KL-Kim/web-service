@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import validator from 'validator';
+import isEmail from 'validator/lib/isEmail';
 import { connect } from 'react-redux';
 
 // Material UI Components
@@ -54,7 +53,7 @@ class ForgetPasswordPage extends Component {
   }
 
   isValidEmail() {
-    if(!this.state.email || !validator.isEmail(this.state.email)) {
+    if(!this.state.email || !isEmail(this.state.email)) {
       this.setState({
         "showError": true,
         "errorMessage": 'Error: Input a valid Email'

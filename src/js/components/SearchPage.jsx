@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -14,18 +14,14 @@ import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
 import Popover from '@material-ui/core/Popover';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
 
 // Material UI Icons
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -114,7 +110,7 @@ class SearchPage extends Component {
   componentDidMount() {
     const searchHistory = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY) || [];
 
-    if (!_.isEmpty(searchHistory)) {
+    if (!isEmpty(searchHistory)) {
       this.setState({
         searchHistory: searchHistory.reverse().slice(),
       });
@@ -238,7 +234,7 @@ class SearchPage extends Component {
               areas.push(business.address.area);
             }
 
-            return ;
+            return null;
           });
 
           this.setState({
@@ -304,7 +300,7 @@ class SearchPage extends Component {
             areas.push(business.address.area);
           }
 
-          return ;
+          return null;
         });
 
         this.setState({
@@ -342,7 +338,7 @@ class SearchPage extends Component {
   }
 
   render() {
-    const { classes, businessList } = this.props;
+    const { classes } = this.props;
 
     return (
       <Container>
@@ -376,7 +372,7 @@ class SearchPage extends Component {
               </form>
 
               {
-                _.isEmpty(this.state.searchCategoryResponse) || _.isEmpty(this.state.search)
+                isEmpty(this.state.searchCategoryResponse) || isEmpty(this.state.search)
                   ? null
                   : <div>
                       <Divider className={classes.divider} />
@@ -396,7 +392,7 @@ class SearchPage extends Component {
               }
 
               {
-                _.isEmpty(this.state.searchTagResponse) || _.isEmpty(this.state.search)
+                isEmpty(this.state.searchTagResponse) || isEmpty(this.state.search)
                   ? null
                   : <div>
                       <Divider className={classes.divider} />
@@ -436,7 +432,7 @@ class SearchPage extends Component {
                     </Grid>
 
                     {
-                      _.isEmpty(this.state.searchHistory)
+                      isEmpty(this.state.searchHistory)
                         ? null
                         : <Grid item xs={12} sm={6}>
                             <Paper>
@@ -473,7 +469,7 @@ class SearchPage extends Component {
           }
 
           {
-            this.props.totalCount === 0 || _.isEmpty(this.state.searchedQuery)
+            this.props.totalCount === 0 || isEmpty(this.state.searchedQuery)
               ? null
               : <div>
                   <Grid container justify="space-between" alignItems="flex-end">
@@ -505,7 +501,7 @@ class SearchPage extends Component {
                   <div className={classes.chipBar}>
                     <HorizontalScrollBar>
                       <CustomButton
-                        color={_.isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
+                        color={isEmpty(this.state.selectedCategory) ? "primary" : 'white'}
                         round
                         className={classes.chip}
                         onClick={this.handleSelectCategory('')}
@@ -514,7 +510,7 @@ class SearchPage extends Component {
                       </CustomButton>
 
                       {
-                        _.isEmpty(this.state.categories)
+                        isEmpty(this.state.categories)
                           ? null
                           : this.state.categories.map(item => (
                             <CustomButton
@@ -559,8 +555,8 @@ class SearchPage extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.area) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.area) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.area) ? 'outlined' : 'text'}
                       onClick={this.handleSelectArea('')}
                     >
                       All
@@ -592,8 +588,8 @@ class SearchPage extends Component {
                     <Button
                       fullWidth
                       size="small"
-                      color={_.isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                      variant={_.isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      color={isEmpty(this.state.orderBy) ? 'primary' : 'default'}
+                      variant={isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
                       onClick={this.handleSelectOrder('')}
                     >
                       Recommend
