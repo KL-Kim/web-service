@@ -29,6 +29,7 @@ import DeleteForever from '@material-ui/icons/DeleteForever';
 import CancelPresentation from '@material-ui/icons/CancelPresentation';
 
 // Custom Components
+import SlideInTransition from 'js/components/utils/SlideInTransition';
 import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
@@ -217,6 +218,7 @@ class WriteReviewDialog extends Component {
         <Dialog 
           fullWidth
           fullScreen={this.props.fullScreen}
+          TransitionComponent={SlideInTransition}
           scroll="paper"
           open={this.props.open}
           onClose={this.handleClose}

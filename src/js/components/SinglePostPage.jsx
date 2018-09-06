@@ -280,7 +280,11 @@ class SinglePostPage extends Component {
                 <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 <div>
                   <span className={classes.iconButton}>
-                    <ThumbButton type="up" count={isEmpty(post.upvote) ? 0 :post.upvote.length} handleSubmit={this.handleVotePost("UPVOTE")} />
+                    <ThumbButton 
+                      type="up" 
+                      count={isEmpty(post.upvote) ? 0 :post.upvote.length} 
+                      handleSubmit={this.handleVotePost("UPVOTE")} 
+                      />
                   </span>
 
                   <span className={classes.iconButton}>

@@ -272,6 +272,12 @@ class SingleBusinessPage extends Component {
     }
   }
 
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (this.state.business !== nextState.business) {
+  //     return false;
+  //   }
+  // }
+
   componentWillUnmount() {
     this.props.clearReviewsList();
   }

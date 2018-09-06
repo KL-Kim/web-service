@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
@@ -45,7 +45,7 @@ const styles = theme => ({
   }
 });
 
-class ReviewCardAlt extends Component {
+class ReviewCardAlt extends PureComponent {
   constructor(props) {
     super(props);
 

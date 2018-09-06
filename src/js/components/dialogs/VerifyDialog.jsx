@@ -20,6 +20,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 // Material UI Icons
 import Close from '@material-ui/icons/Close';
 
+// Custom Components
+import SlideInTransition from 'js/components/utils/SlideInTransition';
+
 const styles = theme => ({
     "appBar": {
       position: 'relative',
@@ -37,7 +40,7 @@ class VerifyDialog extends PureComponent {
             <Dialog 
                 fullWidth
                 fullScreen={this.props.fullScreen}
-                scroll="paper"
+                TransitionComponent={SlideInTransition}
                 open={this.props.open}
                 onClose={this.props.onClose}
                 aria-labelledby="verify-dialog-title"

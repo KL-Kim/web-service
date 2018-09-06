@@ -27,6 +27,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Error from '@material-ui/icons/Error';
 import Close from '@material-ui/icons/Close';
 
+// Custom Components
+import SlideInTransition from 'js/components/utils/SlideInTransition';
+
 // Actions
 import { login } from 'js/actions/user.actions';
 import { closeLoginDialog } from 'js/actions/app.actions';
@@ -206,6 +209,7 @@ class LoginDialog extends Component {
       <Dialog 
         fullWidth
         fullScreen={this.props.fullScreen}
+        TransitionComponent={SlideInTransition}
         open={this.props.open}
         onClose={this.handleClose}
         aria-labelledby="login-dialog-title"

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ const styles = theme => ({
   },
 });
 
-class CommentCard extends Component {
+class CommentCard extends PureComponent {
   constructor(props) {
     super(props);
 

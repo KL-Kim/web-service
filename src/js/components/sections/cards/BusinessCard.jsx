@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import isEmpty from 'lodash/isEmpty';
@@ -42,7 +42,7 @@ const styles = (theme) => ({
   }
 });
 
-class BusinessCard extends PureComponent {
+class BusinessCard extends Component {
   constructor(props) {
     super(props);
 
@@ -58,6 +58,18 @@ class BusinessCard extends PureComponent {
       this.setState({
         isFavor: this.props.isFavor,
       });
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.isFavor !== nextState.isFavor) {
+      return true;
+    } 
+    else if (this.props.bid !== nextProps.bid) {
+      return true;
+    }
+    else {
+      return false;
     }
   }
 

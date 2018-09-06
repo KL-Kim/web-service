@@ -10,6 +10,10 @@ import Alert from '../utils/Alert';
 import DevTools from './DevTools';
 
 class Container extends Component {
+  // componentDidCatch(error, info) {
+  //   const stack = info.componentStack;
+  // }
+
   render() {
     return (
       <div style={{

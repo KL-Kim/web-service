@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 // Material UI Components
@@ -49,7 +49,7 @@ const styles = theme => ({
     }
 });
 
-class HorizontalScrollBar extends Component {
+class HorizontalScrollBar extends PureComponent {
     constructor(props) {
         super(props);
 

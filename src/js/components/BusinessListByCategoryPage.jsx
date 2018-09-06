@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
+import { Map } from 'immutable';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -51,7 +52,7 @@ class BusinessListPage extends Component {
     super(props);
 
     this.state = {
-      "limit": 48,
+      "limit": 24,
       "orderBy": '',
       "event": false,
       "hasMore": false,
@@ -81,18 +82,13 @@ class BusinessListPage extends Component {
       this.props.getTagsList()
         .then(tags => {
           if (!isEmpty(tags)) {
-            const targets = [];
 
-            tags.map(item => {
-              if (!isEmpty(item.category) && item.category.enName === this.props.match.params.slug) {
-                targets.push(item);
-              }
-
-              return '';
-            })
+            const targets = tags.map(item => 
+              !isEmpty(item.category) && item.category.enName === this.props.match.params.slug
+            );
 
             this.setState({
-              tags: [...targets]
+              tags: targets
             });
           }
         })

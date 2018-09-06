@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -86,14 +86,13 @@ const styles = theme => ({
   }
 });
 
-class Header extends Component {
+class Header extends PureComponent {
   constructor(props) {
     super(props);
 
 
     this.state = {
       "drawerOpen": false,
-      "loginDialogOpen": false,
     };
 
     this.handleLogout = this.handleLogout.bind(this);
@@ -141,13 +140,13 @@ class Header extends Component {
               </div>
 
               <LinkContainer to="/search">
-                <IconButton className={classes.button} color="default">
+                <IconButton disableRipple className={classes.button} color="default">
                   <Search />
                 </IconButton>
               </LinkContainer>
 
               <LinkContainer to="/explore">
-                <IconButton className={classes.button} color="default">
+                <IconButton disableRipple className={classes.button} color="default">
                   <Explore />
                 </IconButton>
               </LinkContainer>
@@ -161,6 +160,7 @@ class Header extends Component {
                     </IconButton>
                   : this.props.isLoggedIn
                       ? <IconButton
+                          disableRipple
                           className={classes.button}
                           onClick={this.handleDrawerToggle}
                         >
@@ -168,6 +168,7 @@ class Header extends Component {
                         </IconButton>
                       : <IconButton 
                           color='default'
+                          disableRipple
                           className={classes.button} 
                           onClick={this.handleLoginDialogOpen}
                         >
@@ -202,7 +203,7 @@ class Header extends Component {
                       <Link to="/setting/notification">
                         <MenuItem selected={match.path === "/setting/notification"}>
                           <ListItemIcon>
-                            <Notifications color="secondary" />
+                            <Notifications color={this.props.newNotificationCount > 0 ? "primary" : 'default' } />
                           </ListItemIcon>
                           <ListItemText classes={this.props.newNotificationCount > 0 ? { primary: classes.selected } : {}}>
                             {

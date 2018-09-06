@@ -17,6 +17,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
 // Custom Components
+import SlideInTransition from 'js/components/utils/SlideInTransition';
 import VerifyDialog from './VerifyDialog';
 
 // Material UI Icons
@@ -100,6 +101,7 @@ class WriteCommentDialog extends Component {
                 <Dialog 
                     fullWidth
                     fullScreen={this.props.fullScreen}
+                    TransitionComponent={SlideInTransition}
                     open={this.props.open}
                     onClose={this.handleClose}
                     aria-labelledby="comment-dialog-title"
