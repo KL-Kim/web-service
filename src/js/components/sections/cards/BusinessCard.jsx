@@ -53,8 +53,8 @@ class BusinessCard extends Component {
     this.handleToggleFavor = this.handleToggleFavor.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.isFavor !== this.props.isFavor) {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.isFavor !== this.props.isFavor || prevState.isFavor !== this.state.isFavor) {
       this.setState({
         isFavor: this.props.isFavor,
       });
@@ -65,9 +65,9 @@ class BusinessCard extends Component {
     if (this.state.isFavor !== nextState.isFavor) {
       return true;
     } 
-    else if (this.props.bid !== nextProps.bid) {
+    else if (this.props.isFavor !== nextProps.isFavor) {
       return true;
-    }
+    } 
     else {
       return false;
     }
@@ -139,31 +139,36 @@ class BusinessCard extends Component {
             </Grid>
             
             <br />
-            <div>
-              <Grid container>
-                {
-                  isEmpty(this.props.tags)
-                    ? null
-                    : this.props.tags.map(item => (
-                        <Grid item key={item._id} style={{ marginRight: 4}}>
-                          <Link to={"/business/tag/" +item.slug} className={classes.chip}>
-                            <Badge color="info">
-                              #{item.krName}
-                            </Badge>
-                          </Link>
-                        </Grid>
-                    ))
-                }
-              </Grid>
-            </div>
+            
           </CardContent>
 
           <CardActions>
-            <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.handleToggleFavor}>
-              {
-                this.state.isFavor ? <Favorite /> : <FavoriteBorder />
-              }
-            </IconButton>
+            <div style={{ flex: 1 }}>
+              <IconButton color={this.state.isFavor ? "secondary" : 'default'} onClick={this.handleToggleFavor}>
+                {
+                  this.state.isFavor ? <Favorite /> : <FavoriteBorder />
+                }
+              </IconButton>
+            </div>
+            {
+              isEmpty(this.props.tags)
+                ? null
+                : this.props.tags.map(item => (
+                    <div key={item._id} style={{ marginRight: 4}}>
+                      <Link to={{
+                          pathname: "/business/tag/" + item.enName,
+                          state: {
+                            tag: item
+                          }
+                        }}
+                      >
+                        <Badge color="info">
+                          #{item.krName}
+                        </Badge>
+                      </Link>
+                    </div>
+                ))
+            }
           </CardActions>
         </Card>
       </div>

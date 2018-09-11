@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -31,7 +31,7 @@ const styles = theme => ({
   },
 });
 
-class TagPanel extends PureComponent {
+class TagPanel extends Component {
   constructor(props) {
     super(props);
 
@@ -54,25 +54,37 @@ class TagPanel extends PureComponent {
     });
 
     if (this.props.isLoggedIn) {
-      const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+      if (!isEmpty(this.props.user) && !isEmpty(this.props.user.favors)) {
+          this.setState({
+              myFavors: [...this.props.user.favors]
+          })
+      } else {
+          const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
 
-      if (myFavors) {
-        this.setState({
-          myFavors: [...myFavors],
-        });
+          if (myFavors) {
+              this.setState({
+                  myFavors: [...myFavors],
+              });
+          }
       }
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.isLoggedIn !== this.props.isLoggedIn) {
-        const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
-
-        if (myFavors) {
+    if (prevProps.user !== this.props.user) {
+      if (!isEmpty(this.props.user) && !isEmpty(this.props.user.favors)) {
           this.setState({
-            myFavors: [...myFavors],
-          });
-        }
+              myFavors: [...this.props.user.favors]
+          })
+      } else {
+          const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+
+          if (myFavors) {
+              this.setState({
+                  myFavors: [...myFavors],
+              });
+          }
+      }
     }
   }
 
@@ -80,10 +92,23 @@ class TagPanel extends PureComponent {
     this.props.clearBusinessList();
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.list !== this.state.list) {
+      return true;
+    } 
+    else if (nextState.myFavors !== this.state.myFavors) {
+      return true;
+    } 
+    else if (nextProps.user !== this.props.user) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   render() {
     const { classes } = this.props;
-
-    let index;
 
     return isEmpty(this.state.list) ? null : (
       <div>
@@ -93,7 +118,14 @@ class TagPanel extends PureComponent {
           </Grid>
 
           <Grid item>
-            <Link to={"/business/tag/" + this.props.tag.enName}>
+            <Link to={{
+                pathname: "/business/tag/" + this.props.tag.enName,
+                hash: '#',
+                state: {
+                  tag: this.props.tag
+                }
+              }} 
+            >
               <Button>More</Button>
             </Link>
           </Grid>
@@ -101,10 +133,7 @@ class TagPanel extends PureComponent {
 
         <HorizontalScrollBar>
           {
-            this.state.list.map(item => {
-              index = this.state.myFavors.indexOf(item._id);
-
-              return (
+            this.state.list.map(item => (
                 <div className={classes.card} key={item._id}>
                   <BusinessCard
                       bid={item._id}
@@ -117,15 +146,14 @@ class TagPanel extends PureComponent {
                       tags={item.tags}
                       event={!isEmpty(item.event)}
 
-                      isFavor={index > -1 ? true : false}
+                      isFavor={this.state.myFavors.includes(item._id)}
                       isLoggedIn={this.props.isLoggedIn}
                       userId={isEmpty(this.props.user) ? '' : this.props.user._id}
                       favorOperation={this.props.favorOperation}
                       openLoginDialog={this.props.openLoginDialog}
                   />
                 </div>
-              );
-            })
+              ))
           }
         </HorizontalScrollBar>
       </div>

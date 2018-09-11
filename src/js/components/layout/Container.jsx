@@ -6,13 +6,11 @@ import Header from './Header';
 import Footer from './Footer';
 import Alert from '../utils/Alert';
 
-// For dev
-import DevTools from './DevTools';
-
 class Container extends Component {
   // componentDidCatch(error, info) {
   //   const stack = info.componentStack;
   // }
+
 
   render() {
     return (
@@ -27,7 +25,6 @@ class Container extends Component {
           {this.props.children}
         </main>
         <Footer />
-        <DevTools />
         <Alert />
       </div>
     );

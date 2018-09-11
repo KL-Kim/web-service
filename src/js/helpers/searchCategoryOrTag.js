@@ -32,7 +32,8 @@ const search = (type, query) => {
 
   if (query === 'ALL') {
     return list;
-  } else {
+  } 
+  else {
     const regex = new RegExp(escapeRegExp(query));
 
     const match = list.filter(item => {

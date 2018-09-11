@@ -42,6 +42,18 @@ const styles = theme => ({
 });
 
 class CommentPanel extends Component {
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.comments !== this.props.comments) {
+            return true;
+        }
+        else if (nextProps.hasMore !== this.props.hasMore) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     handleFocus(e) {
         if (this.props.onFocusAddNew) {
             this.props.onFocusAddNew();

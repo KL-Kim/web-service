@@ -7,8 +7,8 @@ import Divider from '@material-ui/core/Divider';
 
 // Custom Components
 import Container from 'js/components/layout/Container';
-import ExploreTagSection from 'js/components/sections/ExploreTagSection';
-import ExploreCategorySection from 'js/components/sections/ExploreCategorySection';
+import ExplorePageTagSection from 'js/components/sections/ExplorePageTagSection';
+import ExplorePageCategorySection from 'js/components/sections/ExplorePageCategorySection';
 
 // Common Style
 import { root } from 'assets/jss/common.style';
@@ -28,11 +28,11 @@ class ExplorePage extends Component {
     return (
       <Container>
         <div className={classes.root}>
-          <ExploreCategorySection />
+          <ExplorePageCategorySection />
 
           <Divider className={classes.divider} />
           
-          <ExploreTagSection />
+          <ExplorePageTagSection />
         </div>
       </Container>
     );

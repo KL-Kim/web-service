@@ -64,7 +64,7 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "isLoggedIn": true,
         "isUserVerified": action.payload.user.isVerified,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -75,7 +75,7 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "isLoggedIn": true,
         "isUserVerified": action.payload.user.isVerified,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -85,7 +85,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "isUserVerified": action.payload.user.isVerified,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -103,7 +103,7 @@ const userReducer = (state = initialState, action) => {
         "isFetching": false,
         "isLoggedIn": true,
         "isUserVerified": action.payload.user.isVerified,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -117,7 +117,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         "isFetching": false,
         "isUserVerified": action.payload.user.isVerified,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -126,7 +126,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -135,7 +135,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 
@@ -144,7 +144,7 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         "isFetching": false,
-        "user": action.payload.user,
+        "user": {...action.payload.user},
         "updatedAt": Date.now(),
       };
 

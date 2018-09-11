@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
-import { Map } from 'immutable';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -53,16 +51,24 @@ class BusinessListPage extends Component {
 
     this.state = {
       "limit": 24,
+      "area": {},
       "orderBy": '',
       "event": false,
+      "originalArea:": {},
+      "originalOrderBy": '',
+      "originalEvent": false,
       "hasMore": false,
       "count": 0,
-      "area": {},
-      "tagSlug": '',
+      "selectedTagSlug": '',
       "tags": [],
+      
       "category": {},
       "filterPopoverOpen": false,
     };
+
+    if (!isEmpty(props.location.state) && !isEmpty(props.location.state.category)) {
+      this.state.category = {...props.location.state.category}
+    } 
 
     this.loadMore = this.loadMore.bind(this);
     this.handleSelectTag = this.handleSelectTag.bind(this);
@@ -77,18 +83,18 @@ class BusinessListPage extends Component {
 
   componentDidMount() {
     if (this.props.match.params.slug) {
-      this.getCategory();
+      if (isEmpty(this.state.category)) this.getCategory();
 
       this.props.getTagsList()
         .then(tags => {
           if (!isEmpty(tags)) {
 
-            const targets = tags.map(item => 
+            const targets = tags.filter(item => 
               !isEmpty(item.category) && item.category.enName === this.props.match.params.slug
             );
 
             this.setState({
-              tags: targets
+              tags: [...targets]
             });
           }
         })
@@ -138,12 +144,10 @@ class BusinessListPage extends Component {
     this.props.getCategoriesList()
       .then(response => {
         if (response) {
-          find(response, item => {
-            if (item.enName === this.props.match.params.slug) {
-              this.setState({
-                category: item
-              });
-            }
+          const category = response.find(item => item.enName === this.props.match.params.slug);
+
+          this.setState({
+            category: {...category}
           });
         }
       });
@@ -154,7 +158,7 @@ class BusinessListPage extends Component {
       hasMore: false,
     });
 
-    if (this.state.tagSlug !== slug) {
+    if (this.state.selectedTagSlug !== slug) {
       this.props.getBusinessList({
         tag: slug,
         limit: this.state.limit,
@@ -173,7 +177,7 @@ class BusinessListPage extends Component {
       });
   
       this.setState({
-        tagSlug: slug,
+        selectedTagSlug: slug,
       });
     }
   }
@@ -181,15 +185,15 @@ class BusinessListPage extends Component {
   handleSelectArea = item => e => {
     if (this.state.area.code !== item.code) {
       this.setState({
-        area: item,
+        area: {...item},
       });
     }
   }
 
-  handleSelectSort = item => e => {
-    if (item !== this.state.orderBy) {
+  handleSelectSort = orderBy => e => {
+    if (orderBy !== this.state.orderBy) {
       this.setState({
-        orderBy: item,
+        orderBy,
       });
     }
   }
@@ -203,12 +207,18 @@ class BusinessListPage extends Component {
   handleOpenFilterPopover() {
     this.setState({
       filterPopoverOpen: true,
+      originalArea: this.state.area,
+      originalOrderBy: this.state.orderBy,
+      originalEvent: this.state.event,
     });
   }
 
   handleCloseFilterPopover() {
     this.setState({
       filterPopoverOpen: false,
+      area: this.state.originalArea,
+      orderBy: this.state.originalOrderBy,
+      event: this.state.originalEvent
     });
   }
 
@@ -220,7 +230,7 @@ class BusinessListPage extends Component {
     this.props.getBusinessList({
       limit: this.state.limit,
       category: this.state.category.enName,
-      tag: this.state.tagSlug,
+      tag: this.state.selectedTagSlug,
       area: this.state.area.code,
       event: this.state.event,
       orderBy: this.state.orderBy,
@@ -244,7 +254,7 @@ class BusinessListPage extends Component {
       this.props.getBusinessList({
         limit: this.state.count + this.state.limit,
         category: this.state.category.enName,
-        tag: this.state.tagSlug,
+        tag: this.state.selectedTagSlug,
         area: this.state.area.code,
         event: this.state.event,
         orderBy: this.state.orderBy,
@@ -302,7 +312,7 @@ class BusinessListPage extends Component {
                 : <HorizontalScrollBar>
                     <CustomButton
                       round
-                      color={!this.state.tagSlug ? "primary" : "white"}
+                      color={!this.state.selectedTagSlug ? "primary" : "white"}
                       className={classes.chip}
                       onClick={this.handleSelectTag()}
                     >
@@ -313,7 +323,7 @@ class BusinessListPage extends Component {
                           <CustomButton
                             key={item._id}
                             round
-                            color={this.state.tagSlug === item.enName ? "primary" : "white"}
+                            color={this.state.selectedTagSlug === item.enName ? "primary" : "white"}
                             className={classes.chip}
                             onClick={this.handleSelectTag(item.enName)}
                           >
@@ -356,7 +366,7 @@ class BusinessListPage extends Component {
                       fullWidth
                       size="small"
                       color={isEmpty(this.state.area) ? 'primary' : 'default'}
-                      variant={isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      variant={isEmpty(this.state.area) ? 'raised' : 'text'}
                       onClick={this.handleSelectArea('')}
                     >
                       All
@@ -370,7 +380,7 @@ class BusinessListPage extends Component {
                           fullWidth
                           size="small"
                           color={this.state.area.code === item.code ? 'primary' : 'default'}
-                          variant={this.state.area.code === item.code ? 'outlined' : 'text'}
+                          variant={this.state.area.code === item.code ? 'raised' : 'text'}
                           onClick={this.handleSelectArea(item)}
                         >
                           {item.cnName}
@@ -378,9 +388,12 @@ class BusinessListPage extends Component {
                       </Grid>
                     )
                   }
+                </Grid>
+              
+                <Divider className={classes.divider} />
 
+                <Grid container spacing={8} alignItems="center">
                   <Grid item xs={12}>
-                    <Divider className={classes.divider} />
                     <Typography variant="body2">Order by</Typography>
                   </Grid>
 
@@ -389,7 +402,7 @@ class BusinessListPage extends Component {
                       fullWidth
                       size="small"
                       color={isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                      variant={isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      variant={isEmpty(this.state.orderBy) ? 'raised' : 'text'}
                       onClick={this.handleSelectSort('')}
                     >
                       Recommend
@@ -401,7 +414,7 @@ class BusinessListPage extends Component {
                       fullWidth
                       size="small"
                       color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
-                      variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
+                      variant={this.state.orderBy === 'rating' ? 'raised' : 'text'}
                       onClick={this.handleSelectSort('rating')}
                     >
                       Rating
@@ -413,17 +426,17 @@ class BusinessListPage extends Component {
                       fullWidth
                       size="small"
                       color={this.state.orderBy === 'new' ? 'primary' : 'default'}
-                      variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
+                      variant={this.state.orderBy === 'new' ? 'raised' : 'text'}
                       onClick={this.handleSelectSort('new')}
                     >
                       New
                     </Button>
                   </Grid>
+                </Grid>
 
-                  <Grid item xs={12}>
-                    <Divider className={classes.divider} />
-                  </Grid>
+                <Divider className={classes.divider} />
 
+                <Grid container spacing={8} alignItems="center">
                   <Grid item>
                     <Typography variant="body2">Event</Typography>
                   </Grid>
@@ -441,6 +454,7 @@ class BusinessListPage extends Component {
                 </Grid>
 
                 <Divider className={classes.divider} />
+
                 <Grid container spacing={8} justify="flex-end" alignItems="center">
                   <Grid item>
                     <Button size="small" onClick={this.handleCloseFilterPopover}>

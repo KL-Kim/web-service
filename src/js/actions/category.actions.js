@@ -3,11 +3,11 @@
  */
 import isEmpty from 'lodash/isEmpty';
 
-import categoryTypes from '../constants/category.types';
+import categoryTypes from 'js/constants/category.types';
 import * as AlertActions from './alert.actions';
-import { fetchCategoriesOrTags } from '../api/business.service';
-import webStorageTypes from '../constants/webStorage.types.js';
-import { saveToStorage, loadFromStorage, removeFromStorage } from '../helpers/webStorage';
+import { fetchCategoriesOrTags } from 'js/api/business.service';
+import webStorageTypes from 'js/constants/webStorage.types.js';
+import { saveToStorage, loadFromStorage, removeFromStorage } from 'js/helpers/webStorage';
 
 /**
  * Get business categories list
@@ -35,20 +35,20 @@ export const getCategoriesList = () => {
 
   return (dispatch, getState) => {
 
-    const state = getState();
+    // const state = getState();
 
-    if (!isEmpty(state.categoryReducer.categoriesList)) {
-      return Promise.resolve(state.categoryReducer.categoriesList);
-    }
+    // if (!isEmpty(state.categoryReducer.categoriesList)) {
+    //   return Promise.resolve(state.categoryReducer.categoriesList);
+    // }
 
-    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
-    const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
+    // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
+    // const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
 
-    if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-      dispatch(_getCategoriesSuccess(categories));
+    // if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+    //   dispatch(_getCategoriesSuccess(categories));
 
-      return Promise.resolve(categories);
-    }
+    //   return Promise.resolve(categories);
+    // }
   
     dispatch(_getCategoriesRequest());
 

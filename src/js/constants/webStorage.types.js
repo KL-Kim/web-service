@@ -10,6 +10,8 @@ const webStorageTypes = {
   "WEB_STORAGE_TAGS_UPDATED_AT": 'tags_updated_at',
   "WEB_STORAGE_GENERAL_CITY": 'city',
   "WEB_STORAGE_GENERAL_AREAS": 'general_areas',
+  "WEB_STORAGE_HOMEPAGE_POPULAR_BUSINESS": 'popular_business',
+  "WEB_STORAGE_HOMEPAGE_POPULAR_BUSINESS_UPDATED_AT": 'popular_business_updated_at',
 };
 
 export default webStorageTypes;

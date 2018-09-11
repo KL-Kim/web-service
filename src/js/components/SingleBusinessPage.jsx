@@ -122,7 +122,7 @@ class SingleBusinessPage extends Component {
     super(props)
 
     this.state = {
-      "business": null,
+      "business": {},
       "addNewDialogOpen": false,
       "limit": 12,
       'count': 0,
@@ -168,7 +168,6 @@ class SingleBusinessPage extends Component {
           return ;
         } 
         else {
-          const index = this.state.myFavors.indexOf(business._id);
           const images = [];
 
           if (!isEmpty(business.mainImage)) {
@@ -190,11 +189,10 @@ class SingleBusinessPage extends Component {
           }
 
           this.setState({
-            business: Object.assign({}, business),
+            business: {...business},
             images: [...images],
-            isMyFavor: (!isEmpty(index) && index > -1) ? true : false,
+            isMyFavor: this.state.myFavors.includes(business._id),
           });
-
 
           return this.props.getReviews({
             limit: this.state.limit,
@@ -235,7 +233,6 @@ class SingleBusinessPage extends Component {
             return ;
           }
 
-          const index = this.state.myFavors.indexOf(business._id);
           const images = [];
 
           if (!isEmpty(business.mainImage)) {
@@ -253,7 +250,7 @@ class SingleBusinessPage extends Component {
           this.setState({
             business: Object.assign({}, business),
             images: [...images],
-            isMyFavor: (!isEmpty(index) && index > -1) ? true : false,
+            isMyFavor: this.state.myFavors.includes(business._id),
           });
 
           return this.props.getReviews({
@@ -272,15 +269,15 @@ class SingleBusinessPage extends Component {
     }
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
+  componentWillUnmount() {
+    this.props.clearReviewsList();
+  }
+
+    // shouldComponentUpdate(nextProps, nextState) {
   //   if (this.state.business !== nextState.business) {
   //     return false;
   //   }
   // }
-
-  componentWillUnmount() {
-    this.props.clearReviewsList();
-  }
 
   handleLightboxOpen() {
     this.setState({
@@ -525,7 +522,16 @@ class SingleBusinessPage extends Component {
                           isEmpty(business.tags)
                             ? null
                             : business.tags.map(item => (
-                                <Link to={"/business/tag/" + item.enName} key={item._id} className={classes.chip}>
+                                <Link to={{
+                                    pathname: "/business/tag/" + item.enName,
+                                    hash: '#',
+                                    state: {
+                                      tag: item
+                                    }
+                                  }}  
+                                  key={item._id} 
+                                  className={classes.chip}
+                                >
                                   <Badge color="info"  >#{item.krName}</Badge>
                                 </Link>
                             ))
@@ -951,6 +957,7 @@ const mapStateToProps = (state, ownProps) => {
     "isLoggedIn": state.userReducer.isLoggedIn,
     "isVerified": state.userReducer.isUserVerified,
     "isFetching": state.businessReducer.isFetching,
+    "business": state.businessReducer.singleBusiness,
   };
 };
 

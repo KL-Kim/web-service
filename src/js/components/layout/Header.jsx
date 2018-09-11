@@ -15,7 +15,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -121,7 +120,7 @@ class Header extends PureComponent {
   }
 
   render() {
-    const { classes, user, isLoggedIn, updatedAt, match } = this.props;
+    const { classes, user, isLoggedIn, match } = this.props;
 
     return (
       <div className={classes.root}>
@@ -152,28 +151,22 @@ class Header extends PureComponent {
               </LinkContainer>
 
               { 
-                this.props.isFetching
+                this.props.isLoggedIn
                   ? <IconButton
+                      disableRipple
                       className={classes.button}
+                      onClick={this.handleDrawerToggle}
                     >
-                      <CircularProgress size={24} />
+                      <Avatar user={user} />
                     </IconButton>
-                  : this.props.isLoggedIn
-                      ? <IconButton
-                          disableRipple
-                          className={classes.button}
-                          onClick={this.handleDrawerToggle}
-                        >
-                          <Avatar user={user} updatedAt={updatedAt} />
-                        </IconButton>
-                      : <IconButton 
-                          color='default'
-                          disableRipple
-                          className={classes.button} 
-                          onClick={this.handleLoginDialogOpen}
-                        >
-                          <AccountCircle />
-                        </IconButton>
+                  : <IconButton 
+                      color='default'
+                      disableRipple
+                      className={classes.button} 
+                      onClick={this.handleLoginDialogOpen}
+                    >
+                      <AccountCircle />
+                    </IconButton>
                 
               }
             </Toolbar>
@@ -191,7 +184,7 @@ class Header extends PureComponent {
                 >
                   <div style={{ width: 240, overflow: 'hidden' }}>
                     <div className={classes.account}>
-                      <Avatar user={user} type="MEDIUM" updatedAt={updatedAt} />
+                      <Avatar user={user} type="MEDIUM" />
                       <Typography variant="body1" className={classes.avatarName}>
                         <ProperName user={user} />
                       </Typography>
@@ -203,7 +196,7 @@ class Header extends PureComponent {
                       <Link to="/setting/notification">
                         <MenuItem selected={match.path === "/setting/notification"}>
                           <ListItemIcon>
-                            <Notifications color={this.props.newNotificationCount > 0 ? "primary" : 'default' } />
+                            <Notifications color={this.props.newNotificationCount > 0 ? "primary" : 'inherit' } />
                           </ListItemIcon>
                           <ListItemText classes={this.props.newNotificationCount > 0 ? { primary: classes.selected } : {}}>
                             {
@@ -291,7 +284,6 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
   user: PropTypes.object.isRequired,
-  updatedAt: PropTypes.number,
   isLoggedIn: PropTypes.bool.isRequired,
   newNotificationCount: PropTypes.number.isRequired,
   logout: PropTypes.func.isRequired,
@@ -303,7 +295,6 @@ const mapStateToProps = (state) => {
     "isFetching": state.userReducer.isFetching,
     "user": state.userReducer.user,
     "isLoggedIn": state.userReducer.isLoggedIn,
-    "updatedAt": state.userReducer.updatedAt,
     "newNotificationCount": state.notificationReducer.unreadCount,
   };
 };

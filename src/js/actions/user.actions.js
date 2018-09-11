@@ -443,21 +443,6 @@ export const updateUserProfile = (id, data) => {
       return null;
     }
 
-    const user = getState().userReducer.user;
-    let modified = false;
-
-    data.map((value, name) => {
-      if (value !== user[name]) {
-        modified = true;
-      }
-
-      return null;
-    });
-
-    if (!modified) {
-      return dispatch(AlertActions.alertSuccess("Nothing changed"));
-    }
-
     dispatch(_updateUserProfileRequest());
 
     return getToken()

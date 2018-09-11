@@ -64,6 +64,18 @@ const styles = theme => ({
 });
 
 class ReviewPanel extends Component {
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.reviews !== this.props.reviews) {
+            return true;
+        }
+        else if (nextProps.hasMore !== this.props.hasMore) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     handleFocus(e) {
         if (this.props.onFocusAddNew) {
             this.props.onFocusAddNew();

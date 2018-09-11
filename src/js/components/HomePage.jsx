@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 
 // Custom Components
 import Container from './layout/Container';
-import SectionCarousel from './sections/SectionCarousel';
-import BusinessPanel from './sections/BusinessPanel';
-import PopularCategorySection from './sections/PopularCategorySection';
-
-// Actions
-import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
+import HomePageCarouselSection from './sections/HomePageCarouselSection';
+import HomePagePopularCategorySection from './sections/HomePagePopularCategorySection';
+import HomePagePopularBusinessSection from './sections/HomePagePopularBusinessSection';
 
 const styles = theme => ({
   carousel: {
@@ -36,18 +31,6 @@ const styles = theme => ({
 });
 
 class HomePage extends Component {
-  componentDidMount() {
-    this.props.getBusinessList({
-      'limit': 9,
-      'orderBy': "useful",
-      'event': 1,
-    });
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
-  }
-
   render() {
     const { classes } = this.props;
 
@@ -55,18 +38,16 @@ class HomePage extends Component {
       <Container>
         <div>
           <div className={classes.carousel}>
-              <SectionCarousel />
+            <HomePageCarouselSection />
           </div>
           
           <div className={classes.container}>
             <div className={classes.section}>
-              <PopularCategorySection />
+              <HomePagePopularCategorySection />
             </div>
 
             <div className={classes.section}>
-              <Typography variant="title" gutterBottom>Popular Event</Typography>
-
-              <BusinessPanel />
+              <HomePagePopularBusinessSection />
             </div>
           </div>
         </div>
@@ -77,17 +58,6 @@ class HomePage extends Component {
 
 HomePage.propTypes = {
   "classes": PropTypes.object.isRequired,
-
-  // Methods
-  getBusinessList: PropTypes.func.isRequired, 
-  clearBusinessList: PropTypes.func.isRequired,  
 };
 
-const mapStateToProps = (state, ownProps) => {
-  return {};
-};
-
-export default connect(mapStateToProps, { 
-  getBusinessList, 
-  clearBusinessList,
-})(withStyles(styles)(HomePage));
+export default withStyles(styles)(HomePage);

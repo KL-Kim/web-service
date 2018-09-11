@@ -32,31 +32,60 @@ class BusinessPanel extends Component {
 
     componentDidMount() {
         if (this.props.isLoggedIn) {
-            const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
-
-            if (myFavors) {
+            if (!isEmpty(this.props.user) && !isEmpty(this.props.user.favors)) {
                 this.setState({
-                    myFavors,
-                });
+                    myFavors: [...this.props.user.favors]
+                })
+            } else {
+                const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+
+                if (myFavors) {
+                    this.setState({
+                        myFavors: [...myFavors],
+                    });
+                }
             }
         }
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.isLoggedIn !== this.props.isLoggedIn) {
-            const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
-
-            if (myFavors) {
+        if (prevProps.user !== this.props.user) {
+            if (!isEmpty(this.props.user) && !isEmpty(this.props.user.favors)) {
                 this.setState({
-                    myFavors,
-                });
+                    myFavors: [...this.props.user.favors]
+                })
+            } else {
+                const myFavors = loadFromStorage(webStorageTypes.WEB_STORAGE_USER_FAVOR) || [];
+
+                if (myFavors) {
+                    this.setState({
+                        myFavors: [...myFavors],
+                    });
+                }
             }
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.businessList !== this.props.businessList) {
+            return true;
+        } 
+        else if (nextProps.hasMore !== this.props.hasMore) {
+            return true;
+        } 
+        else if (nextProps.user !== this.props.user) {
+            return true;
+        }
+        else if (nextState.myFavors !== this.state.myFavors) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
     render() {
         const { businessList } = this.props;
-        let index = -1;
 
         if (this.props.getEmptyList) {
             return <Typography align="center">None</Typography>
@@ -68,41 +97,35 @@ class BusinessPanel extends Component {
                 <div>
                     <InfiniteScroll
                         pageStart={0}
-                        loadMore={this.props.loadMore}
                         hasMore={this.props.hasMore}
+                        loadMore={this.props.loadMore}
                         loader={<div style={{ textAlign: 'center' }} key={0}>
                                     <CircularProgress size={30} />
                                 </div>}
                     >
                         <Grid container spacing={16} style={{ marginBottom: 12 }}>
                             {
-                                businessList.map(item => {
-                                    if (!isEmpty(this.state.myFavors)) {
-                                        index = this.state.myFavors.indexOf(item._id);
-                                    }
+                                businessList.map(item => (
+                                    <Grid item xs={12} sm={4} key={item._id}>
+                                        <BusinessCard
+                                            bid={item._id}
+                                            title={item.krName}
+                                            slug={item.enName}
+                                            rating={item.ratingAverage}
+                                            image={isEmpty(item.mainImage) ? '' : item.mainImage.url}
+                                            category={item.category}
+                                            tags={item.tags}
+                                            event={!!(item.event)}
 
-                                    return (
-                                        <Grid item xs={12} sm={4} key={item._id}>
-                                            <BusinessCard
-                                                bid={item._id}
-                                                title={item.krName}
-                                                slug={item.enName}
-                                                rating={item.ratingAverage}
-                                                image={isEmpty(item.mainImage) ? '' : item.mainImage.url}
-                                                category={item.category}
-                                                tags={item.tags}
-                                                event={!!(item.event)}
+                                            isFavor={this.state.myFavors.includes(item._id)}
+                                            isLoggedIn={this.props.isLoggedIn}
+                                            userId={isEmpty(this.props.user) ? '' : this.props.user._id}
 
-                                                isFavor={index > -1 ? true : false}
-                                                isLoggedIn={this.props.isLoggedIn}
-                                                userId={isEmpty(this.props.user) ? '' : this.props.user._id}
-
-                                                openLoginDialog={this.props.openLoginDialog}
-                                                favorOperation={this.props.favorOperation}
-                                            />
-                                        </Grid>
-                                    );
-                                })
+                                            openLoginDialog={this.props.openLoginDialog}
+                                            favorOperation={this.props.favorOperation}
+                                        />
+                                    </Grid>
+                                ))
                             }
                         </Grid>
                     </InfiniteScroll>
@@ -142,7 +165,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         "isLoggedIn": state.userReducer.isLoggedIn,
         "user": state.userReducer.user,
-        "businessList": state.businessReducer.businessList,
+        "businessList": isEmpty(ownProps.businessList) ? state.businessReducer.businessList : ownProps.businessList,
         "totalCount": state.businessReducer.totalCount,
         "isFetching": state.businessReducer.isFetching,
         "getEmptyList": state.businessReducer.getEmptyList,

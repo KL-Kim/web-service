@@ -89,11 +89,13 @@ export const getSingleBusiness = (slug) => {
     "payload": {}
   });
 
-  const _getSignleBusinessSuccess = () => ({
+  const _getSignleBusinessSuccess = (response) => ({
     "type": businessTypes.GET_SINGLE_BUSINESS_SUCCESS,
     "meta": {},
     "error": null,
-    "payload": {}
+    "payload": {
+      business: response
+    }
   });
 
   const _getSingleBusinessFailure = (error) => ({
@@ -110,10 +112,10 @@ export const getSingleBusiness = (slug) => {
 
     dispatch(_getSingleBusinessRequest());
     return fetchSingleBusiness(slug)
-      .then(business => {
-        dispatch(_getSignleBusinessSuccess());
+      .then(response => {
+        dispatch(_getSignleBusinessSuccess(response));
 
-        return business;
+        return response;
       })
       .catch(err => {
         dispatch(_getSingleBusinessFailure(err));

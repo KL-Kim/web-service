@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -50,13 +49,20 @@ class BusinessListByTag extends Component {
     this.state = {
       "limit": 48,
       "count": 0,
-      "area": '',
+      "area": {},
       "orderBy": '',
       "event": false,
+      "originalArea:": {},
+      "originalOrderBy": '',
+      "originalEvent": false,
       "hasMore": false,
       "filterPopoverOpen": false,
       "tag": {},
     };
+    
+    if (!isEmpty(props.location.state) && !isEmpty(props.location.state.tag)) {
+      this.state.tag = {...props.location.state.tag}
+    } 
 
     this.getTag = this.getTag.bind(this);
     this.loadMore = this.loadMore.bind(this);
@@ -70,7 +76,7 @@ class BusinessListByTag extends Component {
 
   componentDidMount() {
     if (this.props.match.params.slug) {
-      this.getTag();
+      if(isEmpty(this.state.tag)) this.getTag();
 
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -89,7 +95,13 @@ class BusinessListByTag extends Component {
 
   componentDidUpdate(prevProps) {
     if (!isEmpty(this.props.match.params.slug) && this.props.match.params.slug !== prevProps.match.params.slug) {
-      this.getTag();
+      if (!isEmpty(this.props.location.state) && !isEmpty(this.props.location.state.tag)) {
+        this.setState({
+          tag: {...this.props.location.state.tag}
+        })
+      } else {
+        this.getTag();
+      }
 
       this.props.getBusinessList({
         limit: this.state.limit,
@@ -117,12 +129,10 @@ class BusinessListByTag extends Component {
     this.props.getTagsList()
       .then(response => {
         if (response) {
-          find(response, item => {
-            if (item.enName === this.props.match.params.slug) {
-              this.setState({
-                tag: item
-              });
-            }
+          const tag = response.find(item => item.enName === this.props.match.params.slug);
+
+          this.setState({
+            tag: {...tag}
           });
         }
       });
@@ -154,7 +164,7 @@ class BusinessListByTag extends Component {
   handleSelectArea = area => e => {
     if (this.state.area.code !== area.code) {
       this.setState({
-        area: area,
+        area: {...area},
       });
     }
   }
@@ -176,12 +186,18 @@ class BusinessListByTag extends Component {
   handleOpenFilterPopover() {
     this.setState({
       filterPopoverOpen: true,
+      originalArea: this.state.area,
+      originalOrderBy: this.state.orderBy,
+      originalEvent: this.state.event,
     });
   }
 
   handleCloseFilterPopover() {
     this.setState({
       filterPopoverOpen: false,
+      area: this.state.originalArea,
+      orderBy: this.state.originalOrderBy,
+      event: this.state.originalEvent
     });
   }
 
@@ -269,7 +285,7 @@ class BusinessListByTag extends Component {
                       fullWidth
                       size="small"
                       color={isEmpty(this.state.area) ? 'primary' : 'default'}
-                      variant={isEmpty(this.state.area) ? 'outlined' : 'text'}
+                      variant={isEmpty(this.state.area) ? 'raised' : 'text'}
                       onClick={this.handleSelectArea('')}
                     >
                       All
@@ -283,7 +299,7 @@ class BusinessListByTag extends Component {
                           fullWidth
                           size="small"
                           color={this.state.area.code === item.code ? 'primary' : 'default'}
-                          variant={this.state.area.code === item.code ? 'outlined' : 'text'}
+                          variant={this.state.area.code === item.code ? 'raised' : 'text'}
                           onClick={this.handleSelectArea(item)}
                         >
                           {item.cnName}
@@ -303,7 +319,7 @@ class BusinessListByTag extends Component {
                       fullWidth
                       size="small"
                       color={isEmpty(this.state.orderBy) ? 'primary' : 'default'}
-                      variant={isEmpty(this.state.orderBy) ? 'outlined' : 'text'}
+                      variant={isEmpty(this.state.orderBy) ? 'raised' : 'text'}
                       onClick={this.handleSelectOrderBy('')}
                     >
                       Recommend
@@ -315,7 +331,7 @@ class BusinessListByTag extends Component {
                       fullWidth
                       size="small"
                       color={this.state.orderBy === 'rating' ? 'primary' : 'default'}
-                      variant={this.state.orderBy === 'rating' ? 'outlined' : 'text'}
+                      variant={this.state.orderBy === 'rating' ? 'raised' : 'text'}
                       onClick={this.handleSelectOrderBy('rating')}
                     >
                       Rating
@@ -327,7 +343,7 @@ class BusinessListByTag extends Component {
                       fullWidth
                       size="small"
                       color={this.state.orderBy === 'new' ? 'primary' : 'default'}
-                      variant={this.state.orderBy === 'new' ? 'outlined' : 'text'}
+                      variant={this.state.orderBy === 'new' ? 'raised' : 'text'}
                       onClick={this.handleSelectOrderBy('new')}
                     >
                       New

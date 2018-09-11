@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
 
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
@@ -116,9 +115,9 @@ class AddressPanel extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const province = find(this.state.provinces, { 'code': this.state.provinceCode });
-    const city = find(this.state.cities, { 'code': this.state.cityCode });
-    const area = find(this.state.areas, { 'code': this.state.areaCode });
+    const province = this.state.provinces.find(item => item.code === this.state.provinceCode);
+    const city = this.state.cities.find(item => item.code === this.state.cityCode);
+    const area = this.state.areas.find(item =>  item.code === this.state.areaCode);
 
     const data = {
       "address": {

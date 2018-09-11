@@ -35,11 +35,11 @@ class AvatarModule extends Component {
   render() {
     if (isEmpty(this.props.user)) return null;
 
-    const { classes, type, user, updatedAt } = this.props;
+    const { classes, user } = this.props;
 
     let className;
 
-    switch (type) {
+    switch (this.props.type) {
       case "BIG":
         className = classes.big;
         break;
@@ -58,7 +58,7 @@ class AvatarModule extends Component {
 
     return isEmpty(user.avatarUrl) 
       ? <Avatar className={className}>{upperCase(user.username[0])}</Avatar>
-      : <Avatar className={className} alt={user.username[0]} src={user.avatarUrl + '?t=' + updatedAt} />
+      : <Avatar className={className} alt={user.username[0]} src={user.avatarUrl + '?t=' + this.props.updatedAt} />
     ;
   }
 }

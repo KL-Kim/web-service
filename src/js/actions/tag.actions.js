@@ -2,7 +2,6 @@
  * Business Tag Actions
  */
 import isEmpty from 'lodash/isEmpty';
-import immutable from 'immutable';
 
 import tagTypes from '../constants/tag.types';
 import * as AlertActions from './alert.actions';
@@ -40,7 +39,7 @@ export const getTagsList = () => {
   });
 
   return (dispatch, getState) => {
-    const state = getState();
+    // const state = getState();
 
     // if (!isEmpty(state.tagReducer.tagsList)) {
     //   return Promise.resolve(Map(state.tagReducer.tagsList));
@@ -59,14 +58,13 @@ export const getTagsList = () => {
 
     return fetchCategoriesOrTags("TAG")
       .then(response => {
-        const list = immutable.List.of(...response);
 
-        saveToStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST, list);
+        saveToStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST, response);
         saveToStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT, Date.now());
 
-        dispatch(_getTagsSuccess(list));
+        dispatch(_getTagsSuccess(response));
 
-        return list;
+        return response;
       })
       .catch(err => {
         removeFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);

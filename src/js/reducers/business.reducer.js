@@ -5,6 +5,7 @@ import businessTypes from '../constants/business.types';
 
 const initialState = {
   businessList: [],
+  singleBusiness: {},
   totalCount: 0,
   isFetching: false,
   getEmptyList: false, 
@@ -53,6 +54,12 @@ const businessReducer = (state = initialState, action) => {
       };
 
     case businessTypes.GET_SINGLE_BUSINESS_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        singleBusiness: {...action.payload.business},
+      };
+
     case businessTypes.REPORT_BUSINESS_SUCCESS:
       return {
         ...state,

@@ -238,6 +238,7 @@ class LoginDialog extends Component {
                   type="email"
                   id="email"
                   name="email"
+                  autoComplete="email"
                   error={this.state.emailError}
                   onBlur={this.isValidEmail}
                   onChange={this.handleChange}
@@ -262,6 +263,7 @@ class LoginDialog extends Component {
                   type="password"
                   id="password"
                   name="password"
+                  autoComplete="current-password"
                   error={this.state.passwordError}
                   onBlur={this.isValidPassword}
                   onChange={this.handleChange}
