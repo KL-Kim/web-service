@@ -26,6 +26,11 @@ const styles = (theme) => ({
 });
 
 class Footer extends Component{
+
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     const { classes } = this.props;
 

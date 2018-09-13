@@ -8,10 +8,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import Container from './layout/Container';
+import LoadingProgress from 'js/components/utils/LoadingProgress';
 
 // Actions
 import { verifyAccount } from 'js/actions/user.actions.js';
@@ -41,7 +41,7 @@ class AccountVerificationPage extends Component {
     super(props);
 
     this.state = {
-      "message": "",
+      "message": "Loading...",
     };
   }
 
@@ -67,15 +67,14 @@ class AccountVerificationPage extends Component {
     return (
       <Container>
         <div className={classes.root}>
-          <Typography variant="display1" align="center" gutterBottom>
-            Account Verification
-          </Typography>
+          <Typography variant="display1" align="center" gutterBottom>Account Verification</Typography>
+
           <Paper className={classes.paper}>
             <div className={classes.paragraph}>
               {
                 this.props.isFetching
-                  ? <CircularProgress size={40} />
-                  : <Typography variant="body1" align="center" className={classes.paragraph}>
+                  ? <LoadingProgress isLoading={this.props.isFetching} />
+                  : <Typography variant="body2" align="center" className={classes.paragraph}>
                       {this.state.message}
                     </Typography>
               }
@@ -83,7 +82,7 @@ class AccountVerificationPage extends Component {
 
             <div>
               <Link to="/">
-                <Button variant="raised" color="primary">
+                <Button color="primary">
                   Home
                 </Button>
               </Link>

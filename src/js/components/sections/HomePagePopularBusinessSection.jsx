@@ -73,7 +73,7 @@ HomePagePopularBusinessSection.prototypes = {
 };
 
 export default connect(
-    () => {},
+    () => ({}),
     { 
         getBusinessList, 
         clearBusinessList,

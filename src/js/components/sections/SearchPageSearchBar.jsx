@@ -34,8 +34,8 @@ class SearchBar extends PureComponent {
         this.state = {
             "search": '',
             "typingTimeout": null,
-            "searchedCategory": [],
-            "searchedTag": [],
+            "categories": [],
+            "tags": [],
         };
     }
 
@@ -68,8 +68,8 @@ class SearchBar extends PureComponent {
         else {
             this.setState({
                 search: '',
-                "searchedCategory": [],
-                "searchedTag": [],
+                "categories": [],
+                "tags": [],
             })
         }
     }
@@ -80,8 +80,8 @@ class SearchBar extends PureComponent {
             const tags = searchCategoryOrTag('tag', query);
         
             this.setState({
-                searchedCategory: [...categories],
-                searchedTag: [...tags],
+                categories: [...categories],
+                tags: [...tags],
             });
         }
     }
@@ -129,13 +129,13 @@ class SearchBar extends PureComponent {
                 </form>
 
                 {
-                    isEmpty(this.state.searchedCategory)
+                    isEmpty(this.state.categories)
                         ?   null
                         :   <div>
                                 <Divider className={classes.divider} />
                                 <List>
                                     {
-                                    this.state.searchedCategory.map(item => (
+                                    this.state.categories.map(item => (
                                         <Link to={{
                                             pathname: "/business/category/" + item.enName,
                                             hash: '#',
@@ -156,13 +156,13 @@ class SearchBar extends PureComponent {
                 }
 
                 {
-                    isEmpty(this.state.searchedTag)
+                    isEmpty(this.state.tags)
                         ?   null
                         :   <div>
                                 <Divider className={classes.divider} />
                                 <List>
                                     {
-                                    this.state.searchedTag.map((item) => (
+                                    this.state.tags.map((item) => (
                                         <Link to={{
                                             pathname: "/business/tag/" + item.enName,
                                             hash: '#',
@@ -190,4 +190,4 @@ SearchBar.prototypes = {
     "classes": PropTypes.object.isRequired,
 };
 
-export default (withStyles(styles)(SearchBar));
+export default withStyles(styles)(SearchBar);

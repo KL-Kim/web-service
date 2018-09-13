@@ -16,7 +16,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Material UI Icons
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -28,6 +27,7 @@ import Container from '../layout/Container';
 import MessageContent from '../utils/MessageContent';
 import ConfirmationDialog from 'js/components/dialogs/ConfirmationDialog';
 import getElapsedTime from 'js/helpers/ElapsedTime';
+import LoadingProgress from 'js/components/utils/LoadingProgress';
 
 // Actions
 import {
@@ -178,7 +178,6 @@ class NotificationPage extends Component {
               <Typography variant="title">Notifications</Typography>
             </Grid>
 
-
             <Grid item>
               <Button
                 color="primary"
@@ -199,9 +198,7 @@ class NotificationPage extends Component {
                       pageStart={0}
                       loadMore={this.loadMore}
                       hasMore={this.state.hasMore}
-                      loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
-                              </div>}
+                      loader={<LoadingProgress isLoading key={0} />}
                     >
                       {
                         this.props.list.map((item) =>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty';
 
 // Material UI Components
@@ -10,30 +9,24 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import ListItemText from '@material-ui/core/ListItemText';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
-
 
 // Custom Components
 import Container from './layout/Container';
 import SearchPageBusinessSection from './sections/SearchPageBusinessSection';
 import SearchPageSearchBar from './sections/SearchPageSearchBar';
+import LoadingProgress from 'js/components/utils/LoadingProgress';
 
 // Actions
 import { getBusinessList, clearBusinessList } from 'js/actions/business.actions';
 
-// WebStorage
-import { loadFromStorage } from 'js/helpers/webStorage';
-import webStorageTypes from 'js/constants/webStorage.types';
-
 // Helpers
-import searchCategoryOrTag from 'js/helpers/searchCategoryOrTag';
-import saveSearchHistory from 'js/helpers/saveSearchHistory';
+import { saveHistory, loadHistory } from 'js/helpers/SearchHistory';
 
 // Common Style
-import { root, chip, chipBar } from 'assets/jss/common.style';
+import { root } from 'assets/jss/common.style';
 
 const queries = [
   '꼬치',
@@ -45,21 +38,11 @@ const queries = [
 
 const styles = theme => ({
   "root": root(theme),
-  "chip": chip(theme),
-  "chipBar": chipBar(theme),
   "section": {
     marginBottom: theme.spacing.unit * 4,
   },
   "paper": {
     padding: theme.spacing.unit * 2,
-  },
-  "popoverContainer": {
-    maxWidth: 400,
-    padding: theme.spacing.unit * 2,
-  },
-  "divider": {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
   },
 });
 
@@ -88,7 +71,7 @@ class SearchPage extends Component {
   }
 
   componentDidMount() {
-    const searchHistory = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY) || [];
+    const searchHistory = loadHistory();
 
     if (!isEmpty(searchHistory)) {
       this.setState({
@@ -97,12 +80,16 @@ class SearchPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearBusinessList();
+  }
+
   saveSearchedQuery = query => {
     this.setState({
       searchedQuery: query
     });
 
-    saveSearchHistory(query);
+    saveHistory(query);
   }
 
   handleClickQuery = query => e => {
@@ -172,27 +159,27 @@ class SearchPage extends Component {
           }
 
           {
-            this.props.totalCount === 0 && this.props.isFetching
-              ? <div style={{ textAlign: 'center' }} key={0}>
-                  <CircularProgress size={30} />
+            this.state.searchedQuery && this.props.isFetching
+              ? <LoadingProgress isLoading={this.props.isFetching} />
+              : null
+          }
+
+          {
+            this.state.searchedQuery && this.props.getEmptyList
+              ? <div className={classes.section}>
+                  <Paper className={classes.paper}>
+                    <Typography variant="body2" align="center">Sorry, we could not find business matching '{this.state.searchedQuery}'</Typography>
+                  </Paper>
                 </div>
               : null
           }
-
+          
           {
-            this.props.getEmptyList
-              ? <Paper className={classes.paper}>
-                  <Typography align="center">Sorry, you can search another word</Typography>
-                </Paper>
-              : null
-          }
-
-          {
-            this.props.totalCount === 0 || isEmpty(this.state.searchedQuery)
-              ? null
-              : <div>
+            this.state.searchedQuery && this.props.totalCount > 0 
+              ? <div className={classes.section}>
                   <SearchPageBusinessSection searchedQuery={this.state.searchedQuery} />
                 </div>
+              : null
           }
         </div>
       </Container>

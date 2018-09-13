@@ -8,7 +8,6 @@ import InfiniteScroll from 'react-infinite-scroller';
 // Material UI Components
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import FormControl from '@material-ui/core/FormControl';
@@ -20,6 +19,7 @@ import Edit from '@material-ui/icons/Edit'
 
 // Custom Components
 import ReviewCardAlt from './cards/ReviewCardAlt';
+import LoadingProgress from 'js/components/utils/LoadingProgress';
 
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions'; 
@@ -86,11 +86,9 @@ class ReviewPanel extends Component {
     render() {
         const { classes, reviews } = this.props;
 
-        // if (this.props.isFetching) {
-        //     return  <div style={{ textAlign: 'center' }}>
-        //                 <CircularProgress size={50} />
-        //             </div>;
-        // }
+        if (this.props.totalCount === 0 && this.props.isFetching) {
+            return <LoadingProgress isLoading={this.props.isFetching} />;
+        }
 
         return (
             <div>
@@ -98,9 +96,7 @@ class ReviewPanel extends Component {
                     pageStart={0}
                     loadMore={this.props.loadMore}
                     hasMore={this.props.hasMore}
-                    loader={<div style={{ textAlign: 'center' }} key={0}>
-                                <CircularProgress size={30} />
-                            </div>}
+                    loader={<LoadingProgress isLoading key={0} />}
                 >
                     <div className={classes.mansoryWrapper}>
                         <Masonry elementType={'div'}>

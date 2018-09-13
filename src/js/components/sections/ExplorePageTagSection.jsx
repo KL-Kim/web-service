@@ -11,6 +11,9 @@ import { Grid, Typography, Button } from '@material-ui/core';
 // Custom Components
 import TagBar from './TagBar';
 
+// Actions
+import { clearBusinessList } from 'js/actions/business.actions.js';
+
 const styles = theme => ({
   "section": {
     marginBottom: theme.spacing.unit * 2,
@@ -74,13 +77,17 @@ class TagSection extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.tags !== this.props.tags && !isEmpty(nextProps.tags)) {
       return true;
-    } 
+    }
     else if (nextState.popular !== this.state.popular || nextState.list !== this.state.list) {
       return true;
     }
     else {
       return false;
     }
+  }
+
+  componentWillUnmount() {
+    this.props.clearBusinessList();
   }
 
   render() {
@@ -140,4 +147,6 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-export default connect(mapStateToProps, {})(withStyles(styles)(TagSection));
+export default connect(mapStateToProps, {
+  clearBusinessList,
+})(withStyles(styles)(TagSection));

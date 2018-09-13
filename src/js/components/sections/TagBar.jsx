@@ -17,7 +17,7 @@ import BusinessCard from './cards/BusinessCard';
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions'; 
 import { favorOperation } from 'js/actions/user.actions';
-import { getBusinessList, clearBusinessList } from 'js/actions/business.actions.js';
+import { getBusinessList } from 'js/actions/business.actions.js';
 
 // WebStorage
 import { loadFromStorage } from 'js/helpers/webStorage';
@@ -31,7 +31,7 @@ const styles = theme => ({
   },
 });
 
-class TagPanel extends Component {
+class TagBar extends Component {
   constructor(props) {
     super(props);
 
@@ -86,10 +86,6 @@ class TagPanel extends Component {
           }
       }
     }
-  }
-
-  componentWillUnmount() {
-    this.props.clearBusinessList();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -161,7 +157,7 @@ class TagPanel extends Component {
   }
 }
 
-TagPanel.propTypes = {
+TagBar.propTypes = {
   "classes": PropTypes.object.isRequired,
   "tag": PropTypes.object.isRequired,
   "isFetching": PropTypes.bool,
@@ -184,7 +180,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(mapStateToProps, { 
   getBusinessList, 
-  favorOperation, 
-  clearBusinessList,
+  favorOperation,
   openLoginDialog,
-})(withStyles(styles)(TagPanel));
+})(withStyles(styles)(TagBar));

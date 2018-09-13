@@ -10,8 +10,7 @@ class Container extends Component {
   // componentDidCatch(error, info) {
   //   const stack = info.componentStack;
   // }
-
-
+  
   render() {
     return (
       <div style={{

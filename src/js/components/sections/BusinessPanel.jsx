@@ -7,10 +7,10 @@ import InfiniteScroll from 'react-infinite-scroller';
 // Material UI Components
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Custom Components
 import BusinessCard from './cards/BusinessCard';
+import LoadingProgress from 'js/components/utils/LoadingProgress';
 
 // WebStorage
 import { loadFromStorage } from 'js/helpers/webStorage';
@@ -19,7 +19,6 @@ import webStorageTypes from 'js/constants/webStorage.types';
 // Actions
 import { openLoginDialog } from 'js/actions/app.actions'; 
 import { favorOperation } from 'js/actions/user.actions';
-
 
 class BusinessPanel extends Component {
     constructor(props) {
@@ -88,20 +87,21 @@ class BusinessPanel extends Component {
         const { businessList } = this.props;
 
         if (this.props.getEmptyList) {
-            return <Typography align="center">None</Typography>
+            return <Typography variant="body2" align="center">Sorry, No matching business.</Typography>
+        }
+
+        if (this.props.isFetching) {
+            return <LoadingProgress isLoading={this.props.isFetching} />
         }
         
         return isEmpty(businessList) 
-            ? null 
-            : (
-                <div>
+            ?  null 
+            :  <div>
                     <InfiniteScroll
                         pageStart={0}
                         hasMore={this.props.hasMore}
                         loadMore={this.props.loadMore}
-                        loader={<div style={{ textAlign: 'center' }} key={0}>
-                                    <CircularProgress size={30} />
-                                </div>}
+                        loader={<LoadingProgress isLoading key={0} />}
                     >
                         <Grid container spacing={16} style={{ marginBottom: 12 }}>
                             {
@@ -137,7 +137,6 @@ class BusinessPanel extends Component {
                             : null
                     }
                 </div>
-        )
     }
 }
 

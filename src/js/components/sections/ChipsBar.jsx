@@ -42,7 +42,7 @@ class ChipsBar extends Component {
         this.props.onSelect(item);
 
         this.setState({
-            selected: item
+            selected: item._id
         });
     }
 
@@ -67,11 +67,14 @@ class ChipsBar extends Component {
                             :   this.props.chips.map(item => (
                                     <CustomButton
                                         key={item._id}
-                                        color={this.state.selected === item.enName ? "primary" : 'white'}
+                                        color={this.state.selected === item._id ? "primary" : 'white'}
                                         round
                                         className={classes.chip}
-                                        onClick={this.handleSelect(item.enName)}
+                                        onClick={this.handleSelect(item)}
                                     >
+                                        {
+                                            this.props.type === "tag" && '#'
+                                        }                                    
                                         {item.krName}
                                     </CustomButton>
                                 ))

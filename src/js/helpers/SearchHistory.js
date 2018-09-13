@@ -7,7 +7,7 @@
 import { loadFromStorage, saveToStorage } from 'js/helpers/webStorage';
 import webStorageTypes from 'js/constants/webStorage.types';
 
-const saveSearchHistory = (query) => {
+export const saveHistory = query => {
   if (!query) return ;
 
   let history = loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY);
@@ -33,4 +33,6 @@ const saveSearchHistory = (query) => {
   return ;
 }
 
-export default saveSearchHistory;
+export const loadHistory = () => {
+  return loadFromStorage(webStorageTypes.WEB_STORAGE_SEARCH_HISTORY) || [];
+}
