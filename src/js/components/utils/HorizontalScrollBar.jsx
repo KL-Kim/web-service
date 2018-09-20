@@ -13,7 +13,11 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 const styles = theme => ({
     "root": {
         position: 'relative',
-        width: '100%',
+        overflowY: 'hidden',
+        whiteSpace: 'normal',
+    },
+    "container": {
+        position: 'relative',
         height: '100%',
     },
     "wrapper": {
@@ -26,10 +30,11 @@ const styles = theme => ({
         [theme.breakpoints.down('xs')]: {
             paddingTop: 0,
             paddingBottom: 0,
-        }
+        },
     },
     "item": {
         display: 'inline-block',
+        paddingBottom: 100,
     },
     "buttonWrapper": {
         position: "absolute",
@@ -58,7 +63,7 @@ class HorizontalScrollBar extends PureComponent {
             showRightButton: false,
         };
         
-        this.ref = React.createRef();
+        this.containerRef = React.createRef();
 
         this.handleScrollLeft = this.handleScrollLeft.bind(this);
         this.handleScrollRight = this.handleScrollRight.bind(this);
@@ -66,22 +71,23 @@ class HorizontalScrollBar extends PureComponent {
     }
 
     componentDidMount() {
-        if (this.ref.current) {
+        if (this.containerRef.current) {
             this.setState({
-                showRightButton: this.ref.current.clientWidth < this.ref.current.scrollWidth
+                showRightButton: this.containerRef.current.clientWidth < this.containerRef.current.scrollWidth
             });
-            this.ref.current.addEventListener("scroll", this.handleScroll);
+
+            this.containerRef.current.addEventListener("scroll", this.handleScroll);
         }
     }
 
     componentWillUnmount() {
-        if (this.ref.current) {
-            this.ref.current.removeEventListener("scroll", this.handleScroll);
+        if (this.containerRef.current) {
+            this.containerRef.current.removeEventListener("scroll", this.handleScroll);
         }
     }
 
     handleScroll() {
-        const node = this.ref.current;
+        const node = this.containerRef.current;
 
         if (node.scrollLeft > 0) {
             this.setState({
@@ -105,57 +111,58 @@ class HorizontalScrollBar extends PureComponent {
     }
 
     handleScrollLeft() {
-        const diff = this.ref.current.scrollLeft - this.ref.current.clientWidth + this.props.diff;
+        const diff = this.containerRef.current.scrollLeft - this.containerRef.current.clientWidth + this.props.diff;
 
-        animate('scrollLeft', this.ref.current, diff > 0 ? diff : 0);
+        animate('scrollLeft', this.containerRef.current, diff > 0 ? diff : 0);
     }
 
     handleScrollRight () {
-        const diff = this.ref.current.scrollLeft + this.ref.current.clientWidth - this.props.diff;
+        const diff = this.containerRef.current.scrollLeft + this.containerRef.current.clientWidth - this.props.diff;
 
-        animate('scrollLeft', this.ref.current, diff);    
+        animate('scrollLeft', this.containerRef.current, diff);    
     }
 
     render() {
         const { classes } = this.props;
         
         return (
-            
-            <div className={classes.root}>
-                
-                <div className={classes.wrapper} ref={this.ref}>
-                    {
-                        this.props.children.map((item, index) => (
-                            <div className={classes.item} key={index}>
-                                {item} 
-                            </div>
-                        ))
-                    }
-                </div>
-                
+            <div className={classes.root} style={{ height: this.props.itemHeight }}>
+                <div className={classes.container}>
+                    <div className={classes.wrapper} ref={this.containerRef}>
+                        {
+                            this.props.children.map((item, index) => (
+                                <div className={classes.item} key={index}>
+                                    {item} 
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>   
+
                 <div>
-                    <div className={classes.buttonWrapper} style={{ left: -24, }}>
+                    <div className={classes.buttonWrapper} style={{ left: 0, }}>
                         {
-                            this.state.showLeftButton && <IconButton
-                                className={classes.button}
-                                onClick={this.handleScrollLeft}
-                            >
-                                <KeyboardArrowLeft />
-                            </IconButton>
+                            this.state.showLeftButton 
+                                &&  <IconButton
+                                        className={classes.button}
+                                        onClick={this.handleScrollLeft}
+                                    >
+                                        <KeyboardArrowLeft />
+                                    </IconButton>
                         }
                     </div>
-                    <div className={classes.buttonWrapper} style={{ right: -24, }}>
+                    <div className={classes.buttonWrapper} style={{ right: 0, }}>
                         {
-                            this.state.showRightButton && <IconButton
-                                className={classes.button}
-                                onClick={this.handleScrollRight}
-                            >
-                                <KeyboardArrowRight />
-                            </IconButton>
+                            this.state.showRightButton 
+                                &&  <IconButton
+                                        className={classes.button}
+                                        onClick={this.handleScrollRight}
+                                    >
+                                        <KeyboardArrowRight />
+                                    </IconButton>
                         }
                     </div>
                 </div>
-            
             </div>
         );
     }

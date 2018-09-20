@@ -35,20 +35,20 @@ export const getCategoriesList = () => {
 
   return (dispatch, getState) => {
 
-    // const state = getState();
+    const state = getState();
 
-    // if (!isEmpty(state.categoryReducer.categoriesList)) {
-    //   return Promise.resolve(state.categoryReducer.categoriesList);
-    // }
+    if (!isEmpty(state.categoryReducer.categoriesList)) {
+      return Promise.resolve(state.categoryReducer.categoriesList);
+    }
 
-    // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
-    // const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
+    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_UPDATED_AT);
+    const categories = loadFromStorage(webStorageTypes.WEB_STORAGE_CATEGORIES_LIST);
 
-    // if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-    //   dispatch(_getCategoriesSuccess(categories));
+    if (categories && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+      dispatch(_getCategoriesSuccess(categories));
 
-    //   return Promise.resolve(categories);
-    // }
+      return Promise.resolve(categories);
+    }
   
     dispatch(_getCategoriesRequest());
 

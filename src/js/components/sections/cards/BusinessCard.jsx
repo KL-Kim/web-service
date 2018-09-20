@@ -31,15 +31,16 @@ const styles = (theme) => ({
     maxWidth: 400,
     minWidth: 220,
   },
-  "content": {
-    paddingBottom: '0px !important',
-  },
   "image": {
     width: '100%', 
     height: 180, 
     objectFit: 'cover',
     position: 'relative',
-  }
+  },
+  "content": {
+    paddingBottom: '0px !important',
+  },
+  
 });
 
 class BusinessCard extends Component {

@@ -9,12 +9,22 @@ import { withStyles } from '@material-ui/core/styles';
 import CustomButton from 'js/components/utils/Button';
 import HorizontalScrollBar from 'js/components/utils/HorizontalScrollBar';
 
-// Common Style
-import { chip, chipBar } from 'assets/jss/common.style';
-
 const styles = theme => ({
-    "chip": chip(theme),
-    "chipBar": chipBar(theme),
+    "chipBar": {
+        margin: 0,
+    },
+    "chip": {
+        width: 'auto',
+        display: 'inline-block',
+        marginTop: theme.spacing.unit * 2,
+        marginBottom: theme.spacing.unit * 2,
+        marginRight: theme.spacing.unit,
+        paddingTop: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit * 3,
+        paddingRight: theme.spacing.unit * 3,
+        fontSize: theme.typography.pxToRem(16),
+    },
 });
 
 class ChipsBar extends Component {
@@ -51,7 +61,7 @@ class ChipsBar extends Component {
 
         return (
             <div>
-                <HorizontalScrollBar className={classes.chipBar}>
+                <HorizontalScrollBar className={classes.chipBar} itemHeight={70}>
                     <CustomButton
                         color={isEmpty(this.state.selected) ? "primary" : 'white'}
                         round

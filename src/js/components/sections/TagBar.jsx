@@ -27,7 +27,6 @@ const styles = theme => ({
   card: {
     width: 260,
     marginRight: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit,
   },
 });
 
@@ -127,7 +126,7 @@ class TagBar extends Component {
           </Grid>
         </Grid>
 
-        <HorizontalScrollBar>
+        <HorizontalScrollBar itemHeight={336}>
           {
             this.state.list.map(item => (
                 <div className={classes.card} key={item._id}>

@@ -39,20 +39,20 @@ export const getTagsList = () => {
   });
 
   return (dispatch, getState) => {
-    // const state = getState();
+    const state = getState();
 
-    // if (!isEmpty(state.tagReducer.tagsList)) {
-    //   return Promise.resolve(Map(state.tagReducer.tagsList));
-    // }
+    if (!isEmpty(state.tagReducer.tagsList)) {
+      return Promise.resolve(state.tagReducer.tagsList);
+    }
 
-    // // const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
-    // // const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
+    const updatedAt = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_UPDATED_AT);
+    const tags = loadFromStorage(webStorageTypes.WEB_STORAGE_TAGS_LIST);
 
-    // // if (!isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
-    // //   dispatch(_getTagsSuccess(Map(tags)));
+    if (!isEmpty(tags) && (updatedAt + 60 * 60 * 1000) > Date.now()) {
+      dispatch(_getTagsSuccess(tags));
 
-    // //   return Promise.resolve(Map(tags));
-    // // }
+      return Promise.resolve(tags);
+    }
 
     dispatch(_getTagsRequest());
 
